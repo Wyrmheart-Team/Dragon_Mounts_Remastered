@@ -21,10 +21,7 @@
           { "type": "minor", "release": "patch" },
           { "type": "fix", "release": "patch" },
           { "type": "perf", "release": "patch" },
-          { "type": "breaking", "release": "major" },
-          { "type": "**", "release": "patch" },
-          { "subject": "**", "release": "patch" },
-          { "message": "**", "release": "patch" }
+          { "type": "breaking", "release": "major" }
         ]
       }],
       ["@semantic-release/release-notes-generator", {
