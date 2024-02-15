@@ -18,7 +18,7 @@
     },
     {
       "type": "biome",
-      "biome_tag": "dmr:is_mountain"
+      "biome_tag": "minecraft:is_mountain"
     }
   ],
   "primary_color": "718aa9",
