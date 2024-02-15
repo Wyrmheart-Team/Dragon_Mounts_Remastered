@@ -1,0 +1,37 @@
+{
+  "attributes": {
+    "minecraft:generic.flying_speed": 0.25
+  },
+  "abilities": [
+    {
+        "type": "quick_flight"
+    }
+  ],
+  "habitats": [
+    {
+      "type": "world_height",
+      "height": 200
+    },
+    {
+      "type": "nearby_blocks",
+      "block_tag": "dmr:aether_dragon_habitat_blocks"
+    },
+    {
+      "type": "biome",
+      "biome_tag": "dmr:is_mountain"
+    }
+  ],
+  "primary_color": "718aa9",
+  "secondary_color": "e6e6e6",
+  "loot_tables": [
+    {
+      "table": "minecraft:chests/simple_dungeon",
+      "chance": 0.2,
+      "min": 1,
+      "max": 1
+    }
+  ],
+  "accessories": [
+    "tail_mem"
+  ]
+}

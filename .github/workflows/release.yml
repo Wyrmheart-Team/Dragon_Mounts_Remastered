@@ -1,0 +1,173 @@
+name: Automatic Build Pipeline
+
+on:
+  push:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  semantic-release:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    outputs:
+      changelog: ${{ steps.release_description.outputs.description }}
+      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
+      new_tag: ${{ steps.semantic.outputs.new_release_git_tag }}
+      new_release_version: ${{ steps.semantic.outputs.new_release_version }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+           node-version: '18.x'
+           registry-url: 'https://npm.pkg.github.com'
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v3
+        id: semantic
+        with:
+            dry_run: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Generate changelog value
+        shell: bash
+        id: release_description
+        run: |
+          description="${{ steps.semantic.outputs.new_release_notes }}"
+          description="${description//'%'/'\n'}"
+          description="${description//$'\n'/'\n'}"
+          description="${description//$'\r'/'\n'}"
+          echo $description
+          echo "::set-output name=description::$description"
+
+      - name: Print Release Summary
+        run: |
+          if [[ "${{ steps.semantic.outputs.new_release_version }}" != "" ]]; then
+            echo "New version ${{ steps.semantic.outputs.new_release_version }} released." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No new version released." >> $GITHUB_STEP_SUMMARY
+          fi
+
+  java-build:
+    name: Java Build
+    needs: semantic-release
+    if: needs.semantic-release.outputs.new_release_published == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Read properties file and set as env
+        run: |
+          while IFS= read -r line || [[ -n "$line" ]]; do
+            if [[ $line == \#* ]] || [[ -z $line ]]; then
+              continue # Skip comments and empty lines
+            fi
+            IFS='=' read -r key value <<< "$line"
+            key=$(echo $key | xargs) # Trim key
+            value=$(echo $value | xargs) # Trim value
+            if [ ! -z "$key" ]; then
+              echo "Setting $key=$value"
+              echo "$key=$value" >> $GITHUB_ENV
+            fi
+          done < ./gradle.properties
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.java_version }}
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Update gradle.properties
+        run: sed -i "s/mod_version=.*/mod_version=${{ needs.semantic-release.outputs.new_release_version }}/g" gradle.properties
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ./build/fg_cache
+          key: ${{ runner.os }}-gradle-${{ hashFiles('gradle.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Setup forge mdk
+        run: ./gradlew init
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Notify Discord
+        uses: Sniddl/discord-commits@v1.6
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          last-commit-only: true
+          message: "New version of ${{ github.event.repository.name }}"
+          embed: |
+            {
+              "description": "*Built using the following versions*:\n\n*Minecraft*: **${{ env.minecraft_version }}**\n*NeoForge*: **${{ env.neo_version }}**\n*GeckoLib*: **${{ env.geckolib_version }}**\n\n${{ needs.semantic-release.outputs.changelog }}\n"
+            }
+
+      - name: Discord file publish
+        uses: sinshutu/upload-to-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        with:
+          args: build/libs/*.jar
+
+  publish-release:
+    name: Publish Release
+    needs: java-build
+    if: needs.semantic-release.outputs.new_release_published == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+           node-version: '18.x'
+           registry-url: 'https://npm.pkg.github.com'
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v3
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

@@ -1,0 +1,35 @@
+{
+  "name": "DragonMountsRemastered",
+  "version": "1.0.0",
+  "devDependencies": {
+    "@semantic-release/commit-analyzer": "^11.0.0",
+    "@semantic-release/release-notes-generator": "^12.0.0",
+    "semantic-release": "^22.0.5"
+  },
+  "files": [
+    "build/libs/*.jar"
+  ],
+  "release": {
+    "branches": [
+      "1.20.4"
+    ],
+    "plugins": [
+      ["@semantic-release/commit-analyzer", {
+        "preset": "angular",
+        "releaseRules": [
+          { "type": "feat", "release": "minor" },
+          { "type": "minor", "release": "patch" },
+          { "type": "fix", "release": "patch" },
+          { "type": "perf", "release": "patch" },
+          { "type": "breaking", "release": "major" },
+          { "type": "**", "release": "patch" },
+          { "subject": "**", "release": "patch" },
+          { "message": "**", "release": "patch" }
+        ]
+      }],
+      ["@semantic-release/release-notes-generator", {
+        "linkCompare": false
+      }]
+    ]
+  }
+}

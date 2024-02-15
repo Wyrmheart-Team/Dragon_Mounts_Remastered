@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dmr.DragonMounts.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "dmr.refmap.json",
+  "mixins": [
+    "EnsureSafeFlyingVehicleMixin",
+    "EntityDismountMixin",
+    "PlayerBreathMixin",
+    "PlayerDismountMixin",
+    "ReplenishDragonEggMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

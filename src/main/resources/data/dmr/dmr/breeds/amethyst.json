@@ -1,0 +1,35 @@
+{
+  "hatch_particles": {
+    "type": "minecraft:end_rod"
+  },
+  "accessories": [
+    "middle_tail_scales"
+  ],
+  "habitats": [
+    {
+      "type": "nearby_blocks",
+      "block_tag": "dmr:amethyst_dragon_habitat_blocks"
+    }
+  ],
+  "abilities": [
+    {
+      "type": "gem_guard"
+    },
+    {
+      "type": "crystal_harmony"
+    }
+  ],
+  "primary_color": 10975729,
+  "secondary_color": 16698599,
+  "ambient_sound": "dmr:entity.dragon.breathe",
+  "growth_time": 72000,
+  "hatch_time": 12000,
+  "loot_tables": [
+    {
+      "table": "minecraft:chests/stronghold_library",
+      "chance": 0.15,
+      "min": 1,
+      "max": 1
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "dmr:block/dragon_egg_models"
+    }
+  }
+}

@@ -1,0 +1,104 @@
+plugins {
+    id 'idea'
+    id "io.freefair.lombok" version "6.5.0.2"
+    id 'net.neoforged.gradle.userdev' version '7.0.77'
+}
+
+version = "$minecraft_version-$mod_version"
+group = mod_group_id
+
+base {
+    archivesName = mod_name
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+sourceSets {
+    main.resources.srcDirs += 'src/main/generated_resources'
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+subsystems {
+    parchment {
+        minecraftVersion = "${parchment_mc_version}"
+        mappingsVersion = "${parchment_version}"
+    }
+}
+
+repositories{
+    maven {
+        name = 'GeckoLib'
+        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content {
+            includeGroupByRegex("software\\.bernie.*")
+            includeGroup("com.eliotlash.mclib")
+        }
+    }
+    maven { url 'https://maven.blamejared.com/' }
+}
+
+dependencies {
+    implementation "net.neoforged:neoforge:${neo_version}"
+
+    implementation "com.eliotlash.mclib:mclib:20"
+    implementation "software.bernie.geckolib:geckolib-neoforge-$minecraft_version:$geckolib_version"
+
+    compileOnly "mezz.jei:jei-$minecraft_version-common-api:$jei_version"
+    compileOnly"mezz.jei:jei-$minecraft_version-neoforge-api:$jei_version"
+
+    runtimeOnly "mezz.jei:jei-$minecraft_version-neoforge:$jei_version"
+}
+
+minecraft {
+    accessTransformers {
+        file('src/main/resources/META-INF/accesstransformer.cfg')
+    }
+}
+
+runs {
+    configureEach {
+        //ideaModule "${project.name}.main"
+        modSource project.sourceSets.main
+    }
+
+    client
+    server {
+        programArgument '--nogui'
+    }
+
+    data {
+        workingDirectory project.file('run-data')
+        programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+    }
+}
+
+
+tasks.named('processResources', ProcessResources).configure {
+    var replaceProperties = [
+            minecraft_version: minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version: neo_version,
+            neo_version_range: neo_version_range,
+            loader_version_range: loader_version_range,
+            mod_id: mod_id,
+            mod_name: mod_name,
+            mod_license: mod_license,
+            mod_version: mod_version,
+            mod_authors: mod_authors,
+            mod_description: mod_description,
+            pack_format_number: pack_format_number,
+            geckolib_version_range: geckolib_version_range
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties + [project: project]
+    }
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}

@@ -1,0 +1,91 @@
+package dmr.DragonMounts.common.config;
+
+import net.neoforged.neoforge.common.ModConfigSpec;
+
+import java.util.concurrent.TimeUnit;
+
+public class DMRConfig
+{
+	public static final ModConfigSpec CLIENT;
+	public static final ModConfigSpec COMMON;
+	public static final ModConfigSpec SERVER;
+	
+	public static final int HATCH_TIME = (int)TimeUnit.SECONDS.convert(10, TimeUnit.MINUTES); // (10 minutes))
+	public static final int GROWTH_TIME = (int)TimeUnit.SECONDS.convert(10, TimeUnit.MINUTES); // (10 minutes))
+	public static final int BASE_REPRO_LIMIT = 3;
+	public static final float BASE_SIZE_MODIFIER = 1.0f;
+	private static final Long WHISTLE_COOLDOWN = TimeUnit.MILLISECONDS.convert(5, TimeUnit.SECONDS); // 5 minutes
+	
+	public static final ModConfigSpec.BooleanValue CAMERA_FLIGHT;
+	public static final ModConfigSpec.BooleanValue DOUBLE_PRESS_DISMOUNT;
+	
+	
+	static //Client
+	{
+		var configurator = new ModConfigSpec.Builder();
+		
+		CAMERA_FLIGHT = configurator.comment("Should the dragon be controlled by the camera during flight?").define("camera_flight", true);
+		
+		DOUBLE_PRESS_DISMOUNT = configurator.comment("Should dismounting the dragon require double pressing the dismount button? Disabling this will not allow using sneak or the dismount button to descend.")
+				.define("alternate_dismount", true);
+		
+		CLIENT = configurator.build();
+	}
+	
+	public static final ModConfigSpec.BooleanValue ALLOW_EGG_OVERRIDE;
+	
+	static //Common
+	{
+		var configurator = new ModConfigSpec.Builder();
+		
+		ALLOW_EGG_OVERRIDE = configurator.comment("Allow the vanilla ender egg to be interacted with? (Hatchable)",
+		                                      "Useful to help with mod compatability")
+				.define("allow_egg_override", true);
+		
+		COMMON = configurator.build();
+	}
+	
+	public static final ModConfigSpec.LongValue WHISTLE_COOLDOWN_CONFIG;
+	public static final ModConfigSpec.BooleanValue CALL_CHECK_SPACE;
+	
+	public static final ModConfigSpec.IntValue HATCH_TIME_CONFIG;
+	public static final ModConfigSpec.IntValue GROWTH_TIME_CONFIG;
+	public static final ModConfigSpec.DoubleValue SIZE_MODIFIER;
+	public static final ModConfigSpec.BooleanValue REPLENISH_EGGS;
+	public static final ModConfigSpec.IntValue REPRO_LIMIT;
+	public static final ModConfigSpec.BooleanValue ALLOW_HYBRIDIZATION;
+	public static final ModConfigSpec.BooleanValue HABITAT_OFFSPRING;
+	
+	static //Server
+	{
+		var configurator = new ModConfigSpec.Builder();
+		
+		REPLENISH_EGGS = configurator.comment("Should Ender Dragon Eggs replenish on the exit portal after a respawned dragon is deafeated?",
+		                                      "Useful for multiplayer scenarios.")
+				.define("replenish_eggs", true);
+		
+		REPRO_LIMIT = configurator.comment("Number of times a dragon is able to breed.")
+				.defineInRange("breed_limit", BASE_REPRO_LIMIT, 0, Integer.MAX_VALUE);
+		
+		HATCH_TIME_CONFIG = configurator.comment("Time in seconds for a dragon egg to hatch.")
+				.defineInRange("hatch_time", HATCH_TIME, 0, Integer.MAX_VALUE);
+		
+		GROWTH_TIME_CONFIG = configurator.comment("Time in seconds for a dragon to grow.")
+                .defineInRange("growth_time", GROWTH_TIME, 0, Integer.MAX_VALUE);
+		
+		SIZE_MODIFIER = configurator.comment("Size modifier for all dragons.")
+                .defineInRange("size_modifier", BASE_SIZE_MODIFIER, 0.0, Double.MAX_VALUE);
+		
+		ALLOW_HYBRIDIZATION = configurator.comment("Allow hybridization between dragons.").define("allow_hybridization", true);
+		
+		HABITAT_OFFSPRING = configurator.comment("Offspring from breeding can turn into dragon type matching current environment.").define("habitat_offspring", true);
+		
+		WHISTLE_COOLDOWN_CONFIG = configurator.comment("The cooldown for using the whistle ability.")
+				.defineInRange("whistle_cooldown", WHISTLE_COOLDOWN, 0L, Long.MAX_VALUE);
+		
+		CALL_CHECK_SPACE = configurator.comment("Should the dragon whistle check for available space?")
+				.define("whistle_check_space", true);
+		
+		SERVER = configurator.build();
+	}
+}

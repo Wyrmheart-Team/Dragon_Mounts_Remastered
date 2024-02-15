@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/dragon_egg",
+  "textures": {
+    "all": "dmr:block/sculk_dragon_egg"
+  }
+}

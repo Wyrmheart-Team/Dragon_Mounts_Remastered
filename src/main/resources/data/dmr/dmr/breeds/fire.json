@@ -1,0 +1,48 @@
+{
+  "abilities": [
+    {
+      "type": "ember_aura"
+    },
+    {
+      "type": "fire_proof"
+    }
+  ],
+  "habitats": [
+    {
+      "type": "nearby_blocks",
+      "block_tag": "dmr:fire_dragon_habitat_blocks"
+    },
+    {
+      "type": "in_fluid",
+      "fluid_tag": "minecraft:lava",
+      "point_multiplier": 3.0
+    },
+    {
+      "type": "world_height",
+      "height": 10,
+      "below": true
+    }
+  ],
+  "hatch_particles": {
+    "type": "minecraft:flame"
+  },
+  "immunities": [
+    "onFire",
+    "inFire",
+    "lava",
+    "hotFloor"
+  ],
+  "primary_color": "912400",
+  "secondary_color": "ff9819",
+  "loot_tables": [
+    {
+      "table": "minecraft:chests/desert_pyramid",
+      "chance": 0.085,
+      "min": 1,
+      "max": 1
+    }
+  ],
+  "accessories": [
+    "middle_tail_scales"
+  ]
+}

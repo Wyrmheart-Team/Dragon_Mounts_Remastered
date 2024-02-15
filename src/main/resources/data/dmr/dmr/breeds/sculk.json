@@ -1,0 +1,32 @@
+{
+  "hatch_particles": {
+    "type": "minecraft:sculk_charge_pop"
+  },
+  "accessories": [
+    "tail_horns"
+  ],
+  "habitats": [
+    {
+      "type": "biome",
+      "biome_tag": "minecraft:deep_dark"
+    }
+  ],
+  "abilities": [
+    {
+      "type": "echo_sense"
+    }
+  ],
+  "primary_color": 856598,
+  "secondary_color": 103061,
+  "ambient_sound": "dmr:entity.dragon.breathe",
+  "growth_time": 72000,
+  "hatch_time": 12000,
+  "loot_tables": [
+    {
+      "table": "minecraft:chests/ancient_city",
+      "chance": 0.15,
+      "min": 1,
+      "max": 1
+    }
+  ]
+}

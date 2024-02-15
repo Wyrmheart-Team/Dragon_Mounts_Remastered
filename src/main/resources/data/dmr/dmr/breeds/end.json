@@ -1,0 +1,41 @@
+{
+  "attributes": {
+    "minecraft:generic.max_health": 75.0
+  },
+  "habitats": [
+    {
+      "type": "dragon_breath"
+    },
+    {
+      "type": "biome",
+      "biome_tag": "minecraft:is_end"
+    }
+  ],
+  "abilities": [
+    {
+      "type": "ender_cloak"
+    },
+    {
+      "type": "void_walker"
+    }
+  ],
+  "hatch_particles": {
+    "type": "minecraft:portal"
+  },
+  "immunities": [
+    "dragonBreath"
+  ],
+  "primary_color": "161616",
+  "secondary_color": "ff63e8",
+  "accessories": [
+    "second_horns"
+  ],
+  "loot_tables": [
+    {
+      "table": "minecraft:chests/stronghold_corridor",
+      "chance": 0.1,
+      "min": 1,
+      "max": 1
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "abilities": [
+    {
+      "type": "floral_trail"
+    },
+    {
+      "type": "nature_blessing"
+    }
+  ],
+  "habitats": [
+    {
+      "type": "biome",
+      "biome_tag": "minecraft:lush_caves"
+    },
+    {
+      "type": "biome",
+      "biome_tag": "minecraft:is_jungle"
+    }
+  ],
+  "hatch_particles": {
+    "type": "minecraft:spore_blossom_air"
+  },
+  "primary_color": 8628541,
+  "secondary_color": 16083386,
+  "ambient_sound": "dmr:entity.dragon.breathe",
+  "growth_time": 72000,
+  "hatch_time": 12000,
+  "loot_tables": [
+    {
+      "table": "dungeoncrawl:chests/treasure",
+      "chance": 0.2,
+      "min": 1,
+      "max": 1
+    },
+    {
+      "table": "minecraft:chests/jungle_temple",
+      "chance": 0.1,
+      "min": 1,
+      "max": 1
+    },
+    {
+      "table": "minecraft:chests/woodland_mansion",
+      "chance": 0.3,
+      "min": 1,
+      "max": 1
+    },
+    {
+      "table": "minecraft:block/azalea_leaves",
+      "chance": 0.0001,
+      "min": 1,
+      "max": 1
+    }
+  ]
+}
