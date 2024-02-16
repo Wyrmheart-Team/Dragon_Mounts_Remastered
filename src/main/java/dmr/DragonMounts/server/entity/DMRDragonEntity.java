@@ -263,7 +263,30 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 			if (!pPlayer.getAbilities().instabuild) {
 				pArmor.shrink(1);
 			}
+			setArmor();
 		}
+	}
+	
+	
+	private static final UUID ARMOR_MODIFIER_UUID = UUID.fromString("f04f756f-f0ad-4f61-86e0-17e9ef5d6489");
+	
+	//TODO Unsure if Horse armor should be used or if we should implement new custom items
+	//TODO Horse armor currently doesnt render on the dragon
+	public void setArmor(){
+		ItemStack itemstack = this.inventory.getItem(ARMOR_SLOT);
+		if (!this.level().isClientSide) {
+			this.getAttribute(Attributes.ARMOR).removeModifier(ARMOR_MODIFIER_UUID);
+			if(this.isArmor(itemstack)) {
+				int i = ((HorseArmorItem)itemstack.getItem()).getProtection();
+				if (i != 0) {
+					this.getAttribute(Attributes.ARMOR).addTransientModifier(new AttributeModifier(ARMOR_MODIFIER_UUID, "Armor bonus", (double)i, AttributeModifier.Operation.ADDITION));
+				}
+			}
+		}
+	}
+	
+	public boolean isArmor(ItemStack pStack) {
+		return pStack.getItem() instanceof HorseArmorItem;
 	}
 
 	public boolean canFly()
@@ -651,10 +674,6 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 		}
 
 		return super.mobInteract(player, hand);
-	}
-	
-	public boolean isArmor(ItemStack pStack) {
-		return pStack.getItem() instanceof HorseArmorItem;
 	}
 	
 	public void updateAgeProperties()
@@ -1071,5 +1090,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 				handler.setDragon(this);
 			}
 		}
+		
+		setArmor();
 	}
 }

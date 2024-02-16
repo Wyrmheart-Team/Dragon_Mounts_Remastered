@@ -41,38 +41,20 @@ public class DragonContainerMenu extends AbstractContainerMenu
 			}
 		});
 
-		//TODO Implement armor
-//		this.addSlot(new Slot(dragonContainer, DMRDragonEntity.ARMOR_SLOT, 8, 36) {
-//			public boolean mayPlace(ItemStack p_39690_) {
-//				return dragon.isArmor(p_39690_);
-//			}
-//
-//			public int getMaxStackSize() {
-//				return 1;
-//			}
-//
-//			@Override
-//			public void set(ItemStack pStack)
-//			{
-//				super.set(pStack);
-//				dragon.updateContainerEquipment();
-//			}
-//		});
-		
-		this.addSlot(new Slot(dragonContainer, DMRDragonEntity.CHEST_SLOT, 8, 54) {
+		this.addSlot(new Slot(dragonContainer, DMRDragonEntity.ARMOR_SLOT, 8, 36) {
 			public boolean mayPlace(ItemStack p_39690_) {
-				return p_39690_.is(Items.CHEST);
+				return dragon.isArmor(p_39690_);
 			}
-			
+
+			public int getMaxStackSize() {
+				return 1;
+			}
+
 			@Override
 			public void set(ItemStack pStack)
 			{
 				super.set(pStack);
 				dragon.updateContainerEquipment();
-			}
-			
-			public int getMaxStackSize() {
-				return 1;
 			}
 		});
 		
