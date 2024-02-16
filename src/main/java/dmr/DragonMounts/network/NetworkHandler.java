@@ -35,7 +35,8 @@ public class NetworkHandler{
 			new SummonDragonPacket(),
 			new CompleteDataSync(-1, null),
 			new DismountDragonPacket(-1, false),
-			new DragonAgeSyncPacket(-1, -1)
+			new DragonAgeSyncPacket(-1, -1),
+			new DragonAttackPacket(-1)
 	);
 	
 	public static void registerEvent(RegisterPayloadHandlerEvent event) {

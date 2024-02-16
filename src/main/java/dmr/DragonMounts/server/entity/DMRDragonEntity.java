@@ -544,7 +544,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 		setXRot(driver.getXRot() * 0.68f);
 
 		// rotate body towards the head
-		setYRot(Mth.rotateIfNecessary(yHeadRot, getYRot(), 4));
+		setYRot(Mth.rotateIfNecessary(yHeadRot, getYRot(), 8));
 
  		if (isControlledByLocalInstance())
 		{

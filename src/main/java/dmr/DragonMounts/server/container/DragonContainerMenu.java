@@ -1,20 +1,28 @@
 package dmr.DragonMounts.server.container;
 
 import dmr.DragonMounts.registry.DMRMenus;
+import dmr.DragonMounts.server.container.slots.DragonInventorySlot;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DragonContainerMenu extends AbstractContainerMenu
 {
 	private final Container dragonContainer;
 	public final DMRDragonEntity dragon;
+	
+	private List<DragonInventorySlot> inventorySlots = new ArrayList<>();
 	
 	public DragonContainerMenu(int pContainerId, Inventory pPlayerInventory, FriendlyByteBuf data)
 	{
@@ -58,19 +66,51 @@ public class DragonContainerMenu extends AbstractContainerMenu
 			}
 		});
 		
-		if (dragon.hasChest()) {
-			for(int k = 0; k < 3; ++k) {
-				for(int l = 0; l < 9; ++l) {
-					this.addSlot(new Slot(dragonContainer, 3 + l + k * 9, 8 + l * 18, 84 + k * 18){
-						
-						@Override
-						public boolean isActive()
-						{
-							return dragon.hasChest();
-						}
-					});
+		this.addSlot(new Slot(dragonContainer, DMRDragonEntity.CHEST_SLOT, 8, 54) {
+			
+			@Override
+			public boolean mayPickup(Player pPlayer)
+			{
+				return dragon.inventoryEmpty() || dragon.inventory.getItem(DMRDragonEntity.CHEST_SLOT).is(Items.ENDER_CHEST);
+			}
+			
+			public boolean mayPlace(ItemStack p_39690_) {
+				return p_39690_.is(Items.CHEST) || p_39690_.is(Items.ENDER_CHEST);
+			}
+
+			@Override
+			public void set(ItemStack pStack)
+			{
+				super.set(pStack);
+				dragon.updateContainerEquipment();
+				for(DragonInventorySlot slot : inventorySlots){
+					slot.setChestTypeChanged(dragon.inventory.getItem(DMRDragonEntity.CHEST_SLOT).is(Items.ENDER_CHEST));
 				}
 			}
+
+			public int getMaxStackSize() {
+				return 1;
+			}
+		});
+		
+		for(int k = 0; k < 3; ++k) {
+			for(int l = 0; l < 9; ++l) {
+				var chestSlot = new DragonInventorySlot(l + k * 9, 8 + l * 18, 84 + k * 18, dragonContainer, pPlayerInventory.player.getEnderChestInventory()){
+					
+					@Override
+					public boolean isActive()
+					{
+						return dragon.hasChest();
+					}
+				};
+				
+				this.addSlot(chestSlot);
+				inventorySlots.add(chestSlot);
+			}
+		}
+		
+		for(DragonInventorySlot slot : inventorySlots){
+			slot.setChestTypeChanged(dragon.inventory.getItem(DMRDragonEntity.CHEST_SLOT).is(Items.ENDER_CHEST));
 		}
 		
 		for(int i1 = 0; i1 < 3; ++i1) {

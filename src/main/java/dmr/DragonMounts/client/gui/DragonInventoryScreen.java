@@ -6,12 +6,14 @@ import dmr.DragonMounts.network.packets.DragonStatePacket;
 import dmr.DragonMounts.server.container.DragonContainerMenu;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.types.abilities.types.Ability;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
@@ -77,6 +79,21 @@ public class DragonInventoryScreen  extends AbstractContainerScreen<DragonContai
 		                                                    this.xMouse,
 		                                                    this.yMouse,
 		                                                    this.dragon);
+	}
+	
+	
+	protected void renderLabels(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY) {
+		pGuiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
+		
+		
+		if(dragon.hasChest()){
+			if(dragon.inventory.getItem(DMRDragonEntity.CHEST_SLOT).is(Items.ENDER_CHEST)) {
+				pGuiGraphics.drawString(this.font, Component.translatable("container.enderchest"), this.inventoryLabelX, this.inventoryLabelY, 4210752, false);
+				return;
+			}
+		}
+		
+		pGuiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 4210752, false);
 	}
 	
 	public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {

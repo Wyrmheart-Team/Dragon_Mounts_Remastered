@@ -394,7 +394,7 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 	public void updateContainerEquipment() {
 		if (!this.level().isClientSide) {
 			setSaddled(!this.inventory.getItem(SADDLE_SLOT).isEmpty() && this.inventory.getItem(SADDLE_SLOT).is(Items.SADDLE));
-			setChest(!this.inventory.getItem(CHEST_SLOT).isEmpty() && this.inventory.getItem(CHEST_SLOT).is(Items.CHEST));
+			setChest(!this.inventory.getItem(CHEST_SLOT).isEmpty() && (this.inventory.getItem(CHEST_SLOT).is(Items.CHEST) || this.inventory.getItem(CHEST_SLOT).is(Items.ENDER_CHEST)));
 		}
 	}
 	
@@ -415,6 +415,16 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		
 		this.inventory.addListener(this);
 		this.updateContainerEquipment();
+	}
+	
+	public boolean inventoryEmpty(){
+		for(int i = 3; i < this.inventory.getContainerSize(); ++i) {
+			if (!this.inventory.getItem(i).isEmpty()) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	@Override
