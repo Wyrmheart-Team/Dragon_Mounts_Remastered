@@ -18,7 +18,7 @@ public class DMRConfig
 	
 	public static final ModConfigSpec.BooleanValue CAMERA_FLIGHT;
 	public static final ModConfigSpec.BooleanValue DOUBLE_PRESS_DISMOUNT;
-	
+	public static final ModConfigSpec.BooleanValue USE_ALTERNATE_ATTACK_KEY;
 	
 	static //Client
 	{
@@ -28,6 +28,9 @@ public class DMRConfig
 		
 		DOUBLE_PRESS_DISMOUNT = configurator.comment("Should dismounting the dragon require double pressing the dismount button? Disabling this will not allow using sneak or the dismount button to descend.")
 				.define("alternate_dismount", true);
+		
+		USE_ALTERNATE_ATTACK_KEY = configurator.comment("Should dragon attacks require holding down the dragon attack key?")
+				.define("alternate_attack_key", true);
 		
 		CLIENT = configurator.build();
 	}

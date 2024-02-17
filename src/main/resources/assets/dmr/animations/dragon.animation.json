@@ -1566,7 +1566,6 @@
 			}
 		},
 		"breath": {
-			"loop": true,
 			"animation_length": 0.45833,
 			"bones": {
 				"bottomjaw": {
@@ -1583,6 +1582,18 @@
 				},
 				"head_attack": {
 					"rotation": ["-7.5+math.sin(query.anim_time * 800)", 0, "math.sin(query.anim_time * 800) * 4"]
+				},
+				"neck1_molang": {
+					"rotation": [0, "query.head_yaw / 4", 0]
+				},
+				"neck2_molang": {
+					"rotation": [0, "query.head_yaw / 4", 0]
+				},
+				"neck3_molang": {
+					"rotation": [0, "query.head_yaw / 4", 0]
+				},
+				"head_molang": {
+					"rotation": [0, "query.head_yaw / 4", 0]
 				}
 			}
 		},
@@ -1937,6 +1948,18 @@
 						"0.3333": [75, 0, 0],
 						"0.4583": [0, 0, 0]
 					}
+				},
+				"neck1_molang": {
+					"rotation": [0, "query.head_yaw / 4", 0]
+				},
+				"neck2_molang": {
+					"rotation": [0, "query.head_yaw / 4", 0]
+				},
+				"neck3_molang": {
+					"rotation": [0, "query.head_yaw / 4", 0]
+				},
+				"head_molang": {
+					"rotation": [0, "query.head_yaw / 4", "query.head_yaw / 4"]
 				}
 			}
 		}

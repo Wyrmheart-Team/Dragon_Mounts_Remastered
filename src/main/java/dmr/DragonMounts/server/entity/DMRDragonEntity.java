@@ -16,6 +16,7 @@ import dmr.DragonMounts.util.BreedingUtils;
 import dmr.DragonMounts.util.PlayerStateUtils;
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -26,6 +27,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.*;
+import net.minecraft.world.Container;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.*;
@@ -50,16 +52,19 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.joml.Vector3d;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.*;
+import java.util.List;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 import static net.minecraft.world.entity.ai.attributes.Attributes.FLYING_SPEED;
@@ -81,6 +86,8 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 	public static final int BASE_KB_RESISTANCE = 1;
 	public static final float BASE_WIDTH = 2.75f; // adult sizes
 	public static final float BASE_HEIGHT = 2.75f;
+	
+	public static final int BREATH_COUNT = 5;
 	
 	// other constants
 	public static final UUID SCALE_MODIFIER_UUID = UUID.fromString("856d4ba4-9ffe-4a52-8606-890bb9be538b"); // just a random uuid I took online
@@ -115,22 +122,21 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 	public static final RawAnimation SIT_ALT = RawAnimation.begin().thenLoop("sit-alt");
 	
 	public static final RawAnimation BITE = RawAnimation.begin().thenPlay("bite");
+	public static final RawAnimation BREATH = RawAnimation.begin().thenPlayXTimes("breath", BREATH_COUNT);
 	
 	public static final RawAnimation IDLE = RawAnimation.begin().thenLoop("idle");
 	
 	private AnimationController<?> animationController;
+	private AnimationController<?> headController;
 	
 	private void addDragonAnimations(ControllerRegistrar data)
 	{
-		var headController = new AnimationController<>(this, "head-controller", 0, state -> {
-			if(isControlledByLocalInstance()){
-				return PlayState.STOP;
-			}
-			
+		headController = new AnimationController<>(this, "head-controller", 0, state -> {
 			return state.setAndContinue(isFlying() ? NECK_TURN_FLIGHT : NECK_TURN);
 		});
 		
 		headController.triggerableAnim("bite", BITE);
+		headController.triggerableAnim("breath", BREATH);
 		data.add(headController);
 		
 		animationController = new AnimationController<>(this, "controller", 5, state -> {
@@ -433,6 +439,18 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 
 		if(tickCount % 20 == 0)
 			getBreed().tick(this);
+		
+		if(level.isClientSide){
+			if(headController != null && headController.isPlayingTriggeredAnimation()){
+				if(Objects.equals(headController.getCurrentAnimation().animation().name(), "breath")){
+					clientBreathAttack();
+				}
+			}
+		}else{
+			if(breathTime != -1) {
+				serverBreathAttack();
+			}
+		}
 	}
 	
 	@Override
@@ -540,11 +558,11 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 		float yaw = driver.yHeadRot;
 		if (move.z > 0) // rotate in the direction of the drivers controls1
 			yaw += (float) Mth.atan2(driver.zza, driver.xxa) * (180f / (float) Math.PI) - 90;
-		yHeadRot = yaw;
+		yHeadRot = driver.yHeadRot;
 		setXRot(driver.getXRot() * 0.68f);
 
 		// rotate body towards the head
-		setYRot(Mth.rotateIfNecessary(yHeadRot, getYRot(), 8));
+		setYRot(Mth.rotateIfNecessary(yaw, getYRot(), 8));
 
  		if (isControlledByLocalInstance())
 		{
@@ -798,6 +816,72 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 	public void onFlap() {
 		if (this.level().isClientSide && !this.isSilent()) {
 			this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), getWingsSound(), this.getSoundSource(), 2.0F, 0.8F + this.random.nextFloat() * 0.3F, false);
+		}
+	}
+	
+	public Vector3d breathSourcePosition;
+	
+	private static final double breathLength = 0.5 * BREATH_COUNT;
+	private long breathTime = -1;
+	
+	public void serverBreathAttack(){
+		if(breathTime == -1){
+			breathTime = 0;
+		}else{
+			if(breathTime >= (int)(breathLength * 20)){
+				breathTime = -1;
+			}else{
+				breathTime++;
+				
+				if(getControllingPassenger() == null) return;
+				var viewVector = getControllingPassenger().getViewVector(1f);
+				
+				float degrees = Mth.wrapDegrees(getControllingPassenger().yBodyRot);
+				
+				double yawRadians = Math.toRadians(degrees);
+				double f4 = -Math.sin(yawRadians);
+				double f5 = Math.cos(yawRadians);
+				Vec3 lookVector = new Vec3(f4, viewVector.y, f5);
+				
+				var dimensions = getDimensions(getPose());
+				float size = 15f;
+				
+				var offsetBoundingBox = new AABB(getX() + (dimensions.width / 2), getY() + (dimensions.height / 2), getZ() + (dimensions.width / 2),
+				                                 getX() + (dimensions.width / 2) + lookVector.x * size, getY() + (dimensions.height / 2) + lookVector.y * size, getZ() +  + (dimensions.width / 2) + lookVector.z * size);
+				var entities = level.getNearbyEntities(LivingEntity.class, TargetingConditions.forCombat().ignoreInvisibilityTesting()
+						.selector(getControllingPassenger()::canAttack).selector(s -> !s.isAlliedTo(getControllingPassenger())), getControllingPassenger(), offsetBoundingBox);
+				
+				entities.stream().filter(e -> e != this && e != getControllingPassenger()).forEach(ent -> {
+					ent.hurt(level.damageSources().mobAttack(this), 2);
+					ent.setSecondsOnFire(5);
+				});
+			}
+		}
+	}
+	
+	@OnlyIn(Dist.CLIENT)
+	public void clientBreathAttack(){
+		if(getControllingPassenger() == null) return;
+		
+		float degrees = Mth.wrapDegrees(getControllingPassenger().yBodyRot);
+		
+		double yawRadians = Math.toRadians(degrees);
+		double f4 = -Math.sin(yawRadians);
+		double f5 = Math.cos(yawRadians);
+		Vec3 lookVector = new Vec3(f4, 0, f5);
+		
+		var viewVector = getControllingPassenger().getViewVector(1f);
+		
+		if(breathSourcePosition != null){
+			for(int i = 0; i < 20; i++) {
+				Vec3 speed = new Vec3(
+						lookVector.x * (0.5f + (random.nextFloat() / 2)),
+						viewVector.y,
+						lookVector.z * (0.5f + (random.nextFloat() / 2)));
+				
+				var particle = ParticleTypes.FLAME;
+				level.addParticle(particle, getX() + breathSourcePosition.x, getY() + breathSourcePosition.y, getZ() + breathSourcePosition.z, speed.x, speed.y, speed.z);
+			}
 		}
 	}
 

@@ -34,10 +34,11 @@ public record DragonAttackPacket(int entityId) implements IMessage<DragonAttackP
 			dragon.triggerAnim("head-controller", "bite");
 			
 			var dimensions = dragon.getDimensions(dragon.getPose());
+			float degrees = Mth.wrapDegrees(player.yBodyRot);
 			
-			float f1 = -(float)dragon.yBodyRot * ((float)Math.PI / 180F);
-			float f4 = Mth.sin(f1);
-			float f5 = Mth.cos(f1);
+			double yawRadians = -Math.toRadians(degrees);
+			double f4 = Math.sin(yawRadians);
+			double f5 = Math.cos(yawRadians);
 			Vec3 lookVector = new Vec3(f4 * dimensions.width * 2, 0, f5 * dimensions.width * 2);
 			
 			var offsetAabb = dragon.getBoundingBox().move(lookVector).inflate(2, 5, 2);
@@ -49,12 +50,6 @@ public record DragonAttackPacket(int entityId) implements IMessage<DragonAttackP
 				dragon.doHurtTarget(target);
 			}
 		}
-	}
-	
-	@Override
-	public boolean autoSync()
-	{
-		return false;
 	}
 	
 	@Override

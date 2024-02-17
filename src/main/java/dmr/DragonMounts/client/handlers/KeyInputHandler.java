@@ -27,10 +27,12 @@ import java.util.concurrent.TimeUnit;
 public class KeyInputHandler
 {
 	public static KeyMapping SUMMON_DRAGON = new KeyMapping("dmr.keybind.summon_dragon", GLFW.GLFW_KEY_V, "dmr.keybind.category");
+	public static KeyMapping ATTACK_KEY = new KeyMapping("dmr.keybind.attack", GLFW.GLFW_KEY_LEFT_ALT, "dmr.keybind.category");
 	
 	@SubscribeEvent
 	public static void registerBindings(RegisterKeyMappingsEvent event) {
 		event.register(SUMMON_DRAGON);
+		event.register(ATTACK_KEY);
 	}
 	
 	@OnlyIn(Dist.CLIENT)

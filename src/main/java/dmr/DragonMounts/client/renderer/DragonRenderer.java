@@ -104,5 +104,9 @@ public class DragonRenderer extends GeoEntityRenderer<DMRDragonEntity>
 			Minecraft.getInstance().getProfiler().pop();
 			Minecraft.getInstance().getProfiler().pop();
 		}
+		
+		model.getBone("bottomjaw").ifPresent(bone -> {
+			entity.breathSourcePosition = bone.getLocalPosition();
+		});
 	}
 }
