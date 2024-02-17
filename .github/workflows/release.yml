@@ -142,6 +142,7 @@ jobs:
 
   publish-release:
     name: Publish Release
+    environment: Release
     needs: java-build
     if: needs.semantic-release.outputs.new_release_published == 'true'
     runs-on: ubuntu-latest
