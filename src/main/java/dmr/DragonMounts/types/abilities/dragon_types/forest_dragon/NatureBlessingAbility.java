@@ -20,12 +20,14 @@ public class NatureBlessingAbility implements NearbyAbility
 	@Override
 	public void tick(DMRDragonEntity dragon, Player owner)
 	{
-		var level = dragon.level;
-		var block = level.getBlockState(dragon.blockPosition());
-		
-		if(block.is(Blocks.GRASS_BLOCK) || block.is(BlockTags.FLOWERS) || block.is(BlockTags.SAPLINGS)) {
-			dragon.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 40, 0, true, false, true));
-			owner.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 40, 0, true, false, true));
+		if (!dragon.level.isClientSide) {
+			var level = dragon.level;
+			var block = level.getBlockState(dragon.blockPosition());
+			
+			if (block.is(Blocks.GRASS_BLOCK) || block.is(BlockTags.FLOWERS) || block.is(BlockTags.SAPLINGS)) {
+				dragon.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 40, 0, true, false, true));
+				owner.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 40, 0, true, false, true));
+			}
 		}
 	}
 }

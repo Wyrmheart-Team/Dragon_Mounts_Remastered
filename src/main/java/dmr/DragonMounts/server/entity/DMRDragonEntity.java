@@ -15,6 +15,7 @@ import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.util.BreedingUtils;
 import dmr.DragonMounts.util.PlayerStateUtils;
 import io.netty.buffer.Unpooled;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
@@ -129,6 +130,11 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 	private AnimationController<?> animationController;
 	private AnimationController<?> headController;
 	
+	@OnlyIn(Dist.CLIENT)
+	private boolean cameraFlightCheck(Player player){
+		return DMRConfig.CAMERA_FLIGHT.get() && player == Minecraft.getInstance().player;
+	}
+	
 	private void addDragonAnimations(ControllerRegistrar data)
 	{
 		headController = new AnimationController<>(this, "head-controller", 0, state -> {
@@ -148,11 +154,20 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 				if (isMovingHorizontal || isPathFinding()) {
 					if(isSprinting()){
 						var rider = getControllingPassenger();
-						var vector = getDeltaMovement();
+						var vector = getDeltaMovement().multiply(0.5, 0.5, 0.5);
 						
 						//Use view vector when ridden and delta when not
 						if(rider instanceof Player player) {
-							vector = player.getViewVector(state.getPartialTick());
+							var lookVector = true;
+							if(level.isClientSide){
+								if(!cameraFlightCheck(player)){
+									lookVector = false;
+								}
+							}
+							
+							if(lookVector){
+								vector = player.getViewVector(state.getPartialTick());
+							}
 						}
 						
 						if (vector.y < -0.25) {
@@ -847,7 +862,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 				float size = 15f;
 				
 				var offsetBoundingBox = new AABB(getX() + (dimensions.width / 2), getY() + (dimensions.height / 2), getZ() + (dimensions.width / 2),
-				                                 getX() + (dimensions.width / 2) + lookVector.x * size, getY() + (dimensions.height / 2) + lookVector.y * size, getZ() +  + (dimensions.width / 2) + lookVector.z * size);
+				                                 getX() + (dimensions.width / 2) + lookVector.x * size, getY() + (dimensions.height / 2) + lookVector.y * size, getZ() +  (dimensions.width / 2) + lookVector.z * size);
 				var entities = level.getNearbyEntities(LivingEntity.class, TargetingConditions.forCombat().ignoreInvisibilityTesting()
 						.selector(getControllingPassenger()::canAttack).selector(s -> !s.isAlliedTo(getControllingPassenger())), getControllingPassenger(), offsetBoundingBox);
 				

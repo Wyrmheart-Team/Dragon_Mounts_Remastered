@@ -27,20 +27,18 @@ public class DragonAttackEvent
 		var player = Minecraft.getInstance().player;
 		if (player != null) {
 			if (player.getControlledVehicle() instanceof DMRDragonEntity dragon) {
-				if (event.isAttack()) {
-					event.setCanceled(true);
-					event.setSwingHand(false);
+				if (lastAttack == null || System.currentTimeMillis() - lastAttack > TimeUnit.MILLISECONDS.convert(1, TimeUnit.SECONDS)) {
+					lastAttack = System.currentTimeMillis();
 					
-					if (lastAttack == null || System.currentTimeMillis() - lastAttack > TimeUnit.MILLISECONDS.convert(1, TimeUnit.SECONDS)) {
-						lastAttack = System.currentTimeMillis();
-						if (Minecraft.getInstance().options.keyUse.isDown()) {
-						} else {
-							NetworkHandler.send(PacketDistributor.SERVER.noArg(), new DragonAttackPacket(dragon.getId()));
-						}
-					}
-				}else if(event.isUseItem()){
-					if (lastAttack == null || System.currentTimeMillis() - lastAttack > TimeUnit.MILLISECONDS.convert(1, TimeUnit.SECONDS)) {
-						lastAttack = System.currentTimeMillis();
+					if (event.isAttack()) {
+						event.setCanceled(true);
+						event.setSwingHand(false);
+						
+						NetworkHandler.send(PacketDistributor.SERVER.noArg(), new DragonAttackPacket(dragon.getId()));
+					} else if (event.isUseItem()) {
+						event.setCanceled(true);
+						event.setSwingHand(false);
+						
 						NetworkHandler.send(PacketDistributor.SERVER.noArg(), new DragonBreathPacket(dragon.getId()));
 					}
 				}

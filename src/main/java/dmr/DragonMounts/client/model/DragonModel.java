@@ -1,9 +1,14 @@
 package dmr.DragonMounts.client.model;
 
 import dmr.DragonMounts.DragonMountsRemaster;
+import dmr.DragonMounts.common.config.DMRConfig;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import software.bernie.geckolib.core.molang.MolangParser;
 import software.bernie.geckolib.model.GeoModel;
 
@@ -48,14 +53,29 @@ public class DragonModel extends GeoModel<DMRDragonEntity>
 
 		var viewVector = dragon.getViewVector(1f);
 		
-		if(dragon.getControllingPassenger() instanceof Player player){
-			viewVector = player.getViewVector(1f);
+		if(dragon.getControllingPassenger() instanceof Player player) {
+			var lookVector = true;
+			if(dragon.level.isClientSide){
+				if(!cameraFlightCheck(player)){
+					lookVector = false;
+				}
+			}
+			
+			if(lookVector){
+				viewVector = player.getViewVector(1f);
+			}else{
+				viewVector = dragon.getDeltaMovement().multiply(0.5, 0.5, 0.5);
+			}
 		}
 		
 		if(viewVector != null) {
 			var pitch = viewVector.y;
-			parser.setValue("query.pitch", () -> pitch);
+			parser.setValue("query.pitch", () -> Mth.clamp(pitch, -1, 1));
 		}
-		
+	}
+	
+	@OnlyIn( Dist.CLIENT)
+	private boolean cameraFlightCheck(Player player){
+		return DMRConfig.CAMERA_FLIGHT.get() && player == Minecraft.getInstance().player;
 	}
 }

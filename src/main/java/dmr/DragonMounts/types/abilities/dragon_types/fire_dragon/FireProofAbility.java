@@ -17,6 +17,8 @@ public class FireProofAbility implements NearbyAbility
 	@Override
 	public void tick(DMRDragonEntity dragon, Player owner)
 	{
-		owner.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 40, 0, true, false, true));
+		if(!dragon.level.isClientSide) {
+			owner.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 40, 0, true, false, true));
+		}
 	}
 }
