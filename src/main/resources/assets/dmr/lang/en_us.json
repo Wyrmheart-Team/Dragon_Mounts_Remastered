@@ -71,7 +71,7 @@
   "dmr.ability.ender_cloak.description": "When near the dragon you will not anger endermen",
 
   "dmr.ability.void_walker.name": "Void Walker",
-  "dmr.ability.void_walker.description": "When near the dragon you are given slow falling.",
+  "dmr.ability.void_walker.description": "When near the dragon you will not be hurt by fall damage",
 
   "dmr.ability.ember_aura.name": "Ember Aura",
   "dmr.ability.ember_aura.description": "Any hostiles near the dragon are set on fire",

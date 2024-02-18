@@ -1,12 +1,17 @@
 package dmr.DragonMounts.types.abilities.dragon_types.end_dragon;
 
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.types.abilities.types.NearbyAbility;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
-
-public class VoidWalker implements NearbyAbility
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
+@EventBusSubscriber
+public class VoidWalker implements Ability
 {
 	@Override
 	public String type()
@@ -14,9 +19,21 @@ public class VoidWalker implements NearbyAbility
 		return "void_walker";
 	}
 	
-	@Override
-	public void tick(DMRDragonEntity dragon, Player owner)
-	{
-		owner.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 20*20, 0, true, false, true));
+	@SubscribeEvent
+	public static void onFallDamage(LivingFallEvent event){
+		if(event.getEntity() instanceof Player player){
+			var level = player.level;
+			var dragons = level.getNearbyEntities(DMRDragonEntity.class, TargetingConditions.forNonCombat(), player, player.getBoundingBox().inflate(5));
+			
+			for(var dragon : dragons){
+				if(dragon.getOwner() != player) continue;
+				var hasVoidWalker = dragon.getBreed().getAbilities().stream().anyMatch(ability -> ability.type().equals("void_walker"));
+				
+				if(hasVoidWalker){
+					event.setCanceled(true);
+					break;
+				}
+			}
+		}
 	}
 }
