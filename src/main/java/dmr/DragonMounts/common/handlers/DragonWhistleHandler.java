@@ -111,7 +111,6 @@ public class DragonWhistleHandler
 						
 						if(!player.level.isClientSide){
 							dragon.setPos(player.getX(), player.getY(), player.getZ());
-							dragon.setPathingGoal(player.blockPosition());
 						}
 						
 						if(!player.level.isClientSide){
@@ -140,7 +139,7 @@ public class DragonWhistleHandler
 	}
 	
 	public static DMRDragonEntity findDragon(Player player, UUID dragonId){
-		var dragons = player.level.getNearbyEntities(DMRDragonEntity.class, TargetingConditions.forNonCombat().range(32).ignoreLineOfSight(), player, player.getBoundingBox().inflate(32));
+		var dragons = player.level.getNearbyEntities(DMRDragonEntity.class, TargetingConditions.forNonCombat().ignoreLineOfSight(), player, player.getBoundingBox().inflate(32));
 		
 		for (var e : dragons)
 		{

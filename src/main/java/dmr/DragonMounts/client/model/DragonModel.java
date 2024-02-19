@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import software.bernie.geckolib.core.molang.MolangParser;
@@ -50,32 +51,12 @@ public class DragonModel extends GeoModel<DMRDragonEntity>
 
 		parser.setValue("query.head_pitch", () -> dragon.getXRot() * 1);
 		parser.setValue("query.head_yaw", () -> (dragon.yBodyRot - dragon.yHeadRot) * -1);
-
-		var viewVector = dragon.getViewVector(1f);
 		
-		if(dragon.getControllingPassenger() instanceof Player player) {
-			var lookVector = true;
-			if(dragon.level.isClientSide){
-				if(!cameraFlightCheck(player)){
-					lookVector = false;
-				}
-			}
-			
-			if(lookVector){
-				viewVector = player.getViewVector(1f);
-			}else{
-				viewVector = dragon.getDeltaMovement().multiply(0.5, 0.5, 0.5);
-			}
-		}
+		var viewVector = dragon.getDeltaMovement().multiply(0.5, 0.25, 0.5);
 		
 		if(viewVector != null) {
 			var pitch = viewVector.y;
 			parser.setValue("query.pitch", () -> Mth.clamp(pitch, -1, 1));
 		}
-	}
-	
-	@OnlyIn( Dist.CLIENT)
-	private boolean cameraFlightCheck(Player player){
-		return DMRConfig.CAMERA_FLIGHT.get() && player == Minecraft.getInstance().player;
 	}
 }

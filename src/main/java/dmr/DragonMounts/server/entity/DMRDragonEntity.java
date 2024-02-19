@@ -130,11 +130,6 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 	private AnimationController<?> animationController;
 	private AnimationController<?> headController;
 	
-	@OnlyIn(Dist.CLIENT)
-	private boolean cameraFlightCheck(Player player){
-		return DMRConfig.CAMERA_FLIGHT.get() && player == Minecraft.getInstance().player;
-	}
-	
 	private void addDragonAnimations(ControllerRegistrar data)
 	{
 		headController = new AnimationController<>(this, "head-controller", 0, state -> {
@@ -153,28 +148,13 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 			if(isFlying()) {
 				if (isMovingHorizontal || isPathFinding()) {
 					if(isSprinting()){
-						var rider = getControllingPassenger();
-						var vector = getDeltaMovement().multiply(0.5, 0.5, 0.5);
+						var delta = getDeltaMovement().multiply(0.5, 0.25, 0.5);
 						
-						//Use view vector when ridden and delta when not
-						if(rider instanceof Player player) {
-							var lookVector = true;
-							if(level.isClientSide){
-								if(!cameraFlightCheck(player)){
-									lookVector = false;
-								}
-							}
-							
-							if(lookVector){
-								vector = player.getViewVector(state.getPartialTick());
-							}
-						}
-						
-						if (vector.y < -0.25) {
+						if (delta.y < -0.25) {
 							return state.setAndContinue(DIVE);
-						} else if (vector.y > 0.25) {
+						} else if (delta.y > 0.25) {
 							return state.setAndContinue(FLY_CLIMB);
-						} else if (vector.y > 0) {
+						} else if (delta.y > 0) {
 							return state.setAndContinue(FLY);
 						} else {
 							return state.setAndContinue(GLIDE);
