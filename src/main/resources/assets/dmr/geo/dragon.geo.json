@@ -2174,9 +2174,9 @@
 					]
 				},
 				{
-					"name": "bone",
+					"name": "rider",
 					"parent": "body",
-					"pivot": [0, 43.5, -20]
+					"pivot": [0, 43.5, -18]
 				}
 			]
 		}

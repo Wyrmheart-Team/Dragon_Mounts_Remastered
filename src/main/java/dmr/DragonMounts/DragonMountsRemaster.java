@@ -1,21 +1,22 @@
 package dmr.DragonMounts;
 
-import com.google.common.graph.Network;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.brigadier.CommandDispatcher;
-import dmr.DragonMounts.registry.*;
-import dmr.DragonMounts.server.events.LootTableInject;
-import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.client.gui.DragonInventoryScreen;
 import dmr.DragonMounts.client.model.DragonEggModelLoader;
+import dmr.DragonMounts.client.renderer.layers.DragonPassengerLayer;
 import dmr.DragonMounts.common.config.DMRConfig;
-import dmr.DragonMounts.types.dragonBreeds.DataPackLoader;
+import dmr.DragonMounts.network.NetworkHandler;
+import dmr.DragonMounts.registry.*;
+import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import dmr.DragonMounts.server.events.LootTableInject;
 import dmr.DragonMounts.server.items.DragonSpawnEgg;
+import dmr.DragonMounts.types.abilities.types.Ability;
+import dmr.DragonMounts.types.dragonBreeds.DataPackLoader;
 import dmr.DragonMounts.types.dragonBreeds.ResourcePackLoader;
 import dmr.DragonMounts.types.habitats.Habitat;
-import dmr.DragonMounts.network.NetworkHandler;
 import dmr.DragonMounts.util.type_adapters.*;
 import lombok.Getter;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -23,6 +24,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -37,8 +39,10 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Block;
+import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+
 import java.util.List;
 
 @Mod(DragonMountsRemaster.MOD_ID )
@@ -90,6 +94,7 @@ public class DragonMountsRemaster
 		{
 			bus.addListener((ModelEvent.RegisterGeometryLoaders e) -> e.register(id("dragon_egg"), DragonEggModelLoader.INSTANCE));
 			bus.addListener((RegisterColorHandlersEvent.Item e) -> e.register(DragonSpawnEgg::getColor, DMRItems.DRAGON_SPAWN_EGG.get()));
+			NeoForge.EVENT_BUS.addListener(this::cancelPassengerRenderEvent);
 		}
 
 		bus.addListener(DataPackLoader::newDataPack);
@@ -116,5 +121,17 @@ public class DragonMountsRemaster
 	@SubscribeEvent
 	public void serverRegisterCommandsEvent(RegisterCommandsEvent event){
 		CommandDispatcher<CommandSourceStack> commandDispatcher = event.getDispatcher();
+	}
+
+	//@SubscribeEvent
+	//public <T extends LivingEntity, M extends EntityModel<T>> void cancelPassengerRenderEvent(RenderLivingEvent.Pre<T, M> event){
+	//	LivingEntity entity = event.getEntity();
+	//	if (entity.getVehicle() instanceof DMRDragonEntity && DragonPassengerLayer.passengers.contains(entity.getUUID())) event.setCanceled(true);
+	//}
+
+	@SubscribeEvent
+	public void cancelPassengerRenderEvent(RenderLivingEvent.Pre event){
+		LivingEntity entity = event.getEntity();
+		if (entity.getVehicle() instanceof DMRDragonEntity && DragonPassengerLayer.passengers.contains(entity.getUUID())) event.setCanceled(true);
 	}
 }
