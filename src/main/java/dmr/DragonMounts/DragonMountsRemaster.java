@@ -123,12 +123,6 @@ public class DragonMountsRemaster
 		CommandDispatcher<CommandSourceStack> commandDispatcher = event.getDispatcher();
 	}
 
-	//@SubscribeEvent
-	//public <T extends LivingEntity, M extends EntityModel<T>> void cancelPassengerRenderEvent(RenderLivingEvent.Pre<T, M> event){
-	//	LivingEntity entity = event.getEntity();
-	//	if (entity.getVehicle() instanceof DMRDragonEntity && DragonPassengerLayer.passengers.contains(entity.getUUID())) event.setCanceled(true);
-	//}
-
 	@SubscribeEvent
 	public void cancelPassengerRenderEvent(RenderLivingEvent.Pre event){
 		LivingEntity entity = event.getEntity();

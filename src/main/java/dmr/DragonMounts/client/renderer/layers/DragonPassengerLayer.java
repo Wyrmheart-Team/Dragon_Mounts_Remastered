@@ -49,7 +49,7 @@ public class DragonPassengerLayer<T extends DMRDragonEntity> extends GeoRenderLa
 
             matrixStackIn.translate(0, -0.7f, 0);
             RenderUtils.translateToPivotPoint(matrixStackIn, bone);
-                matrixStackIn.mulPose(Axis.YP.rotationDegrees(entity.getViewYRot(partialTick) - 180));
+                matrixStackIn.mulPose(Axis.YP.rotationDegrees(entity.getYRot() - 180));
             renderEntity(passenger, partialTick, matrixStackIn, bufferSource, packedLight);
             buffer = bufferSource.getBuffer(renderType);
 
