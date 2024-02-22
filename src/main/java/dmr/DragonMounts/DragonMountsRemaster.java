@@ -97,8 +97,6 @@ public class DragonMountsRemaster
 		
 		NeoForge.EVENT_BUS.addListener(DataPackLoader::dataPackData);
 		NeoForge.EVENT_BUS.addListener(LootTableInject::onLootLoad);
-		
-		NeoForge.EVENT_BUS.addListener(this::serverRegisterCommandsEvent);
 	}
 	
 	public void setupCommon(final FMLCommonSetupEvent event){}
@@ -108,13 +106,7 @@ public class DragonMountsRemaster
 	}
 	public void setupServer(final FMLDedicatedServerSetupEvent event){}
 	
-	
 	public static ResourceLocation id(String path){
 		return new ResourceLocation(MOD_ID, path);
-	}
-	
-	@SubscribeEvent
-	public void serverRegisterCommandsEvent(RegisterCommandsEvent event){
-		CommandDispatcher<CommandSourceStack> commandDispatcher = event.getDispatcher();
 	}
 }

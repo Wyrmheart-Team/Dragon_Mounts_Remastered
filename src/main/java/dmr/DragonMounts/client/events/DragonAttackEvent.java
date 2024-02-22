@@ -1,5 +1,6 @@
 package dmr.DragonMounts.client.events;
 
+import dmr.DragonMounts.DragonMountsRemaster;
 import dmr.DragonMounts.client.handlers.KeyInputHandler;
 import dmr.DragonMounts.common.config.DMRConfig;
 import dmr.DragonMounts.network.NetworkHandler;
@@ -35,7 +36,7 @@ public class DragonAttackEvent
 						event.setSwingHand(false);
 						
 						NetworkHandler.send(PacketDistributor.SERVER.noArg(), new DragonAttackPacket(dragon.getId()));
-					} else if (event.isUseItem()) {
+					} else if (event.isUseItem() && DragonMountsRemaster.DEBUG) {
 						event.setCanceled(true);
 						event.setSwingHand(false);
 						

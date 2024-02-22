@@ -52,7 +52,7 @@ public class DragonModel extends GeoModel<DMRDragonEntity>
 		parser.setValue("query.head_pitch", () -> dragon.getXRot() * 1);
 		parser.setValue("query.head_yaw", () -> (dragon.yBodyRot - dragon.yHeadRot) * -1);
 		
-		var viewVector = dragon.getDeltaMovement().multiply(0.5, 0.25, 0.5);
+		var viewVector = dragon.getDeltaMovement().multiply(0, 0.25, 0);
 		
 		if(viewVector != null) {
 			var pitch = viewVector.y;

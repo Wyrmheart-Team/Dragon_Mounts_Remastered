@@ -148,7 +148,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 			if(isFlying()) {
 				if (isMovingHorizontal || isPathFinding()) {
 					if(isSprinting()){
-						var delta = getDeltaMovement().multiply(0.5, 0.25, 0.5);
+						var delta = getDeltaMovement().multiply(0, 0.25, 0);
 						
 						if (delta.y < -0.25) {
 							return state.setAndContinue(DIVE);
