@@ -100,7 +100,7 @@ jobs:
           cache: 'gradle'
 
       - name: Update gradle.properties
-        run: sed -i "s/mod_version=.*/mod_version=${{ needs.semantic-release.outputs.new_release_version }}/g" gradle.properties
+        run: sed -i "s/mod_version=.*/mod_version=${{ needs.semantic-release.outputs.new_release_version }}-dev/g" gradle.properties
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
