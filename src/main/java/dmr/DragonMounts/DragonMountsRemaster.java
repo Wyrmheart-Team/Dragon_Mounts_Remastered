@@ -94,7 +94,6 @@ public class DragonMountsRemaster
 		{
 			bus.addListener((ModelEvent.RegisterGeometryLoaders e) -> e.register(id("dragon_egg"), DragonEggModelLoader.INSTANCE));
 			bus.addListener((RegisterColorHandlersEvent.Item e) -> e.register(DragonSpawnEgg::getColor, DMRItems.DRAGON_SPAWN_EGG.get()));
-			NeoForge.EVENT_BUS.addListener(this::cancelPassengerRenderEvent);
 		}
 
 		bus.addListener(DataPackLoader::newDataPack);
@@ -121,11 +120,5 @@ public class DragonMountsRemaster
 	@SubscribeEvent
 	public void serverRegisterCommandsEvent(RegisterCommandsEvent event){
 		CommandDispatcher<CommandSourceStack> commandDispatcher = event.getDispatcher();
-	}
-
-	@SubscribeEvent
-	public void cancelPassengerRenderEvent(RenderLivingEvent.Pre event){
-		LivingEntity entity = event.getEntity();
-		if (entity.getVehicle() instanceof DMRDragonEntity && DragonPassengerLayer.passengers.contains(entity.getUUID())) event.setCanceled(true);
 	}
 }

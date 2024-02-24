@@ -13,6 +13,11 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
@@ -22,6 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@EventBusSubscriber( Dist.CLIENT )
 public class DragonPassengerLayer<T extends DMRDragonEntity> extends GeoRenderLayer<T> {
     private final String passengerBone;
     private final int passengerNumber;
@@ -75,5 +81,11 @@ public class DragonPassengerLayer<T extends DMRDragonEntity> extends GeoRenderLa
             throw new ReportedException(CrashReport.forThrowable(throwable1, "Rendering entity in world"));
         }
         matrixStack.popPose();
+    }
+    
+    @SubscribeEvent
+    public static void cancelPassengerRenderEvent(RenderLivingEvent.Pre event){
+        LivingEntity entity = event.getEntity();
+        if (entity.getVehicle() instanceof DMRDragonEntity && DragonPassengerLayer.passengers.contains(entity.getUUID())) event.setCanceled(true);
     }
 }
