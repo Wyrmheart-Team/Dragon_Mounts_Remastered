@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dmr.DragonMounts.DragonMountsRemaster;
 import dmr.DragonMounts.client.renderer.layers.DragonGlowLayer;
+import dmr.DragonMounts.client.renderer.layers.DragonPassengerLayer;
 import dmr.DragonMounts.client.renderer.layers.DragonSaddleLayer;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.types.dragonBreeds.ResourcePackLoader;
@@ -28,6 +29,7 @@ public class DragonRenderer extends GeoEntityRenderer<DMRDragonEntity>
 		super(renderManager, modelProvider);
 		renderLayers.addLayer(new DragonGlowLayer(this));
 		renderLayers.addLayer(new DragonSaddleLayer(this));
+		renderLayers.addLayer(new DragonPassengerLayer<>(this, "rider"));
 	}
 	
 	@Override
