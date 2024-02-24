@@ -41,5 +41,12 @@ public class DMRJeiPlugin implements IModPlugin
 			}
 			return "NONE";
 		});
+		
+		registration.registerSubtypeInterpreter(DMRItems.DRAGON_ARMOR.get(), (stack, context) -> {
+			if(stack.getTag() != null && stack.getTag().contains(NBTConstants.ARMOR)) {
+				return stack.getTag().getString(NBTConstants.ARMOR);
+			}
+			return "NONE";
+		});
 	}
 }

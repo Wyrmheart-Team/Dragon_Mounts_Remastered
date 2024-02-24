@@ -9,6 +9,9 @@
     "minecraft:kelp_plant",
     "minecraft:prismarine",
     "minecraft:sea_lantern",
-    "minecraft:sea_pickle"
+    "minecraft:sea_pickle",
+    "minecraft:water",
+    "minecraft:bubble_column",
+    "minecraft:bubble_coral"
   ]
 }

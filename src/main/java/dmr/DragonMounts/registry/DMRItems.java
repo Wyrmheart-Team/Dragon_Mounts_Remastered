@@ -1,6 +1,7 @@
 package dmr.DragonMounts.registry;
 
 import dmr.DragonMounts.DragonMountsRemaster;
+import dmr.DragonMounts.server.items.DragonArmorItem;
 import dmr.DragonMounts.server.items.DragonEggItemBlock;
 import dmr.DragonMounts.server.items.DragonSpawnEgg;
 import dmr.DragonMounts.server.items.dev.DragonPathHighligther;
@@ -18,6 +19,7 @@ public class DMRItems
 	
 	public static final Supplier<Item> DRAGON_SPAWN_EGG = ITEMS.register("dragon_spawn_egg", DragonSpawnEgg::new);
 	public static final Supplier<Item> DRAGON_EGG_BLOCK_ITEM = ITEMS.register("dragon_egg", () -> new DragonEggItemBlock(new Item.Properties()));
+	public static final Supplier<Item> DRAGON_ARMOR = ITEMS.register("dragon_armor", () -> new DragonArmorItem(new Item.Properties()));
 	
 	public static void init(){
 		if(DragonMountsRemaster.DEBUG){

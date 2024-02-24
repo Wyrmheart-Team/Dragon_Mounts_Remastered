@@ -9,7 +9,9 @@ import dmr.DragonMounts.server.ai.*;
 import dmr.DragonMounts.server.container.DragonContainerMenu;
 import dmr.DragonMounts.common.config.DMRConfig;
 import dmr.DragonMounts.server.blocks.DragonMountsEggBlock;
+import dmr.DragonMounts.server.items.DragonArmorItem;
 import dmr.DragonMounts.server.items.DragonSpawnEgg;
+import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.util.BreedingUtils;
@@ -271,23 +273,24 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 	
 	private static final UUID ARMOR_MODIFIER_UUID = UUID.fromString("f04f756f-f0ad-4f61-86e0-17e9ef5d6489");
 	
-	//TODO Unsure if Horse armor should be used or if we should implement new custom items
-	//TODO Horse armor currently doesnt render on the dragon
 	public void setArmor(){
 		ItemStack itemstack = this.inventory.getItem(ARMOR_SLOT);
 		if (!this.level().isClientSide) {
 			this.getAttribute(Attributes.ARMOR).removeModifier(ARMOR_MODIFIER_UUID);
 			if(this.isArmor(itemstack)) {
-				int i = ((HorseArmorItem)itemstack.getItem()).getProtection();
-				if (i != 0) {
-					this.getAttribute(Attributes.ARMOR).addTransientModifier(new AttributeModifier(ARMOR_MODIFIER_UUID, "Armor bonus", (double)i, AttributeModifier.Operation.ADDITION));
+				DragonArmor armor = DragonArmor.getArmorType(itemstack);
+				if(armor != null) {
+					int i = armor.getProtection();
+					if (i != 0) {
+						this.getAttribute(Attributes.ARMOR).addTransientModifier(new AttributeModifier(ARMOR_MODIFIER_UUID, "Armor bonus", (double)i, AttributeModifier.Operation.ADDITION));
+					}
 				}
 			}
 		}
 	}
 	
 	public boolean isArmor(ItemStack pStack) {
-		return pStack.getItem() instanceof HorseArmorItem;
+		return pStack.getItem() instanceof DragonArmorItem;
 	}
 
 	public boolean canFly()

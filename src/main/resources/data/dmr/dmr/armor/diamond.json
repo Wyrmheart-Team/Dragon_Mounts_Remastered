@@ -1,0 +1,53 @@
+{
+  "protection": 11,
+  "loot_tables": [
+    {
+      "table": "minecraft:chests/desert_pyramid",
+      "chance": 0.03,
+      "min": 1,
+      "max": 1
+    },
+    {
+      "table": "minecraft:chests/jungle_temple",
+      "chance": 0.025,
+      "min": 1,
+      "max": 1
+    },
+    {
+      "table": "minecraft:chests/end_city_treasure",
+      "chance": 0.025,
+      "min": 1,
+      "max": 1
+    },
+    {
+      "table": "minecraft:chests/nether_bridge",
+      "chance": 0.1,
+      "min": 1,
+      "max": 1
+    },
+    {
+      "table": "minecraft:chests/stronghold_corridor",
+      "chance": 0.025,
+      "min": 1,
+      "max": 1
+    },
+    {
+      "table": "minecraft:chests/simple_dungeon",
+      "chance": 0.05,
+      "min": 1,
+      "max": 1
+    },
+    {
+      "table": "minecraft:chests/village_weaponsmith",
+      "chance": 0.05,
+      "min": 1,
+      "max": 1
+    },
+    {
+      "table": "minecraft:chests/ancient_city",
+      "chance": 0.12,
+      "min": 1,
+      "max": 1
+    }
+  ]
+}

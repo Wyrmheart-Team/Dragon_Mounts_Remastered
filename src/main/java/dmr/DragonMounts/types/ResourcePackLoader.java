@@ -1,4 +1,4 @@
-package dmr.DragonMounts.types.dragonBreeds;
+package dmr.DragonMounts.types;
 
 import com.google.gson.Gson;
 import net.minecraft.client.Minecraft;

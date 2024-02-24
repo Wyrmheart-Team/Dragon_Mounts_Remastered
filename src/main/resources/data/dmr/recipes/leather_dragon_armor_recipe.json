@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "X": {
+      "item": "minecraft:leather"
+    },
+    "S": {
+      "item": "minecraft:leather_horse_armor"
+    }
+  },
+  "pattern": [
+    " X ",
+    "XSX",
+    " X "
+  ],
+  "result": {
+    "item": "dmr:dragon_armor",
+    "nbt": "{armor_type:\"leather\"}"
+  }
+}

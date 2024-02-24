@@ -1,20 +1,18 @@
 package dmr.DragonMounts.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import dmr.DragonMounts.DragonMountsRemaster;
+import dmr.DragonMounts.client.renderer.layers.DragonArmorLayer;
 import dmr.DragonMounts.client.renderer.layers.DragonGlowLayer;
 import dmr.DragonMounts.client.renderer.layers.DragonPassengerLayer;
 import dmr.DragonMounts.client.renderer.layers.DragonSaddleLayer;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import dmr.DragonMounts.types.dragonBreeds.ResourcePackLoader;
+import dmr.DragonMounts.types.ResourcePackLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.GeoModel;
@@ -28,6 +26,7 @@ public class DragonRenderer extends GeoEntityRenderer<DMRDragonEntity>
 	{
 		super(renderManager, modelProvider);
 		renderLayers.addLayer(new DragonGlowLayer(this));
+		renderLayers.addLayer(new DragonArmorLayer(this));
 		renderLayers.addLayer(new DragonSaddleLayer(this));
 		renderLayers.addLayer(new DragonPassengerLayer<>(this, "rider"));
 	}

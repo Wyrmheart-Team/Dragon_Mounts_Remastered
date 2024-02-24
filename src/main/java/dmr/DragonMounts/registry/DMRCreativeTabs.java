@@ -2,8 +2,10 @@ package dmr.DragonMounts.registry;
 
 import dmr.DragonMounts.DragonMountsRemaster;
 import dmr.DragonMounts.server.items.DMRDevItem;
+import dmr.DragonMounts.server.items.DragonArmorItem;
 import dmr.DragonMounts.server.items.DragonEggItemBlock;
 import dmr.DragonMounts.server.items.DragonSpawnEgg;
+import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -23,15 +25,21 @@ public class DMRCreativeTabs
 	public static Supplier<CreativeModeTab> MOD_TESTING_DEV_TAB;
 	
 	public static final Supplier<CreativeModeTab> MOD_TAB = CREATIVE_MODE_TABS.register("dragon_mounts",
-	                                                                                          () -> CreativeModeTab.builder().icon(() -> new ItemStack(DMRItems.DRAGON_EGG_BLOCK_ITEM.get())).title(Component.translatable("itemGroup.dragon_mounts")).displayItems((enabledFeatures, entries) -> {
-		                                                                                          var breeds = DragonBreedsRegistry.getDragonBreeds();
-		                                                                                          for (IDragonBreed type : breeds) {
-			                                                                                          if (!type.isHybrid()) entries.accept(DragonEggItemBlock.getDragonEggStack(type));
-		                                                                                          }
-		                                                                                          for (IDragonBreed type : breeds) {
-			                                                                                          if (!type.isHybrid()) entries.accept(DragonSpawnEgg.create(type));
-		                                                                                          }
-	                                                                                          }).build());
+          () -> CreativeModeTab.builder().icon(() -> new ItemStack(DMRItems.DRAGON_EGG_BLOCK_ITEM.get())).title(Component.translatable("itemGroup.dragon_mounts")).displayItems((enabledFeatures, entries) -> {
+              var breeds = DragonBreedsRegistry.getDragonBreeds();
+              for (IDragonBreed type : breeds) {
+                  if (!type.isHybrid()) entries.accept(DragonEggItemBlock.getDragonEggStack(type));
+              }
+              for (IDragonBreed type : breeds) {
+                  if (!type.isHybrid()) entries.accept(DragonSpawnEgg.create(type));
+              }
+			  var armors = new ArrayList<>(DragonArmorRegistry.getDragonArmors());
+			  armors.sort(Comparator.comparing(DragonArmor::getProtection));
+			  
+			  for(DragonArmor armor : armors){
+				  entries.accept(DragonArmorItem.getArmorStack(armor));
+			  }
+          }).build());
 	
 	public static void init()
 	{

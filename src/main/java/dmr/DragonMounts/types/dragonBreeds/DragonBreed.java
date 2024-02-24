@@ -201,7 +201,7 @@ public class DragonBreed implements IDragonBreed
 	@Override
 	public Component getName()
 	{
-		return Component.translatable("dragon_breed." + getId());
+		return Component.translatable(DragonMountsRemaster.MOD_ID + ".dragon_breed." + getId());
 	}
 	
 	public ResourceLocation getResourceLocation(){
