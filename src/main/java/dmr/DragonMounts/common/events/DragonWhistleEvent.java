@@ -72,9 +72,20 @@ public class DragonWhistleEvent
 					if (dragonWasKilled) {
 						var dragonRespawnDelay = DragonWorldDataManager.getDeathDelay(event.getLevel(), state.dragonUUID);
 						var message = DragonWorldDataManager.getDeathMessage(event.getLevel(), state.dragonUUID);
-						var mes = (MutableComponent) Component.translatable(message);
-						player.displayClientMessage(mes.withStyle(ChatFormatting.RED), false);
-						state.respawnDelay = dragonRespawnDelay;
+						var mes = Component.Serializer.fromJsonLenient(message);
+						
+						if(mes != null) {
+							player.displayClientMessage(mes, false);
+						}
+						
+						if(DMRConfig.ALLOW_RESPAWN.get()) {
+							state.respawnDelay = dragonRespawnDelay;
+						}else{
+							state.dragonUUID = null;
+							state.summonInstance = null;
+						}
+						
+						DragonWorldDataManager.clearDragonData(event.getLevel(), state.dragonUUID);
 					}
 				}
 			}
@@ -105,10 +116,11 @@ public class DragonWhistleEvent
 	public static void onEntityDeath(LivingDeathEvent event){
 		if(!event.getEntity().level.isClientSide) {
 			if (event.getEntity() instanceof DMRDragonEntity dragon) {
+				var mes = ((MutableComponent)event.getSource().getLocalizedDeathMessage(event.getEntity())).withStyle(ChatFormatting.RED);
+				
 				//Player is online, do death handle
 				if(dragon.getOwner() != null && dragon.getOwner() instanceof Player player) {
-					var mes = (MutableComponent)event.getSource().getLocalizedDeathMessage(event.getEntity());
-					player.displayClientMessage(mes.withStyle(ChatFormatting.RED), false);
+					player.displayClientMessage(mes, false);
 					
 					if(!DMRConfig.ALLOW_RESPAWN.get()){
 						var state = player.getData(DMRCapability.PLAYER_CAPABILITY);
@@ -120,7 +132,7 @@ public class DragonWhistleEvent
 					}
 				}else{
 					//Player isnt online, save to world
-					DragonWorldDataManager.setDragonDead(dragon, event.getSource());
+					DragonWorldDataManager.setDragonDead(dragon, Component.Serializer.toJson(mes));
 				}
 			}
 		}

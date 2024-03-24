@@ -37,12 +37,12 @@ public class DragonWorldDataManager
 		return data.deathMessages.get(uuid);
 	}
 	
-	public static void setDragonDead(DMRDragonEntity dragon, DamageSource source){
+	public static void setDragonDead(DMRDragonEntity dragon, String message){
 		var level = dragon.level;
 		DragonWorldData data = DragonWorldData.getInstance(level);
 		data.deadDragons.add(dragon.getDragonUUID());
 		data.deathDelay.put(dragon.getDragonUUID(), DMRConfig.RESPAWN_TIME.get());
-		data.deathMessages.put(dragon.getDragonUUID(), "death.attack." + source.getMsgId());
+		data.deathMessages.put(dragon.getDragonUUID(), message);
 		data.setDirty();
 	}
 }
