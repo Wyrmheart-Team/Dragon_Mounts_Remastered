@@ -31,8 +31,7 @@ public class NetworkHandler{
 	
 	private static final List<IMessage<?>> messages = List.of(
 			new DragonStatePacket(-1, -1),
-			new SyncBreedsPacket(),
-			new SyncArmorPacket(),
+			new SyncDataPackPacket(),
 			new SummonDragonPacket(),
 			new CompleteDataSync(-1, null),
 			new DismountDragonPacket(-1, false),

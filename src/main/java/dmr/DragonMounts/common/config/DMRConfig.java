@@ -1,5 +1,6 @@
 package dmr.DragonMounts.common.config;
 
+import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.concurrent.TimeUnit;
@@ -59,6 +60,12 @@ public class DMRConfig
 	public static final ModConfigSpec.BooleanValue ALLOW_HYBRIDIZATION;
 	public static final ModConfigSpec.BooleanValue HABITAT_OFFSPRING;
 	
+	public static final ModConfigSpec.DoubleValue BASE_HEALTH;
+	public static final ModConfigSpec.DoubleValue BASE_DAMAGE;
+	
+	public static final ModConfigSpec.BooleanValue ALLOW_RESPAWN;
+	public static final ModConfigSpec.IntValue RESPAWN_TIME;
+	
 	static //Server
 	{
 		var configurator = new ModConfigSpec.Builder();
@@ -88,6 +95,17 @@ public class DMRConfig
 		
 		CALL_CHECK_SPACE = configurator.comment("Should the dragon whistle check for available space?")
 				.define("whistle_check_space", true);
+		
+		BASE_HEALTH = configurator.comment("Base health for all dragons.")
+				.defineInRange("base_health", DMRDragonEntity.BASE_HEALTH, 1.0, Double.MAX_VALUE);
+		BASE_DAMAGE = configurator.comment("Base damage for all dragons.")
+				.defineInRange("base_damage", DMRDragonEntity.BASE_DAMAGE, 1.0, Double.MAX_VALUE);
+		
+		ALLOW_RESPAWN = configurator.comment("Allow dragons to respawn after death.")
+				.define("allow_respawn", true);
+		
+		RESPAWN_TIME = configurator.comment("Time in seconds for a dragon to respawn.")
+                .defineInRange("respawn_time", 60, 0, Integer.MAX_VALUE);
 		
 		SERVER = configurator.build();
 	}

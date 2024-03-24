@@ -31,11 +31,15 @@ import java.util.UUID;
 public class DragonWhistleHandler
 {
 	public static boolean canCall(Player player){
-		
 		var handler = PlayerStateUtils.getHandler(player);
 		
 		if(handler.dragonUUID == null){
 			player.displayClientMessage(Component.translatable("dmr.dragon_call.nodragon").withStyle(ChatFormatting.RED), true);
+			return false;
+		}
+		
+		if(handler.respawnDelay > 0){
+			player.displayClientMessage(Component.translatable("dmr.dragon_call.respawn", handler.respawnDelay / 20).withStyle(ChatFormatting.RED), true);
 			return false;
 		}
 		

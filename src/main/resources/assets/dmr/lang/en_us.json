@@ -13,6 +13,7 @@
   "dmr.dragon_call.riding": "You can't call your dragon while riding!",
   "dmr.dragon_call.nospace": "There is not enough space to call your dragon!",
   "dmr.dragon_call.nodragon": "You have no dragon to call!",
+  "dmr.dragon_call.respawn":  "Your dragon is dead, you can call it back in {0} seconds!",
 
   "item.dmr.dragon_armor.leather": "Leather Dragon Armor",
   "item.dmr.dragon_armor.iron": "Iron Dragon Armor",

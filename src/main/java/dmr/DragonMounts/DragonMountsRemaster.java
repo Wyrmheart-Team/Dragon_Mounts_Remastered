@@ -5,18 +5,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dmr.DragonMounts.registry.*;
 import dmr.DragonMounts.server.events.LootTableInject;
+import dmr.DragonMounts.types.DataPackHandler;
 import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.client.gui.DragonInventoryScreen;
 import dmr.DragonMounts.client.model.DragonEggModelLoader;
-import dmr.DragonMounts.client.renderer.layers.DragonPassengerLayer;
 import dmr.DragonMounts.common.config.DMRConfig;
 import dmr.DragonMounts.network.NetworkHandler;
-import dmr.DragonMounts.registry.*;
-import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import dmr.DragonMounts.server.events.LootTableInject;
-import dmr.DragonMounts.server.items.DragonSpawnEgg;
-import dmr.DragonMounts.types.armor.ArmorDataPackLoader;
-import dmr.DragonMounts.types.dragonBreeds.BreedDataPackLoader;
 import dmr.DragonMounts.server.items.DragonSpawnEgg;
 import dmr.DragonMounts.types.ResourcePackLoader;
 import dmr.DragonMounts.types.habitats.Habitat;
@@ -26,7 +20,6 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -40,7 +33,6 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Block;
-import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.List;
@@ -95,14 +87,12 @@ public class DragonMountsRemaster
 			bus.addListener((ModelEvent.RegisterGeometryLoaders e) -> e.register(id("dragon_egg"), DragonEggModelLoader.INSTANCE));
 			bus.addListener((RegisterColorHandlersEvent.Item e) -> e.register(DragonSpawnEgg::getColor, DMRItems.DRAGON_SPAWN_EGG.get()));
 		}
-		
-		bus.addListener(ArmorDataPackLoader::newDataPack);
-		bus.addListener(BreedDataPackLoader::newDataPack);
-		
+
 		bus.addListener(NetworkHandler::registerEvent);
 		
-		NeoForge.EVENT_BUS.addListener(ArmorDataPackLoader::dataPackData);
-		NeoForge.EVENT_BUS.addListener(BreedDataPackLoader::dataPackData);
+		bus.addListener(DataPackHandler::newDataPack);
+		NeoForge.EVENT_BUS.addListener(DataPackHandler::dataPackData);
+		
 		NeoForge.EVENT_BUS.addListener(LootTableInject::onLootLoad);
 	}
 	

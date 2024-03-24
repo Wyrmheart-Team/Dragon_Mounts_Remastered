@@ -223,7 +223,6 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 				.add(SWIM_SPEED.value(), BASE_SPEED_WATER);
 	}
 	
-	
 	@Override
 	protected void registerGoals() // TODO: Much Smarter AI and features
 	{
@@ -311,13 +310,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 	{
 		if (canFly()) jumpFromGround();
 	}
-
-//	@Override
-//	protected float getJumpPower()
-//	{
-//		return super.getJumpPower() * (canFly() ? 1.5f : 1);
-//	}
-
+	
 	@Override
 	public ItemStack getPickedResult(HitResult target)
 	{
@@ -353,23 +346,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 		if (riddenByEntity != null)
 		{
 			boolean customRidingPos = false;
-//			BakedGeoModel model = ClientModHandler.MODEL_INSTANCE.getBakedGeoModel(ClientModHandler.MODEL_INSTANCE.getModelResource(this).toString());
-//
-//			if(model != null){
-//				var opBone = model.getBone("riding_pos");
-//				if(opBone.isPresent()){
-//					customRidingPos = true;
-//					var bone = opBone.get();
-//
-//					Vector3d bonePos = bone.getModelPosition();
-//					System.out.println(bonePos);
-//					Vec3 pos1 = new Vec3(bonePos.x, bonePos.y, bonePos.z)
-//							//.add(position())
-//							.yRot((float) Math.toRadians(-yBodyRot));
-//					pCallback.accept(passenger, pos1.x, pos1.y, pos1.z);
-//				}
-//			}
-			
+
 			if(!customRidingPos){
 				Vec3 pos = new Vec3(0, (float)(getBbHeight() + breed.getVerticalRidingOffset()) + passenger.getMyRidingOffset(this), getScale())
 						.yRot((float) Math.toRadians(-yBodyRot))
@@ -478,7 +455,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 		if(getControllingPassenger() == null && !hasWanderTarget() && !isOrderedToSit()) {
 			if (isPathFinding()) {
 				var dest = getNavigation().getTargetPos();
-				var farDist = dest.distManhattan(blockPosition()) >= 32d;
+				var farDist = dest.distManhattan(blockPosition()) >= 16d;
 				var dist = (dest.getY() - blockPosition().getY()) >= 8d || dest.distManhattan(blockPosition()) >= 64d;
 				var shouldFly = !isFlying() && canFly();
 				
@@ -696,7 +673,14 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 	{
 		refreshDimensions();
 		this.setMaxUpStep(Math.max(2 * getAgeProgress(), 1));
-
+		
+		AttributeInstance baseHealthInstance = getAttribute(MAX_HEALTH);
+		baseHealthInstance.setBaseValue(DMRConfig.BASE_HEALTH.get());
+		
+		AttributeInstance attackDamageInstance = getAttribute(ATTACK_DAMAGE);
+		attackDamageInstance.setBaseValue(DMRConfig.BASE_DAMAGE.get());
+		
+		
 		var mod = new AttributeModifier(SCALE_MODIFIER_UUID, "Dragon size modifier", getScale(), AttributeModifier.Operation.ADDITION);
 		for (var attribute : new Attribute[]{MAX_HEALTH, ATTACK_DAMAGE, }) // avoid duped code
 		{

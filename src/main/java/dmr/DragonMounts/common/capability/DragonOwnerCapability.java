@@ -1,6 +1,7 @@
 package dmr.DragonMounts.common.capability;
 
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import lombok.Setter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -18,10 +19,13 @@ import java.util.*;
 
 public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 {
+	@Setter
 	private Player player;
 	
 	private float dragonHealth;
 	public Long lastCall;
+	
+	public int respawnDelay;
 	
 	public UUID dragonUUID;
 	public UUID summonInstance;
@@ -53,10 +57,6 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 			}
 		}
 		return null;
-	}
-	
-	public void setPlayer(Player player){
-		this.player = player;
 	}
 	
 	public void setDragon(DMRDragonEntity dragon){
@@ -109,6 +109,8 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 			
 			tag.put("lastSeenPos", NbtUtils.writeBlockPos(new BlockPos((int) lastSeenPos.x, (int)lastSeenPos.y, (int)lastSeenPos.z)));
 			tag.putString("lastSeenDim", lastSeenDim.location().toString());
+			
+			tag.putInt("respawnDelay", respawnDelay);
 		}
 		return tag;
 	}
@@ -139,6 +141,10 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 			
 			if(base.contains("dragonNBT")){
 				dragonNBT = base.getCompound("dragonNBT");
+			}
+			
+			if(base.contains("respawnDelay")){
+				respawnDelay = base.getInt("respawnDelay");
 			}
 			
 			BlockPos temp = NbtUtils.readBlockPos(base.getCompound("lastSeenPos"));
