@@ -11,74 +11,88 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 {
 	@Setter
 	private Player player;
 	
-	private float dragonHealth;
 	public Long lastCall;
 	
-	public int respawnDelay;
-	
-	public UUID dragonUUID;
-	public UUID summonInstance;
-	
-	private ResourceKey<Level> lastSeenDim = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("overworld"));
-	private CompoundTag dragonNBT = new CompoundTag();
-	private Vec3 lastSeenPos = Vec3.ZERO;
+	public ConcurrentHashMap<Integer, Integer> respawnDelays = new ConcurrentHashMap<>();
+	public ConcurrentHashMap<Integer, UUID> dragonUUIDs = new ConcurrentHashMap<>();
+	public ConcurrentHashMap<Integer, UUID> summonInstances = new ConcurrentHashMap<>();
+	public ConcurrentHashMap<Integer, CompoundTag> dragonNBTs = new ConcurrentHashMap<>();
 	
 	public boolean shouldDismount;
 	
-	public DMRDragonEntity createDragonEntity(Player player, Level world){
+	public DMRDragonEntity createDragonEntity(Player player, Level world, int index){
 		setPlayer(player);
 		
-		Optional<EntityType<?>> type = EntityType.by(dragonNBT);
+		var nbt = dragonNBTs.get(index);
 		
-		if (type.isPresent())
-		{
-			Entity entity = type.get().create(world);
-			if (entity instanceof DMRDragonEntity dragon)
-			{
-				dragon.load(dragonNBT);
-				dragon.setUUID(UUID.randomUUID());
-				dragon.clearFire();
-				dragon.hurtTime = 0;
-				
-				setDragon(dragon);
-				
-				return dragon;
+		if(nbt != null) {
+			Optional<EntityType<?>> type = EntityType.by(nbt);
+			
+			if (type.isPresent()) {
+				Entity entity = type.get().create(world);
+				if (entity instanceof DMRDragonEntity dragon) {
+					dragon.load(nbt);
+					dragon.setUUID(UUID.randomUUID());
+					dragon.clearFire();
+					dragon.hurtTime = 0;
+					
+					dragon.setOrderedToSit(false);
+					dragon.setWanderTarget(null);
+					
+					setDragon(dragon, index);
+					
+					return dragon;
+				}
 			}
 		}
 		return null;
 	}
 	
-	public void setDragon(DMRDragonEntity dragon){
+	public void setDragon(DMRDragonEntity dragon, int index){
 		dragon.setTame(true);
 		dragon.setOwnerUUID(player.getGameProfile().getId());
 		
-		summonInstance = UUID.randomUUID();
+		var summonInstance = UUID.randomUUID();
+		summonInstances.put(index, summonInstance);
 		dragon.setSummonInstance(summonInstance);
 		
-		dragonUUID = dragon.getDragonUUID();
-		dragonNBT = dragon.serializeNBT();
+		dragonUUIDs.put(index, dragon.getDragonUUID());
 		
-		setLastSeen(player);
+		var wanderPos = dragon.getWanderTarget();
+		var sit = dragon.isOrderedToSit();
+		
+		dragon.setWanderTarget(null);
+		dragon.setOrderedToSit(false);
+		
+		dragonNBTs.put(index, dragon.serializeNBT());
+		
+		dragon.setWanderTarget(wanderPos);
+		dragon.setOrderedToSit(sit);
 	}
 	
 	public boolean isSelectedDragon(DMRDragonEntity dragon){
-		return dragonUUID != null && dragon.getDragonUUID() != null && dragonUUID.equals(dragon.getDragonUUID());
-	}
-	
-	public void setLastSeen(Player player){
-		lastSeenDim = player.level.dimension();
-		lastSeenPos = player.position();
+		if(dragon.getDragonUUID() != null){
+			for(var uuid : dragonUUIDs.values()){
+				if(dragon.getDragonUUID().equals(uuid)){
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	@Override
@@ -88,30 +102,24 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 		
 		tag.putBoolean("shouldDismount", shouldDismount);
 		
-		if(dragonUUID != null) {
-			tag.putFloat("dragonHealth", dragonHealth);
-			
-			if(dragonUUID != null) {
-				tag.putUUID("dragonUUID", dragonUUID);
+		for(DyeColor color : DyeColor.values()){
+			if(respawnDelays.containsKey(color.getId())){
+				tag.putInt("respawnDelay_" + color.getId(), respawnDelays.get(color.getId()));
 			}
 			
-			if(summonInstance != null) {
-				tag.putUUID("summonInstance", summonInstance);
+			if(dragonUUIDs.containsKey(color.getId())){
+				tag.putUUID("dragonUUID_" + color.getId(), dragonUUIDs.get(color.getId()));
 			}
 			
-			if(lastCall != null) {
-				tag.putLong("lastCall", lastCall);
+			if(summonInstances.containsKey(color.getId())){
+				tag.putUUID("summonInstance_" + color.getId(), summonInstances.get(color.getId()));
 			}
 			
-			if(dragonNBT != null) {
-				tag.put("dragonNBT", dragonNBT);
+			if(dragonNBTs.containsKey(color.getId())){
+				tag.put("dragonNBT_" + color.getId(), dragonNBTs.get(color.getId()));
 			}
-			
-			tag.put("lastSeenPos", NbtUtils.writeBlockPos(new BlockPos((int) lastSeenPos.x, (int)lastSeenPos.y, (int)lastSeenPos.z)));
-			tag.putString("lastSeenDim", lastSeenDim.location().toString());
-			
-			tag.putInt("respawnDelay", respawnDelay);
 		}
+		
 		return tag;
 	}
 	
@@ -122,34 +130,27 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 			shouldDismount = base.getBoolean("shouldDismount");
 		}
 		
-		if(base.contains("dragonUUID")){
-			if(base.contains("dragonHealth")) {
-				dragonHealth = base.getFloat("dragonHealth");
+		respawnDelays.clear();
+		dragonUUIDs.clear();
+		summonInstances.clear();
+		dragonNBTs.clear();
+		
+		for(DyeColor color : DyeColor.values()){
+			if(base.contains("respawnDelay_" + color.getId())){
+				respawnDelays.put(color.getId(), base.getInt("respawnDelay_" + color.getId()));
 			}
 			
-			if(base.contains("dragonUUID")) {
-				dragonUUID = base.getUUID("dragonUUID");
+			if(base.contains("dragonUUID_" + color.getId())){
+				dragonUUIDs.put(color.getId(), base.getUUID("dragonUUID_" + color.getId()));
 			}
 			
-			if(base.contains("summonInstance")) {
-				summonInstance = base.getUUID("summonInstance");
+			if(base.contains("summonInstance_" + color.getId())){
+				summonInstances.put(color.getId(), base.getUUID("summonInstance_" + color.getId()));
 			}
 			
-			if(base.contains("lastCall")){
-				lastCall = base.getLong("lastCall");
+			if(base.contains("dragonNBT_" + color.getId())){
+				dragonNBTs.put(color.getId(), base.getCompound("dragonNBT_" + color.getId()));
 			}
-			
-			if(base.contains("dragonNBT")){
-				dragonNBT = base.getCompound("dragonNBT");
-			}
-			
-			if(base.contains("respawnDelay")){
-				respawnDelay = base.getInt("respawnDelay");
-			}
-			
-			BlockPos temp = NbtUtils.readBlockPos(base.getCompound("lastSeenPos"));
-			lastSeenPos = new Vec3(temp.getX(), temp.getY(), temp.getZ());
-			lastSeenDim = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(base.getString("lastSeenDim")));
 		}
 	}
 }

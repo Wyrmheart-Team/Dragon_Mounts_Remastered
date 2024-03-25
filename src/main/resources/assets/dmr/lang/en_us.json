@@ -14,6 +14,13 @@
   "dmr.dragon_call.nospace": "There is not enough space to call your dragon!",
   "dmr.dragon_call.nodragon": "You have no dragon to call!",
   "dmr.dragon_call.respawn":  "Your dragon is dead, you can call it back in {0} seconds!",
+  "dmr.dragon_call.unlink_first": "You must unbind this from your current dragon before you can bind another!",
+  "dmr.dragon_call.unlink_success": "Successfully unbound from your dragon!",
+  "dmr.dragon_call.link_success": "Successfully bound to {0}!",
+  "dmr.dragon_call.no_whistle": "You need a whistle to call your dragon!",
+
+  "dmr.dragon_summon.tooltip.1": "Bound to {0}",
+  "dmr.dragon_summon.tooltip.2": "Dead, Can be called back in {0} seconds",
 
   "item.dmr.dragon_armor.leather": "Leather Dragon Armor",
   "item.dmr.dragon_armor.iron": "Iron Dragon Armor",
@@ -49,6 +56,23 @@
   "item.dmr.dragon_spawn_egg.amethyst": "Amethyst Dragon Spawn Egg",
   "item.dmr.dragon_spawn_egg.sculk": "Sculk Dragon Spawn Egg",
   "item.dmr.dragon_spawn_egg.lush": "Lush Dragon Spawn Egg",
+
+  "item.dmr.dragon_whistle.white": "White Dragon Whistle",
+  "item.dmr.dragon_whistle.orange": "Orange Dragon Whistle",
+  "item.dmr.dragon_whistle.magenta": "Magenta Dragon Whistle",
+  "item.dmr.dragon_whistle.light_blue": "Light Blue Dragon Whistle",
+  "item.dmr.dragon_whistle.yellow": "Yellow Dragon Whistle",
+  "item.dmr.dragon_whistle.lime": "Lime Dragon Whistle",
+  "item.dmr.dragon_whistle.pink": "Pink Dragon Whistle",
+  "item.dmr.dragon_whistle.gray": "Gray Dragon Whistle",
+  "item.dmr.dragon_whistle.light_gray": "Light Gray Dragon Whistle",
+  "item.dmr.dragon_whistle.cyan": "Cyan Dragon Whistle",
+  "item.dmr.dragon_whistle.purple": "Purple Dragon Whistle",
+  "item.dmr.dragon_whistle.blue": "Blue Dragon Whistle",
+  "item.dmr.dragon_whistle.brown": "Brown Dragon Whistle",
+  "item.dmr.dragon_whistle.green": "Green Dragon Whistle",
+  "item.dmr.dragon_whistle.red": "Red Dragon Whistle",
+  "item.dmr.dragon_whistle.black": "Black Dragon Whistle",
 
   "block.dmr.dragon_egg": "Dragon Egg",
 

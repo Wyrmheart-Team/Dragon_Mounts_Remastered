@@ -1,45 +1,42 @@
 package dmr.DragonMounts.common.handlers;
 
-import com.google.common.collect.ImmutableList;
 import dmr.DragonMounts.common.capability.DragonOwnerCapability;
 import dmr.DragonMounts.common.config.DMRConfig;
 import dmr.DragonMounts.network.NetworkHandler;
 import dmr.DragonMounts.network.packets.DragonStatePacket;
 import dmr.DragonMounts.registry.DMRCapability;
+import dmr.DragonMounts.registry.DMRItems;
 import dmr.DragonMounts.registry.DMRSounds;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import dmr.DragonMounts.server.items.DragonWhistleItem;
 import dmr.DragonMounts.util.PlayerStateUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.item.DyeColor;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.PacketDistributor.TargetPoint;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class DragonWhistleHandler
 {
-	public static boolean canCall(Player player){
+	public static boolean canCall(Player player, int index){
 		var handler = PlayerStateUtils.getHandler(player);
 		
-		if(handler.dragonUUID == null){
+		if(index == -1){
+			player.displayClientMessage(Component.translatable("dmr.dragon_call.no_whistle").withStyle(ChatFormatting.RED), true);
+			return false;
+		}
+		
+		if(!handler.dragonUUIDs.containsKey(index) || handler.dragonUUIDs.get(index) == null){
 			player.displayClientMessage(Component.translatable("dmr.dragon_call.nodragon").withStyle(ChatFormatting.RED), true);
 			return false;
 		}
 		
-		if(handler.respawnDelay > 0){
-			player.displayClientMessage(Component.translatable("dmr.dragon_call.respawn", handler.respawnDelay / 20).withStyle(ChatFormatting.RED), true);
+		if(handler.respawnDelays.getOrDefault(index, 0) > 0){
+			player.displayClientMessage(Component.translatable("dmr.dragon_call.respawn", handler.respawnDelays.getOrDefault(index, 0) / 20).withStyle(ChatFormatting.RED), true);
 			return false;
 		}
 		
@@ -72,6 +69,11 @@ public class DragonWhistleHandler
 			if (callDragon(player)){
 				var handler = PlayerStateUtils.getHandler(player);
 				handler.lastCall = System.currentTimeMillis();
+				DMRItems.DRAGON_WHISTLES.values().forEach(s -> {
+					if(!player.getCooldowns().isOnCooldown(s.get())){
+						player.getCooldowns().addCooldown(s.get(), (int)TimeUnit.SECONDS.convert(DMRConfig.WHISTLE_COOLDOWN_CONFIG.get(), TimeUnit.MILLISECONDS) * 20);
+					}
+				});
 			}
 		}
 	}
@@ -80,13 +82,15 @@ public class DragonWhistleHandler
 		if(player != null){
 			DragonOwnerCapability cap = player.getData(DMRCapability.PLAYER_CAPABILITY);
 			
-			if (!canCall(player))
+			var summonItemIndex = getDragonSummonIndex(player);
+			
+			if (!canCall(player, summonItemIndex))
 				return false;
 			
 			Random rand = new Random();
 			player.level.playSound(null, player.blockPosition(), DMRSounds.DRAGON_WHISTLE_SOUND.get(), player.getSoundSource(), 1, (float) (1.4 + rand.nextGaussian() / 3));
 			
-			DMRDragonEntity dragon = findDragon(player, cap.dragonUUID);
+			DMRDragonEntity dragon = findDragon(player, cap.dragonUUIDs.get(summonItemIndex));
 			
 			if(dragon != null){
 				if (dragon.level.dimensionType() == player.level.dimensionType())
@@ -121,25 +125,72 @@ public class DragonWhistleHandler
 							NetworkHandler.send(PacketDistributor.TRACKING_ENTITY.with(dragon), new DragonStatePacket(dragon.getId(), 1));
 						}
 					}
-					
-					cap.setLastSeen(player);
 					return true;
 				}
 			}
 			
 			// Spawning a new dragon
-			DMRDragonEntity newDragon = cap.createDragonEntity(player, player.level);
+			DMRDragonEntity newDragon = cap.createDragonEntity(player, player.level, summonItemIndex);
 			newDragon.setPos(player.getX(), player.getY(), player.getZ());
 			player.level.addFreshEntity(newDragon);
+			
+			if(!player.level.isClientSide){
+				NetworkHandler.send(PacketDistributor.TRACKING_ENTITY.with(newDragon), new DragonStatePacket(newDragon.getId(), 1));
+			}
+			
 			return true;
 		}
 		
 		return false;
 	}
 	
-	public static void setDragon(Player player, DMRDragonEntity dragon){
+	public static int getDragonSummonIndex(Player player){
+		//Main hand - first
+		if(player.getInventory().getSelected().getItem() instanceof DragonWhistleItem whistleItem){
+			DyeColor c = whistleItem.getColor();
+			return c.getId();
+		}
+		
+		//Off hand - second
+		if(player.getInventory().offhand.get(0).getItem() instanceof DragonWhistleItem whistleItem){
+			DyeColor c = whistleItem.getColor();
+			return c.getId();
+		}
+		
+		//Hotbar - third
+		for(int i = 0; i < 9; i++){
+			if(player.getInventory().getItem(i).getItem() instanceof DragonWhistleItem whistleItem){
+				DyeColor c = whistleItem.getColor();
+				return c.getId();
+			}
+		}
+		
+		//Inventory - fourth
+		for(int i = 9; i < player.getInventory().getContainerSize(); i++){
+			if(player.getInventory().getItem(i).getItem() instanceof DragonWhistleItem whistleItem){
+				DyeColor c = whistleItem.getColor();
+				return c.getId();
+			}
+		}
+		
+		return -1;
+	}
+	
+	public static int getDragonSummonIndex(Player player, UUID dragonUUID){
+		var handler = PlayerStateUtils.getHandler(player);
+		
+		for(var entry : handler.dragonUUIDs.entrySet()){
+			if(entry.getValue().equals(dragonUUID)){
+				return entry.getKey();
+			}
+		}
+		
+		return 0;
+	}
+	
+	public static void setDragon(Player player, DMRDragonEntity dragon, int index){
 		player.getData(DMRCapability.PLAYER_CAPABILITY).setPlayer(player);
-		player.getData(DMRCapability.PLAYER_CAPABILITY).setDragon(dragon);
+		player.getData(DMRCapability.PLAYER_CAPABILITY).setDragon(dragon, index);
 	}
 	
 	public static DMRDragonEntity findDragon(Player player, UUID dragonId){

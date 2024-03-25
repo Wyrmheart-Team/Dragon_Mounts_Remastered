@@ -19,5 +19,7 @@ public class DataProvider
         ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
         
         generator.addProvider(event.includeServer(), new BlockTagProvider(output, event.getLookupProvider(), DragonMountsRemaster.MOD_ID, existingFileHelper));
+        generator.addProvider(event.includeServer(), new DMRRecipeProvider(output, event.getLookupProvider()));
+        generator.addProvider(event.includeServer(), new DMRItemModelProvider(output, DragonMountsRemaster.MOD_ID, existingFileHelper));
     }
 }

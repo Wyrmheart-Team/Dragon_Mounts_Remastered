@@ -59,6 +59,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
@@ -658,7 +659,6 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 			{
 				setRidingPlayer(player);
 				navigation.stop();
-				DragonWhistleHandler.setDragon(player, this);
 			}
 			setTarget(null);
 			setOrderedToSit(false);
@@ -1144,19 +1144,29 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 		return new DragonContainerMenu(pId, pInventory, buffer);
 	}
 	
-	@Override
-	public void containerChanged(Container pContainer)
-	{
-		// Update the saved dragon so that summoning the dragon doesnt wipe the inventory
-		if(getOwner() instanceof Player player){
+	public void updateOwnerData(){
+		if(getOwner() instanceof Player player && !player.level.isClientSide){
 			var handler = player.getData(DMRCapability.PLAYER_CAPABILITY);
 			
 			if(handler.isSelectedDragon(this)) {
 				handler.setPlayer(player);
-				handler.setDragon(this);
+				handler.setDragon(this, DragonWhistleHandler.getDragonSummonIndex(player, getDragonUUID()));
 			}
 		}
-		
+	}
+	
+	@Override
+	public void containerChanged(Container pContainer)
+	{
+		// Update the saved dragon so that summoning the dragon doesnt wipe the inventory
+		updateOwnerData();
 		setArmor();
+	}
+	
+	@Override
+	public void setCustomName(@Nullable Component pName)
+	{
+		super.setCustomName(pName);
+		updateOwnerData();
 	}
 }

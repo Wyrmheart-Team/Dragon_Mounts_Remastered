@@ -57,7 +57,7 @@ public class DragonWorldData extends SavedData
 			CompoundTag compoundtag = new CompoundTag();
 			tag.putUUID("uuid", uuid);
 			tag.putInt("delay", deathDelay.getOrDefault(uuid, 0));
-			tag.putString("message", deathMessages.getOrDefault(uuid, "death.attack.generic"));
+			tag.putString("message", deathMessages.getOrDefault(uuid, ""));
 			listtag.add(compoundtag);
 		}
 		tag.put("deadDragons", listtag);

@@ -1,15 +1,13 @@
 package dmr.DragonMounts.registry;
 
 import dmr.DragonMounts.DragonMountsRemaster;
-import dmr.DragonMounts.server.items.DMRDevItem;
-import dmr.DragonMounts.server.items.DragonArmorItem;
-import dmr.DragonMounts.server.items.DragonEggItemBlock;
-import dmr.DragonMounts.server.items.DragonSpawnEgg;
+import dmr.DragonMounts.server.items.*;
 import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.ArrayList;
@@ -39,6 +37,11 @@ public class DMRCreativeTabs
 			  for(DragonArmor armor : armors){
 				  entries.accept(DragonArmorItem.getArmorStack(armor));
 			  }
+			  
+			  for(DyeColor color : DyeColor.values()){
+				  entries.accept(DragonWhistleItem.getWhistleItem(color));
+			  }
+			  
           }).build());
 	
 	public static void init()
