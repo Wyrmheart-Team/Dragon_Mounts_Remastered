@@ -140,6 +140,13 @@ jobs:
         with:
           args: build/libs/*.jar
 
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          repository: Wyrmheart-Team/Workflows
+          event-type: update-server
+
   publish-release:
     name: Publish Release
     environment: Release
