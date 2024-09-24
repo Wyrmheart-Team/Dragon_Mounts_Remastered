@@ -4,13 +4,14 @@ import dmr.DragonMounts.registry.DMREntities;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import dmr.DragonMounts.client.model.DragonModel;
 import dmr.DragonMounts.client.renderer.DragonRenderer;
 
-@Mod.EventBusSubscriber( bus = Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber( bus = Bus.MOD, value = Dist.CLIENT)
 public class ClientModHandler
 {
 	public static DragonModel MODEL_INSTANCE = new DragonModel();

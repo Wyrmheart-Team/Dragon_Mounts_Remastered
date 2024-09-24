@@ -4,13 +4,23 @@ import dmr.DragonMounts.DragonMountsRemaster;
 import dmr.DragonMounts.network.IMessage;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record DragonBreathPacket(int entityId) implements IMessage<DragonBreathPacket>
 {
-	public static ResourceLocation ID = DragonMountsRemaster.id("dragon_breath");
+	public static final CustomPacketPayload.Type<DragonStatePacket> TYPE = new CustomPacketPayload.Type<>(DragonMountsRemaster.id("dragon_breath"));
+	
+	@Override
+	public Type<? extends CustomPacketPayload> type()
+	{
+		return TYPE;
+	}
 	
 	@Override
 	public DragonBreathPacket decode(FriendlyByteBuf buffer)
@@ -20,7 +30,7 @@ public record DragonBreathPacket(int entityId) implements IMessage<DragonBreathP
 	
 	
 	@Override
-	public void handle(PlayPayloadContext context, Player player)
+	public void handle(IPayloadContext context, Player player)
 	{
 		var entity = player.level.getEntity(entityId);
 		
@@ -30,15 +40,13 @@ public record DragonBreathPacket(int entityId) implements IMessage<DragonBreathP
 		}
 	}
 	
-	@Override
-	public void write(FriendlyByteBuf pBuffer)
-	{
-		pBuffer.writeInt(entityId);
-	}
+	
+	public static final StreamCodec<FriendlyByteBuf, DragonBreathPacket> STREAM_CODEC =
+			StreamCodec.composite(ByteBufCodecs.INT, DragonBreathPacket::entityId, DragonBreathPacket::new);
 	
 	@Override
-	public ResourceLocation id()
+	public StreamCodec<? super RegistryFriendlyByteBuf, DragonBreathPacket> streamCodec()
 	{
-		return ID;
+		return STREAM_CODEC;
 	}
 }

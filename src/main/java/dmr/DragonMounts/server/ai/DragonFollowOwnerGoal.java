@@ -7,17 +7,6 @@ import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
 
-/**
- * Goal for dragon to follow its owner.
- * <p></p>
- * Mostly copied from <code>FollowOwnerGoal</code>, but with some modifications to fix an issue.
- * Also allows dragon to tp to owner in the air, so they don't get stuck until the owner lands.
- *
- * @author AnimalsWritingCode
- *
- * @see net.minecraft.world.entity.ai.goal.FollowOwnerGoal
- */
-@SuppressWarnings("DataFlowIssue")
 public class DragonFollowOwnerGoal extends Goal
 {
     private final DMRDragonEntity dragon;
@@ -26,6 +15,8 @@ public class DragonFollowOwnerGoal extends Goal
     private final float stopDistance;
     private final float startDistance;
 
+    private static final int PATHFINDING_UPDATE_TICKS = 20;
+    
     public DragonFollowOwnerGoal(DMRDragonEntity dragon, double speedModifier, float startDistance, float stopDistance)
     {
         this.dragon = dragon;
@@ -38,39 +29,33 @@ public class DragonFollowOwnerGoal extends Goal
     public boolean canUse()
     {
         LivingEntity livingentity = dragon.getOwner();
-        if (livingentity == null) {
+        if (livingentity == null || livingentity.isSpectator() || livingentity.isInvisible()) {
             return false;
         }
-        if (livingentity.isSpectator())
+        if (dragon.isOrderedToSit() || dragon.hasWanderTarget())
         {
             return false;
         }
-        if (dragon.isOrderedToSit())
-        {
-            return false;
-        }
-        
-        if(dragon.hasWanderTarget()){
-            return false;
-        }
-        
         return dragon.distanceToSqr(livingentity) >= (double)(startDistance * startDistance);
     }
 
     public boolean canContinueToUse()
     {
+        LivingEntity livingentity = dragon.getOwner();
+        if(livingentity == null || livingentity.isSpectator() || livingentity.isInvisible()){
+            return false;
+        }
+        
         if (dragon.getNavigation().isDone())
         {
             return false;
         }
-        if (dragon.isOrderedToSit())
+        
+        if (dragon.isOrderedToSit() || dragon.hasWanderTarget())
         {
             return false;
         }
-        if(dragon.hasWanderTarget()){
-            return false;
-        }
-        return dragon.getOwner() != null && dragon.distanceToSqr(dragon.getOwner()) >= (double)(stopDistance * stopDistance);
+        return dragon.distanceToSqr(dragon.getOwner()) >= (double)(stopDistance * stopDistance);
     }
 
     public void start()
@@ -92,7 +77,7 @@ public class DragonFollowOwnerGoal extends Goal
         dragon.getLookControl().setLookAt(owner, 10.0F, (float)dragon.getMaxHeadXRot());
         if (--timeToRecalcPath <= 0)
         {
-            timeToRecalcPath = adjustedTickDelay(10);
+            timeToRecalcPath = adjustedTickDelay(PATHFINDING_UPDATE_TICKS);
             if (!dragon.isLeashed() && !dragon.isPassenger())
             {
                 dragon.getNavigation().moveTo(owner.getX(), owner.getY() - 0.5d, owner.getZ(), dragon.isFlying() ? speedModifier * 0.5 : speedModifier);

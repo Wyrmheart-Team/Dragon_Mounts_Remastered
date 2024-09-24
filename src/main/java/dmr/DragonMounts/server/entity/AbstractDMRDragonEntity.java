@@ -30,7 +30,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 
 import javax.annotation.Nullable;
@@ -79,7 +78,6 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 	}
 	
 	@Override
-	@NotNull
 	public BodyRotationControl createBodyControl()
 	{
 		return new DragonBodyController((DMRDragonEntity)this);
@@ -285,18 +283,18 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 	}
 	
 	@Override
-	protected void defineSynchedData()
+	protected void defineSynchedData(SynchedEntityData.Builder builder)
 	{
-		super.defineSynchedData();
+		super.defineSynchedData(builder);
 		
-		entityData.define(DATA_BREED,"");
-		entityData.define(DATA_ORIG_BREED, "");
-		entityData.define(DATA_SADDLED, false);
-		entityData.define(DATA_UUID, "");
-		entityData.define(DATA_SUMMON_INSTANCE, "");
-		entityData.define(DATA_WANDERING_POS, BlockPos.ZERO);
-		entityData.define(DATA_PATHING_GOAL, BlockPos.ZERO);
-		this.entityData.define(DATA_ID_CHEST, false);
+		builder.define(DATA_BREED,"");
+		builder.define(DATA_ORIG_BREED, "");
+		builder.define(DATA_SADDLED, false);
+		builder.define(DATA_UUID, "");
+		builder.define(DATA_SUMMON_INSTANCE, "");
+		builder.define(DATA_WANDERING_POS, BlockPos.ZERO);
+		builder.define(DATA_PATHING_GOAL, BlockPos.ZERO);
+		builder.define(DATA_ID_CHEST, false);
 	}
 	
 	@Override
@@ -328,25 +326,22 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		compound.putString(NBTConstants.BREED, getBreed().getId());
 		compound.putString("orig_" + NBTConstants.BREED, entityData.get(DATA_ORIG_BREED));
 		compound.putBoolean(NBTConstants.SADDLED, isSaddled());
+		compound.putBoolean(NBTConstants.CHEST, hasChest());
 		compound.putInt(NBTConstants.REPRO_COUNT, reproCount);
 		compound.putString(NBTConstants.DRAGON_UUID, getDragonUUID().toString());
 		compound.put(NBTConstants.WANDERING_POS, NbtUtils.writeBlockPos(getWanderTarget()));
 		
-		if (this.isTame()) {
-			ListTag listtag = new ListTag();
-			
-			for(int i = 0; i < this.inventory.getContainerSize(); ++i) {
-				ItemStack itemstack = this.inventory.getItem(i);
-				if (!itemstack.isEmpty()) {
-					CompoundTag compoundtag = new CompoundTag();
-					compoundtag.putByte("Slot", (byte)i);
-					itemstack.save(compoundtag);
-					listtag.add(compoundtag);
-				}
+		ListTag listtag = new ListTag();
+		for (int i = 0; i < this.inventory.getContainerSize(); i++) {
+			ItemStack itemstack = this.inventory.getItem(i);
+			if (!itemstack.isEmpty()) {
+				CompoundTag compoundtag = new CompoundTag();
+				compoundtag.putByte("Slot", (byte)(i));
+				listtag.add(itemstack.save(this.registryAccess(), compoundtag));
 			}
-			
-			compound.put("Items", listtag);
 		}
+		
+		compound.put("Items", listtag);
 	}
 	
 	@Override
@@ -365,22 +360,21 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		
 		super.readAdditionalSaveData(compound);
 		setSaddled(compound.getBoolean(NBTConstants.SADDLED));
+		setChest(compound.getBoolean(NBTConstants.CHEST));
 		this.reproCount = compound.getInt(NBTConstants.REPRO_COUNT);
 		setDragonUUID(UUID.fromString(compound.getString(NBTConstants.DRAGON_UUID)));
-		setWanderTarget(NbtUtils.readBlockPos(compound.getCompound(NBTConstants.WANDERING_POS)));
+		setWanderTarget(NbtUtils.readBlockPos(compound, NBTConstants.WANDERING_POS).orElse(null));
 		
-		if(this.isTame()){
-			ListTag listtag = compound.getList("Items", 10);
-			
-			for(int i = 0; i < listtag.size(); ++i) {
-				CompoundTag compoundtag = listtag.getCompound(i);
-				int j = compoundtag.getByte("Slot") & 255;
-				if (j < this.inventory.getContainerSize()) {
-					this.inventory.setItem(j, ItemStack.of(compoundtag));
-				}
+		ListTag listtag = compound.getList("Items", 10);
+		
+		for (int i = 0; i < listtag.size(); i++) {
+			CompoundTag compoundtag = listtag.getCompound(i);
+			int j = compoundtag.getByte("Slot") & 255;
+			if (j < this.inventory.getContainerSize()) {
+				this.inventory.setItem(j, ItemStack.parse(this.registryAccess(), compoundtag).orElse(ItemStack.EMPTY));
 			}
 		}
-		
+	
 		this.updateContainerEquipment();
 	}
 	protected int getInventorySize() {
@@ -452,35 +446,35 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		}
 	}
 	
-	@Nullable
+	
 	//AbstractHorse.java - 1.19.2
 	private Vec3 getDismountLocationInDirection(Vec3 pDirection, LivingEntity pPassenger) {
 		double d0 = this.getX() + pDirection.x;
 		double d1 = this.getBoundingBox().minY;
 		double d2 = this.getZ() + pDirection.z;
-		BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+		BlockPos.MutableBlockPos blockpos_mutableblockpos = new BlockPos.MutableBlockPos();
 		
 		for(Pose pose : pPassenger.getDismountPoses()) {
-			blockpos$mutableblockpos.set(d0, d1, d2);
+			blockpos_mutableblockpos.set(d0, d1, d2);
 			double d3 = this.getBoundingBox().maxY + 0.75D;
 			
 			while(true) {
-				double d4 = this.level.getBlockFloorHeight(blockpos$mutableblockpos);
-				if ((double)blockpos$mutableblockpos.getY() + d4 > d3) {
+				double d4 = this.level.getBlockFloorHeight(blockpos_mutableblockpos);
+				if ((double)blockpos_mutableblockpos.getY() + d4 > d3) {
 					break;
 				}
 				
 				if (DismountHelper.isBlockFloorValid(d4)) {
 					AABB aabb = pPassenger.getLocalBoundsForPose(pose);
-					Vec3 vec3 = new Vec3(d0, (double)blockpos$mutableblockpos.getY() + d4, d2);
+					Vec3 vec3 = new Vec3(d0, (double)blockpos_mutableblockpos.getY() + d4, d2);
 					if (DismountHelper.canDismountTo(this.level, pPassenger, aabb.move(vec3))) {
 						pPassenger.setPose(pose);
 						return vec3;
 					}
 				}
 				
-				blockpos$mutableblockpos.move(Direction.UP);
-				if (!((double)blockpos$mutableblockpos.getY() < d3)) {
+				blockpos_mutableblockpos.move(Direction.UP);
+				if (!((double)blockpos_mutableblockpos.getY() < d3)) {
 					break;
 				}
 			}

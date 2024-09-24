@@ -21,9 +21,9 @@ import java.util.concurrent.CompletableFuture;
 
 public class DMRRecipeProvider extends RecipeProvider
 {
-	public DMRRecipeProvider(PackOutput p_250820_)
+	public DMRRecipeProvider(PackOutput output, CompletableFuture<Provider> registries)
 	{
-		super(p_250820_);
+		super(output, registries);
 	}
 	
 	@Override

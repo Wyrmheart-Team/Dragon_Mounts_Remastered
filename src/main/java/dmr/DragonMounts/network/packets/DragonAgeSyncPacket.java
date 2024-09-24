@@ -4,14 +4,23 @@ import dmr.DragonMounts.DragonMountsRemaster;
 import dmr.DragonMounts.network.IMessage;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record DragonAgeSyncPacket(int dragonId, int age) implements IMessage<DragonAgeSyncPacket>
 {
-	public static ResourceLocation ID = DragonMountsRemaster.id("age_sync");
+	public static final CustomPacketPayload.Type<DragonStatePacket> TYPE = new CustomPacketPayload.Type<>(DragonMountsRemaster.id("age_sync"));
 	
+	@Override
+	public Type<? extends CustomPacketPayload> type()
+	{
+		return TYPE;
+	}
 	@Override
 	public DragonAgeSyncPacket decode(FriendlyByteBuf buffer)
 	{
@@ -19,7 +28,7 @@ public record DragonAgeSyncPacket(int dragonId, int age) implements IMessage<Dra
 	}
 	
 	@Override
-	public void handle(PlayPayloadContext context, Player player)
+	public void handle(IPayloadContext context, Player player)
 	{
 		var dragon = player.level.getEntity(dragonId);
 		
@@ -29,16 +38,14 @@ public record DragonAgeSyncPacket(int dragonId, int age) implements IMessage<Dra
 		}
 	}
 	
-	@Override
-	public void write(FriendlyByteBuf pBuffer)
-	{
-		pBuffer.writeInt(dragonId);
-		pBuffer.writeInt(age);
-	}
+	public static final StreamCodec<FriendlyByteBuf, DragonAgeSyncPacket> STREAM_CODEC =
+			StreamCodec.composite(ByteBufCodecs.INT, DragonAgeSyncPacket::dragonId,
+			                      ByteBufCodecs.INT, DragonAgeSyncPacket::age,
+			                      DragonAgeSyncPacket::new);
 	
 	@Override
-	public ResourceLocation id()
+	public StreamCodec<? super RegistryFriendlyByteBuf, DragonAgeSyncPacket> streamCodec()
 	{
-		return ID;
+		return STREAM_CODEC;
 	}
 }

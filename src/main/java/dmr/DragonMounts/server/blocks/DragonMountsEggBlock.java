@@ -9,6 +9,7 @@ import dmr.DragonMounts.server.blockentities.DragonEggBlockEntity;
 import dmr.DragonMounts.server.items.DragonEggItemBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -17,6 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.player.Player;
@@ -39,7 +41,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
+
 import org.joml.Vector3f;
 
 
@@ -65,7 +67,7 @@ public class DragonMountsEggBlock extends DragonEggBlock implements EntityBlock,
 		pBuilder.add(HATCH_STAGE, HATCHING, WATERLOGGED);
 	}
 	
-	@Nullable
+	
 	@Override
 	public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState)
 	{
@@ -73,20 +75,21 @@ public class DragonMountsEggBlock extends DragonEggBlock implements EntityBlock,
 	}
 	
 	@Override
-	public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @Nullable LivingEntity pPlacer, ItemStack pStack)
+	public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, LivingEntity pPlacer, ItemStack pStack)
 	{
 		if(pLevel.getBlockEntity(pPos) instanceof DragonEggBlockEntity e){
-			if(pStack.hasTag()) {
-				if (pStack.getTag().contains(NBTConstants.BREED)) {
-					e.setBreedId(pStack.getTag().getString(NBTConstants.BREED));
+			if(pStack.has(DataComponents.CUSTOM_DATA)){
+				var tag = pStack.get(DataComponents.CUSTOM_DATA).copyTag();
+				if (tag.contains(NBTConstants.BREED)) {
+					e.setBreedId(tag.getString(NBTConstants.BREED));
 				}
 				
-				if (pStack.getTag().contains("hatchTime")) {
-					e.setHatchTime(pStack.getTag().getInt("hatchTime"));
+				if (tag.contains("hatchTime")) {
+					e.setHatchTime(tag.getInt("hatchTime"));
 				}
 				
-				if (pStack.getTag().contains("hatching")) {
-					if(pStack.getTag().getBoolean("hatching")) {
+				if (tag.contains("hatching")) {
+					if(tag.getBoolean("hatching")) {
 						pLevel.setBlock(pPos, pState.setValue(HATCHING, true), Block.UPDATE_ALL);
 					}
 				}
@@ -94,7 +97,7 @@ public class DragonMountsEggBlock extends DragonEggBlock implements EntityBlock,
 		}
 	}
 	
-	@Nullable
+	
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level _level, BlockState _state, BlockEntityType<T> type)
 	{
@@ -129,10 +132,8 @@ public class DragonMountsEggBlock extends DragonEggBlock implements EntityBlock,
 	}
 	
 	@Override
-	public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit)
+	public InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit)
 	{
-		if(pPlayer.getItemInHand(pHand).getItem() instanceof InstantHatchItem) return InteractionResult.PASS;
-		
 		if (!pState.getValue(HATCHING))
 		{
 			if (!pLevel.isClientSide)
@@ -170,7 +171,7 @@ public class DragonMountsEggBlock extends DragonEggBlock implements EntityBlock,
 		return state.getValue(WATERLOGGED)? Fluids.WATER.getSource(false) : super.getFluidState(state);
 	}
 	@Override
-	@Nullable
+	
 	public BlockState getStateForPlacement(BlockPlaceContext p_196258_1_){
 		return super.getStateForPlacement(p_196258_1_).setValue(WATERLOGGED, p_196258_1_.getLevel().getFluidState(p_196258_1_.getClickedPos()).getType() == Fluids.WATER);
 	}
@@ -183,7 +184,7 @@ public class DragonMountsEggBlock extends DragonEggBlock implements EntityBlock,
 		{
 			CompoundTag tag = null;
 			if (pLevel.getBlockEntity(pPos) instanceof DragonEggBlockEntity e)
-				tag = e.saveWithoutMetadata();
+				tag = e.saveWithoutMetadata(pLevel.registryAccess());
 			
 			var entity = FallingBlockEntity.fall(pLevel, pPos, pState); // this deletes the block. We need to cache the data first and then apply it.
 			if (tag != null) entity.blockData = tag;

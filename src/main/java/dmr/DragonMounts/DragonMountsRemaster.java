@@ -20,9 +20,11 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.item.Item;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig.Type;
@@ -33,6 +35,9 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Block;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.List;
@@ -47,7 +52,7 @@ public class DragonMountsRemaster
 	
 	public static boolean DEBUG = false;
 	
-	public DragonMountsRemaster(IEventBus bus){
+	public DragonMountsRemaster(IEventBus bus, ModContainer container){
 		DEBUG = !FMLLoader.isProduction();
 		
 		var gsonBuilder = new GsonBuilder();
@@ -61,9 +66,9 @@ public class DragonMountsRemaster
 		gsonBuilder.registerTypeAdapter(Ability.class, new AbilityAdapter());
 		gsonBuilder.registerTypeAdapter(Habitat.class, new HabitatAdapter());
 		
-		ModLoadingContext.get().registerConfig(Type.CLIENT, DMRConfig.CLIENT);
-		ModLoadingContext.get().registerConfig(Type.COMMON, DMRConfig.COMMON);
-		ModLoadingContext.get().registerConfig(Type.SERVER, DMRConfig.SERVER);
+		container.registerConfig(Type.CLIENT, DMRConfig.CLIENT);
+		container.registerConfig(Type.COMMON, DMRConfig.COMMON);
+		container.registerConfig(Type.SERVER, DMRConfig.SERVER);
 		
 		Gson = gsonBuilder.create();
 		
@@ -85,7 +90,9 @@ public class DragonMountsRemaster
 		if (FMLLoader.getDist() == Dist.CLIENT) // Client Events
 		{
 			bus.addListener((ModelEvent.RegisterGeometryLoaders e) -> e.register(id("dragon_egg"), DragonEggModelLoader.INSTANCE));
-			bus.addListener((RegisterColorHandlersEvent.Item e) -> e.register(DragonSpawnEgg::getColor, DMRItems.DRAGON_SPAWN_EGG.get()));
+			bus.addListener((RegisterColorHandlersEvent.Item e) -> e.register((stack, layer) -> FastColor.ARGB32.opaque(DragonSpawnEgg.getColor(stack, layer)), DMRItems.DRAGON_SPAWN_EGG.get()));
+			bus.addListener((RegisterMenuScreensEvent e) -> e.register(DMRMenus.DRAGON_MENU.get(), DragonInventoryScreen::new));
+			container.registerExtensionPoint(IConfigScreenFactory.class, (mc, parent) -> new ConfigurationScreen(container, parent));
 		}
 
 		bus.addListener(NetworkHandler::registerEvent);
@@ -99,11 +106,10 @@ public class DragonMountsRemaster
 	public void setupCommon(final FMLCommonSetupEvent event){}
 	public void setupClient(final FMLClientSetupEvent event){
 		ResourcePackLoader.addReloadListener(event);
-		MenuScreens.register(DMRMenus.DRAGON_MENU.get(), DragonInventoryScreen::new);
 	}
 	public void setupServer(final FMLDedicatedServerSetupEvent event){}
 	
 	public static ResourceLocation id(String path){
-		return new ResourceLocation(MOD_ID, path);
+		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
 	}
 }

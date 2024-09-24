@@ -7,6 +7,7 @@ import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.common.config.DMRConfig;
 import dmr.DragonMounts.types.habitats.Habitat;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -14,6 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 
 import java.util.*;
 
@@ -227,9 +229,9 @@ public class DragonBreed implements IDragonBreed
 	}
 	
 	public static IDragonBreed getDragonType(ItemStack stack){
-		CompoundTag tag = stack.getTag();
+		CompoundTag tag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
 		
-		if(tag != null && tag.contains(NBTConstants.BREED)){
+		if(tag.contains(NBTConstants.BREED)){
 			return DragonBreedsRegistry.getDragonBreed(tag.getString(NBTConstants.BREED));
 		}
 		
@@ -239,11 +241,8 @@ public class DragonBreed implements IDragonBreed
 	public static void setDragonType(ItemStack stack, IDragonBreed type){
 		if(type == null) return;
 		
-		CompoundTag tag = stack.getTag() == null ? new CompoundTag() : stack.getTag();
+		CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
 		tag.putString(NBTConstants.BREED, type.getId());
-		
-		if(!stack.hasTag()){
-			stack.setTag(tag);
-		}
+		stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
 	}
 }

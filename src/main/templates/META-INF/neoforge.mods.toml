@@ -5,9 +5,6 @@ license="${mod_license}"
 [[mixins]]
 config = "${mod_id}.mixins.json"
 
-[[accessTransformers]]
-file = "META-INF/accesstransformer.cfg"
-
 [[mods]]
 modId= "${mod_id}"
 displayName="${mod_name}"

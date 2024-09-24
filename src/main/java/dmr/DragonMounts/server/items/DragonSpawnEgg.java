@@ -1,16 +1,27 @@
 package dmr.DragonMounts.server.items;
 
+import dmr.DragonMounts.DMRConstants;
 import dmr.DragonMounts.DMRConstants.NBTConstants;
+import dmr.DragonMounts.DragonMountsRemaster;
 import dmr.DragonMounts.registry.DMREntities;
 import dmr.DragonMounts.registry.DMRItems;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
+import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 
 
@@ -18,7 +29,7 @@ public class DragonSpawnEgg extends DeferredSpawnEggItem
 {
 	public DragonSpawnEgg()
 	{
-		super(DMREntities.DRAGON_ENTITY, 0, 0, new Item.Properties());
+		super(DMREntities.DRAGON_ENTITY, 4996656, 4996656, new Item.Properties());
 	}
 	
 	public static final String DATA_TAG = "ItemData";
@@ -29,33 +40,35 @@ public class DragonSpawnEgg extends DeferredSpawnEggItem
 	public static ItemStack create(IDragonBreed breed)
 	{
 		var id = breed.getId();
-		var root = new CompoundTag();
 		
-		// entity tag
-		var entityTag = new CompoundTag();
+		ItemStack stack = new ItemStack(DMRItems.DRAGON_SPAWN_EGG.get());
+		
+		CompoundTag entityTag = new CompoundTag();
 		entityTag.putString(NBTConstants.BREED, id);
-		root.put(EntityType.ENTITY_TAG, entityTag);
+		entityTag.putString("id", "dmr:dragon");
 		
 		// name & colors
 		// storing these in the stack nbt is more performant than getting the breed everytime
 		var itemDataTag = new CompoundTag();
 		itemDataTag.putString(DATA_ITEM_NAME, String.join(".", DMRItems.DRAGON_SPAWN_EGG.get().getDescriptionId(), id));
+		itemDataTag.putString(NBTConstants.BREED, id);
+		
 		itemDataTag.putInt(DATA_PRIM_COLOR, breed.getPrimaryColor());
 		itemDataTag.putInt(DATA_SEC_COLOR, breed.getSecondaryColor());
-		root.put(DATA_TAG, itemDataTag);
 		
-		ItemStack stack = new ItemStack(DMRItems.DRAGON_SPAWN_EGG.get());
-		stack.setTag(root);
+		stack.set(DataComponents.CUSTOM_DATA, CustomData.of(itemDataTag));
+		stack.set(DataComponents.ENTITY_DATA, CustomData.of(entityTag));
+		
 		return stack;
 	}
 	
 	@Override
 	public Component getName(ItemStack stack)
 	{
-		var tag = stack.getTagElement(DATA_TAG);
-		if (tag != null && tag.contains(DATA_ITEM_NAME)) {
-			var entityTag = stack.getTagElement(EntityType.ENTITY_TAG);
-			var breed = DragonBreedsRegistry.getDragonBreed(entityTag.getString(NBTConstants.BREED));
+		var tag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
+		
+		if (tag.contains(DATA_ITEM_NAME)) {
+			var breed = DragonBreedsRegistry.getDragonBreed(tag.getString(NBTConstants.BREED));
 			
 			if(breed instanceof DragonHybridBreed hybridBreed){
 				return Component.translatable(String.join(".", DMRItems.DRAGON_SPAWN_EGG.get().getDescriptionId(), "hybrid"), hybridBreed.parent1.getName().getString(), hybridBreed.parent2.getName().getString());
@@ -66,12 +79,9 @@ public class DragonSpawnEgg extends DeferredSpawnEggItem
 		return super.getName(stack);
 	}
 	
-	
 	public static int getColor(ItemStack stack, int tintIndex)
 	{
-		var tag = stack.getTagElement(DATA_TAG);
-		if (tag != null)
-			return tintIndex == 0? tag.getInt(DATA_PRIM_COLOR) : tag.getInt(DATA_SEC_COLOR);
-		return 0xffffff;
+		var tag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
+		return tintIndex == 0 ? tag.getInt(DATA_PRIM_COLOR) : tag.getInt(DATA_SEC_COLOR);
 	}
 }

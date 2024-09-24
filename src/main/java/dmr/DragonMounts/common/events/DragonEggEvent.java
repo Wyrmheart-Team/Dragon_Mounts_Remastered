@@ -8,11 +8,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(bus = Bus.GAME)
 public class DragonEggEvent
 {
 	@SubscribeEvent

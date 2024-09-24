@@ -5,7 +5,7 @@ import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.types.abilities.types.Ability;
 import java.util.List;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.EnderManAngerEvent;
 
 

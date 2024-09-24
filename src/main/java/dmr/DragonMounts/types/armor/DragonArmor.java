@@ -10,10 +10,12 @@ import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.LootTableEntry;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +38,9 @@ public class DragonArmor
 	private List<LootTableEntry> lootTable = new ArrayList<>();
 	
 	public static DragonArmor getArmorType(ItemStack stack){
-		CompoundTag tag = stack.getTag();
+		CompoundTag tag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
 		
-		if(tag != null && tag.contains(NBTConstants.ARMOR)){
+		if(tag.contains(NBTConstants.ARMOR)){
 			return DragonArmorRegistry.getDragonArmor(tag.getString(NBTConstants.ARMOR));
 		}
 		
@@ -47,12 +49,8 @@ public class DragonArmor
 	
 	public static void setArmorType(ItemStack stack, DragonArmor type){
 		if(type == null) return;
-		
-		CompoundTag tag = stack.getTag() == null ? new CompoundTag() : stack.getTag();
+		CompoundTag tag = new CompoundTag();
 		tag.putString(NBTConstants.ARMOR, type.getId());
-		
-		if(!stack.hasTag()){
-			stack.setTag(tag);
-		}
+		stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
 	}
 }

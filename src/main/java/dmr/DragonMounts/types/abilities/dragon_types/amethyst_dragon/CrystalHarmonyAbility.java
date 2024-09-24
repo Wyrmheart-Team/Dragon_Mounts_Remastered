@@ -5,8 +5,8 @@ import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.types.abilities.types.Ability;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
 @EventBusSubscriber
 public class CrystalHarmonyAbility implements Ability
@@ -20,18 +20,18 @@ public class CrystalHarmonyAbility implements Ability
 	private static final double protection_chance = 0.1;
 	
 	@SubscribeEvent
-	public static void entityHurt(LivingHurtEvent event){
+	public static void entityHurt(LivingDamageEvent.Pre event){
 		if(event.getEntity() instanceof DMRDragonEntity dragon){
 			if(dragon.getBreed().getAbilities().contains(DragonAbilities.CRYSTAL_HARMONY)){
 				if(dragon.getRandom().nextDouble() <= protection_chance){
-					event.setCanceled(true);
+					event.setNewDamage(0);
 				}
 			}
 		}else if(event.getEntity() instanceof Player player){
 			if(player.getVehicle() instanceof DMRDragonEntity dragon){
 				if(dragon.getBreed().getAbilities().contains(DragonAbilities.CRYSTAL_HARMONY)){
 					if(dragon.getRandom().nextDouble() <= protection_chance){
-						event.setCanceled(true);
+						event.setNewDamage(0);
 					}
 				}
 			}

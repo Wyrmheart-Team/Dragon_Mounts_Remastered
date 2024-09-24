@@ -7,6 +7,7 @@ import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -31,9 +32,9 @@ public class DragonArmorItem extends Item
 	@Override
 	public String getDescriptionId(ItemStack pStack)
 	{
-		var tag = pStack.getTag();
+		var tag = pStack.get(DataComponents.CUSTOM_DATA).copyTag();
 		
-		if(tag != null && tag.contains(NBTConstants.ARMOR)){
+		if(tag.contains(NBTConstants.ARMOR)){
 			return String.join(".", DMRItems.DRAGON_ARMOR.get().getDescriptionId(), tag.getString(NBTConstants.ARMOR));
 		}
 		

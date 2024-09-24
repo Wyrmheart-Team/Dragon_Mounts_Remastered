@@ -108,7 +108,7 @@ public class DragonWhistleHandler
 						}
 						
 						if(!player.level.isClientSide){
-							NetworkHandler.send(PacketDistributor.TRACKING_ENTITY.with(dragon), new DragonStatePacket(dragon.getId(), 1));
+							PacketDistributor.sendToPlayersTrackingEntity(dragon, new DragonStatePacket(dragon.getId(), 1));
 						}
 					}
 					else
@@ -122,7 +122,7 @@ public class DragonWhistleHandler
 						}
 						
 						if(!player.level.isClientSide){
-							NetworkHandler.send(PacketDistributor.TRACKING_ENTITY.with(dragon), new DragonStatePacket(dragon.getId(), 1));
+							PacketDistributor.sendToPlayersTrackingEntity(dragon, new DragonStatePacket(dragon.getId(), 1));
 						}
 					}
 					return true;
@@ -135,7 +135,7 @@ public class DragonWhistleHandler
 			player.level.addFreshEntity(newDragon);
 			
 			if(!player.level.isClientSide){
-				NetworkHandler.send(PacketDistributor.TRACKING_ENTITY.with(newDragon), new DragonStatePacket(newDragon.getId(), 1));
+				PacketDistributor.sendToPlayersTrackingEntity(newDragon, new DragonStatePacket(newDragon.getId(), 1));
 			}
 			
 			return true;

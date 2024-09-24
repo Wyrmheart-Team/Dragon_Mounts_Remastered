@@ -19,6 +19,6 @@ public class AbilityAdapter implements JsonDeserializer<Ability>, JsonSerializer
 	@Override
 	public JsonElement serialize(Ability src, Type typeOfSrc, JsonSerializationContext context)
 	{
-		return Ability.CODEC.encode(src, JsonOps.INSTANCE, null).get().left().get();
+		return Ability.CODEC.encode(src, JsonOps.INSTANCE, null).getOrThrow();
 	}
 }

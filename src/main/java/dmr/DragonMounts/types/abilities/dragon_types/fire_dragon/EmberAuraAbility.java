@@ -20,7 +20,7 @@ public class EmberAuraAbility implements Ability
 			
 			for(Monster mob : list){
 				if(!mob.isOnFire() && !mob.fireImmune() && !mob.isInWaterRainOrBubble()) {
-					mob.setSecondsOnFire(4);
+					mob.setRemainingFireTicks(4);
 				}
 			}
 		}

@@ -16,12 +16,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
-import software.bernie.geckolib.util.RenderUtils;
+import software.bernie.geckolib.util.RenderUtil;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -54,7 +54,7 @@ public class DragonPassengerLayer<T extends DMRDragonEntity> extends GeoRenderLa
             passengers.remove(passenger.getUUID());
 
             matrixStackIn.translate(0, -0.7f, 0);
-            RenderUtils.translateToPivotPoint(matrixStackIn, bone);
+            RenderUtil.translateToPivotPoint(matrixStackIn, bone);
                 matrixStackIn.mulPose(Axis.YP.rotationDegrees(entity.getYRot() - 180));
             renderEntity(passenger, partialTick, matrixStackIn, bufferSource, packedLight);
             buffer = bufferSource.getBuffer(renderType);

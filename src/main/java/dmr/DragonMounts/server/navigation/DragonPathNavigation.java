@@ -26,7 +26,6 @@ public class DragonPathNavigation extends FlyingPathNavigation
 	{
 		this.nodeEvaluator = new DragonNodeEvaluator(mob);
 		this.nodeEvaluator.setCanPassDoors(true);
-		this.nodeEvaluator.setCanFloat(true);
 		return new PathFinder(this.nodeEvaluator, pMaxVisitedNodes);
 	}
 	
@@ -41,5 +40,9 @@ public class DragonPathNavigation extends FlyingPathNavigation
 	{
 		Path path = this.createPath(pEntity, 0);
 		return path != null && this.moveTo(path, pSpeed);
+	}
+	
+	public boolean isStableDestination(BlockPos pPos) {
+		return true;
 	}
 }

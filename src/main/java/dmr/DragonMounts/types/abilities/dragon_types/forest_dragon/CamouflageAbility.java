@@ -5,7 +5,7 @@ import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.types.abilities.types.Ability;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 
 @EventBusSubscriber
@@ -21,14 +21,13 @@ public class CamouflageAbility implements Ability
 	
 	@SubscribeEvent
 	public static void onLivingChangeTarget(LivingChangeTargetEvent event){
-		
-		if(event.getNewTarget() instanceof DMRDragonEntity dragon){
+		if(event.getNewAboutToBeSetTarget() instanceof DMRDragonEntity dragon){
 			if(dragon.getBreed().getAbilities().contains(DragonAbilities.CAMOUFLAGE_ABILITY)){
 				if(event.getEntity().distanceTo(dragon) > range){
 					event.setCanceled(true);
 				}
 			}
-		}else if(event.getNewTarget() instanceof Player player){
+		}else if(event.getNewAboutToBeSetTarget() instanceof Player player){
 			if(player.getVehicle() instanceof DMRDragonEntity dragon){
 				if(dragon.getBreed().getAbilities().contains(DragonAbilities.CAMOUFLAGE_ABILITY)){
 					if(event.getEntity().distanceTo(dragon) > range){

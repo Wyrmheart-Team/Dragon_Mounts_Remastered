@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
@@ -32,7 +32,7 @@ public class DragonRenderer extends GeoEntityRenderer<DMRDragonEntity>
 	}
 	
 	@Override
-	public RenderType getRenderType(DMRDragonEntity animatable, ResourceLocation texture, @Nullable MultiBufferSource bufferSource, float partialTick)
+	public RenderType getRenderType(DMRDragonEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick)
 	{
 		return RenderType.entityCutout(texture);
 	}

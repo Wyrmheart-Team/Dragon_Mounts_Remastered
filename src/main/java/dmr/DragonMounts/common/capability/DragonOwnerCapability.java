@@ -3,6 +3,7 @@ package dmr.DragonMounts.common.capability;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
@@ -53,6 +54,7 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 					dragon.setWanderTarget(null);
 					
 					setDragon(dragon, index);
+					dragon.setHealth(Math.max(1, dragon.getHealth()));
 					
 					return dragon;
 				}
@@ -62,7 +64,7 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 	}
 	
 	public void setDragon(DMRDragonEntity dragon, int index){
-		dragon.setTame(true);
+		dragon.setTame(true, true);
 		dragon.setOwnerUUID(player.getGameProfile().getId());
 		
 		var summonInstance = UUID.randomUUID();
@@ -77,7 +79,9 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 		dragon.setWanderTarget(null);
 		dragon.setOrderedToSit(false);
 		
-		dragonNBTs.put(index, dragon.serializeNBT());
+		//noinspection removal
+		var nbtData = dragon.serializeNBT(dragon.level.registryAccess());
+		dragonNBTs.put(index, nbtData);
 		
 		dragon.setWanderTarget(wanderPos);
 		dragon.setOrderedToSit(sit);
@@ -96,7 +100,7 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 	}
 	
 	@Override
-	public CompoundTag serializeNBT()
+	public CompoundTag serializeNBT(Provider provider)
 	{
 		CompoundTag tag = new CompoundTag();
 		
@@ -124,7 +128,7 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 	}
 	
 	@Override
-	public void deserializeNBT(CompoundTag base)
+	public void deserializeNBT(Provider provider, CompoundTag base)
 	{
 		if(base.contains("shouldDismount")){
 			shouldDismount = base.getBoolean("shouldDismount");

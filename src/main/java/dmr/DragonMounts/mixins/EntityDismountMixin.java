@@ -8,6 +8,7 @@ import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -24,9 +25,9 @@ public class EntityDismountMixin
 				cap.shouldDismount = false;
 				
 				if(player.level.isClientSide()){
-					NetworkHandler.sendToServer(new DismountDragonPacket(player.getId(), false));
+					PacketDistributor.sendToServer(new DismountDragonPacket(player.getId(), false));
 				}else{
-					NetworkHandler.sendToPlayer((ServerPlayer)(Object)this, new DismountDragonPacket(player.getId(), false));
+					PacketDistributor.sendToPlayer((ServerPlayer)(Object)this, new DismountDragonPacket(player.getId(), false));
 				}
 			}
 		}

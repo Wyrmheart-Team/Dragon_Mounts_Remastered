@@ -9,6 +9,7 @@ import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -49,10 +50,11 @@ public class DragonEggBlockEntity extends BlockEntity
 		setBreedId(breed.getId());
 	}
 	
+	
 	@Override
-	protected void saveAdditional(CompoundTag pTag)
+	protected void saveAdditional(CompoundTag pTag, Provider registries)
 	{
-		super.saveAdditional(pTag);
+		super.saveAdditional(pTag, registries);
 		
 		if(getBreedId() != null)
 			pTag.putString(NBTConstants.BREED, getBreedId());
@@ -60,19 +62,20 @@ public class DragonEggBlockEntity extends BlockEntity
 		pTag.putInt("hatchTime", getHatchTime());
 		
 		if (getCustomName() != null)
-			pTag.putString("name", Component.Serializer.toJson(customName));
+			pTag.putString("name", Component.Serializer.toJson(customName, registries));
 	}
 	
 	@Override
-	public void load(CompoundTag pTag)
+	protected void loadAdditional(CompoundTag tag, Provider registries)
 	{
-		super.load(pTag);
-		setBreedId(pTag.getString(NBTConstants.BREED));
-		setHatchTime(pTag.getInt("hatchTime"));
+		super.loadAdditional(tag, registries);
+		setBreedId(tag.getString(NBTConstants.BREED));
+		setHatchTime(tag.getInt("hatchTime"));
 		
-		var name = pTag.getString("name");
-		if (!name.isBlank()) setCustomName(Component.Serializer.fromJson(name));
+		var name = tag.getString("name");
+		if (!name.isBlank()) setCustomName(Component.Serializer.fromJson(name, registries));
 	}
+	
 	
 	
 	public Component getCustomName()
@@ -132,22 +135,21 @@ public class DragonEggBlockEntity extends BlockEntity
 		level.addFreshEntity(baby);
 	}
 	
-	@Nullable
+	
 	@Override
 	public Packet<ClientGamePacketListener> getUpdatePacket()
 	{
 		return ClientboundBlockEntityDataPacket.create(this);
 	}
 	
+	
 	@Override
-	public CompoundTag getUpdateTag()
+	public CompoundTag getUpdateTag(Provider registries)
 	{
-		var tag = super.getUpdateTag();
-		saveAdditional(tag);
+		var tag = super.getUpdateTag(registries);
+		saveAdditional(tag, registries);
 		return tag;
 	}
-	
-	
 	
 	public boolean isModelReady()
 	{

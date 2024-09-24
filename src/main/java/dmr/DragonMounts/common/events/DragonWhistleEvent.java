@@ -19,11 +19,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.neoforge.event.TickEvent.LevelTickEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.living.LivingEvent.LivingTickEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Map;
 import java.util.UUID;
@@ -52,9 +53,9 @@ public class DragonWhistleEvent
 	}
 	
 	@SubscribeEvent
-	public static void onWorldTick(LevelTickEvent event){
-		if(!event.level.isClientSide) {
-			var data = DragonWorldDataManager.getInstance(event.level);
+	public static void onWorldTick(LevelTickEvent.Post event){
+		if(!event.getLevel().isClientSide) {
+			var data = DragonWorldDataManager.getInstance(event.getLevel());
 			
 			for(var uuid : data.deadDragons){
 				if(data.deathDelay.get(uuid) > 0){
@@ -64,7 +65,7 @@ public class DragonWhistleEvent
 			
 			for(var uuid : new CopyOnWriteArrayList<>(data.deadDragons)){
 				if(data.deathDelay.get(uuid) <= 0){
-					DragonWorldDataManager.clearDragonData(event.level, uuid);
+					DragonWorldDataManager.clearDragonData(event.getLevel(), uuid);
 				}
 			}
 		}
@@ -90,7 +91,7 @@ public class DragonWhistleEvent
 						if (dragonWasKilled) {
 							var dragonRespawnDelay = DragonWorldDataManager.getDeathDelay(event.getLevel(), id);
 							var message = DragonWorldDataManager.getDeathMessage(event.getLevel(), id);
-							var mes = Component.Serializer.fromJsonLenient(message);
+							var mes = Component.Serializer.fromJsonLenient(message, event.getLevel().registryAccess());
 							
 							if (mes != null) {
 								player.displayClientMessage(mes, false);
@@ -114,7 +115,7 @@ public class DragonWhistleEvent
 	}
 	
 	@SubscribeEvent
-	public static void onLivingUpdate(LivingTickEvent event){
+	public static void onLivingUpdate(EntityTickEvent.Post event){
 		if(!event.getEntity().level.isClientSide) {
 			if (event.getEntity() instanceof DMRDragonEntity dragon) {
 				if(despawnCheck(dragon)){
@@ -128,8 +129,7 @@ public class DragonWhistleEvent
 					
 					if(state.respawnDelays.containsKey(index) && state.respawnDelays.get(index) > 0){
 						state.respawnDelays.put(index, state.respawnDelays.get(index) - 1);
-						NetworkHandler.sendToPlayer((ServerPlayer)player, new DragonRespawnDelayPacket(index, state.respawnDelays.get(index)));
-						
+						PacketDistributor.sendToPlayer((ServerPlayer)player, new DragonRespawnDelayPacket(index, state.respawnDelays.get(index)));
 						if(state.respawnDelays.get(index) == 0){
 							DragonWorldDataManager.clearDragonData(player.level, id);
 						}
@@ -160,7 +160,7 @@ public class DragonWhistleEvent
 						state.dragonNBTs.remove(index);
 						state.summonInstances.remove(index);
 						state.respawnDelays.remove(index);
-						NetworkHandler.sendToPlayer((ServerPlayer)player, new CompleteDataSync(player));
+						PacketDistributor.sendToPlayer((ServerPlayer)player, new CompleteDataSync(player));
 						
 					}else if(DMRConfig.RESPAWN_TIME.get() > 0){
 						var state = player.getData(DMRCapability.PLAYER_CAPABILITY);
@@ -172,11 +172,11 @@ public class DragonWhistleEvent
 							player.getCooldowns().addCooldown(whistle, DMRConfig.RESPAWN_TIME.get() * 20);
 						}
 						
-						NetworkHandler.sendToPlayer((ServerPlayer)player, new CompleteDataSync(player));
+						PacketDistributor.sendToPlayer((ServerPlayer)player, new CompleteDataSync(player));
 					}
 				}else{
 					//Player isnt online, save to world
-					DragonWorldDataManager.setDragonDead(dragon, Component.Serializer.toJson(mes));
+					DragonWorldDataManager.setDragonDead(dragon, Component.Serializer.toJson(mes, event.getEntity().level.registryAccess()));
 				}
 			}
 		}

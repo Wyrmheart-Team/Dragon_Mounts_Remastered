@@ -75,10 +75,10 @@ public class DataPackHandler
 	{
 		if (event.getPlayer() == null) {
 			event.getPlayerList().getPlayers().stream().findFirst().ifPresent(player -> run(player.level));
-			event.getPlayerList().getPlayers().forEach(player -> NetworkHandler.send(PacketDistributor.PLAYER.with(player), new SyncDataPackPacket()));
+			event.getPlayerList().getPlayers().forEach(player -> PacketDistributor.sendToPlayer(player, new SyncDataPackPacket()));
 		} else {
 			run(event.getPlayer().level);
-			NetworkHandler.send(PacketDistributor.PLAYER.with(event.getPlayer()), new SyncDataPackPacket());
+			PacketDistributor.sendToPlayer(event.getPlayer(), new SyncDataPackPacket());
 		}
 	}
 	

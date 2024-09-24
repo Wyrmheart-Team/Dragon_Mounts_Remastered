@@ -20,6 +20,6 @@ public class ParticleOptionsAdapter implements JsonDeserializer<ParticleOptions>
 	@Override
 	public JsonElement serialize(ParticleOptions src, Type typeOfSrc, JsonSerializationContext context)
 	{
-		return ParticleTypes.CODEC.encode(src, JsonOps.INSTANCE, null).get().left().get();
+		return ParticleTypes.CODEC.encode(src, JsonOps.INSTANCE, null).getOrThrow();
 	}
 }

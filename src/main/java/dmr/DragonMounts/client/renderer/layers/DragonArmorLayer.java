@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
@@ -50,7 +51,7 @@ public class DragonArmorLayer extends GeoRenderLayer<DMRDragonEntity>
 			Minecraft.getInstance().getProfiler().push("armor_layer");
 		}
 		var renderType = RenderType.armorCutoutNoCull(glowTexture);
-		getRenderer().reRender(bakedModel, matrixStackIn, bufferSource, entityLivingBaseIn, renderType, bufferSource.getBuffer(renderType), partialTick, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+		getRenderer().reRender(bakedModel, matrixStackIn, bufferSource, entityLivingBaseIn, renderType, bufferSource.getBuffer(renderType), partialTick, 15728640, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.opaque(0xFFFFFF));
 		
 		if(DragonMountsRemaster.DEBUG) {
 			Minecraft.getInstance().getProfiler().pop();

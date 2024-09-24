@@ -17,6 +17,7 @@ import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 @OnlyIn( Dist.CLIENT)
 public class DragonInventoryScreen  extends AbstractContainerScreen<DragonContainerMenu>
@@ -44,15 +45,15 @@ public class DragonInventoryScreen  extends AbstractContainerScreen<DragonContai
 		topPos=(height-ySize)/2;
 		
 		addRenderableWidget(new ExtendedButton(leftPos + 114, topPos + 7, 55, 20, Component.translatable("dmr.inventory.sit"), (p_214087_1_) -> {
-			NetworkHandler.sendToServer(new DragonStatePacket(dragon.getId(), 0));
+			PacketDistributor.sendToServer(new DragonStatePacket(dragon.getId(), 0));
 		}));
 		
 		addRenderableWidget(new ExtendedButton(leftPos + 114, topPos + 31, 55, 20, Component.translatable("dmr.inventory.follow"), (p_214087_1_) -> {
-			NetworkHandler.sendToServer(new DragonStatePacket(dragon.getId(), 1));
+			PacketDistributor.sendToServer(new DragonStatePacket(dragon.getId(), 1));
 		}));
 		
 		addRenderableWidget(new ExtendedButton(leftPos + 114, topPos + 55, 55, 20, Component.translatable("dmr.inventory.wander"), (p_214087_1_) -> {
-			NetworkHandler.sendToServer(new DragonStatePacket(dragon.getId(), 2));
+			PacketDistributor.sendToServer(new DragonStatePacket(dragon.getId(), 2));
 		}));
 		
 		int i = 0;

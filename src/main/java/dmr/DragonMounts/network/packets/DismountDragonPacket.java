@@ -5,24 +5,33 @@ import dmr.DragonMounts.common.capability.DragonOwnerCapability;
 import dmr.DragonMounts.network.IMessage;
 import dmr.DragonMounts.registry.DMRCapability;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record DismountDragonPacket(int entityId, boolean state) implements IMessage<DismountDragonPacket>
 {
-	@Override
-	public void write(FriendlyByteBuf pBuffer)
-	{
-		pBuffer.writeInt(entityId);
-		pBuffer.writeBoolean(state);
-	}
-	public static ResourceLocation ID = DragonMountsRemaster.id("dismount_dragon");
+	public static final StreamCodec<FriendlyByteBuf, DismountDragonPacket> STREAM_CODEC =
+			StreamCodec.composite(ByteBufCodecs.INT, DismountDragonPacket::entityId,
+			                      ByteBufCodecs.BOOL, DismountDragonPacket::state,
+			                      DismountDragonPacket::new);
 	
 	@Override
-	public ResourceLocation id()
+	public StreamCodec<? super RegistryFriendlyByteBuf, DismountDragonPacket> streamCodec()
 	{
-		return ID;
+		return STREAM_CODEC;
+	}
+	
+	public static final CustomPacketPayload.Type<DragonStatePacket> TYPE = new CustomPacketPayload.Type<>(DragonMountsRemaster.id("dismount_dragon"));
+	
+	@Override
+	public Type<? extends CustomPacketPayload> type()
+	{
+		return TYPE;
 	}
 	
 	@Override
@@ -37,7 +46,7 @@ public record DismountDragonPacket(int entityId, boolean state) implements IMess
 		return true;
 	}
 	
-	public void handle(PlayPayloadContext supplier, Player player)
+	public void handle(IPayloadContext supplier, Player player)
 	{
 		var level = player.level;
 		var entity = level.getEntity(entityId);

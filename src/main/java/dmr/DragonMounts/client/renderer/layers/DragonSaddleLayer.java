@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.util.FastColor;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
@@ -40,7 +41,7 @@ public class DragonSaddleLayer extends GeoRenderLayer<DMRDragonEntity>
 			
 			RenderType type = RenderType.entityCutoutNoCullZOffset(saddleTexture);
 			VertexConsumer vertexConsumer = bufferSource.getBuffer(type);
-			getRenderer().reRender(bakedModel, matrixStackIn, bufferSource, entityLivingBaseIn, type, vertexConsumer, partialTick, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+			getRenderer().reRender(bakedModel, matrixStackIn, bufferSource, entityLivingBaseIn, type, vertexConsumer, partialTick, packedLight, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.opaque(0xFFFFFF));
 		}
 		if(DragonMountsRemaster.DEBUG) {
 			Minecraft.getInstance().getProfiler().pop();

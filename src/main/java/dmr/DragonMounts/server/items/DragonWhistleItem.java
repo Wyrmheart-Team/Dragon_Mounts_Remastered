@@ -26,8 +26,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.fml.DistExecutor;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
 
@@ -66,13 +66,14 @@ public class DragonWhistleItem extends Item
 	}
 	
 	@Override
-	public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced)
+	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag)
 	{
-		super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
+		super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
 		
-		if(pLevel != null && pLevel.isClientSide){
-			//noinspection removal
-			DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> clientSideTooltip(pStack, pTooltipComponents));
+		if(context.level() != null && context.level().isClientSide){
+			if(FMLLoader.getDist() == Dist.CLIENT){
+				clientSideTooltip(stack, tooltipComponents);
+			}
 		}
 	}
 	
@@ -150,12 +151,12 @@ public class DragonWhistleItem extends Item
 						cap.dragonNBTs.remove(color.getId());
 						cap.respawnDelays.remove(color.getId());
 						pPlayer.displayClientMessage(Component.translatable("dmr.dragon_call.unlink_success"), true);
-						NetworkHandler.sendToPlayer((ServerPlayer)pPlayer, new CompleteDataSync(pPlayer));
+						PacketDistributor.sendToPlayer((ServerPlayer)pPlayer, new CompleteDataSync(pPlayer));
 						return InteractionResult.SUCCESS;
 					}
 				}else{
 					DragonWhistleHandler.setDragon(pPlayer, dragon, color.getId());
-					NetworkHandler.sendToPlayer((ServerPlayer)pPlayer, new CompleteDataSync(pPlayer));
+					PacketDistributor.sendToPlayer((ServerPlayer)pPlayer, new CompleteDataSync(pPlayer));
 					pPlayer.displayClientMessage(Component.translatable("dmr.dragon_call.link_success", dragon.getDisplayName().getString()), true);
 				}
 				

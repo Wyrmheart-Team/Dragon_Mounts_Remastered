@@ -19,7 +19,7 @@ public class SoundEventAdapter implements JsonDeserializer<SoundEvent>, JsonSeri
 	{
 		if(!json.isJsonObject()){
 			try{
-				ResourceLocation location = new ResourceLocation(json.getAsString());
+				ResourceLocation location = ResourceLocation.parse(json.getAsString());
 				return BuiltInRegistries.SOUND_EVENT.get(location);
 			}catch (Exception e){
 				e.printStackTrace();
@@ -47,6 +47,6 @@ public class SoundEventAdapter implements JsonDeserializer<SoundEvent>, JsonSeri
 	@Override
 	public JsonElement serialize(SoundEvent src, Type typeOfSrc, JsonSerializationContext context)
 	{
-		return SoundEvent.CODEC.encode(Holder.direct(src), JsonOps.INSTANCE, null).get().left().get();
+		return SoundEvent.CODEC.encode(Holder.direct(src), JsonOps.INSTANCE, null).getOrThrow();
 	}
 }

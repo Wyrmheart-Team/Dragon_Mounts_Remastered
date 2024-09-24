@@ -8,7 +8,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
-import software.bernie.example.registry.ItemRegistry;
 
 import java.lang.reflect.Type;
 
@@ -17,7 +16,7 @@ public class ItemAdapter implements JsonDeserializer<Item>, JsonSerializer<Item>
 	@Override
 	public Item deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
 	{
-		return BuiltInRegistries.ITEM.get(new ResourceLocation(json.getAsString()));
+		return BuiltInRegistries.ITEM.get(ResourceLocation.parse(json.getAsString()));
 	}
 	
 	@Override

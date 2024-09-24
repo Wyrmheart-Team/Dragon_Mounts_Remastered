@@ -7,7 +7,7 @@
       "tag": "minecraft:planks"
     },
     "D": {
-      "item": "minecraft:pink_dye"
+      "item": "minecraft:yellow_dye"
     },
     "I": {
       "item": "minecraft:iron_ingot"
@@ -19,7 +19,8 @@
     "I#I"
   ],
   "result": {
-    "item": "dmr:dragon_whistle.pink"
+    "count": 1,
+    "id": "dmr:dragon_whistle.yellow"
   },
   "show_notification": false
 }

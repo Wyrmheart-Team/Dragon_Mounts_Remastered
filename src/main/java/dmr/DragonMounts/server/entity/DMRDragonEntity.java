@@ -1,7 +1,7 @@
 package dmr.DragonMounts.server.entity;
 
+import dmr.DragonMounts.DragonMountsRemaster;
 import dmr.DragonMounts.common.handlers.DragonWhistleHandler;
-import dmr.DragonMounts.network.NetworkHandler;
 import dmr.DragonMounts.network.packets.DragonAgeSyncPacket;
 import dmr.DragonMounts.registry.*;
 import dmr.DragonMounts.common.capability.DragonOwnerCapability;
@@ -17,11 +17,13 @@ import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.util.BreedingUtils;
 import dmr.DragonMounts.util.PlayerStateUtils;
 import io.netty.buffer.Unpooled;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -34,6 +36,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.*;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
@@ -43,15 +46,16 @@ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.HorseArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SaddleItem;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -59,12 +63,12 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.joml.Vector3d;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.*;
@@ -94,7 +98,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 	public static final int BREATH_COUNT = 5;
 	
 	// other constants
-	public static final UUID SCALE_MODIFIER_UUID = UUID.fromString("856d4ba4-9ffe-4a52-8606-890bb9be538b"); // just a random uuid I took online
+	public static final ResourceLocation SCALE_MODIFIER = ResourceLocation.fromNamespaceAndPath(DragonMountsRemaster.MOD_ID, "scale_attribute"); // just a random uuid I took online
 	public static final int GROUND_CLEARENCE_THRESHOLD = 2;
 	
 	public DMRDragonEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel)
@@ -221,7 +225,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 				.add(KNOCKBACK_RESISTANCE, BASE_KB_RESISTANCE)
 				.add(ATTACK_DAMAGE, BASE_DAMAGE)
 				.add(FLYING_SPEED, BASE_SPEED_FLYING)
-				.add(SWIM_SPEED.value(), BASE_SPEED_WATER);
+				.add(SWIM_SPEED, BASE_SPEED_WATER);
 	}
 	
 	@Override
@@ -253,11 +257,11 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 	}
 
 	@Override
-	public void equipSaddle(SoundSource source)
+	public void equipSaddle(ItemStack stack, SoundSource source)
 	{
 		setSaddled(true);
 		level.playSound(null, getX(), getY(), getZ(), SoundEvents.HORSE_SADDLE, getSoundSource(), 1, 1);
-		inventory.setItem(SADDLE_SLOT, new ItemStack(Items.SADDLE));
+		inventory.setItem(SADDLE_SLOT, stack);
 	}
 	
 	public void equipArmor(Player pPlayer, ItemStack pArmor) {
@@ -270,19 +274,18 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 		}
 	}
 	
-	
-	private static final UUID ARMOR_MODIFIER_UUID = UUID.fromString("f04f756f-f0ad-4f61-86e0-17e9ef5d6489");
+	private static final ResourceLocation ARMOR_MODIFIER = ResourceLocation.fromNamespaceAndPath(DragonMountsRemaster.MOD_ID, "armor_attribute");
 	
 	public void setArmor(){
 		ItemStack itemstack = this.inventory.getItem(ARMOR_SLOT);
 		if (!this.level().isClientSide) {
-			this.getAttribute(Attributes.ARMOR).removeModifier(ARMOR_MODIFIER_UUID);
+			this.getAttribute(Attributes.ARMOR).removeModifier(ARMOR_MODIFIER);
 			if(this.isArmor(itemstack)) {
 				DragonArmor armor = DragonArmor.getArmorType(itemstack);
 				if(armor != null) {
 					int i = armor.getProtection();
 					if (i != 0) {
-						this.getAttribute(Attributes.ARMOR).addTransientModifier(new AttributeModifier(ARMOR_MODIFIER_UUID, "Armor bonus", (double)i, AttributeModifier.Operation.ADDITION));
+						this.getAttribute(Attributes.ARMOR).addTransientModifier(new AttributeModifier(ARMOR_MODIFIER, i, Operation.ADD_VALUE));
 					}
 				}
 			}
@@ -337,7 +340,8 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 		var scale = getScale();
 		var dimWidth = BASE_WIDTH * scale;
 		var dimHeight = height * scale;
-		return new EntityDimensions(dimWidth, dimHeight, false);
+		var dim = EntityDimensions.scalable(dimWidth, dimHeight).withAttachments(EntityAttachments.builder().attach(EntityAttachment.PASSENGER, 0.0F, dimHeight - 0.15625F, getScale()));
+		return dim;
 	}
 	
 	@Override
@@ -349,10 +353,10 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 			boolean customRidingPos = false;
 
 			if(!customRidingPos){
-				Vec3 pos = new Vec3(0, (float)(getBbHeight() + breed.getVerticalRidingOffset()) + passenger.getMyRidingOffset(this), getScale())
-						.yRot((float) Math.toRadians(-yBodyRot))
-						.add(position());
-				pCallback.accept(passenger, pos.x, pos.y, pos.z);
+				Vec3 vec3 = this.getPassengerRidingPosition(passenger);
+				Vec3 vec31 = passenger.getVehicleAttachmentPoint(this);
+				Vec3 riderPos = new Vec3(vec3.x - vec31.x, vec3.y - vec31.y, vec3.z - vec31.z); //.yRot((float) Math.toRadians(-yBodyRot)).add(0, getBbHeight() + breed.getVerticalRidingOffset(), getScale())
+				pCallback.accept(passenger, riderPos.x, riderPos.y, riderPos.z);
 			}
 			
 			// fix rider rotation
@@ -404,7 +408,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 		
 		// update nearGround state when moving for flight and animation logic
 		var dimensions = getDimensions(getPose());
-		nearGround = onGround() || !level.noCollision(this, new AABB(getX() - dimensions.width / 2, getY(), getZ() - dimensions.width / 2, getX() + dimensions.width / 2, getY() - (GROUND_CLEARENCE_THRESHOLD * getScale()), getZ() + dimensions.width / 2));
+		nearGround = onGround() || !level.noCollision(this, new AABB(getX() - dimensions.width() / 2, getY(), getZ() - dimensions.width() / 2, getX() + dimensions.width() / 2, getY() - (GROUND_CLEARENCE_THRESHOLD * getScale()), getZ() + dimensions.width() / 2));
 		
 		// update flying state based on the distance to the ground
 		boolean flying = shouldFly();
@@ -418,7 +422,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 		
 		if(level.isClientSide){
 			if(headController != null && headController.isPlayingTriggeredAnimation()){
-				if(Objects.equals(headController.getCurrentAnimation().animation().name(), "breath")){
+				if(headController.getCurrentAnimation() != null && Objects.equals(headController.getCurrentAnimation().animation().name(), "breath")){
 					clientBreathAttack();
 				}
 			}
@@ -476,7 +480,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 	{
 		super.setAge(pAge);
 		if(!level.isClientSide){
-			NetworkHandler.send(PacketDistributor.TRACKING_ENTITY.with(this), new DragonAgeSyncPacket(getId(), pAge));
+			PacketDistributor.sendToPlayersTrackingEntity(this, new DragonAgeSyncPacket(getId(), pAge));
 		}
 	}
 	
@@ -609,7 +613,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 		if (getHealthRelative() < 1 && isFoodItem(stack))
 		{
 			//noinspection ConstantConditions
-			heal(stack.getItem().getFoodProperties(stack, this).getNutrition());
+			heal(stack.getItem().getFoodProperties(stack, this).nutrition());
 			playSound(getEatingSound(stack), 0.7f, 1);
 			stack.shrink(1);
 			return InteractionResult.sidedSuccess(level.isClientSide);
@@ -621,7 +625,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 			if (!player.getAbilities().instabuild) {
 				stack.shrink(1);
 			}
-			equipSaddle(getSoundSource());
+			equipSaddle(stack, getSoundSource());
 			updateContainerEquipment();
 			return InteractionResult.sidedSuccess(level.isClientSide);
 		}
@@ -672,7 +676,9 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 	public void updateAgeProperties()
 	{
 		refreshDimensions();
-		this.setMaxUpStep(Math.max(2 * getAgeProgress(), 1));
+		
+		AttributeInstance stepHeightInstance = getAttribute(STEP_HEIGHT);
+		stepHeightInstance.setBaseValue(Math.max(2 * getAgeProgress(), 1));
 		
 		AttributeInstance baseHealthInstance = getAttribute(MAX_HEALTH);
 		baseHealthInstance.setBaseValue(DMRConfig.BASE_HEALTH.get());
@@ -681,11 +687,11 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 		attackDamageInstance.setBaseValue(DMRConfig.BASE_DAMAGE.get());
 		
 		
-		var mod = new AttributeModifier(SCALE_MODIFIER_UUID, "Dragon size modifier", getScale(), AttributeModifier.Operation.ADDITION);
-		for (var attribute : new Attribute[]{MAX_HEALTH, ATTACK_DAMAGE, }) // avoid duped code
+		var mod = new AttributeModifier(SCALE_MODIFIER, getScale(), Operation.ADD_VALUE);
+		for (var attribute : new Holder[]{MAX_HEALTH, ATTACK_DAMAGE}) // avoid duped code
 		{
 			AttributeInstance instance = getAttribute(attribute);
-			instance.removeModifier(SCALE_MODIFIER_UUID);
+			instance.removeModifier(SCALE_MODIFIER);
 			instance.addTransientModifier(mod);
 		}
 	}
@@ -721,9 +727,9 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 	}
 	
 	@Override
-	protected void onChangedBlock(BlockPos pos)
+	protected void onChangedBlock(ServerLevel level, BlockPos pos)
 	{
-		super.onChangedBlock(pos);
+		super.onChangedBlock(level, pos);
 		getBreed().onMove(this);
 	}
 
@@ -828,14 +834,14 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 				var dimensions = getDimensions(getPose());
 				float size = 15f;
 				
-				var offsetBoundingBox = new AABB(getX() + (dimensions.width / 2), getY() + (dimensions.height / 2), getZ() + (dimensions.width / 2),
-				                                 getX() + (dimensions.width / 2) + lookVector.x * size, getY() + (dimensions.height / 2) + lookVector.y * size, getZ() +  (dimensions.width / 2) + lookVector.z * size);
+				var offsetBoundingBox = new AABB(getX() + (dimensions.width() / 2), getY() + (dimensions.height() / 2), getZ() + (dimensions.width() / 2),
+				                                 getX() + (dimensions.width() / 2) + lookVector.x * size, getY() + (dimensions.height() / 2) + lookVector.y * size, getZ() +  (dimensions.width() / 2) + lookVector.z * size);
 				var entities = level.getNearbyEntities(LivingEntity.class, TargetingConditions.forCombat().ignoreInvisibilityTesting()
 						.selector(getControllingPassenger()::canAttack).selector(s -> !s.isAlliedTo(getControllingPassenger())), getControllingPassenger(), offsetBoundingBox);
 				
 				entities.stream().filter(e -> e != this && e != getControllingPassenger()).forEach(ent -> {
 					ent.hurt(level.damageSources().mobAttack(this), 2);
-					ent.setSecondsOnFire(5);
+					ent.setRemainingFireTicks(5);
 				});
 			}
 		}
@@ -877,14 +883,14 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 	public boolean isFoodItem(ItemStack stack)
 	{
 		var food = stack.getItem().getFoodProperties(stack, this);
-		return food != null && food.isMeat();
+		return food != null && stack.is(ItemTags.MEAT);
 	}
 
 	public void tamedFor(Player player, boolean successful)
 	{
 		if (successful)
 		{
-			setTame(true);
+			setTame(true, true);
 			navigation.stop();
 			setTarget(null);
 			setOwnerUUID(player.getUUID());
@@ -900,18 +906,19 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 	{
 		return isTame() && isOwnedBy(player);
 	}
-
-	@Override
-	protected float getStandingEyeHeight(Pose poseIn, EntityDimensions sizeIn)
-	{
-		return sizeIn.height * 1.2f;
-	}
 	
 	@Override
-	public float getMyRidingOffset(Entity pEntity)
+	public double getEyeY()
 	{
-		return getBbHeight() - 0.175f + breed.getVerticalRidingOffset();
+		return super.getEyeY() * 1.2f;
 	}
+	
+	//TODO
+//	@Override
+//	public float getMyRidingOffset(Entity pEntity)
+//	{
+//		return getBbHeight() - 0.175f + breed.getVerticalRidingOffset();
+//	}
 
 	public void setRidingPlayer(Player player)
 	{
@@ -937,25 +944,29 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 	}
 	
 	@Override
-	protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHitIn)
+	protected void dropCustomDeathLoot(ServerLevel level, DamageSource damageSource, boolean recentlyHit)
 	{
-		super.dropCustomDeathLoot(source, looting, recentlyHitIn);
-
+		super.dropCustomDeathLoot(level, damageSource, recentlyHit);
 		if (isSaddled()) spawnAtLocation(Items.SADDLE);
 	}
-
+	
 	@Override
-	protected ResourceLocation getDefaultLootTable()
+	protected ResourceKey<LootTable> getDefaultLootTable()
 	{
-		return getBreed().getDeathLootTable() != null ? getBreed().getDeathLootTable() : super.getDefaultLootTable();
+		return getBreed().getDeathLootTable() != null ? ResourceKey.create(Registries.LOOT_TABLE, getBreed().getDeathLootTable()) : super.getDefaultLootTable();
 	}
 
 	@Override
 	@SuppressWarnings("ConstantConditions")
 	public boolean doHurtTarget(Entity entityIn)
 	{
-		boolean attacked = entityIn.hurt(level().damageSources().mobAttack(this), (float) getAttribute(ATTACK_DAMAGE).getValue());
-		if (attacked) doEnchantDamageEffects(this, entityIn);
+		DamageSource damageSource = level().damageSources().mobAttack(this);
+		boolean attacked = entityIn.hurt(damageSource, (float) getAttribute(ATTACK_DAMAGE).getValue());
+		if (attacked){
+			if (this.level() instanceof ServerLevel serverlevel1) {
+				EnchantmentHelper.doPostAttackEffects(serverlevel1, entityIn, damageSource);
+			}
+		}
 		
 		if(attacked){
 			triggerAnim("head-controller", "bite");
@@ -1106,7 +1117,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 		if (this.inventory != null) {
 			for(int i = 0; i < this.inventory.getContainerSize(); ++i) {
 				ItemStack itemstack = this.inventory.getItem(i);
-				if (!itemstack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemstack)) {
+				if (!itemstack.isEmpty() && !EnchantmentHelper.has(itemstack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)) {
 					this.spawnAtLocation(itemstack);
 				}
 			}
@@ -1164,7 +1175,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 	}
 	
 	@Override
-	public void setCustomName(@Nullable Component pName)
+	public void setCustomName(Component pName)
 	{
 		super.setCustomName(pName);
 		updateOwnerData();

@@ -7,8 +7,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
+import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -19,7 +20,7 @@ import java.util.function.Supplier;
 
 import static dmr.DragonMounts.DragonMountsRemaster.MOD_ID;
 
-@Mod.EventBusSubscriber( modid = MOD_ID, bus = Bus.FORGE )
+@EventBusSubscriber( modid = MOD_ID, bus = Bus.GAME )
 public class DMRCapability
 {
 	public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, MOD_ID);
@@ -36,7 +37,7 @@ public class DMRCapability
 	
 	public static void syncCapability(Player player){
 		//player.reviveCaps();
-		NetworkHandler.sendToClients(player, new CompleteDataSync(player));
+		PacketDistributor.sendToPlayersTrackingEntity(player, new CompleteDataSync(player));
 	}
 	
 	@SubscribeEvent
@@ -60,10 +61,7 @@ public class DMRCapability
 			Entity tracked = startTracking.getTarget();
 			if(tracked instanceof ServerPlayer){
 				var handler = tracked.getData(PLAYER_CAPABILITY);
-				
-				if(handler != null){
-					NetworkHandler.send(PacketDistributor.PLAYER.with(target), new CompleteDataSync(tracked.getId(), handler.serializeNBT()));
-				}
+				PacketDistributor.sendToPlayer(target, new CompleteDataSync(tracked.getId(), handler.serializeNBT(tracked.level.registryAccess())));
 			}
 		}
 	}

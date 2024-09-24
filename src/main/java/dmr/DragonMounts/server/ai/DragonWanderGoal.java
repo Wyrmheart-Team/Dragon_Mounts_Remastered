@@ -19,7 +19,7 @@ public class DragonWanderGoal extends WaterAvoidingRandomStrollGoal
 		this.dragon = pMob;
 	}
 	
-	@Nullable
+	
 	protected Vec3 getPosition() {
 		if(dragon.hasWanderTarget()){
 			var random = dragon.level.random;

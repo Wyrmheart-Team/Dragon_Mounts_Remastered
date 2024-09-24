@@ -4,6 +4,10 @@ import dmr.DragonMounts.DragonMountsRemaster;
 import dmr.DragonMounts.network.IMessage;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -12,11 +16,17 @@ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record DragonAttackPacket(int entityId) implements IMessage<DragonAttackPacket>
 {
-	public static ResourceLocation ID = DragonMountsRemaster.id("dragon_attack");
+	public static final CustomPacketPayload.Type<DragonStatePacket> TYPE = new CustomPacketPayload.Type<>(DragonMountsRemaster.id("dragon_attack"));
+	
+	@Override
+	public Type<? extends CustomPacketPayload> type()
+	{
+		return TYPE;
+	}
 	
 	@Override
 	public DragonAttackPacket decode(FriendlyByteBuf buffer)
@@ -25,7 +35,7 @@ public record DragonAttackPacket(int entityId) implements IMessage<DragonAttackP
 	}
 	
 	@Override
-	public void handle(PlayPayloadContext context, Player player)
+	public void handle(IPayloadContext context, Player player)
 	{
 		var entity = player.level.getEntity(entityId);
 		
@@ -39,7 +49,7 @@ public record DragonAttackPacket(int entityId) implements IMessage<DragonAttackP
 			double yawRadians = -Math.toRadians(degrees);
 			double f4 = Math.sin(yawRadians);
 			double f5 = Math.cos(yawRadians);
-			Vec3 lookVector = new Vec3(f4 * dimensions.width * 2, 0, f5 * dimensions.width * 2);
+			Vec3 lookVector = new Vec3(f4 * dimensions.width() * 2, 0, f5 * dimensions.width() * 2);
 			
 			var offsetAabb = dragon.getBoundingBox().move(lookVector).inflate(2, 5, 2);
 			
@@ -52,15 +62,12 @@ public record DragonAttackPacket(int entityId) implements IMessage<DragonAttackP
 		}
 	}
 	
-	@Override
-	public void write(FriendlyByteBuf pBuffer)
-	{
-		pBuffer.writeInt(entityId);
-	}
+	public static final StreamCodec<FriendlyByteBuf, DragonAttackPacket> STREAM_CODEC =
+			StreamCodec.composite(ByteBufCodecs.INT, DragonAttackPacket::entityId, DragonAttackPacket::new);
 	
 	@Override
-	public ResourceLocation id()
+	public StreamCodec<? super RegistryFriendlyByteBuf, DragonAttackPacket> streamCodec()
 	{
-		return ID;
+		return STREAM_CODEC;
 	}
 }

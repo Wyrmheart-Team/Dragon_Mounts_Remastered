@@ -12,18 +12,20 @@ import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
+import net.neoforged.fml.common.EventBusSubscriber.Bus;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.event.TickEvent.ClientTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.concurrent.TimeUnit;
 
 
 @OnlyIn(Dist.CLIENT)
-@Mod.EventBusSubscriber( modid = DragonMountsRemaster.MOD_ID, value = Dist.CLIENT, bus = Bus.MOD)
+@EventBusSubscriber( modid = DragonMountsRemaster.MOD_ID, value = Dist.CLIENT, bus = Bus.MOD)
 public class KeyInputHandler
 {
 	public static KeyMapping SUMMON_DRAGON = new KeyMapping("dmr.keybind.summon_dragon", GLFW.GLFW_KEY_V, "dmr.keybind.category");
@@ -36,18 +38,18 @@ public class KeyInputHandler
 	}
 	
 	@OnlyIn(Dist.CLIENT)
-	@Mod.EventBusSubscriber( modid = DragonMountsRemaster.MOD_ID, value = Dist.CLIENT, bus = Bus.FORGE)
+	@EventBusSubscriber( modid = DragonMountsRemaster.MOD_ID, value = Dist.CLIENT, bus = Bus.GAME)
 	public static class KeyClickHandler
 	{
 		@OnlyIn(Dist.CLIENT)
 		@SubscribeEvent
-		public static void clientTick(ClientTickEvent event){
+		public static void clientTick(ClientTickEvent.Post event){
 			if(Minecraft.getInstance().level == null) return;
 			if(Minecraft.getInstance().player == null) return;
 			if(Minecraft.getInstance().screen != null) return;
 			
 			if(SUMMON_DRAGON.consumeClick()) {
-				NetworkHandler.sendToServer(new SummonDragonPacket());
+				PacketDistributor.sendToServer(new SummonDragonPacket());
 			}
 		}
 		
@@ -68,12 +70,12 @@ public class KeyInputHandler
 					if(DMRConfig.DOUBLE_PRESS_DISMOUNT.get()) {
 						if (lastDismountClick != null && System.currentTimeMillis() < lastDismountClick + TimeUnit.MILLISECONDS.convert(1, TimeUnit.SECONDS)) {
 							lastDismountClick = null;
-							NetworkHandler.sendToServer(new DismountDragonPacket(player.getId(), true));
+							PacketDistributor.sendToServer(new DismountDragonPacket(player.getId(), true));
 						} else {
 							lastDismountClick = System.currentTimeMillis();
 						}
 					}else{
-						NetworkHandler.sendToServer(new DismountDragonPacket(player.getId(), true));
+						PacketDistributor.sendToServer(new DismountDragonPacket(player.getId(), true));
 					}
 				}
 			}

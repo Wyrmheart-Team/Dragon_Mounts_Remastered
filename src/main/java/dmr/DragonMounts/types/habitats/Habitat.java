@@ -1,6 +1,7 @@
 package dmr.DragonMounts.types.habitats;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -11,7 +12,7 @@ import java.util.function.Function;
 
 public interface Habitat
 {
-    Map<String, Codec<? extends Habitat>> REGISTRY = new HashMap<>();
+    Map<String, MapCodec<? extends Habitat>> REGISTRY = new HashMap<>();
 
     Codec<Habitat> CODEC = Codec.STRING.dispatch(Habitat::type, REGISTRY::get);
 
@@ -26,7 +27,7 @@ public interface Habitat
 
     static String register(String name, Codec<? extends Habitat> codec)
     {
-        REGISTRY.put(name, codec);
+        REGISTRY.put(name, MapCodec.assumeMapUnsafe(codec));
         return name;
     }
 

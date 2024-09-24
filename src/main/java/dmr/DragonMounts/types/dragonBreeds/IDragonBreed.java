@@ -1,9 +1,12 @@
 package dmr.DragonMounts.types.dragonBreeds;
 
+import dmr.DragonMounts.DragonMountsRemaster;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.types.habitats.Habitat;
 import lombok.Getter;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Holder.Direct;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -13,8 +16,10 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
+
 import java.util.List;
 import java.util.Map;
 
@@ -36,12 +41,12 @@ public interface IDragonBreed
 		for (Ability a : getAbilities()) a.initialize(dragon);
 		
 		if(getImmunities().contains("drown")){
-			dragon.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
+			dragon.setPathfindingMalus(PathType.WATER, 0.0F);
 		}
 	}
 	
 	default void close(DMRDragonEntity dragon){
-		dragon.getAttributes().assignValues(new AttributeMap(DMRDragonEntity.createAttributes().build())); // restore default attributes
+		dragon.getAttributes().assignAllValues(new AttributeMap(DMRDragonEntity.createAttributes().build())); // restore default attributes
 		for (Ability a : getAbilities()) a.close(dragon);
 	}
 	
@@ -60,7 +65,7 @@ public interface IDragonBreed
 		                        {
 			                        Attribute attr = BuiltInRegistries.ATTRIBUTE.get(att);
 			                        if(attr != null) {
-				                        AttributeInstance inst = dragon.getAttribute(attr);
+				                        AttributeInstance inst = dragon.getAttribute(new Direct<>(attr));
 				                        if (inst != null) inst.setBaseValue(value);
 			                        }
 		                        });
@@ -70,8 +75,8 @@ public interface IDragonBreed
 				ability.getAttributes().forEach((att, value) -> {
 					Attribute attr = BuiltInRegistries.ATTRIBUTE.get(att);
 					if (attr != null) {
-						AttributeInstance inst = dragon.getAttribute(attr);
-						if (inst != null) inst.addPermanentModifier(new AttributeModifier(ability.type(), value, AttributeModifier.Operation.ADDITION));
+						AttributeInstance inst = dragon.getAttribute(new Direct<>(attr));
+						if (inst != null) inst.addPermanentModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(DragonMountsRemaster.MOD_ID, ability.type()), value, Operation.ADD_VALUE));
 					}
 				});
 			}

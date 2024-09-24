@@ -1,6 +1,7 @@
 package dmr.DragonMounts.registry;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import dmr.DragonMounts.types.abilities.dragon_types.aether_dragon.QuickFlight;
 import dmr.DragonMounts.types.abilities.dragon_types.amethyst_dragon.CrystalHarmonyAbility;
 import dmr.DragonMounts.types.abilities.dragon_types.amethyst_dragon.GemGuardAbility;
@@ -26,7 +27,7 @@ import java.util.Map;
 
 public class DragonAbilities
 {
-	public static final Map<String, Codec<? extends Ability>> REGISTRY = new HashMap<>();
+	public static final Map<String, MapCodec<? extends Ability>> REGISTRY = new HashMap<>();
 	
 	public static final FireProofAbility FIRE_PROOF = register(new FireProofAbility());
 	public static final HotFeetAbility HOT_FEET = register(new HotFeetAbility());
@@ -58,11 +59,11 @@ public class DragonAbilities
 	public static final QuickFlight QUICK_FLIGHT = register(new QuickFlight());
 	
 	public static <T extends Ability> T register(T ability){
-		register(ability.type(), Codec.unit(ability));
+		register(ability.type(), MapCodec.unit(ability));
 		return ability;
 	}
 	
-	public static String register(String name, Codec<? extends Ability> codec)
+	public static String register(String name, MapCodec<? extends Ability> codec)
 	{
 	    REGISTRY.put(name, codec);
 	    return name;

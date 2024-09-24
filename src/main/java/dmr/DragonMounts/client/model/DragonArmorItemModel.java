@@ -21,6 +21,8 @@ import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -33,8 +35,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.model.BakedModelWrapper;
 import net.neoforged.neoforge.client.model.IDynamicBakedModel;
@@ -43,8 +45,6 @@ import net.neoforged.neoforge.client.model.data.ModelProperty;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -95,17 +95,18 @@ public class DragonArmorItemModel
 		}
 		
 		@Override
-		public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation)
+		public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides)
 		{
 			var baked = ImmutableMap.<String, BakedModel>builder();
 			for (var entry : models.entrySet())
 			{
 				var unbaked = entry.getValue();
 				unbaked.resolveParents(baker::getModel);
-				baked.put(entry.getKey(), unbaked.bake(baker, unbaked, spriteGetter, modelState, modelLocation, true));
+				baked.put(entry.getKey(), unbaked.bake(baker, unbaked, spriteGetter, modelState, true));
 			}
 			return new Baked(baked.build(), overrides);
 		}
+		
 	}
 	
 	private record Data(String armorId)
@@ -127,7 +128,7 @@ public class DragonArmorItemModel
 		}
 		
 		@Override
-		public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType)
+		public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand, ModelData extraData, RenderType renderType)
 		{
 			var data = extraData.get(Data.PROPERTY);
 			if (data != null && models.containsKey(data.armorId))
@@ -167,7 +168,7 @@ public class DragonArmorItemModel
 		}
 		
 		@Override
-		public TextureAtlasSprite getParticleIcon(@NotNull ModelData modelData)
+		public TextureAtlasSprite getParticleIcon(ModelData modelData)
 		{
 			var data = modelData.get(Data.PROPERTY);
 			if (data != null && models.containsKey(data.armorId))
@@ -189,7 +190,7 @@ public class DragonArmorItemModel
 		}
 		
 		@Override
-		public @NotNull ModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ModelData modelData)
+		public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData)
 		{
 			return modelData;
 		}
@@ -206,16 +207,15 @@ public class DragonArmorItemModel
 			this.nested = nested;
 		}
 		
-		@Nullable
+		
 		@Override
-		public BakedModel resolve(BakedModel original, ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity, int pSeed)
+		public BakedModel resolve(BakedModel original, ItemStack stack, ClientLevel level, LivingEntity entity, int pSeed)
 		{
 			var override = nested.resolve(original, stack, level, entity, pSeed);
 			if (override != original) return override;
 			
-			var tag = stack.getTag();
-			if (tag != null)
-			{
+			if(stack.has(DataComponents.CUSTOM_DATA)){
+				var tag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
 				var armor = tag.getString(NBTConstants.ARMOR);
 				var model = owner.models.get(armor);
 				if (model != null) return model;
@@ -231,7 +231,7 @@ public class DragonArmorItemModel
 		@SubscribeEvent
 		public static void onRegisterGeometryLoaders(ModelEvent.RegisterGeometryLoaders event)
 		{
-			event.register(new ResourceLocation(DragonMountsRemaster.MOD_ID, "dragon_armor"), new DragonArmorLoader());
+			event.register(ResourceLocation.fromNamespaceAndPath(DragonMountsRemaster.MOD_ID, "dragon_armor"), new DragonArmorLoader());
 		}
 	}
 }

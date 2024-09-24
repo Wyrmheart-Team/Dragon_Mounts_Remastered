@@ -10,7 +10,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -24,7 +23,7 @@ class BlockTagProvider extends BlockTagsProvider
     static final TagKey<Block> WATER_DRAGON_HABITAT_BLOCKS = BlockTags.create(DragonMountsRemaster.id("water_dragon_habitat_blocks"));
     static final TagKey<Block> AMETHYST_DRAGON_HABITAT_BLOCKS = BlockTags.create(DragonMountsRemaster.id("amethyst_dragon_habitat_blocks"));
     
-    public BlockTagProvider(PackOutput output, CompletableFuture<Provider> lookupProvider, String modId, @Nullable ExistingFileHelper existingFileHelper)
+    public BlockTagProvider(PackOutput output, CompletableFuture<Provider> lookupProvider, String modId, ExistingFileHelper existingFileHelper)
     {
         super(output, lookupProvider, modId, existingFileHelper);
     }

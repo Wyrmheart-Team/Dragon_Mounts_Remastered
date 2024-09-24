@@ -22,7 +22,7 @@ public class ItemListAdapter implements JsonDeserializer<List<Item>>, JsonSerial
 	{
 		try{
 			var list = RegistryCodecs.homogeneousList(Registries.ITEM).decode(JsonOps.INSTANCE, json);
-			var listGet = list.getOrThrow(false, System.err::println);
+			var listGet = list.getOrThrow();
 			var first = listGet.getFirst().unwrap().right();
 			return first.map(holders -> holders.stream().map(Holder::value).toList()).orElseGet(List::of);
 		}catch (Exception e) {
@@ -40,9 +40,8 @@ public class ItemListAdapter implements JsonDeserializer<List<Item>>, JsonSerial
 		try{
 			var obj = RegistryCodecs.homogeneousList(Registries.ITEM);
 			var objIn = HolderSet.direct(src.stream().map(Direct::new).toList());
-			var obj1 = obj.encode(objIn, JsonOps.INSTANCE, null).get();
-			var obj2 = obj1.left();
-			return obj2.orElse(DragonMountsRemaster.getGson().toJsonTree(List.of()));
+			var obj1 = obj.encode(objIn, JsonOps.INSTANCE, null);
+			return obj1.getOrThrow();
 		}catch (Exception e){
 			e.printStackTrace();
 		}

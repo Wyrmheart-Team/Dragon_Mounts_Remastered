@@ -13,14 +13,14 @@
   "dmr.dragon_call.riding": "You can't call your dragon while riding!",
   "dmr.dragon_call.nospace": "There is not enough space to call your dragon!",
   "dmr.dragon_call.nodragon": "You have no dragon to call!",
-  "dmr.dragon_call.respawn":  "Your dragon is dead, you can call it back in {0} seconds!",
+  "dmr.dragon_call.respawn":  "Your dragon is dead, you can call it back in %1$s seconds!",
   "dmr.dragon_call.unlink_first": "You must unbind this from your current dragon before you can bind another!",
   "dmr.dragon_call.unlink_success": "Successfully unbound from your dragon!",
-  "dmr.dragon_call.link_success": "Successfully bound to {0}!",
+  "dmr.dragon_call.link_success": "Successfully bound to %1$s!",
   "dmr.dragon_call.no_whistle": "You need a whistle to call your dragon!",
 
-  "dmr.dragon_summon.tooltip.1": "Bound to {0}",
-  "dmr.dragon_summon.tooltip.2": "Dead, Can be called back in {0} seconds",
+  "dmr.dragon_summon.tooltip.1": "Bound to %1$s",
+  "dmr.dragon_summon.tooltip.2": "Dead, Can be called back in %1$s seconds",
 
   "item.dmr.dragon_armor.leather": "Leather Dragon Armor",
   "item.dmr.dragon_armor.iron": "Iron Dragon Armor",
@@ -29,9 +29,9 @@
   "item.dmr.dragon_armor.diamond": "Diamond Dragon Armor",
   "item.dmr.dragon_armor.netherite": "Netherite Dragon Armor",
 
-  "dragon_breed.hybrid": "{0} and {1} Hybrid",
-  "item.dmr.dragon_spawn_egg.hybrid": "{0} and {1} Hybrid Spawn Egg",
-  "block.dmr.dragon_egg.hybrid": "{0} and {1} Hybrid Egg",
+  "dragon_breed.hybrid": "%1$s and %2$s Hybrid",
+  "item.dmr.dragon_spawn_egg.hybrid": "%1$s and %2$s Hybrid Spawn Egg",
+  "block.dmr.dragon_egg.hybrid": "%1$s and %2$s Hybrid Egg",
 
   "dmr.dragon_breed.aether": "Aether Dragon",
   "dmr.dragon_breed.fire": "Fire Dragon",
@@ -88,7 +88,7 @@
   "block.dmr.dragon_egg.sculk": "Sculk Dragon Egg",
   "block.dmr.dragon_egg.lush": "Lush Dragon Egg",
 
-  "block.dmr.dragon_egg.hatch_time": "Hatching in: {0}",
+  "block.dmr.dragon_egg.hatch_time": "Hatching in: %1$s",
 
   "dmr.ability.quick_flight.name": "Quick Flight",
   "dmr.ability.quick_flight.description": "The dragon has increased flight speed",
@@ -142,5 +142,25 @@
   "dmr.ability.aquatic_grace.description": "When riding the dragon in water, you will be given night vision",
 
   "dmr.ability.swift_swim.name": "Swift Swim",
-  "dmr.ability.swift_swim.description": "The dragon and its owner will be given Dolphin's Grace"
+  "dmr.ability.swift_swim.description": "The dragon and its owner will be given Dolphin's Grace",
+
+  "dmr.configuration.allow_egg_override": "Allow Egg Override",
+
+  "dmr.configuration.camera_flight": "Camera Flight",
+  "dmr.configuration.alternate_dismount": "Alternate Dismount",
+  "dmr.configuration.alternate_attack_key": "Alternate Attack Key",
+
+  "dmr.configuration.replenish_eggs": "Replenish Eggs",
+  "dmr.configuration.breed_limit": "Breed Limit",
+  "dmr.configuration.hatch_time": "Hatch Time",
+  "dmr.configuration.growth_time": "Growth Time",
+  "dmr.configuration.size_modifier": "Size Modifier",
+  "dmr.configuration.allow_hybridization": "Allow Hybrids",
+  "dmr.configuration.habitat_offspring": "Habitat Offspring",
+  "dmr.configuration.whistle_cooldown": "Whistle Cooldown",
+  "dmr.configuration.whistle_check_space": "Check space for Whistle",
+  "dmr.configuration.base_health": "Base Health",
+  "dmr.configuration.base_damage": "Base Damage",
+  "dmr.configuration.allow_respawn": "Allow Respawning",
+  "dmr.configuration.respawn_time": "Respawn Time"
 }

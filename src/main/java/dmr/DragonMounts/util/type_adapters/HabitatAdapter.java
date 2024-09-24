@@ -17,6 +17,6 @@ public class HabitatAdapter implements JsonDeserializer<Habitat>, JsonSerializer
 	@Override
 	public JsonElement serialize(Habitat src, Type typeOfSrc, JsonSerializationContext context)
 	{
-		return Habitat.CODEC.encode(src, JsonOps.INSTANCE, null).get().left().get();
+		return Habitat.CODEC.encode(src, JsonOps.INSTANCE, null).getOrThrow();
 	}
 }

@@ -7,11 +7,17 @@ import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.LootTableEntry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.storage.loot.LootDataType;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.level.storage.loot.functions.SetNbtFunction;
+import net.minecraft.world.level.storage.loot.functions.SetCustomDataFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.LootTableLoadEvent;
@@ -24,18 +30,13 @@ public class LootTableInject
 	public static void firstLoadInjectBreeds(LevelAccessor level)
 	{
 		var server = level.getServer();
-		
 		if (server != null) {
-			var lootData = server.getLootData();
 			for (IDragonBreed breed : DragonBreedsRegistry.getDragonBreeds()) {
 				if (breed.isHybrid()) continue;
 				
 				for (LootTableEntry entry : breed.getLootTable()) {
-					var optionalTable = lootData.getElementOptional(LootDataType.TABLE, entry.getTable());
-					if(optionalTable.isEmpty()) continue;
-					
-					var table = optionalTable.get();
-					
+					var newTableKey = ResourceKey.create(Registries.LOOT_TABLE, entry.getTable());
+					var table = server.reloadableRegistries().getLootTable(newTableKey);
 					LootPool lootPool = injectEggLoot(breed, entry);
 					
 					if (lootPool.getName() != null) {
@@ -54,14 +55,10 @@ public class LootTableInject
 		var server = level.getServer();
 		
 		if (server != null) {
-			var lootData = server.getLootData();
 			for(DragonArmor armor : DragonArmorRegistry.getDragonArmors()){
 				for (LootTableEntry entry : armor.getLootTable()) {
-					var optionalTable = lootData.getElementOptional(LootDataType.TABLE, entry.getTable());
-					if(optionalTable.isEmpty()) continue;
-					
-					var table = optionalTable.get();
-					
+					var newTableKey = ResourceKey.create(Registries.LOOT_TABLE, entry.getTable());
+					var table = server.reloadableRegistries().getLootTable(newTableKey);
 					LootPool lootPool = injectArmorLoot(armor, entry);
 					
 					if (lootPool.getName() != null) {
@@ -77,7 +74,7 @@ public class LootTableInject
 	{
 		var stack = DragonEggItemBlock.getDragonEggStack(breed);
 		var lootItemBuilder = LootItem.lootTableItem(stack.getItem()
-		).apply(SetNbtFunction.setTag(stack.getTag()));
+		).apply(SetCustomDataFunction.setCustomData(stack.get(DataComponents.CUSTOM_DATA).copyTag()));
 		
 		var lootPoolBuilder = LootPool.lootPool()
 				.when(LootItemRandomChanceCondition.randomChance(entry.getChance()))
@@ -90,7 +87,7 @@ public class LootTableInject
 	{
 		var stack = DragonArmorItem.getArmorStack(armor);
 		var lootItemBuilder = LootItem.lootTableItem(stack.getItem()
-		).apply(SetNbtFunction.setTag(stack.getTag()));
+		).apply(SetCustomDataFunction.setCustomData(stack.get(DataComponents.CUSTOM_DATA).copyTag()));
 		
 		var lootPoolBuilder = LootPool.lootPool()
 				.when(LootItemRandomChanceCondition.randomChance(entry.getChance()))

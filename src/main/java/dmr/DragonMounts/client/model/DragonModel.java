@@ -10,7 +10,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import software.bernie.geckolib.core.molang.MolangParser;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.loading.math.MathParser;
+import software.bernie.geckolib.loading.math.MolangQueries;
 import software.bernie.geckolib.model.GeoModel;
 
 
@@ -44,19 +46,18 @@ public class DragonModel extends GeoModel<DMRDragonEntity>
 	}
 	
 	@Override
-	public void applyMolangQueries(DMRDragonEntity dragon, double seekTime)
+	public void applyMolangQueries(AnimationState<DMRDragonEntity> animationState, double animTime)
 	{
-		super.applyMolangQueries(dragon, seekTime);
-		MolangParser parser = MolangParser.INSTANCE;
-
-		parser.setValue("query.head_pitch", () -> dragon.getXRot() * 1);
-		parser.setValue("query.head_yaw", () -> (dragon.yBodyRot - dragon.yHeadRot) * -1);
+		super.applyMolangQueries(animationState, animTime);
+		var dragon = animationState.getAnimatable();
+		MathParser.setVariable("query.head_pitch", () -> dragon.getXRot() * 1);
+		MathParser.setVariable("query.head_yaw", () -> (dragon.yBodyRot - dragon.yHeadRot) * -1);
 		
 		var viewVector = dragon.getDeltaMovement().multiply(0, 0.25, 0);
 		
 		if(viewVector != null) {
 			var pitch = viewVector.y;
-			parser.setValue("query.pitch", () -> Mth.clamp(pitch, -1, 1));
+			MathParser.setVariable("query.pitch", () -> Mth.clamp(pitch, -1, 1));
 		}
 	}
 }

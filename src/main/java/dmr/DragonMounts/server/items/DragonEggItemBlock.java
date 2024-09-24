@@ -8,10 +8,11 @@ import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
+
 
 import java.util.List;
 
@@ -35,9 +36,9 @@ public class DragonEggItemBlock extends BlockItem
 	@Override
 	public String getDescriptionId(ItemStack pStack)
 	{
-		var tag = pStack.getTag();
+		var tag = pStack.get(DataComponents.CUSTOM_DATA).copyTag();
 		
-		if(tag != null && tag.contains(NBTConstants.BREED)){
+		if(tag.contains(NBTConstants.BREED)){
 			return String.join(".", DMRBlocks.DRAGON_EGG_BLOCK.get().getDescriptionId(), tag.getString(NBTConstants.BREED));
 		}
 		
@@ -49,19 +50,22 @@ public class DragonEggItemBlock extends BlockItem
 	{
 		var breed = DragonBreed.getDragonType(pStack);
 		if(breed instanceof DragonHybridBreed hybridBreed){
-			return Component.translatable(String.join(".", DMRBlocks.DRAGON_EGG_BLOCK.get().getDescriptionId(), "hybrid"), hybridBreed.parent1.getName().getString(), hybridBreed.parent2.getName().getString());
+			var par1 = hybridBreed.parent1.getName().getString();
+			var par2 =  hybridBreed.parent2.getName().getString();
+			var langKey = String.join(".", DMRBlocks.DRAGON_EGG_BLOCK.get().getDescriptionId(), "hybrid");
+			return Component.translatable(langKey, par1, par2);
 		}
 		return super.getName(pStack);
 	}
 	
 	@Override
-	public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltips, TooltipFlag pFlag)
+	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltips, TooltipFlag pFlag)
 	{
-		super.appendHoverText(stack, level, tooltips, pFlag);
+		super.appendHoverText(stack, context, tooltips, pFlag);
 		
-		var tag = stack.getTag();
+		var tag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
 		
-		if(tag != null && tag.contains("breed") && tag.contains("hatchTime")){
+		if(tag.contains("breed") && tag.contains("hatchTime")){
 			var breed = DragonBreedsRegistry.getDragonBreed(tag.getString("breed"));
 			if(breed != null){
 				var hatchTime = tag.getInt("hatchTime");

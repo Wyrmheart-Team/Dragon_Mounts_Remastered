@@ -17,6 +17,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,9 +32,6 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.data.ModelProperty;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -50,14 +49,14 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel>
 	}
 	
 	@Override
-	public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation)
+	public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides)
 	{
 		var baked = ImmutableMap.<String, BakedModel>builder();
 		for (var entry : models.entrySet())
 		{
 			var unbaked = entry.getValue();
 			unbaked.resolveParents(baker::getModel);
-			baked.put(entry.getKey(), unbaked.bake(baker, unbaked, spriteGetter, modelState, modelLocation, true));
+			baked.put(entry.getKey(), unbaked.bake(baker, unbaked, spriteGetter, modelState, true));
 		}
 		return new Baked(baked.build(), overrides);
 	}
@@ -81,7 +80,7 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel>
 		}
 		
 		@Override
-		public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType)
+		public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand, ModelData extraData, RenderType renderType)
 		{
 			var data = extraData.get(Data.PROPERTY);
 			if (data != null && models.containsKey(data.breedId))
@@ -121,7 +120,7 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel>
 		}
 		
 		@Override
-		public TextureAtlasSprite getParticleIcon(@NotNull ModelData modelData)
+		public TextureAtlasSprite getParticleIcon(ModelData modelData)
 		{
 			var data = modelData.get(Data.PROPERTY);
 			if (data != null && models.containsKey(data.breedId))
@@ -143,7 +142,7 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel>
 		}
 		
 		@Override
-		public @NotNull ModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ModelData modelData)
+		public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData)
 		{
 			if (level.getBlockEntity(pos) instanceof DragonEggBlockEntity e && e.isModelReady()) {
 				var breed = e.getBreed() instanceof DragonHybridBreed hybridBreed ? hybridBreed.parent1 : e.getBreed();
@@ -164,16 +163,15 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel>
 			this.nested = nested;
 		}
 		
-		@Nullable
+		
 		@Override
-		public BakedModel resolve(BakedModel original, ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity, int pSeed)
+		public BakedModel resolve(BakedModel original, ItemStack stack, ClientLevel level, LivingEntity entity, int pSeed)
 		{
 			var override = nested.resolve(original, stack, level, entity, pSeed);
 			if (override != original) return override;
 			
-			var tag = stack.getTag();
-			if (tag != null)
-			{
+			if(stack.has(DataComponents.CUSTOM_DATA)){
+				var tag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
 				var breed = tag.getString(NBTConstants.BREED);
 				
 				if(breed.startsWith("hybrid_")){

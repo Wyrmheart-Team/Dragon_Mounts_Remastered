@@ -1,6 +1,7 @@
 package dmr.DragonMounts.server.worlddata;
 
 import dmr.DragonMounts.DragonMountsRemaster;
+import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
@@ -22,7 +23,7 @@ public class DragonWorldData extends SavedData
 	
 	public DragonWorldData(){}
 	
-	public static DragonWorldData load(CompoundTag nbt)
+	public static DragonWorldData load(CompoundTag nbt, Provider provider)
 	{
 		DragonWorldData data = new DragonWorldData();
 		
@@ -44,7 +45,7 @@ public class DragonWorldData extends SavedData
 	}
 	
 	@Override
-	public CompoundTag save(CompoundTag pCompoundTag)
+	public CompoundTag save(CompoundTag pCompoundTag, Provider provider)
 	{
 		CompoundTag tag = new CompoundTag();
 		

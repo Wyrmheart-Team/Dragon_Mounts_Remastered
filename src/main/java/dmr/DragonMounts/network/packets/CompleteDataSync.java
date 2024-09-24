@@ -7,31 +7,38 @@ import dmr.DragonMounts.registry.DMRCapability;
 import dmr.DragonMounts.util.PlayerStateUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record CompleteDataSync(int playerId, CompoundTag tag) implements IMessage<CompleteDataSync>
 {
 	public CompleteDataSync(Player player){
-		this(player.getId(), player.getData(DMRCapability.PLAYER_CAPABILITY).serializeNBT());
+		this(player.getId(), player.getData(DMRCapability.PLAYER_CAPABILITY).serializeNBT(player.level.registryAccess()));
 	}
 	
+	public static final StreamCodec<FriendlyByteBuf, CompleteDataSync> STREAM_CODEC =
+			StreamCodec.composite(ByteBufCodecs.INT, CompleteDataSync::playerId,
+			                      ByteBufCodecs.COMPOUND_TAG, CompleteDataSync::tag,
+			                      CompleteDataSync::new);
+	
 	@Override
-	public void write(FriendlyByteBuf pBuffer)
+	public StreamCodec<? super RegistryFriendlyByteBuf, CompleteDataSync> streamCodec()
 	{
-		pBuffer.writeInt(playerId);
-		pBuffer.writeNbt(tag);
+		return STREAM_CODEC;
 	}
-	
-	public static ResourceLocation ID = DragonMountsRemaster.id("complete_data_sync");
+
+	public static final CustomPacketPayload.Type<DragonStatePacket> TYPE = new CustomPacketPayload.Type<>(DragonMountsRemaster.id("complete_data_sync"));
 	
 	@Override
-	public ResourceLocation id()
+	public Type<? extends CustomPacketPayload> type()
 	{
-		return ID;
+		return TYPE;
 	}
 	
 	@Override
@@ -40,15 +47,16 @@ public record CompleteDataSync(int playerId, CompoundTag tag) implements IMessag
 		return new CompleteDataSync(buffer.readInt(), buffer.readNbt());
 	}
 	
+	
 	@Override
 	public boolean autoSync()
 	{
 		return true;
 	}
 	
-	public void handle(PlayPayloadContext supplier, Player player)
+	public void handle(IPayloadContext supplier, Player player)
 	{
-		PlayerStateUtils.getHandler(player).deserializeNBT(tag);
+		PlayerStateUtils.getHandler(player).deserializeNBT(player.level.registryAccess(), tag);
 		player.refreshDimensions();
 	}
 }
