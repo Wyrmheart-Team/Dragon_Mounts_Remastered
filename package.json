@@ -15,7 +15,9 @@
         "name": "1.20.4",
         "range": "1.10.x"
       },
-      "1.21"
+      {
+        "name": "1.21"
+      }
     ],
     "plugins": [
       ["@semantic-release/commit-analyzer", {

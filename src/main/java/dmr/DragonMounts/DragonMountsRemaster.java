@@ -16,16 +16,15 @@ import dmr.DragonMounts.types.ResourcePackLoader;
 import dmr.DragonMounts.types.habitats.Habitat;
 import dmr.DragonMounts.util.type_adapters.*;
 import lombok.Getter;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.Item;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig.Type;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -73,7 +72,6 @@ public class DragonMountsRemaster
 		Gson = gsonBuilder.create();
 		
 		bus.addListener(this::setupCommon);
-		bus.addListener(this::setupClient);
 
 		DMRCreativeTabs.init();
 		DMRItems.init();
@@ -86,27 +84,16 @@ public class DragonMountsRemaster
 		DMRCreativeTabs.CREATIVE_MODE_TABS.register(bus);
 		DMRMenus.MENU_TYPES.register(bus);
 		DMRCapability.ATTACHMENT_TYPES.register(bus);
-
-		if (FMLLoader.getDist() == Dist.CLIENT) // Client Events
-		{
-			bus.addListener((ModelEvent.RegisterGeometryLoaders e) -> e.register(id("dragon_egg"), DragonEggModelLoader.INSTANCE));
-			bus.addListener((RegisterColorHandlersEvent.Item e) -> e.register((stack, layer) -> FastColor.ARGB32.opaque(DragonSpawnEgg.getColor(stack, layer)), DMRItems.DRAGON_SPAWN_EGG.get()));
-			bus.addListener((RegisterMenuScreensEvent e) -> e.register(DMRMenus.DRAGON_MENU.get(), DragonInventoryScreen::new));
-			container.registerExtensionPoint(IConfigScreenFactory.class, (mc, parent) -> new ConfigurationScreen(container, parent));
-		}
-
+		
 		bus.addListener(NetworkHandler::registerEvent);
-		
 		bus.addListener(DataPackHandler::newDataPack);
-		NeoForge.EVENT_BUS.addListener(DataPackHandler::dataPackData);
 		
+		NeoForge.EVENT_BUS.addListener(DataPackHandler::dataPackData);
 		NeoForge.EVENT_BUS.addListener(LootTableInject::onLootLoad);
 	}
 	
 	public void setupCommon(final FMLCommonSetupEvent event){}
-	public void setupClient(final FMLClientSetupEvent event){
-		ResourcePackLoader.addReloadListener(event);
-	}
+	
 	public void setupServer(final FMLDedicatedServerSetupEvent event){}
 	
 	public static ResourceLocation id(String path){

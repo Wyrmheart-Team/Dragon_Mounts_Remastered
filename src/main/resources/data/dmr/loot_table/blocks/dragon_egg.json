@@ -21,25 +21,10 @@
               ]
             },
             {
-              "function": "minecraft:copy_nbt",
+              "function": "minecraft:copy_components",
               "source": "block_entity",
-              "ops": [
-                {
-                  "source": "hatchTime",
-                  "target": "hatchTime",
-                  "op": "replace"
-                }
-              ]
-            },
-            {
-              "function": "minecraft:copy_nbt",
-              "source": "block_entity",
-              "ops": [
-                {
-                  "source": "breed",
-                  "target": "breed",
-                  "op": "replace"
-                }
+              "include": [
+                "minecraft:custom_data"
               ]
             }
           ]
