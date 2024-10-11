@@ -37,12 +37,17 @@ public class LootTableInject
 				for (LootTableEntry entry : breed.getLootTable()) {
 					var newTableKey = ResourceKey.create(Registries.LOOT_TABLE, entry.getTable());
 					var table = server.reloadableRegistries().getLootTable(newTableKey);
+					
+					if(table.getLootTableId() == null || table.getLootTableId().toString() == null) continue;
+					if(!table.getLootTableId().toString().equals(entry.getTable().toString())) continue;
+					
 					LootPool lootPool = injectEggLoot(breed, entry);
 					
-					if (lootPool.getName() != null) {
+					if(table.getPool(lootPool.getName()) != null){
 						table.removePool(lootPool.getName());
-						table.addPool(lootPool);
 					}
+					
+					table.addPool(lootPool);
 				}
 			}
 		}
@@ -59,12 +64,17 @@ public class LootTableInject
 				for (LootTableEntry entry : armor.getLootTable()) {
 					var newTableKey = ResourceKey.create(Registries.LOOT_TABLE, entry.getTable());
 					var table = server.reloadableRegistries().getLootTable(newTableKey);
+
+					if(table.getLootTableId() == null || table.getLootTableId().toString() == null) continue;
+					if(!table.getLootTableId().toString().equals(entry.getTable().toString())) continue;
+					
 					LootPool lootPool = injectArmorLoot(armor, entry);
 					
-					if (lootPool.getName() != null) {
+					if(table.getPool(lootPool.getName()) != null){
 						table.removePool(lootPool.getName());
-						table.addPool(lootPool);
 					}
+					
+					table.addPool(lootPool);
 				}
 			}
 		}
