@@ -1,5 +1,5 @@
 {
-  "name": "DragonMountsRemastered",
+  "name": "dragon-mounts-remastered",
   "version": "1.0.0",
   "devDependencies": {
     "@semantic-release/commit-analyzer": "^13.0.0",
@@ -10,7 +10,7 @@
     "build/libs/*.jar"
   ],
   "release": {
-    "branches": ["1.21"],
+    "branches": ["1.21", "1.20.4"],
     "plugins": [
       ["@semantic-release/commit-analyzer", {
         "preset": "angular",
