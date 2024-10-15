@@ -162,7 +162,7 @@ public class DragonContainerMenu extends AbstractContainerMenu
 					if (!this.moveItemStackTo(itemstack1, i, j, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (pIndex >= i && pIndex < j) {
+				} else if (pIndex < j) {
 					if (!this.moveItemStackTo(itemstack1, j, k, false)) {
 						return ItemStack.EMPTY;
 					}

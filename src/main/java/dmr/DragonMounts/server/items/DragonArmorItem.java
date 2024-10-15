@@ -11,6 +11,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 
 public class DragonArmorItem extends Item
 {
@@ -32,7 +33,9 @@ public class DragonArmorItem extends Item
 	@Override
 	public String getDescriptionId(ItemStack pStack)
 	{
-		var tag = pStack.get(DataComponents.CUSTOM_DATA).copyTag();
+		var customData = pStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+		
+		var tag = customData.copyTag();
 		
 		if(tag.contains(NBTConstants.ARMOR)){
 			return String.join(".", DMRItems.DRAGON_ARMOR.get().getDescriptionId(), tag.getString(NBTConstants.ARMOR));

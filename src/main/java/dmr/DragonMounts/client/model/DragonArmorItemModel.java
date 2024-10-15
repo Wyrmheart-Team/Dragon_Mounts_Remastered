@@ -30,6 +30,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -215,7 +216,8 @@ public class DragonArmorItemModel
 			if (override != original) return override;
 			
 			if(stack.has(DataComponents.CUSTOM_DATA)){
-				var tag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
+				var customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+				var tag = customData.copyTag();
 				var armor = tag.getString(NBTConstants.ARMOR);
 				var model = owner.models.get(armor);
 				if (model != null) return model;

@@ -229,7 +229,9 @@ public class DragonBreed implements IDragonBreed
 	}
 	
 	public static IDragonBreed getDragonType(ItemStack stack){
-		CompoundTag tag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
+		var customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+		
+		CompoundTag tag = customData.copyTag();
 		
 		if(tag.contains(NBTConstants.BREED)){
 			return DragonBreedsRegistry.getDragonBreed(tag.getString(NBTConstants.BREED));

@@ -67,7 +67,7 @@ public class KeyInputHandler
 			if(player.getControlledVehicle() instanceof DMRDragonEntity){
 				if(event.getAction() == InputConstants.PRESS && event.getKey() == Minecraft.getInstance().options.keyShift.getKey().getValue()){
 					
-					if(DMRConfig.DOUBLE_PRESS_DISMOUNT.get()) {
+					if(DMRConfig.CLIENT.isLoaded() && DMRConfig.DOUBLE_PRESS_DISMOUNT.get()) {
 						if (lastDismountClick != null && System.currentTimeMillis() < lastDismountClick + TimeUnit.MILLISECONDS.convert(1, TimeUnit.SECONDS)) {
 							lastDismountClick = null;
 							PacketDistributor.sendToServer(new DismountDragonPacket(player.getId(), true));

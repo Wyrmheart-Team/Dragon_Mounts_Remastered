@@ -65,7 +65,9 @@ public class DragonSpawnEgg extends DeferredSpawnEggItem
 	@Override
 	public Component getName(ItemStack stack)
 	{
-		var tag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
+		var customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+		
+		var tag = customData.copyTag();
 		
 		if (tag.contains(DATA_ITEM_NAME)) {
 			var breed = DragonBreedsRegistry.getDragonBreed(tag.getString(NBTConstants.BREED));
@@ -81,7 +83,9 @@ public class DragonSpawnEgg extends DeferredSpawnEggItem
 	
 	public static int getColor(ItemStack stack, int tintIndex)
 	{
-		var tag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
+		var customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+		
+		var tag = customData.copyTag();
 		return tintIndex == 0 ? tag.getInt(DATA_PRIM_COLOR) : tag.getInt(DATA_SEC_COLOR);
 	}
 }

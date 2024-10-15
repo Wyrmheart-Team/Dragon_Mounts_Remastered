@@ -171,7 +171,9 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel>
 			if (override != original) return override;
 			
 			if(stack.has(DataComponents.CUSTOM_DATA)){
-				var tag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
+				var customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+				
+				var tag = customData.copyTag();
 				var breed = tag.getString(NBTConstants.BREED);
 				
 				if(breed.startsWith("hybrid_")){

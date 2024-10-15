@@ -23,6 +23,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -79,7 +80,9 @@ public class DragonMountsEggBlock extends DragonEggBlock implements EntityBlock,
 	{
 		if(pLevel.getBlockEntity(pPos) instanceof DragonEggBlockEntity e){
 			if(pStack.has(DataComponents.CUSTOM_DATA)){
-				var tag = pStack.get(DataComponents.CUSTOM_DATA).copyTag();
+				var customData = pStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+				
+				var tag = customData.copyTag();
 				if (tag.contains(NBTConstants.BREED)) {
 					e.setBreedId(tag.getString(NBTConstants.BREED));
 				}

@@ -510,7 +510,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity
 		
 		if (isFlying()) {
 			moveForward = moveForward > 0 ? moveForward : 0;
-			if (moveForward > 0 && DMRConfig.CAMERA_FLIGHT.get()) moveY = -(driver.getXRot() * (Math.PI / 180) * 0.5f);
+			if (DMRConfig.CLIENT.isLoaded() && moveForward > 0 && DMRConfig.CAMERA_FLIGHT.get()) moveY = -(driver.getXRot() * (Math.PI / 180) * 0.5f);
 			
 			if (driver.jumping) moveY += 0.5;
 			if(driver.isShiftKeyDown()) moveY += -0.5;

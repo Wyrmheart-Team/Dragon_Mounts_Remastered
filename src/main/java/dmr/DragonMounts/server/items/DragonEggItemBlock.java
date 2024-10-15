@@ -36,7 +36,9 @@ public class DragonEggItemBlock extends BlockItem
 	@Override
 	public String getDescriptionId(ItemStack pStack)
 	{
-		var tag = pStack.get(DataComponents.CUSTOM_DATA).copyTag();
+		var customData = pStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+		
+		var tag = customData.copyTag();
 		
 		if(tag.contains(NBTConstants.BREED)){
 			return String.join(".", DMRBlocks.DRAGON_EGG_BLOCK.get().getDescriptionId(), tag.getString(NBTConstants.BREED));
@@ -63,7 +65,9 @@ public class DragonEggItemBlock extends BlockItem
 	{
 		super.appendHoverText(stack, context, tooltips, pFlag);
 		
-		var tag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
+		var customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+		
+		var tag = customData.copyTag();
 		
 		if(tag.contains("breed") && tag.contains("hatchTime")){
 			var breed = DragonBreedsRegistry.getDragonBreed(tag.getString("breed"));

@@ -181,7 +181,7 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		var origBreed = entityData.get(DATA_ORIG_BREED);
 		
 		//If there is a original breed stored, try to fetch the breed from that
-		if(!origBreed.isBlank() && !origBreed.isBlank()){
+		if(!origBreed.isBlank()){
 			return DragonBreedsRegistry.getDragonBreed(origBreed);
 		}
 		

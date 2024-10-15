@@ -38,7 +38,9 @@ public class DragonArmor
 	private List<LootTableEntry> lootTable = new ArrayList<>();
 	
 	public static DragonArmor getArmorType(ItemStack stack){
-		CompoundTag tag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
+		var customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+		
+		CompoundTag tag = customData.copyTag();
 		
 		if(tag.contains(NBTConstants.ARMOR)){
 			return DragonArmorRegistry.getDragonArmor(tag.getString(NBTConstants.ARMOR));

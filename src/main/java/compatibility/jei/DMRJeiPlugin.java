@@ -13,6 +13,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 
 @JeiPlugin
 public class DMRJeiPlugin implements IModPlugin
@@ -33,19 +34,22 @@ public class DMRJeiPlugin implements IModPlugin
 }
 
 
-class DragonSpawnEggInterpreter implements ISubtypeInterpreter<ItemStack>{
+class DragonSpawnEggInterpreter implements ISubtypeInterpreter<ItemStack>
+{
 	
 	@Override
 	public Object getSubtypeData(ItemStack ingredient, UidContext context)
 	{
-		return ingredient.get(DataComponents.CUSTOM_DATA);
+		return ingredient.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
 	}
 	
 	@Override
 	public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context)
 	{
-		if(ingredient.has(DataComponents.CUSTOM_DATA)) {
-			var entityTag = ingredient.get(DataComponents.CUSTOM_DATA).copyTag();
+		if (ingredient.has(DataComponents.CUSTOM_DATA)) {
+			var customData = ingredient.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+			
+			var entityTag = customData.copyTag();
 			
 			if (entityTag.contains(NBTConstants.BREED)) {
 				return entityTag.getString(NBTConstants.BREED);
@@ -55,19 +59,21 @@ class DragonSpawnEggInterpreter implements ISubtypeInterpreter<ItemStack>{
 	}
 }
 
-class DragonEggInterpreter implements ISubtypeInterpreter<ItemStack>{
+class DragonEggInterpreter implements ISubtypeInterpreter<ItemStack>
+{
 	
 	@Override
 	public Object getSubtypeData(ItemStack ingredient, UidContext context)
 	{
-		return ingredient.get(DataComponents.CUSTOM_DATA);
+		return ingredient.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
 	}
 	
 	@Override
 	public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context)
 	{
-		if(ingredient.has(DataComponents.CUSTOM_DATA)) {
-			var entityTag = ingredient.get(DataComponents.CUSTOM_DATA).copyTag();
+		if (ingredient.has(DataComponents.CUSTOM_DATA)) {
+			var customData = ingredient.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+			var entityTag = customData.copyTag();
 			
 			if (entityTag.contains(NBTConstants.BREED)) {
 				return entityTag.getString(NBTConstants.BREED);
@@ -77,19 +83,22 @@ class DragonEggInterpreter implements ISubtypeInterpreter<ItemStack>{
 	}
 }
 
-class DragonArmorInterpreter implements ISubtypeInterpreter<ItemStack>{
+class DragonArmorInterpreter implements ISubtypeInterpreter<ItemStack>
+{
 	
 	@Override
 	public Object getSubtypeData(ItemStack ingredient, UidContext context)
 	{
-		return ingredient.get(DataComponents.CUSTOM_DATA);
+		return ingredient.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
 	}
 	
 	@Override
 	public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context)
 	{
-		if(ingredient.has(DataComponents.CUSTOM_DATA)) {
-			var entityTag = ingredient.get(DataComponents.CUSTOM_DATA).copyTag();
+		if (ingredient.has(DataComponents.CUSTOM_DATA)) {
+			var customData = ingredient.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+			
+			var entityTag = customData.copyTag();
 			
 			if (entityTag.contains(NBTConstants.ARMOR)) {
 				return entityTag.getString(NBTConstants.ARMOR);
