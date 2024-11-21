@@ -10,20 +10,17 @@ import net.minecraft.world.level.biome.Biome;
 
 public record BiomeHabitat(int points, TagKey<Biome> biomeTag) implements Habitat
 {
-    public static final Codec<BiomeHabitat> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Habitat.withPoints(2, BiomeHabitat::points),
-            TagKey.codec(Registries.BIOME).fieldOf("biome_tag").forGetter(BiomeHabitat::biomeTag)
-    ).apply(instance, BiomeHabitat::new));
-
-    @Override
-    public int getHabitatPoints(Level level, BlockPos pos)
-    {
-        return level.getBiome(pos).is(biomeTag)? points : 0;
-    }
-
-    @Override
-    public String type()
-    {
-        return Habitat.BIOMES;
-    }
+	public static final Codec<BiomeHabitat> CODEC = RecordCodecBuilder.create(instance -> instance.group(Habitat.withPoints(2, BiomeHabitat::points), TagKey.codec(Registries.BIOME).fieldOf("biome_tag").forGetter(BiomeHabitat::biomeTag)).apply(instance, BiomeHabitat::new));
+	
+	@Override
+	public int getHabitatPoints(Level level, BlockPos pos)
+	{
+		return level.getBiome(pos).is(biomeTag) ? points : 0;
+	}
+	
+	@Override
+	public String type()
+	{
+		return Habitat.BIOMES;
+	}
 }

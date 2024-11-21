@@ -15,9 +15,9 @@ public class DragonAbilityButton extends ExtendedButton
 	private static final ResourceLocation EFFECT_BACKGROUND_LARGE_SPRITE = ResourceLocation.parse("container/inventory/effect_background_large");
 	private ResourceLocation ABILITY_ICON;
 	
-	private Ability ability;
+	private final Ability ability;
 	
-	public DragonAbilityButton(int xPos, int yPos,  Ability ability)
+	public DragonAbilityButton(int xPos, int yPos, Ability ability)
 	{
 		super(xPos, yPos, 120, 32, Component.empty(), (bt) -> {});
 		this.ability = ability;
@@ -25,7 +25,7 @@ public class DragonAbilityButton extends ExtendedButton
 		
 		ABILITY_ICON = DragonMountsRemaster.id("textures/gui/ability_icons/" + ability.type() + ".png");
 		
-		if(Minecraft.getInstance().getTextureManager().getTexture(ABILITY_ICON, null) == null){
+		if (Minecraft.getInstance().getTextureManager().getTexture(ABILITY_ICON, null) == null) {
 			ABILITY_ICON = DragonMountsRemaster.id("textures/gui/ability_icons/missing.png");
 		}
 	}

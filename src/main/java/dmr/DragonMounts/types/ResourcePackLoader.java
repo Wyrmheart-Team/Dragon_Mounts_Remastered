@@ -25,23 +25,26 @@ public class ResourcePackLoader
 	//Assign the groups of bones that should be hidden when a certain property is false in the negativeModelProperties value in a dragon breed
 	public static HashMap<String, List<String>> negativeModelProperties = new HashMap<>();
 	
-	public static void addModelProperty(String key, List<String> bones, List<String> negativeBones){
+	public static void addModelProperty(String key, List<String> bones, List<String> negativeBones)
+	{
 		modelProperties.put(key, bones);
-		if(negativeBones != null && negativeBones.size() > 0) negativeModelProperties.put(key, negativeBones);
+		if (negativeBones != null && negativeBones.size() > 0) negativeModelProperties.put(key, negativeBones);
 	}
 	
 	@OnlyIn( Dist.CLIENT )
-	public static void addReloadListener(FMLClientSetupEvent event){
+	public static void addReloadListener(FMLClientSetupEvent event)
+	{
 		reload(Minecraft.getInstance().getResourceManager());
 		
-		if(Minecraft.getInstance().getResourceManager() instanceof ReloadableResourceManager){
+		if (Minecraft.getInstance().getResourceManager() instanceof ReloadableResourceManager) {
 			((ReloadableResourceManager)Minecraft.getInstance().getResourceManager()).registerReloadListener((ResourceManagerReloadListener)manager -> {
 				reload(Minecraft.getInstance().getResourceManager());
 			});
 		}
 	}
 	
-	protected static void reload(ResourceManager manager){
+	protected static void reload(ResourceManager manager)
+	{
 		Gson gson = new Gson();
 		
 		modelProperties.clear();
@@ -49,25 +52,26 @@ public class ResourcePackLoader
 		
 		Map<ResourceLocation, Resource> accessoryResources = manager.listResources("accessories", s -> s.getPath().endsWith(".json"));
 		
-		for(Entry<ResourceLocation, Resource> entry : accessoryResources.entrySet()){
-			try{
+		for (Entry<ResourceLocation, Resource> entry : accessoryResources.entrySet()) {
+			try {
 				Resource resource = entry.getValue();
-				try(BufferedReader reader = resource.openAsReader()){
+				try (BufferedReader reader = resource.openAsReader()) {
 					AccessoryJson accessoryJson = gson.fromJson(reader, AccessoryJson.class);
 					
-					if(accessoryJson.bones != null){
+					if (accessoryJson.bones != null) {
 						var key = entry.getKey().getPath().replace(".json", "");
 						key = key.substring(key.lastIndexOf("/") + 1);
 						addModelProperty(key, accessoryJson.bones, accessoryJson.negativeBones);
 					}
 				}
-			}catch(Exception e){
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
 	
-	static class AccessoryJson {
+	static class AccessoryJson
+	{
 		public List<String> bones = new ArrayList<>();
 		public List<String> negativeBones = new ArrayList<>();
 	}

@@ -20,17 +20,18 @@ public class CamouflageAbility implements Ability
 	private static final int range = 5;
 	
 	@SubscribeEvent
-	public static void onLivingChangeTarget(LivingChangeTargetEvent event){
-		if(event.getNewAboutToBeSetTarget() instanceof DMRDragonEntity dragon){
-			if(dragon.getBreed().getAbilities().contains(DragonAbilities.CAMOUFLAGE_ABILITY)){
-				if(event.getEntity().distanceTo(dragon) > range){
+	public static void onLivingChangeTarget(LivingChangeTargetEvent event)
+	{
+		if (event.getNewAboutToBeSetTarget() instanceof DMRDragonEntity dragon) {
+			if (dragon.getBreed().getAbilities().contains(DragonAbilities.CAMOUFLAGE_ABILITY)) {
+				if (event.getEntity().distanceTo(dragon) > range) {
 					event.setCanceled(true);
 				}
 			}
-		}else if(event.getNewAboutToBeSetTarget() instanceof Player player){
-			if(player.getVehicle() instanceof DMRDragonEntity dragon){
-				if(dragon.getBreed().getAbilities().contains(DragonAbilities.CAMOUFLAGE_ABILITY)){
-					if(event.getEntity().distanceTo(dragon) > range){
+		} else if (event.getNewAboutToBeSetTarget() instanceof Player player) {
+			if (player.getVehicle() instanceof DMRDragonEntity dragon) {
+				if (dragon.getBreed().getAbilities().contains(DragonAbilities.CAMOUFLAGE_ABILITY)) {
+					if (event.getEntity().distanceTo(dragon) > range) {
 						event.setCanceled(true);
 					}
 				}

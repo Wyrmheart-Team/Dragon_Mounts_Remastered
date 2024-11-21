@@ -17,11 +17,11 @@ public class FrostAuraAbility implements Ability
 	@Override
 	public void tick(DMRDragonEntity dragon)
 	{
-		if(!dragon.level.isClientSide){
+		if (!dragon.level.isClientSide) {
 			List<Monster> list = dragon.level.getNearbyEntities(Monster.class, conditions, dragon, dragon.getBoundingBox().inflate(range, range, range));
 			
-			for(Monster mob : list){
-				mob.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20*5, 1, true, false, false));
+			for (Monster mob : list) {
+				mob.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 1, true, false, false));
 			}
 		}
 	}

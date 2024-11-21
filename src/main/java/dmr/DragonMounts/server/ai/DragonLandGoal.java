@@ -40,7 +40,7 @@ public class DragonLandGoal extends Goal
 	{
 		Vec3 pos = LandRandomPos.getPos(dragon, 4, 32);
 		
-		if(pos != null) {
+		if (pos != null) {
 			if (!dragon.getNavigation().moveTo(pos.x, pos.y, pos.z, 1)) dragon.getNavigation().moveTo(dragon.getX(), dragon.getY() - 1, dragon.getZ(), 1);
 		}
 	}

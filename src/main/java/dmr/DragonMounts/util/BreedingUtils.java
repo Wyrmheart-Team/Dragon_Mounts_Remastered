@@ -25,7 +25,7 @@ public class BreedingUtils
 		
 		// Add the highest habitat point breed to the list of possible outcomes
 		for (IDragonBreed dragonBreed : DragonBreedsRegistry.getDragonBreeds()) {
-			if(dragonBreed.isHybrid()) continue;
+			if (dragonBreed.isHybrid()) continue;
 			
 			var points = 0;
 			for (Habitat habitat : dragonBreed.getHabitats()) {
@@ -33,7 +33,7 @@ public class BreedingUtils
 				points += point;
 			}
 			
-			if(points > 0) {
+			if (points > 0) {
 				outcomes.add(new SimpleEntry<>(points, dragonBreed));
 			}
 		}
@@ -58,33 +58,28 @@ public class BreedingUtils
 		String p2Name = animal.getCustomName().getString();
 		String babyName;
 		
-		if (p1Name.contains(" ") || p2Name.contains(" "))
-		{
+		if (p1Name.contains(" ") || p2Name.contains(" ")) {
 			// combine two words with space
 			// "Tempor Invidunt Dolore" + "Magna"
 			// = "Tempor Magna" or "Magna Tempor"
 			String[] p1Names = p1Name.split(" ");
 			String[] p2Names = p2Name.split(" ");
-
+			
 			p1Name = StringUtils.capitalize(p1Names[mate1.getRandom().nextInt(p1Names.length)]);
 			p2Name = StringUtils.capitalize(p2Names[mate1.getRandom().nextInt(p2Names.length)]);
-
-			babyName = mate1.getRandom().nextBoolean()? p1Name + " " + p2Name : p2Name + " " + p1Name;
-		}
-		else
-		{
+			
+			babyName = mate1.getRandom().nextBoolean() ? p1Name + " " + p2Name : p2Name + " " + p1Name;
+		} else {
 			// scramble two words
 			// "Eirmod" + "Voluptua"
 			// = "Eirvolu" or "Volueir" or "Modptua" or "Ptuamod" or ...
-			if (mate1.getRandom().nextBoolean()) p1Name = p1Name.substring(0, (p1Name.length() - 1) / 2);
-			else p1Name = p1Name.substring((p1Name.length() - 1) / 2);
-
-			if (mate1.getRandom().nextBoolean()) p2Name = p2Name.substring(0, (p2Name.length() - 1) / 2);
-			else p2Name = p2Name.substring((p2Name.length() - 1) / 2);
-
+			if (mate1.getRandom().nextBoolean()) {p1Name = p1Name.substring(0, (p1Name.length() - 1) / 2);} else p1Name = p1Name.substring((p1Name.length() - 1) / 2);
+			
+			if (mate1.getRandom().nextBoolean()) {p2Name = p2Name.substring(0, (p2Name.length() - 1) / 2);} else p2Name = p2Name.substring((p2Name.length() - 1) / 2);
+			
 			p2Name = StringUtils.capitalize(p2Name);
-
-			babyName = mate1.getRandom().nextBoolean()? p1Name + p2Name : p2Name + p1Name;
+			
+			babyName = mate1.getRandom().nextBoolean() ? p1Name + p2Name : p2Name + p1Name;
 		}
 		return babyName;
 	}

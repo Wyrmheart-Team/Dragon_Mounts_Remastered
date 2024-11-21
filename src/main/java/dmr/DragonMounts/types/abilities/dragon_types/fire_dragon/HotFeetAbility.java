@@ -14,24 +14,23 @@ import net.minecraft.world.level.block.Block;
 
 public class HotFeetAbility implements FootprintAbility
 {
-    public static final TagKey<Block> BURNABLES_TAG = BlockTags.create(DragonMountsRemaster.id("hot_feet_burnables"));
-
-    @Override
-    public void placeFootprint(DMRDragonEntity dragon, BlockPos pos)
-    {
-        var level = dragon.level;
-        var steppingOn = level.getBlockState(pos);
-        if (steppingOn.is(BURNABLES_TAG))
-        {
-            level.removeBlock(pos, false);
-            level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, dragon.getSoundSource(), 0.1f, 2f);
-            ((ServerLevel) level).sendParticles(ParticleTypes.LARGE_SMOKE, pos.getX(), pos.getY(), pos.getZ(), 0, 0, 1, 0, 0.05);
-        }
-    }
-
-    @Override
-    public String type()
-    {
-        return "hot_feet";
-    }
+	public static final TagKey<Block> BURNABLES_TAG = BlockTags.create(DragonMountsRemaster.id("hot_feet_burnables"));
+	
+	@Override
+	public void placeFootprint(DMRDragonEntity dragon, BlockPos pos)
+	{
+		var level = dragon.level;
+		var steppingOn = level.getBlockState(pos);
+		if (steppingOn.is(BURNABLES_TAG)) {
+			level.removeBlock(pos, false);
+			level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, dragon.getSoundSource(), 0.1f, 2f);
+			((ServerLevel)level).sendParticles(ParticleTypes.LARGE_SMOKE, pos.getX(), pos.getY(), pos.getZ(), 0, 0, 1, 0, 0.05);
+		}
+	}
+	
+	@Override
+	public String type()
+	{
+		return "hot_feet";
+	}
 }

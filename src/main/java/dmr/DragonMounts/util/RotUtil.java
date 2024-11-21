@@ -5,7 +5,8 @@ import net.minecraft.util.Mth;
 public class RotUtil
 {
 	//MoveController.java - 1.19.2
-	public static float rotlerp(float pSourceAngle, float pTargetAngle, float pMaximumChange) {
+	public static float rotlerp(float pSourceAngle, float pTargetAngle, float pMaximumChange)
+	{
 		float f = Mth.wrapDegrees(pTargetAngle - pSourceAngle);
 		if (f > pMaximumChange) {
 			f = pMaximumChange;

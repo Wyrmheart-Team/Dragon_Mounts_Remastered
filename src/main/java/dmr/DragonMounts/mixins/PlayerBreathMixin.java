@@ -13,13 +13,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin( LivingEntity.class )
 public abstract class PlayerBreathMixin
 {
-	@Inject( method = "canBreatheUnderwater", at = @At( "HEAD" ), cancellable = true)
+	@Inject( method = "canBreatheUnderwater", at = @At( "HEAD" ), cancellable = true )
 	public void canBreatheUnderwater(CallbackInfoReturnable<Boolean> ci)
 	{
-		if(((LivingEntity)(Object)this) instanceof Player player){
-			if(player.isPassenger() && player.getVehicle() instanceof DMRDragonEntity dragon){
-				if(!dragon.canDrownInFluidType(Fluids.WATER.getFluidType())){
-					if(dragon.getBreed().getAbilities().contains(DragonAbilities.AQUATIC_GRACE_ABILITY)) {
+		if (((LivingEntity)(Object)this) instanceof Player player) {
+			if (player.isPassenger() && player.getVehicle() instanceof DMRDragonEntity dragon) {
+				if (!dragon.canDrownInFluidType(Fluids.WATER.getFluidType())) {
+					if (dragon.getBreed().getAbilities().contains(DragonAbilities.AQUATIC_GRACE_ABILITY)) {
 						ci.setReturnValue(true);
 					}
 				}

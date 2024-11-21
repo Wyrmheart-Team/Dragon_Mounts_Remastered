@@ -17,10 +17,10 @@ public class EchoSenseAbility implements Ability
 	@Override
 	public void tick(DMRDragonEntity dragon)
 	{
-		if(!dragon.level.isClientSide){
+		if (!dragon.level.isClientSide) {
 			List<Monster> list = dragon.level.getNearbyEntities(Monster.class, conditions, dragon, dragon.getBoundingBox().inflate(range, range, range));
 			
-			for(Monster mob : list){
+			for (Monster mob : list) {
 				mob.addEffect(new MobEffectInstance(MobEffects.GLOWING, 80, 0, true, false, false));
 			}
 		}

@@ -23,7 +23,7 @@ public class SwiftSwimAbility implements NearbyAbility
 	@Override
 	public void tick(DMRDragonEntity dragon, Player owner)
 	{
-		if(!dragon.level.isClientSide) {
+		if (!dragon.level.isClientSide) {
 			dragon.addEffect(new MobEffectInstance(MobEffects.DOLPHINS_GRACE, 40, 1, true, false, false));
 			owner.addEffect(new MobEffectInstance(MobEffects.DOLPHINS_GRACE, 40, 1, true, false, false));
 		}

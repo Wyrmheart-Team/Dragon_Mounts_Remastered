@@ -15,11 +15,11 @@ public class EmberAuraAbility implements Ability
 	@Override
 	public void tick(DMRDragonEntity dragon)
 	{
-		if(!dragon.level.isClientSide){
+		if (!dragon.level.isClientSide) {
 			List<Monster> list = dragon.level.getNearbyEntities(Monster.class, conditions, dragon, dragon.getBoundingBox().inflate(range, range, range));
 			
-			for(Monster mob : list){
-				if(!mob.isOnFire() && !mob.fireImmune() && !mob.isInWaterRainOrBubble()) {
+			for (Monster mob : list) {
+				if (!mob.isOnFire() && !mob.fireImmune() && !mob.isInWaterRainOrBubble()) {
 					mob.setRemainingFireTicks(4);
 				}
 			}

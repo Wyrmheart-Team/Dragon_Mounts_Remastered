@@ -23,7 +23,7 @@ public class AquaticGraceAbility implements NearbyAbility
 	@Override
 	public void tick(DMRDragonEntity dragon, Player owner)
 	{
-		if(!dragon.level.isClientSide && dragon.isInWater()) {
+		if (!dragon.level.isClientSide && dragon.isInWater()) {
 			owner.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 20 * 20, 0, true, false, false));
 		}
 	}

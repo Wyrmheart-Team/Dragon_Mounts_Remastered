@@ -19,8 +19,9 @@ public class EtherealHarmonyAbility implements Ability
 	}
 	
 	@SubscribeEvent
-	public static void onLivingChangeTarget(LivingChangeTargetEvent event){
-		if(event.getEntity().getType().is(EntityTypeTags.UNDEAD)) {
+	public static void onLivingChangeTarget(LivingChangeTargetEvent event)
+	{
+		if (event.getEntity().getType().is(EntityTypeTags.UNDEAD)) {
 			if (event.getNewAboutToBeSetTarget() instanceof DMRDragonEntity dragon) {
 				if (dragon.getBreed().getAbilities().contains(DragonAbilities.ETHEREAL_HARMONY)) {
 					event.setCanceled(true);

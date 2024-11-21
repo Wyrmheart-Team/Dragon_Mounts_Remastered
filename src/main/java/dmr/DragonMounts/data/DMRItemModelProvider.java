@@ -17,12 +17,9 @@ public class DMRItemModelProvider extends ItemModelProvider
 	@Override
 	protected void registerModels()
 	{
-		for(DyeColor color : DyeColor.values())
-		{
+		for (DyeColor color : DyeColor.values()) {
 			String name = color.getName();
-			getBuilder("dragon_whistle." + name)
-					.parent(new ModelFile.UncheckedModelFile("item/generated"))
-					.texture("layer0", DragonMountsRemaster.MOD_ID + ":" + "item/" + name + "_dragon_whistle");
+			getBuilder("dragon_whistle." + name).parent(new ModelFile.UncheckedModelFile("item/generated")).texture("layer0", DragonMountsRemaster.MOD_ID + ":" + "item/" + name + "_dragon_whistle");
 		}
 	}
 }

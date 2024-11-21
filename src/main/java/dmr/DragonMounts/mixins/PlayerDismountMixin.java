@@ -13,10 +13,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class PlayerDismountMixin
 {
 	@Inject( method = "wantsToStopRiding", at = @At( "HEAD" ), cancellable = true )
-	protected void wantsToStopRiding(CallbackInfoReturnable<Boolean> ci){
+	protected void wantsToStopRiding(CallbackInfoReturnable<Boolean> ci)
+	{
 		var player = (Player)(Object)this;
 		
-		if(player.getControlledVehicle() instanceof DMRDragonEntity){
+		if (player.getControlledVehicle() instanceof DMRDragonEntity) {
 			DragonOwnerCapability cap = player.getData(DMRCapability.PLAYER_CAPABILITY);
 			ci.setReturnValue(cap.shouldDismount);
 		}

@@ -29,19 +29,16 @@ public class DragonPathingGoal extends Goal
 	@Override
 	public boolean canContinueToUse()
 	{
-		if (dragon.getNavigation().isDone())
-		{
+		if (dragon.getNavigation().isDone()) {
 			return false;
 		}
 		
-		if(dragon.getPathingGoal() == BlockPos.ZERO)
-		{
+		if (dragon.getPathingGoal() == BlockPos.ZERO) {
 			return false;
 		}
 		
 		BlockPos pathingGoal = dragon.getPathingGoal();
-		if (dragon.distanceToSqr(pathingGoal.getX(), pathingGoal.getY(), pathingGoal.getZ()) < 1)
-		{
+		if (dragon.distanceToSqr(pathingGoal.getX(), pathingGoal.getY(), pathingGoal.getZ()) < 1) {
 			return false;
 		}
 		
@@ -49,7 +46,8 @@ public class DragonPathingGoal extends Goal
 	}
 	
 	@Override
-	public void start() {
+	public void start()
+	{
 		timeToRecalcPath = 0;
 	}
 	
@@ -63,11 +61,9 @@ public class DragonPathingGoal extends Goal
 	@Override
 	public void tick()
 	{
-		if (--timeToRecalcPath <= 0)
-		{
+		if (--timeToRecalcPath <= 0) {
 			timeToRecalcPath = adjustedTickDelay(10);
-			if (!dragon.isLeashed() && !dragon.isPassenger())
-			{
+			if (!dragon.isLeashed() && !dragon.isPassenger()) {
 				BlockPos pos = dragon.getPathingGoal();
 				dragon.getNavigation().moveTo(pos.getX(), pos.getY(), pos.getZ(), speedModifier);
 			}

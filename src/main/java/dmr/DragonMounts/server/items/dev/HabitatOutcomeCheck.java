@@ -16,15 +16,14 @@ public class HabitatOutcomeCheck extends DMRDevItem
 	@Override
 	public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected)
 	{
-		if(pIsSelected && pEntity instanceof Player pPlayer){
-			if(!pLevel.isClientSide && pPlayer.tickCount % 10 == 0)
-			{
+		if (pIsSelected && pEntity instanceof Player pPlayer) {
+			if (!pLevel.isClientSide && pPlayer.tickCount % 10 == 0) {
 				var outcomes = BreedingUtils.getHabitatBreedOutcomes((ServerLevel)pLevel, pPlayer.blockPosition());
-				if(outcomes.size() > 0){
+				if (outcomes.size() > 0) {
 					StringJoiner joiner = new StringJoiner(", ");
 					outcomes.stream().limit(3).forEach(outcome -> joiner.add(outcome.getValue().getId() + ": " + outcome.getKey()));
 					pPlayer.displayClientMessage(Component.literal(joiner.toString()), true);
-				}else{
+				} else {
 					pPlayer.displayClientMessage(Component.literal("None"), true);
 				}
 			}

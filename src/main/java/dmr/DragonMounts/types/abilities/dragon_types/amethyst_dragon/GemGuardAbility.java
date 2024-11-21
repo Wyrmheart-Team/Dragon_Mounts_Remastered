@@ -23,22 +23,23 @@ public class GemGuardAbility implements Ability
 	private static final double deflect_chance = 0.25;
 	
 	@SubscribeEvent
-	public static void projectileEvent(ProjectileImpactEvent event){
+	public static void projectileEvent(ProjectileImpactEvent event)
+	{
 		var hitResult = event.getRayTraceResult();
 		
-		if(hitResult instanceof EntityHitResult result && result.getType() == Type.ENTITY){
+		if (hitResult instanceof EntityHitResult result && result.getType() == Type.ENTITY) {
 			var target = result.getEntity();
 			
-			if(target instanceof DMRDragonEntity dragon){
-				if(dragon.getBreed().getAbilities().contains(DragonAbilities.GEM_GUARD)){
-					if(dragon.getRandom().nextDouble() < deflect_chance){
+			if (target instanceof DMRDragonEntity dragon) {
+				if (dragon.getBreed().getAbilities().contains(DragonAbilities.GEM_GUARD)) {
+					if (dragon.getRandom().nextDouble() < deflect_chance) {
 						event.setCanceled(true);
 					}
 				}
-			}else if(target instanceof Player player){
-				if(player.getVehicle() instanceof DMRDragonEntity dragon){
-					if(dragon.getBreed().getAbilities().contains(DragonAbilities.GEM_GUARD)){
-						if(dragon.getRandom().nextDouble() < deflect_chance){
+			} else if (target instanceof Player player) {
+				if (player.getVehicle() instanceof DMRDragonEntity dragon) {
+					if (dragon.getBreed().getAbilities().contains(DragonAbilities.GEM_GUARD)) {
+						if (dragon.getRandom().nextDouble() < deflect_chance) {
 							event.setCanceled(true);
 						}
 					}
