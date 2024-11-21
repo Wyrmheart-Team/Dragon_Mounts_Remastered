@@ -42,9 +42,12 @@ jobs:
         run: npm install
 
       - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@v3
+        uses: cycjimmy/semantic-release-action@v4
         id: semantic
         with:
+            extra_plugins: |
+              @semantic-release/commit-analyzer
+              @semantic-release/release-notes-generator
             dry_run: true
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -175,7 +178,11 @@ jobs:
         run: npm install
 
       - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@v3
+        uses: cycjimmy/semantic-release-action@v4
         id: semantic
+        with:
+            extra_plugins: |
+              @semantic-release/commit-analyzer
+              @semantic-release/release-notes-generator
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
