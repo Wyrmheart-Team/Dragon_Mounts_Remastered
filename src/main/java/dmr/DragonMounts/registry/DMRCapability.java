@@ -27,37 +27,42 @@ public class DMRCapability
 	
 	
 	@SubscribeEvent
-	public static void onLoggedIn(PlayerEvent.PlayerLoggedInEvent loggedInEvent){
+	public static void onLoggedIn(PlayerEvent.PlayerLoggedInEvent loggedInEvent)
+	{
 		Player player = loggedInEvent.getEntity();
 		player.getData(PLAYER_CAPABILITY).setPlayer(player);
 		syncCapability(player);
 	}
 	
-	public static void syncCapability(Player player){
+	public static void syncCapability(Player player)
+	{
 		//player.reviveCaps();
 		PacketDistributor.sendToPlayersTrackingEntity(player, new CompleteDataSync(player));
 	}
 	
 	@SubscribeEvent
-	public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent playerRespawnEvent){
+	public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent playerRespawnEvent)
+	{
 		Player player = playerRespawnEvent.getEntity();
 		player.getData(PLAYER_CAPABILITY).setPlayer(player);
 		syncCapability(player);
 	}
 	
 	@SubscribeEvent
-	public static void onDimensionChange(PlayerEvent.PlayerChangedDimensionEvent event){
+	public static void onDimensionChange(PlayerEvent.PlayerChangedDimensionEvent event)
+	{
 		Player player = event.getEntity();
 		player.getData(PLAYER_CAPABILITY).setPlayer(player);
 		syncCapability(player);
 	}
 	
 	@SubscribeEvent
-	public static void onTrackingStart(PlayerEvent.StartTracking startTracking){
+	public static void onTrackingStart(PlayerEvent.StartTracking startTracking)
+	{
 		Player trackingPlayer = startTracking.getEntity();
-		if(trackingPlayer instanceof ServerPlayer target){
+		if (trackingPlayer instanceof ServerPlayer target) {
 			Entity tracked = startTracking.getTarget();
-			if(tracked instanceof ServerPlayer){
+			if (tracked instanceof ServerPlayer) {
 				var handler = tracked.getData(PLAYER_CAPABILITY);
 				PacketDistributor.sendToPlayer(target, new CompleteDataSync(tracked.getId(), handler.serializeNBT(tracked.level.registryAccess())));
 			}

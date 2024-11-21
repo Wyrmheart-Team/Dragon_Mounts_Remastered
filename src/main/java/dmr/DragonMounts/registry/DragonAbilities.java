@@ -57,14 +57,15 @@ public class DragonAbilities
 	
 	public static final QuickFlight QUICK_FLIGHT = register(new QuickFlight());
 	
-	public static <T extends Ability> T register(T ability){
+	public static <T extends Ability> T register(T ability)
+	{
 		register(ability.type(), MapCodec.unit(ability));
 		return ability;
 	}
 	
 	public static String register(String name, MapCodec<? extends Ability> codec)
 	{
-	    REGISTRY.put(name, codec);
-	    return name;
+		REGISTRY.put(name, codec);
+		return name;
 	}
 }

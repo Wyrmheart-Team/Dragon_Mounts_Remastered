@@ -34,9 +34,7 @@ public record DragonRespawnDelayPacket(int index, int delay) implements IMessage
 		state.respawnDelays.put(index, delay);
 	}
 	
-	public static final StreamCodec<FriendlyByteBuf, DragonRespawnDelayPacket> STREAM_CODEC =
-			StreamCodec.composite(ByteBufCodecs.INT, DragonRespawnDelayPacket::index,
-			                      ByteBufCodecs.INT, DragonRespawnDelayPacket::delay, DragonRespawnDelayPacket::new);
+	public static final StreamCodec<FriendlyByteBuf, DragonRespawnDelayPacket> STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.INT, DragonRespawnDelayPacket::index, ByteBufCodecs.INT, DragonRespawnDelayPacket::delay, DragonRespawnDelayPacket::new);
 	
 	@Override
 	public StreamCodec<? super RegistryFriendlyByteBuf, DragonRespawnDelayPacket> streamCodec()

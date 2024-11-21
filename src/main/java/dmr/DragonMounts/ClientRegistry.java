@@ -21,33 +21,37 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 import static net.neoforged.fml.common.EventBusSubscriber.Bus.MOD;
 
-@EventBusSubscriber(bus = MOD, value = Dist.CLIENT)
+@EventBusSubscriber( bus = MOD, value = Dist.CLIENT )
 public class ClientRegistry
 {
-	@OnlyIn( Dist.CLIENT)
+	@OnlyIn( Dist.CLIENT )
 	@SubscribeEvent
-	public static void setupClient(final FMLClientSetupEvent event){
+	public static void setupClient(final FMLClientSetupEvent event)
+	{
 		ResourcePackLoader.addReloadListener(event);
 		
 		var modContainer = ModLoadingContext.get().getActiveContainer();
 		modContainer.registerExtensionPoint(IConfigScreenFactory.class, (mc, parent) -> new ConfigurationScreen(modContainer, parent));
 	}
 	
-	@OnlyIn( Dist.CLIENT)
+	@OnlyIn( Dist.CLIENT )
 	@SubscribeEvent
-	public static void registerMenus(RegisterMenuScreensEvent e){
+	public static void registerMenus(RegisterMenuScreensEvent e)
+	{
 		e.register(DMRMenus.DRAGON_MENU.get(), DragonInventoryScreen::new);
 	}
 	
-	@OnlyIn( Dist.CLIENT)
+	@OnlyIn( Dist.CLIENT )
 	@SubscribeEvent
-	public static void registerGeometryLoaders(ModelEvent.RegisterGeometryLoaders e){
+	public static void registerGeometryLoaders(ModelEvent.RegisterGeometryLoaders e)
+	{
 		e.register(DragonMountsRemaster.id("dragon_egg"), DragonEggModelLoader.INSTANCE);
 	}
 	
-	@OnlyIn( Dist.CLIENT)
+	@OnlyIn( Dist.CLIENT )
 	@SubscribeEvent
-	public static void registerColorHandlers(RegisterColorHandlersEvent.Item e){
+	public static void registerColorHandlers(RegisterColorHandlersEvent.Item e)
+	{
 		e.register((stack, layer) -> FastColor.ARGB32.opaque(DragonSpawnEgg.getColor(stack, layer)), DMRItems.DRAGON_SPAWN_EGG.get());
 	}
 }

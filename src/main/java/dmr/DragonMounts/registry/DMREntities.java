@@ -22,7 +22,8 @@ public class DMREntities
 	public static final Supplier<EntityType<DMRDragonEntity>> DRAGON_ENTITY = ENTITIES.register("dragon", () -> EntityType.Builder.of(DMRDragonEntity::new, MobCategory.CREATURE).sized(DMRDragonEntity.BASE_WIDTH, DMRDragonEntity.BASE_HEIGHT).clientTrackingRange(10).updateInterval(3).build("dragon"));
 	
 	@SubscribeEvent
-	public static void attributeCreationEvent(EntityAttributeCreationEvent event){
+	public static void attributeCreationEvent(EntityAttributeCreationEvent event)
+	{
 		event.put(DRAGON_ENTITY.get(), DMRDragonEntity.createAttributes().build());
 	}
 }

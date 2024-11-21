@@ -4,7 +4,7 @@
   },
   "abilities": [
     {
-        "type": "quick_flight"
+      "type": "quick_flight"
     }
   ],
   "habitats": [

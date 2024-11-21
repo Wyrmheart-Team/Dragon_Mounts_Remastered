@@ -26,16 +26,18 @@ public class DMRItems
 	
 	public static HashMap<Integer, Supplier<Item>> DRAGON_WHISTLES = generateWhistles();
 	
-	private static HashMap<Integer, Supplier<Item>> generateWhistles(){
+	private static HashMap<Integer, Supplier<Item>> generateWhistles()
+	{
 		HashMap<Integer, Supplier<Item>> map = new HashMap<>();
-		for(DyeColor color : DyeColor.values()){
+		for (DyeColor color : DyeColor.values()) {
 			map.put(color.getId(), ITEMS.register("dragon_whistle." + color.getName(), () -> new DragonWhistleItem(new Item.Properties().stacksTo(1), color)));
 		}
 		return map;
 	}
 	
-	public static void init(){
-		if(DragonMountsRemaster.DEBUG){
+	public static void init()
+	{
+		if (DragonMountsRemaster.DEBUG) {
 			ITEMS.register("habitat_checker", HabitatOutcomeCheck::new);
 			ITEMS.register("instant_hatch", InstantHatchItem::new);
 			ITEMS.register("dragon_path_highlighter", DragonPathHighligther::new);

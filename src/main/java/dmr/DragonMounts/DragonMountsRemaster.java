@@ -28,7 +28,7 @@ import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.List;
 
-@Mod(DragonMountsRemaster.MOD_ID )
+@Mod( DragonMountsRemaster.MOD_ID )
 public class DragonMountsRemaster
 {
 	public static final String MOD_ID = "dmr";
@@ -38,13 +38,14 @@ public class DragonMountsRemaster
 	
 	public static boolean DEBUG = false;
 	
-	public DragonMountsRemaster(IEventBus bus, ModContainer container){
+	public DragonMountsRemaster(IEventBus bus, ModContainer container)
+	{
 		DEBUG = !FMLLoader.isProduction();
 		
 		var gsonBuilder = new GsonBuilder();
 		gsonBuilder.setPrettyPrinting();
 		gsonBuilder.registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer());
-		gsonBuilder.registerTypeAdapter(new TypeToken<List<Item>>(){}.getType(), new ItemListAdapter());
+		gsonBuilder.registerTypeAdapter(new TypeToken<List<Item>>() {}.getType(), new ItemListAdapter());
 		gsonBuilder.registerTypeAdapter(Item.class, new ItemAdapter());
 		gsonBuilder.registerTypeAdapter(Block.class, new BlockAdapter());
 		gsonBuilder.registerTypeAdapter(ParticleOptions.class, new ParticleOptionsAdapter());
@@ -59,7 +60,7 @@ public class DragonMountsRemaster
 		Gson = gsonBuilder.create();
 		
 		bus.addListener(this::setupCommon);
-
+		
 		DMRCreativeTabs.init();
 		DMRItems.init();
 		
@@ -79,11 +80,12 @@ public class DragonMountsRemaster
 		NeoForge.EVENT_BUS.addListener(LootTableInject::onLootLoad);
 	}
 	
-	public void setupCommon(final FMLCommonSetupEvent event){}
+	public void setupCommon(final FMLCommonSetupEvent event) {}
 	
-	public void setupServer(final FMLDedicatedServerSetupEvent event){}
+	public void setupServer(final FMLDedicatedServerSetupEvent event) {}
 	
-	public static ResourceLocation id(String path){
+	public static ResourceLocation id(String path)
+	{
 		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
 	}
 }

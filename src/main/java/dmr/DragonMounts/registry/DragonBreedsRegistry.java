@@ -14,11 +14,13 @@ public class DragonBreedsRegistry
 {
 	private static final HashMap<String, IDragonBreed> DRAGON_TYPES = new HashMap<>();
 	
-	public static void register(IDragonBreed breed){
+	public static void register(IDragonBreed breed)
+	{
 		DRAGON_TYPES.put(breed.getId(), breed);
 	}
 	
-	public static void registerHybrids(){
+	public static void registerHybrids()
+	{
 		//Clear all current hybrids
 		var list = DRAGON_TYPES.entrySet().stream().filter(ent -> ent.getValue() instanceof DragonHybridBreed).map(Entry::getKey);
 		list.forEach(DRAGON_TYPES::remove);
@@ -33,39 +35,47 @@ public class DragonBreedsRegistry
 		}
 	}
 	
-	public static void registerHybrid(IDragonBreed parent1, IDragonBreed parent2){
+	public static void registerHybrid(IDragonBreed parent1, IDragonBreed parent2)
+	{
 		register(new DragonHybridBreed(parent1, parent2));
 	}
 	
-	public static void setBreeds(List<IDragonBreed> breeds){
+	public static void setBreeds(List<IDragonBreed> breeds)
+	{
 		DRAGON_TYPES.clear();
-		for(IDragonBreed breed : breeds){
+		for (IDragonBreed breed : breeds) {
 			register(breed);
 		}
 	}
 	
-	public static IDragonBreed getDragonBreed(String name){
+	public static IDragonBreed getDragonBreed(String name)
+	{
 		var val = DRAGON_TYPES.getOrDefault(name, null);
 		return val == null ? getDefault() : val;
 	}
 	
-	public static IDragonBreed getHybridBreed(IDragonBreed breed1, IDragonBreed breed2){
+	public static IDragonBreed getHybridBreed(IDragonBreed breed1, IDragonBreed breed2)
+	{
 		return getDragonBreed("hybrid_" + breed1.getId() + "_" + breed2.getId());
 	}
 	
-	public static boolean hasDragonBreed(String name){
+	public static boolean hasDragonBreed(String name)
+	{
 		return DRAGON_TYPES.containsKey(name);
 	}
 	
-	public static List<IDragonBreed> getDragonBreeds(){
+	public static List<IDragonBreed> getDragonBreeds()
+	{
 		return new ArrayList<>(DRAGON_TYPES.values());
 	}
 	
-	public static IDragonBreed getFirst(){
+	public static IDragonBreed getFirst()
+	{
 		return getDragonBreeds().stream().findFirst().orElse(new DragonBreed());
 	}
 	
-	public static IDragonBreed getDefault(){
+	public static IDragonBreed getDefault()
+	{
 		return hasDragonBreed("end") ? getDragonBreed("end") : getFirst();
 	}
 }

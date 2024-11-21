@@ -1,40 +1,32 @@
 {
   "itemGroup.dragon_mounts": "Dragon Mounts Remaster",
-
   "dmr.keybind.summon_dragon": "Call Dragon",
   "dmr.keybind.attack": "Dragon Attacks",
   "dmr.keybind.category": "Dragon Mounts Remaster",
-
   "dmr.inventory.sit": "Sit",
   "dmr.inventory.follow": "Follow",
   "dmr.inventory.wander": "Wander",
-
   "dmr.dragon_call.on_cooldown": "You can't call your dragon yet!",
   "dmr.dragon_call.riding": "You can't call your dragon while riding!",
   "dmr.dragon_call.nospace": "There is not enough space to call your dragon!",
   "dmr.dragon_call.nodragon": "You have no dragon to call!",
-  "dmr.dragon_call.respawn":  "Your dragon is dead, you can call it back in %1$s seconds!",
+  "dmr.dragon_call.respawn": "Your dragon is dead, you can call it back in %1$s seconds!",
   "dmr.dragon_call.unlink_first": "You must unbind this from your current dragon before you can bind another!",
   "dmr.dragon_call.unlink_success": "Successfully unbound from your dragon!",
   "dmr.dragon_call.link_success": "Successfully bound to %1$s!",
   "dmr.dragon_call.no_whistle": "You need a whistle to call your dragon!",
-
   "dmr.dragon_summon.tooltip.1": "Bound to %1$s",
   "dmr.dragon_summon.tooltip.2": "Dead, Can be called back in %1$s seconds",
-
   "item.dmr.dragon_egg.hatch": "Place on the ground & right click to hatch",
-
   "item.dmr.dragon_armor.leather": "Leather Dragon Armor",
   "item.dmr.dragon_armor.iron": "Iron Dragon Armor",
   "item.dmr.dragon_armor.gold": "Gold Dragon Armor",
   "item.dmr.dragon_armor.emerald": "Emerald Dragon Armor",
   "item.dmr.dragon_armor.diamond": "Diamond Dragon Armor",
   "item.dmr.dragon_armor.netherite": "Netherite Dragon Armor",
-
   "dragon_breed.hybrid": "%1$s and %2$s Hybrid",
   "item.dmr.dragon_spawn_egg.hybrid": "%1$s and %2$s Hybrid Spawn Egg",
   "block.dmr.dragon_egg.hybrid": "%1$s and %2$s Hybrid Egg",
-
   "dmr.dragon_breed.aether": "Aether Dragon",
   "dmr.dragon_breed.fire": "Fire Dragon",
   "dmr.dragon_breed.end": "End Dragon",
@@ -46,7 +38,6 @@
   "dmr.dragon_breed.amethyst": "Amethyst Dragon",
   "dmr.dragon_breed.sculk": "Sculk Dragon",
   "dmr.dragon_breed.lush": "Lush Dragon",
-
   "item.dmr.dragon_spawn_egg.aether": "Aether Dragon Spawn Egg",
   "item.dmr.dragon_spawn_egg.fire": "Fire Dragon Spawn Egg",
   "item.dmr.dragon_spawn_egg.end": "End Dragon Spawn Egg",
@@ -58,7 +49,6 @@
   "item.dmr.dragon_spawn_egg.amethyst": "Amethyst Dragon Spawn Egg",
   "item.dmr.dragon_spawn_egg.sculk": "Sculk Dragon Spawn Egg",
   "item.dmr.dragon_spawn_egg.lush": "Lush Dragon Spawn Egg",
-
   "item.dmr.dragon_whistle.white": "White Dragon Whistle",
   "item.dmr.dragon_whistle.orange": "Orange Dragon Whistle",
   "item.dmr.dragon_whistle.magenta": "Magenta Dragon Whistle",
@@ -75,9 +65,7 @@
   "item.dmr.dragon_whistle.green": "Green Dragon Whistle",
   "item.dmr.dragon_whistle.red": "Red Dragon Whistle",
   "item.dmr.dragon_whistle.black": "Black Dragon Whistle",
-
   "block.dmr.dragon_egg": "Dragon Egg",
-
   "block.dmr.dragon_egg.aether": "Aether Dragon Egg",
   "block.dmr.dragon_egg.fire": "Fire Dragon Egg",
   "block.dmr.dragon_egg.end": "End Dragon Egg",
@@ -89,69 +77,47 @@
   "block.dmr.dragon_egg.amethyst": "Amethyst Dragon Egg",
   "block.dmr.dragon_egg.sculk": "Sculk Dragon Egg",
   "block.dmr.dragon_egg.lush": "Lush Dragon Egg",
-
   "block.dmr.dragon_egg.hatch_time": "Hatching in: %1$s",
-
   "dmr.ability.quick_flight.name": "Quick Flight",
   "dmr.ability.quick_flight.description": "The dragon has increased flight speed",
-
   "dmr.ability.crystal_harmony.name": "Crystal Harmony",
   "dmr.ability.crystal_harmony.description": "The dragon and its owner has a chance to block incoming damage",
-
   "dmr.ability.gem_guard.name": "Gem Guard",
   "dmr.ability.gem_guard.description": "The dragon and its owner has a chance to deflect incoming projectiles",
-
   "dmr.ability.ender_cloak.name": "Ender Cloak",
   "dmr.ability.ender_cloak.description": "When near the dragon you will not anger endermen",
-
   "dmr.ability.void_walker.name": "Void Walker",
   "dmr.ability.void_walker.description": "When near the dragon you will not be hurt by fall damage",
-
   "dmr.ability.ember_aura.name": "Ember Aura",
   "dmr.ability.ember_aura.description": "Any hostiles near the dragon are set on fire",
-
   "dmr.ability.fire_proof.name": "Fire Proof",
   "dmr.ability.fire_proof.description": "When near the dragon you are immune to fire damage",
-
   "dmr.ability.hot_feet.name": "Hot Feet",
   "dmr.ability.hot_feet.description": "The dragon will light the ground on fire when walking",
-
   "dmr.ability.camouflage.name": "Camouflage",
   "dmr.ability.camouflage.description": "Hostiles will have a shorter range for detecting the dragon and its nearby owner",
-
   "dmr.ability.nature_blessing.name": "Nature's Blessing",
   "dmr.ability.nature_blessing.description": "When the dragon is near flowers and plants, it will grant itself and its owner regeneration",
-
   "dmr.ability.etheral_harmony.name": "Etheral Harmony",
   "dmr.ability.etheral_harmony.description": "The dragon and its rider will not be targeted by undead",
-
   "dmr.ability.frost_aura.name": "Frost Aura",
   "dmr.ability.frost_aura.description": "Any hostiles near the dragon are given slowness",
-
   "dmr.ability.frost_walker.name": "Frost Walker",
   "dmr.ability.frost_walker.description": "The dragon will freeze water when walking",
-
   "dmr.ability.floral_trail.name": "Floral Trail",
   "dmr.ability.floral_trail.description": "The dragon will leave a trail of plants and flowers when walking",
-
   "dmr.ability.infernal_pact.name": "Infernal Pact",
   "dmr.ability.infernal_pact.description": "The dragon and its owner will not be targeted by hostiles in the nether",
-
   "dmr.ability.echo_sense.name": "Echo Sense",
   "dmr.ability.echo_sense.description": "When near the dragon you will be able to see hostiles through walls",
-
   "dmr.ability.aquatic_grace.name": "Aquatic Grace",
   "dmr.ability.aquatic_grace.description": "When riding the dragon in water, you will be given night vision",
-
   "dmr.ability.swift_swim.name": "Swift Swim",
   "dmr.ability.swift_swim.description": "The dragon and its owner will be given Dolphin's Grace",
-
   "dmr.configuration.allow_egg_override": "Allow Egg Override",
-
   "dmr.configuration.camera_flight": "Camera Flight",
   "dmr.configuration.alternate_dismount": "Alternate Dismount",
   "dmr.configuration.alternate_attack_key": "Alternate Attack Key",
-
   "dmr.configuration.replenish_eggs": "Replenish Eggs",
   "dmr.configuration.breed_limit": "Breed Limit",
   "dmr.configuration.hatch_time": "Hatch Time",
