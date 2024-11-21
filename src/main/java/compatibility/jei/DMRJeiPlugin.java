@@ -3,7 +3,6 @@ package compatibility.jei;
 import dmr.DragonMounts.DMRConstants.NBTConstants;
 import dmr.DragonMounts.DragonMountsRemaster;
 import dmr.DragonMounts.registry.DMRItems;
-import dmr.DragonMounts.server.items.DragonWhistleItem;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
@@ -11,7 +10,6 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 

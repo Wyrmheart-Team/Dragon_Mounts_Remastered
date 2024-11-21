@@ -1,27 +1,17 @@
 package dmr.DragonMounts.server.items;
 
-import dmr.DragonMounts.DMRConstants;
 import dmr.DragonMounts.DMRConstants.NBTConstants;
-import dmr.DragonMounts.DragonMountsRemaster;
 import dmr.DragonMounts.registry.DMREntities;
 import dmr.DragonMounts.registry.DMRItems;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
-import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.FastColor;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 
 
@@ -72,7 +62,7 @@ public class DragonSpawnEgg extends DeferredSpawnEggItem
 		if (tag.contains(DATA_ITEM_NAME)) {
 			var breed = DragonBreedsRegistry.getDragonBreed(tag.getString(NBTConstants.BREED));
 			
-			if(breed instanceof DragonHybridBreed hybridBreed){
+			if (breed instanceof DragonHybridBreed hybridBreed) {
 				return Component.translatable(String.join(".", DMRItems.DRAGON_SPAWN_EGG.get().getDescriptionId(), "hybrid"), hybridBreed.parent1.getName().getString(), hybridBreed.parent2.getName().getString());
 			}
 			

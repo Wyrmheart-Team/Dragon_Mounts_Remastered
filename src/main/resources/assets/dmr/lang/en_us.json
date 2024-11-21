@@ -22,6 +22,8 @@
   "dmr.dragon_summon.tooltip.1": "Bound to %1$s",
   "dmr.dragon_summon.tooltip.2": "Dead, Can be called back in %1$s seconds",
 
+  "item.dmr.dragon_egg.hatch": "Place on the ground & right click to hatch",
+
   "item.dmr.dragon_armor.leather": "Leather Dragon Armor",
   "item.dmr.dragon_armor.iron": "Iron Dragon Armor",
   "item.dmr.dragon_armor.gold": "Gold Dragon Armor",

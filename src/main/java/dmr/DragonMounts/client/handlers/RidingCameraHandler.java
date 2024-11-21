@@ -1,12 +1,11 @@
 package dmr.DragonMounts.client.handlers;
 
+import dmr.DragonMounts.common.config.DMRConfig;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -18,13 +17,14 @@ public class RidingCameraHandler
 	private static float lastCameraIncrease;
 	
 	@SubscribeEvent
-	public static void flightCamera(ComputeCameraAngles setup){
+	public static void flightCamera(ComputeCameraAngles setup)
+	{
 		LocalPlayer currentPlayer = Minecraft.getInstance().player;
 		Camera info = setup.getCamera();
 		
 		if (currentPlayer != null && currentPlayer.getRootVehicle() instanceof DMRDragonEntity) {
 			if (setup.getCamera().isDetached()) {
-				float gradualIncrease = Mth.lerp(0.25f, lastCameraIncrease, info.getMaxZoom(10));
+				float gradualIncrease = Mth.lerp(0.25f, lastCameraIncrease, info.getMaxZoom(DMRConfig.RIDING_CAMERA_OFFSET.get()));
 				info.move(gradualIncrease * -1f, (gradualIncrease / 2f) * -1f, 0f);
 				lastCameraIncrease = gradualIncrease;
 			}

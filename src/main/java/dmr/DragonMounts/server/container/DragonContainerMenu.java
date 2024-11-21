@@ -8,11 +8,9 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Blocks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +20,7 @@ public class DragonContainerMenu extends AbstractContainerMenu
 	private final Container dragonContainer;
 	public final DMRDragonEntity dragon;
 	
-	private List<DragonInventorySlot> inventorySlots = new ArrayList<>();
+	private final List<DragonInventorySlot> inventorySlots = new ArrayList<>();
 	
 	public DragonContainerMenu(int pContainerId, Inventory pPlayerInventory, FriendlyByteBuf data)
 	{
@@ -31,12 +29,16 @@ public class DragonContainerMenu extends AbstractContainerMenu
 		this.dragonContainer = dragon.inventory;
 		
 		dragonContainer.startOpen(pPlayerInventory.player);
-		this.addSlot(new Slot(dragonContainer, DMRDragonEntity.SADDLE_SLOT, 8, 18) {
-			public boolean mayPlace(ItemStack p_39677_) {
+		this.addSlot(new Slot(dragonContainer, DMRDragonEntity.SADDLE_SLOT, 8, 18)
+		{
+			
+			public boolean mayPlace(ItemStack p_39677_)
+			{
 				return p_39677_.is(Items.SADDLE) && !this.hasItem() && dragon.isSaddleable();
 			}
 			
-			public boolean isActive() {
+			public boolean isActive()
+			{
 				return dragon.isSaddleable();
 			}
 			
@@ -48,16 +50,20 @@ public class DragonContainerMenu extends AbstractContainerMenu
 				setChanged();
 			}
 		});
-
-		this.addSlot(new Slot(dragonContainer, DMRDragonEntity.ARMOR_SLOT, 8, 36) {
-			public boolean mayPlace(ItemStack p_39690_) {
+		
+		this.addSlot(new Slot(dragonContainer, DMRDragonEntity.ARMOR_SLOT, 8, 36)
+		{
+			
+			public boolean mayPlace(ItemStack p_39690_)
+			{
 				return dragon.isArmor(p_39690_);
 			}
-
-			public int getMaxStackSize() {
+			
+			public int getMaxStackSize()
+			{
 				return 1;
 			}
-
+			
 			@Override
 			public void set(ItemStack pStack)
 			{
@@ -66,7 +72,8 @@ public class DragonContainerMenu extends AbstractContainerMenu
 			}
 		});
 		
-		this.addSlot(new Slot(dragonContainer, DMRDragonEntity.CHEST_SLOT, 8, 54) {
+		this.addSlot(new Slot(dragonContainer, DMRDragonEntity.CHEST_SLOT, 8, 54)
+		{
 			
 			@Override
 			public boolean mayPickup(Player pPlayer)
@@ -74,28 +81,31 @@ public class DragonContainerMenu extends AbstractContainerMenu
 				return dragon.inventoryEmpty() || dragon.inventory.getItem(DMRDragonEntity.CHEST_SLOT).is(Items.ENDER_CHEST);
 			}
 			
-			public boolean mayPlace(ItemStack p_39690_) {
+			public boolean mayPlace(ItemStack p_39690_)
+			{
 				return p_39690_.is(Items.CHEST) || p_39690_.is(Items.ENDER_CHEST);
 			}
-
+			
 			@Override
 			public void set(ItemStack pStack)
 			{
 				super.set(pStack);
 				dragon.updateContainerEquipment();
-				for(DragonInventorySlot slot : inventorySlots){
+				for (DragonInventorySlot slot : inventorySlots) {
 					slot.setChestTypeChanged(dragon.inventory.getItem(DMRDragonEntity.CHEST_SLOT).is(Items.ENDER_CHEST));
 				}
 			}
-
-			public int getMaxStackSize() {
+			
+			public int getMaxStackSize()
+			{
 				return 1;
 			}
 		});
 		
-		for(int k = 0; k < 3; ++k) {
-			for(int l = 0; l < 9; ++l) {
-				var chestSlot = new DragonInventorySlot(l + k * 9, 8 + l * 18, 84 + k * 18, dragonContainer, pPlayerInventory.player.getEnderChestInventory()){
+		for (int k = 0; k < 3; ++k) {
+			for (int l = 0; l < 9; ++l) {
+				var chestSlot = new DragonInventorySlot(l + k * 9, 8 + l * 18, 84 + k * 18, dragonContainer, pPlayerInventory.player.getEnderChestInventory())
+				{
 					
 					@Override
 					public boolean isActive()
@@ -109,22 +119,23 @@ public class DragonContainerMenu extends AbstractContainerMenu
 			}
 		}
 		
-		for(DragonInventorySlot slot : inventorySlots){
+		for (DragonInventorySlot slot : inventorySlots) {
 			slot.setChestTypeChanged(dragon.inventory.getItem(DMRDragonEntity.CHEST_SLOT).is(Items.ENDER_CHEST));
 		}
 		
-		for(int i1 = 0; i1 < 3; ++i1) {
-			for(int k1 = 0; k1 < 9; ++k1) {
+		for (int i1 = 0; i1 < 3; ++i1) {
+			for (int k1 = 0; k1 < 9; ++k1) {
 				this.addSlot(new Slot(pPlayerInventory, k1 + i1 * 9 + 9, 8 + k1 * 18, 151 + i1 * 18));
 			}
 		}
 		
-		for(int j1 = 0; j1 < 9; ++j1) {
+		for (int j1 = 0; j1 < 9; ++j1) {
 			this.addSlot(new Slot(pPlayerInventory, j1, 8 + j1 * 18, 209));
 		}
 	}
-
-	public boolean stillValid(Player pPlayer) {
+	
+	public boolean stillValid(Player pPlayer)
+	{
 		return !this.dragon.hasInventoryChanged(this.dragonContainer) && this.dragonContainer.stillValid(pPlayer) && this.dragon.isAlive() && this.dragon.distanceTo(pPlayer) < 8.0F;
 	}
 	
@@ -132,7 +143,8 @@ public class DragonContainerMenu extends AbstractContainerMenu
 	 * Handle when the stack in slot {@code index} is shift-clicked. Normally this moves the stack between the player
 	 * inventory and the other inventory(s).
 	 */
-	public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
+	public ItemStack quickMoveStack(Player pPlayer, int pIndex)
+	{
 		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = this.slots.get(pIndex);
 		if (slot != null && slot.hasItem()) {
@@ -186,7 +198,8 @@ public class DragonContainerMenu extends AbstractContainerMenu
 	/**
 	 * Called when the container is closed.
 	 */
-	public void removed(Player pPlayer) {
+	public void removed(Player pPlayer)
+	{
 		super.removed(pPlayer);
 		this.dragonContainer.stopOpen(pPlayer);
 	}

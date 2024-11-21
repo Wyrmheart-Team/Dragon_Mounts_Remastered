@@ -9,16 +9,12 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record DismountDragonPacket(int entityId, boolean state) implements IMessage<DismountDragonPacket>
 {
-	public static final StreamCodec<FriendlyByteBuf, DismountDragonPacket> STREAM_CODEC =
-			StreamCodec.composite(ByteBufCodecs.INT, DismountDragonPacket::entityId,
-			                      ByteBufCodecs.BOOL, DismountDragonPacket::state,
-			                      DismountDragonPacket::new);
+	public static final StreamCodec<FriendlyByteBuf, DismountDragonPacket> STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.INT, DismountDragonPacket::entityId, ByteBufCodecs.BOOL, DismountDragonPacket::state, DismountDragonPacket::new);
 	
 	@Override
 	public StreamCodec<? super RegistryFriendlyByteBuf, DismountDragonPacket> streamCodec()
@@ -51,7 +47,7 @@ public record DismountDragonPacket(int entityId, boolean state) implements IMess
 		var level = player.level;
 		var entity = level.getEntity(entityId);
 		
-		if(entity instanceof Player player1){
+		if (entity instanceof Player player1) {
 			DragonOwnerCapability cap = player1.getData(DMRCapability.PLAYER_CAPABILITY);
 			cap.shouldDismount = state;
 		}

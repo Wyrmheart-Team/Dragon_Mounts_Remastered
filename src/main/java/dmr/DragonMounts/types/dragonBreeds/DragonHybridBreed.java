@@ -9,14 +9,17 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DragonHybridBreed implements IDragonBreed
 {
-	@SerializedName("parent1")
+	@SerializedName( "parent1" )
 	public IDragonBreed parent1;
 	
-	@SerializedName("parent1")
+	@SerializedName( "parent1" )
 	public IDragonBreed parent2;
 	
 	public DragonHybridBreed(IDragonBreed parent1, IDragonBreed parent2)
@@ -61,12 +64,14 @@ public class DragonHybridBreed implements IDragonBreed
 		return parent2.getPrimaryColor();
 	}
 	
-	@Override public String getId()
+	@Override
+	public String getId()
 	{
 		return "hybrid_" + parent1.getId() + "_" + parent2.getId();
 	}
 	
-	@Override public void setId(String id) {}
+	@Override
+	public void setId(String id) {}
 	
 	@Override
 	public ResourceLocation getDeathLootTable()
@@ -108,17 +113,17 @@ public class DragonHybridBreed implements IDragonBreed
 	public List<String> getImmunities()
 	{
 		List<String> immunities = new ArrayList<>();
-		if(parent1.getImmunities() != null){
-			if(parent1.getImmunities().size() > 1){
+		if (parent1.getImmunities() != null) {
+			if (parent1.getImmunities().size() > 1) {
 				immunities.addAll(parent1.getImmunities().subList(0, parent1.getImmunities().size() / 2));
-			}else{
+			} else {
 				immunities.addAll(parent1.getImmunities());
 			}
 		}
-		if(parent2.getImmunities() != null){
-			if(parent2.getImmunities().size() > 1){
+		if (parent2.getImmunities() != null) {
+			if (parent2.getImmunities().size() > 1) {
 				immunities.addAll(parent2.getImmunities().subList(parent2.getImmunities().size() / 2, parent2.getImmunities().size()));
-			}else{
+			} else {
 				immunities.addAll(parent2.getImmunities());
 			}
 		}
@@ -129,8 +134,8 @@ public class DragonHybridBreed implements IDragonBreed
 	public Map<ResourceLocation, Double> getAttributes()
 	{
 		Map<ResourceLocation, Double> attributes = new HashMap<>();
-		if(parent1.getAttributes() != null) attributes.putAll(parent1.getAttributes());
-		if(parent2.getAttributes() != null) attributes.putAll(parent2.getAttributes());
+		if (parent1.getAttributes() != null) attributes.putAll(parent1.getAttributes());
+		if (parent2.getAttributes() != null) attributes.putAll(parent2.getAttributes());
 		return attributes;
 	}
 	
@@ -144,17 +149,17 @@ public class DragonHybridBreed implements IDragonBreed
 	public List<Ability> getAbilities()
 	{
 		List<Ability> abilities = new ArrayList<>();
-		if(parent1.getAbilities() != null){
-			if(parent1.getAbilities().size() > 1){
+		if (parent1.getAbilities() != null) {
+			if (parent1.getAbilities().size() > 1) {
 				abilities.addAll(parent1.getAbilities().subList(0, parent1.getAbilities().size() / 2));
-			}else{
+			} else {
 				abilities.addAll(parent1.getAbilities());
 			}
 		}
-		if(parent2.getAbilities() != null){
-			if(parent2.getAbilities().size() > 1){
+		if (parent2.getAbilities() != null) {
+			if (parent2.getAbilities().size() > 1) {
 				abilities.addAll(parent2.getAbilities().subList(parent2.getAbilities().size() / 2, parent2.getAbilities().size()));
-			}else{
+			} else {
 				abilities.addAll(parent2.getAbilities());
 			}
 		}
@@ -165,8 +170,8 @@ public class DragonHybridBreed implements IDragonBreed
 	public List<Item> getTamingItems()
 	{
 		List<Item> tamingItems = new ArrayList<>();
-		if(parent1.getTamingItems() != null) tamingItems.addAll(parent1.getTamingItems());
-		if(parent2.getTamingItems() != null) tamingItems.addAll(parent2.getTamingItems());
+		if (parent1.getTamingItems() != null) tamingItems.addAll(parent1.getTamingItems());
+		if (parent2.getTamingItems() != null) tamingItems.addAll(parent2.getTamingItems());
 		return tamingItems;
 	}
 	
@@ -174,8 +179,8 @@ public class DragonHybridBreed implements IDragonBreed
 	public List<Item> getBreedingItems()
 	{
 		List<Item> breedingItems = new ArrayList<>();
-		if(parent1.getBreedingItems() != null) breedingItems.addAll(parent1.getBreedingItems());
-		if(parent2.getBreedingItems() != null) breedingItems.addAll(parent2.getBreedingItems());
+		if (parent1.getBreedingItems() != null) breedingItems.addAll(parent1.getBreedingItems());
+		if (parent2.getBreedingItems() != null) breedingItems.addAll(parent2.getBreedingItems());
 		return breedingItems;
 	}
 	
@@ -189,17 +194,17 @@ public class DragonHybridBreed implements IDragonBreed
 	public List<String> getAccessories()
 	{
 		List<String> modelProperties = new ArrayList<>();
-		if(parent1.getAccessories() != null){
-			if(parent1.getAccessories().size() > 1) {
+		if (parent1.getAccessories() != null) {
+			if (parent1.getAccessories().size() > 1) {
 				modelProperties.addAll(parent1.getAccessories().subList(0, parent1.getAccessories().size() / 2));
-			}else{
+			} else {
 				modelProperties.addAll(parent1.getAccessories());
 			}
 		}
-		if(parent2.getAccessories() != null){
-			if(parent2.getAccessories().size() > 1){
+		if (parent2.getAccessories() != null) {
+			if (parent2.getAccessories().size() > 1) {
 				modelProperties.addAll(parent2.getAccessories().subList(parent2.getAccessories().size() / 2, parent2.getAccessories().size()));
-			}else{
+			} else {
 				modelProperties.addAll(parent2.getAccessories());
 			}
 		}
@@ -211,11 +216,9 @@ public class DragonHybridBreed implements IDragonBreed
 	{
 		List<LootTableEntry> list = new ArrayList<>();
 		
-		if(parent1.getLootTable() != null)
-			list.addAll(parent1.getLootTable().subList(0, parent1.getLootTable().size() / 2));
+		if (parent1.getLootTable() != null) list.addAll(parent1.getLootTable().subList(0, parent1.getLootTable().size() / 2));
 		
-		if(parent2.getLootTable() != null)
-			list.addAll(parent2.getLootTable().subList(parent2.getLootTable().size() / 2, parent2.getLootTable().size()));
+		if (parent2.getLootTable() != null) list.addAll(parent2.getLootTable().subList(parent2.getLootTable().size() / 2, parent2.getLootTable().size()));
 		
 		return list;
 	}

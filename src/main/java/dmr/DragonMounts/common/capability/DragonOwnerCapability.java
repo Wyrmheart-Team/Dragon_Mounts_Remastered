@@ -2,22 +2,17 @@ package dmr.DragonMounts.common.capability;
 
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import lombok.Setter;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup.Provider;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 
-import java.util.*;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
@@ -34,12 +29,13 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 	
 	public boolean shouldDismount;
 	
-	public DMRDragonEntity createDragonEntity(Player player, Level world, int index){
+	public DMRDragonEntity createDragonEntity(Player player, Level world, int index)
+	{
 		setPlayer(player);
 		
 		var nbt = dragonNBTs.get(index);
 		
-		if(nbt != null) {
+		if (nbt != null) {
 			Optional<EntityType<?>> type = EntityType.by(nbt);
 			
 			if (type.isPresent()) {
@@ -63,7 +59,8 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 		return null;
 	}
 	
-	public void setDragon(DMRDragonEntity dragon, int index){
+	public void setDragon(DMRDragonEntity dragon, int index)
+	{
 		dragon.setTame(true, true);
 		dragon.setOwnerUUID(player.getGameProfile().getId());
 		
@@ -87,10 +84,11 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 		dragon.setOrderedToSit(sit);
 	}
 	
-	public boolean isSelectedDragon(DMRDragonEntity dragon){
-		if(dragon.getDragonUUID() != null){
-			for(var uuid : dragonUUIDs.values()){
-				if(dragon.getDragonUUID().equals(uuid)){
+	public boolean isSelectedDragon(DMRDragonEntity dragon)
+	{
+		if (dragon.getDragonUUID() != null) {
+			for (var uuid : dragonUUIDs.values()) {
+				if (dragon.getDragonUUID().equals(uuid)) {
 					return true;
 				}
 			}
@@ -106,20 +104,20 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 		
 		tag.putBoolean("shouldDismount", shouldDismount);
 		
-		for(DyeColor color : DyeColor.values()){
-			if(respawnDelays.containsKey(color.getId())){
+		for (DyeColor color : DyeColor.values()) {
+			if (respawnDelays.containsKey(color.getId())) {
 				tag.putInt("respawnDelay_" + color.getId(), respawnDelays.get(color.getId()));
 			}
 			
-			if(dragonUUIDs.containsKey(color.getId())){
+			if (dragonUUIDs.containsKey(color.getId())) {
 				tag.putUUID("dragonUUID_" + color.getId(), dragonUUIDs.get(color.getId()));
 			}
 			
-			if(summonInstances.containsKey(color.getId())){
+			if (summonInstances.containsKey(color.getId())) {
 				tag.putUUID("summonInstance_" + color.getId(), summonInstances.get(color.getId()));
 			}
 			
-			if(dragonNBTs.containsKey(color.getId())){
+			if (dragonNBTs.containsKey(color.getId())) {
 				tag.put("dragonNBT_" + color.getId(), dragonNBTs.get(color.getId()));
 			}
 		}
@@ -130,7 +128,7 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 	@Override
 	public void deserializeNBT(Provider provider, CompoundTag base)
 	{
-		if(base.contains("shouldDismount")){
+		if (base.contains("shouldDismount")) {
 			shouldDismount = base.getBoolean("shouldDismount");
 		}
 		
@@ -139,20 +137,20 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 		summonInstances.clear();
 		dragonNBTs.clear();
 		
-		for(DyeColor color : DyeColor.values()){
-			if(base.contains("respawnDelay_" + color.getId())){
+		for (DyeColor color : DyeColor.values()) {
+			if (base.contains("respawnDelay_" + color.getId())) {
 				respawnDelays.put(color.getId(), base.getInt("respawnDelay_" + color.getId()));
 			}
 			
-			if(base.contains("dragonUUID_" + color.getId())){
+			if (base.contains("dragonUUID_" + color.getId())) {
 				dragonUUIDs.put(color.getId(), base.getUUID("dragonUUID_" + color.getId()));
 			}
 			
-			if(base.contains("summonInstance_" + color.getId())){
+			if (base.contains("summonInstance_" + color.getId())) {
 				summonInstances.put(color.getId(), base.getUUID("summonInstance_" + color.getId()));
 			}
 			
-			if(base.contains("dragonNBT_" + color.getId())){
+			if (base.contains("dragonNBT_" + color.getId())) {
 				dragonNBTs.put(color.getId(), base.getCompound("dragonNBT_" + color.getId()));
 			}
 		}

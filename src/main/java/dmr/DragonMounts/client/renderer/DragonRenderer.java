@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
 import net.minecraft.resources.ResourceLocation;
-
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
@@ -39,15 +38,16 @@ public class DragonRenderer extends GeoEntityRenderer<DMRDragonEntity>
 	
 	
 	@Override
-	public void render(DMRDragonEntity entity, float entityYaw, float partialTicks, PoseStack stack, MultiBufferSource bufferIn, int packedLightIn){
-		if(DragonMountsRemaster.DEBUG) {
+	public void render(DMRDragonEntity entity, float entityYaw, float partialTicks, PoseStack stack, MultiBufferSource bufferIn, int packedLightIn)
+	{
+		if (DragonMountsRemaster.DEBUG) {
 			Minecraft.getInstance().getProfiler().push("dragon_mounts");
 		}
 		
 		var breed = entity.getBreed();
 		var model = getGeoModel();
 		
-		if(DragonMountsRemaster.DEBUG) {
+		if (DragonMountsRemaster.DEBUG) {
 			Minecraft.getInstance().getProfiler().push("model_properties");
 		}
 		ResourcePackLoader.negativeModelProperties.forEach((key, bones) -> {
@@ -82,26 +82,25 @@ public class DragonRenderer extends GeoEntityRenderer<DMRDragonEntity>
 		backSpike.ifPresent(geoBone -> geoBone.setHidden(entity.isSaddled()));
 		
 		
-		
-		if(DragonMountsRemaster.DEBUG) {
+		if (DragonMountsRemaster.DEBUG) {
 			Minecraft.getInstance().getProfiler().pop();
 			
 			Minecraft.getInstance().getProfiler().push("scale");
 		}
 		
-		if(!entity.isAdult()){
+		if (!entity.isAdult()) {
 			var scale = 0.25f + (entity.getAgeProgress() * 0.75f);
 			stack.scale(scale, scale, scale);
 		}
 		
-		if(DragonMountsRemaster.DEBUG) {
+		if (DragonMountsRemaster.DEBUG) {
 			Minecraft.getInstance().getProfiler().pop();
 			
 			Minecraft.getInstance().getProfiler().push("render");
 		}
 		super.render(entity, entityYaw, partialTicks, stack, bufferIn, packedLightIn);
 		
-		if(DragonMountsRemaster.DEBUG) {
+		if (DragonMountsRemaster.DEBUG) {
 			Minecraft.getInstance().getProfiler().pop();
 			Minecraft.getInstance().getProfiler().pop();
 		}

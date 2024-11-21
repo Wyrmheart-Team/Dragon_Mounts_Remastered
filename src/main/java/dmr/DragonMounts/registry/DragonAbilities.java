@@ -1,6 +1,5 @@
 package dmr.DragonMounts.registry;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import dmr.DragonMounts.types.abilities.dragon_types.aether_dragon.QuickFlight;
 import dmr.DragonMounts.types.abilities.dragon_types.amethyst_dragon.CrystalHarmonyAbility;
@@ -11,11 +10,11 @@ import dmr.DragonMounts.types.abilities.dragon_types.fire_dragon.EmberAuraAbilit
 import dmr.DragonMounts.types.abilities.dragon_types.fire_dragon.FireProofAbility;
 import dmr.DragonMounts.types.abilities.dragon_types.fire_dragon.HotFeetAbility;
 import dmr.DragonMounts.types.abilities.dragon_types.forest_dragon.CamouflageAbility;
-import dmr.DragonMounts.types.abilities.dragon_types.ghost_dragon.EtherealHarmonyAbility;
-import dmr.DragonMounts.types.abilities.dragon_types.lush_dragon.FloralTrailAbility;
 import dmr.DragonMounts.types.abilities.dragon_types.forest_dragon.NatureBlessingAbility;
+import dmr.DragonMounts.types.abilities.dragon_types.ghost_dragon.EtherealHarmonyAbility;
 import dmr.DragonMounts.types.abilities.dragon_types.ice_dragon.FrostAuraAbility;
 import dmr.DragonMounts.types.abilities.dragon_types.ice_dragon.FrostWalkerAbility;
+import dmr.DragonMounts.types.abilities.dragon_types.lush_dragon.FloralTrailAbility;
 import dmr.DragonMounts.types.abilities.dragon_types.nether_dragon.InfernalPactAbility;
 import dmr.DragonMounts.types.abilities.dragon_types.skulk_dragon.EchoSenseAbility;
 import dmr.DragonMounts.types.abilities.dragon_types.water_dragon.AquaticGraceAbility;

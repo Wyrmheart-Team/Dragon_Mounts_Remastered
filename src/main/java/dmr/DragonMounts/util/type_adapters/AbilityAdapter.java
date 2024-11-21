@@ -3,7 +3,6 @@ package dmr.DragonMounts.util.type_adapters;
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
 import dmr.DragonMounts.types.abilities.types.Ability;
-import net.minecraft.core.particles.ParticleTypes;
 
 import java.lang.reflect.Type;
 

@@ -5,8 +5,10 @@ import dmr.DragonMounts.DragonMountsRemaster;
 import dmr.DragonMounts.server.items.DragonWhistleItem;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.*;
-import net.minecraft.data.recipes.packs.VanillaRecipeProvider;
+import net.minecraft.data.recipes.RecipeBuilder;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
@@ -29,18 +31,12 @@ public class DMRRecipeProvider extends RecipeProvider
 	@Override
 	protected void buildRecipes(RecipeOutput pRecipeOutput)
 	{
-		for(DyeColor color : DyeColor.values()){
+		for (DyeColor color : DyeColor.values()) {
 			var pId = DragonMountsRemaster.id("dragon_whistle_item_" + color.getName());
 			Map<Character, Ingredient> keys = ImmutableMap.of('I', Ingredient.of(Items.IRON_INGOT), '#', Ingredient.of(ItemTags.PLANKS), 'D', Ingredient.of(DyeItem.byColor(color)));
 			List<String> rows = List.of("I#I", "#D#", "I#I");
 			
-			ShapedRecipe shapedrecipe = new ShapedRecipe(
-					"dragon",
-					RecipeBuilder.determineBookCategory(RecipeCategory.MISC),
-					ShapedRecipePattern.of(keys, rows),
-					DragonWhistleItem.getWhistleItem(color),
-					false
-			);
+			ShapedRecipe shapedrecipe = new ShapedRecipe("dragon", RecipeBuilder.determineBookCategory(RecipeCategory.MISC), ShapedRecipePattern.of(keys, rows), DragonWhistleItem.getWhistleItem(color), false);
 			
 			pRecipeOutput.accept(pId, shapedrecipe, null);
 		}

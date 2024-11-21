@@ -8,12 +8,10 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -39,7 +37,7 @@ public record DragonAttackPacket(int entityId) implements IMessage<DragonAttackP
 	{
 		var entity = player.level.getEntity(entityId);
 		
-		if(entity instanceof DMRDragonEntity dragon){
+		if (entity instanceof DMRDragonEntity dragon) {
 			dragon.swing(InteractionHand.MAIN_HAND);
 			dragon.triggerAnim("head-controller", "bite");
 			
@@ -62,8 +60,7 @@ public record DragonAttackPacket(int entityId) implements IMessage<DragonAttackP
 		}
 	}
 	
-	public static final StreamCodec<FriendlyByteBuf, DragonAttackPacket> STREAM_CODEC =
-			StreamCodec.composite(ByteBufCodecs.INT, DragonAttackPacket::entityId, DragonAttackPacket::new);
+	public static final StreamCodec<FriendlyByteBuf, DragonAttackPacket> STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.INT, DragonAttackPacket::entityId, DragonAttackPacket::new);
 	
 	@Override
 	public StreamCodec<? super RegistryFriendlyByteBuf, DragonAttackPacket> streamCodec()

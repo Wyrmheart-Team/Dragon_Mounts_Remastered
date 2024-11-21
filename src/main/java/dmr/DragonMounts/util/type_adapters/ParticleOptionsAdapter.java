@@ -2,9 +2,7 @@ package dmr.DragonMounts.util.type_adapters;
 
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
-import dmr.DragonMounts.types.habitats.Habitat;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ParticleTypes;
 
 import java.lang.reflect.Type;

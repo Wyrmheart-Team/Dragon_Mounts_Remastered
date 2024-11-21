@@ -3,7 +3,6 @@ package dmr.DragonMounts.client.events;
 import dmr.DragonMounts.DragonMountsRemaster;
 import dmr.DragonMounts.client.handlers.KeyInputHandler;
 import dmr.DragonMounts.common.config.DMRConfig;
-import dmr.DragonMounts.network.NetworkHandler;
 import dmr.DragonMounts.network.packets.DragonAttackPacket;
 import dmr.DragonMounts.network.packets.DragonBreathPacket;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
@@ -24,7 +23,7 @@ public class DragonAttackEvent
 	@SubscribeEvent
 	public static void onClickEvent(InteractionKeyMappingTriggered event)
 	{
-		if(DMRConfig.USE_ALTERNATE_ATTACK_KEY.get() && !KeyInputHandler.ATTACK_KEY.isDown()) return;
+		if (DMRConfig.USE_ALTERNATE_ATTACK_KEY.get() && !KeyInputHandler.ATTACK_KEY.isDown()) return;
 		
 		var player = Minecraft.getInstance().player;
 		if (player != null) {

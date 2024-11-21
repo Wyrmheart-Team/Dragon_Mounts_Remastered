@@ -1,9 +1,9 @@
 package dmr.DragonMounts.server.blockentities;
 
 import dmr.DragonMounts.DMRConstants.NBTConstants;
-import dmr.DragonMounts.registry.DMREntities;
 import dmr.DragonMounts.common.config.DMRConfig;
 import dmr.DragonMounts.registry.DMRBlockEntities;
+import dmr.DragonMounts.registry.DMREntities;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import lombok.Getter;
@@ -23,15 +23,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-import javax.annotation.Nullable;
-
 import static dmr.DragonMounts.server.blocks.DragonMountsEggBlock.HATCHING;
 import static dmr.DragonMounts.server.blocks.DragonMountsEggBlock.HATCH_STAGE;
 
 public class DragonEggBlockEntity extends BlockEntity
 {
-	private @Getter @Setter String breedId;
-	private @Getter @Setter int hatchTime = DMRConfig.HATCH_TIME_CONFIG.get();
+	private @Getter
+	@Setter String breedId;
+	private @Getter
+	@Setter int hatchTime = DMRConfig.HATCH_TIME_CONFIG.get();
 	
 	private Component customName;
 	
@@ -56,13 +56,11 @@ public class DragonEggBlockEntity extends BlockEntity
 	{
 		super.saveAdditional(pTag, registries);
 		
-		if(getBreedId() != null)
-			pTag.putString(NBTConstants.BREED, getBreedId());
+		if (getBreedId() != null) pTag.putString(NBTConstants.BREED, getBreedId());
 		
 		pTag.putInt("hatchTime", getHatchTime());
 		
-		if (getCustomName() != null)
-			pTag.putString("name", Component.Serializer.toJson(customName, registries));
+		if (getCustomName() != null) pTag.putString("name", Component.Serializer.toJson(customName, registries));
 	}
 	
 	@Override
@@ -77,7 +75,6 @@ public class DragonEggBlockEntity extends BlockEntity
 	}
 	
 	
-	
 	public Component getCustomName()
 	{
 		return customName;
@@ -89,26 +86,25 @@ public class DragonEggBlockEntity extends BlockEntity
 	}
 	
 	int tickCount = 0;
+	
 	public void tick(Level pLevel, BlockPos pPos, BlockState pState)
 	{
 		tickCount++;
 		int maxHatchTime = getBreed() == null ? 1 : getBreed().getHatchTime();
 		int growthStage = (maxHatchTime / 3);
 		
-		if(tickCount % 20 == 0){
-			if(pState.getValue(HATCHING)){
-				if(hatchTime <= 0){
-					if(!pLevel.isClientSide)
-						hatch((ServerLevel)pLevel, pPos);
-				}else{
+		if (tickCount % 20 == 0) {
+			if (pState.getValue(HATCHING)) {
+				if (hatchTime <= 0) {
+					if (!pLevel.isClientSide) hatch((ServerLevel)pLevel, pPos);
+				} else {
 					hatchTime -= 1;
 					
 					var stage = Mth.clamp((maxHatchTime - hatchTime) / growthStage, 0, 3);
 					
-					if(stage != pState.getValue(HATCH_STAGE))
-						pLevel.setBlockAndUpdate(pPos, pState.setValue(HATCH_STAGE, stage));
+					if (stage != pState.getValue(HATCH_STAGE)) pLevel.setBlockAndUpdate(pPos, pState.setValue(HATCH_STAGE, stage));
 					
-					if(pState.getValue(HATCH_STAGE) == 3){
+					if (pState.getValue(HATCH_STAGE) == 3) {
 						level.playSound(null, pPos, SoundEvents.TURTLE_EGG_CRACK, SoundSource.BLOCKS, 0.85f, 0.95f + level.getRandom().nextFloat() * 0.2f);
 					}
 				}
@@ -116,10 +112,10 @@ public class DragonEggBlockEntity extends BlockEntity
 		}
 	}
 	
-	@SuppressWarnings("ConstantConditions")
+	@SuppressWarnings( "ConstantConditions" )
 	public void hatch(ServerLevel level, BlockPos pos)
 	{
-		var data = (DragonEggBlockEntity) level.getBlockEntity(pos);
+		var data = (DragonEggBlockEntity)level.getBlockEntity(pos);
 		var baby = DMREntities.DRAGON_ENTITY.get().create(level);
 		
 		level.playSound(null, pos, SoundEvents.TURTLE_EGG_HATCH, SoundSource.BLOCKS, 1.2f, 0.95f + level.getRandom().nextFloat() * 0.2f);
@@ -129,8 +125,7 @@ public class DragonEggBlockEntity extends BlockEntity
 		baby.setBaby(true);
 		baby.setPos(pos.getX(), pos.getY(), pos.getZ());
 		
-		if(data.getCustomName() != null)
-			baby.setCustomName(data.getCustomName());
+		if (data.getCustomName() != null) baby.setCustomName(data.getCustomName());
 		
 		level.addFreshEntity(baby);
 	}

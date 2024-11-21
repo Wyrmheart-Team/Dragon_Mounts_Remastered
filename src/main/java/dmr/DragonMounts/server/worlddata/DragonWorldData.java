@@ -6,7 +6,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.datafix.DataFixTypes;
-import net.minecraft.world.level.ForcedChunksSavedData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
@@ -15,13 +14,13 @@ import java.util.*;
 
 public class DragonWorldData extends SavedData
 {
-	private static String name = DragonMountsRemaster.MOD_ID + "_dragon_world_data";
+	private static final String name = DragonMountsRemaster.MOD_ID + "_dragon_world_data";
 	
 	public Map<UUID, Integer> deathDelay = new HashMap<>();
 	public Map<UUID, String> deathMessages = new HashMap<>();
 	public List<UUID> deadDragons = new ArrayList<>();
 	
-	public DragonWorldData(){}
+	public DragonWorldData() {}
 	
 	public static DragonWorldData load(CompoundTag nbt, Provider provider)
 	{
@@ -30,8 +29,7 @@ public class DragonWorldData extends SavedData
 		var num = nbt.getInt("num");
 		ListTag listtag = nbt.getList("deadDragons", 10);
 		
-		for(int i = 0; i < num; i++)
-		{
+		for (int i = 0; i < num; i++) {
 			CompoundTag compoundtag = listtag.getCompound(i);
 			UUID uuid = compoundtag.getUUID("uuid");
 			int delay = compoundtag.getInt("delay");
@@ -53,8 +51,7 @@ public class DragonWorldData extends SavedData
 		
 		ListTag listtag = new ListTag();
 		
-		for(UUID uuid : deadDragons)
-		{
+		for (UUID uuid : deadDragons) {
 			CompoundTag compoundtag = new CompoundTag();
 			tag.putUUID("uuid", uuid);
 			tag.putInt("delay", deathDelay.getOrDefault(uuid, 0));
@@ -72,11 +69,12 @@ public class DragonWorldData extends SavedData
 			throw new RuntimeException("Attempted to get the data from a client world. This is wrong.");
 		}
 		
-		DimensionDataStorage storage = ((ServerLevel) level).getDataStorage();
+		DimensionDataStorage storage = ((ServerLevel)level).getDataStorage();
 		return storage.computeIfAbsent(factory(), name);
 	}
 	
-	public static SavedData.Factory<DragonWorldData> factory() {
+	public static SavedData.Factory<DragonWorldData> factory()
+	{
 		return new SavedData.Factory<>(DragonWorldData::new, DragonWorldData::load, DataFixTypes.LEVEL);
 	}
 }

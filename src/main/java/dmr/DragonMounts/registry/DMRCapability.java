@@ -1,14 +1,12 @@
 package dmr.DragonMounts.registry;
 
 import dmr.DragonMounts.common.capability.DragonOwnerCapability;
-import dmr.DragonMounts.network.NetworkHandler;
 import dmr.DragonMounts.network.packets.CompleteDataSync;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;

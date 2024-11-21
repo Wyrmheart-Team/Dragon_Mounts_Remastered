@@ -6,7 +6,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import dmr.DragonMounts.DragonMountsRemaster;
-import dmr.DragonMounts.network.NetworkHandler;
 import dmr.DragonMounts.network.packets.SyncDataPackPacket;
 import dmr.DragonMounts.registry.DragonArmorRegistry;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
@@ -86,7 +85,7 @@ public class DataPackHandler
 	{
 		var breed_reg = level.registryAccess().registry(BREEDS_KEY).orElseGet(() -> RegistryAccess.EMPTY.registryOrThrow(BREEDS_KEY));
 		var armor_reg = level.registryAccess().registry(ARMORS_KEY).orElseGet(() -> RegistryAccess.EMPTY.registryOrThrow(ARMORS_KEY));
-
+		
 		List<DragonArmor> armorList = new ArrayList<>();
 		List<IDragonBreed> breedList = new ArrayList<>();
 		
@@ -113,7 +112,8 @@ public class DataPackHandler
 		LootTableInject.firstLoadInjectBreeds(level);
 	}
 	
-	private static <T> DataResult<T> readData(Object input, Class<T> clas){
+	private static <T> DataResult<T> readData(Object input, Class<T> clas)
+	{
 		if (input instanceof JsonElement el) {
 			try {
 				return DataResult.success(DragonMountsRemaster.getGson().fromJson(el, clas));

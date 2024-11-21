@@ -8,7 +8,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -21,6 +20,7 @@ public record DragonAgeSyncPacket(int dragonId, int age) implements IMessage<Dra
 	{
 		return TYPE;
 	}
+	
 	@Override
 	public DragonAgeSyncPacket decode(FriendlyByteBuf buffer)
 	{
@@ -32,16 +32,12 @@ public record DragonAgeSyncPacket(int dragonId, int age) implements IMessage<Dra
 	{
 		var dragon = player.level.getEntity(dragonId);
 		
-		if(dragon instanceof DMRDragonEntity dragonEntity)
-		{
+		if (dragon instanceof DMRDragonEntity dragonEntity) {
 			dragonEntity.setAge(age);
 		}
 	}
 	
-	public static final StreamCodec<FriendlyByteBuf, DragonAgeSyncPacket> STREAM_CODEC =
-			StreamCodec.composite(ByteBufCodecs.INT, DragonAgeSyncPacket::dragonId,
-			                      ByteBufCodecs.INT, DragonAgeSyncPacket::age,
-			                      DragonAgeSyncPacket::new);
+	public static final StreamCodec<FriendlyByteBuf, DragonAgeSyncPacket> STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.INT, DragonAgeSyncPacket::dragonId, ByteBufCodecs.INT, DragonAgeSyncPacket::age, DragonAgeSyncPacket::new);
 	
 	@Override
 	public StreamCodec<? super RegistryFriendlyByteBuf, DragonAgeSyncPacket> streamCodec()

@@ -3,17 +3,18 @@ package dmr.DragonMounts.server.items;
 import dmr.DragonMounts.DMRConstants.NBTConstants;
 import dmr.DragonMounts.registry.DMRBlocks;
 import dmr.DragonMounts.registry.DMRItems;
-import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
+import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.level.Level;
-
 
 import java.util.List;
 
@@ -24,11 +25,13 @@ public class DragonEggItemBlock extends BlockItem
 		super(DMRBlocks.DRAGON_EGG_BLOCK.get(), pProperties.rarity(Rarity.EPIC));
 	}
 	
-	public static ItemStack getDragonEggStack(IDragonBreed type){
+	public static ItemStack getDragonEggStack(IDragonBreed type)
+	{
 		return getDragonEggStack(type, 1);
 	}
 	
-	public static ItemStack getDragonEggStack(IDragonBreed type, int count){
+	public static ItemStack getDragonEggStack(IDragonBreed type, int count)
+	{
 		ItemStack stack = new ItemStack(DMRItems.DRAGON_EGG_BLOCK_ITEM.get(), count);
 		DragonBreed.setDragonType(stack, type);
 		return stack;
@@ -41,7 +44,7 @@ public class DragonEggItemBlock extends BlockItem
 		
 		var tag = customData.copyTag();
 		
-		if(tag.contains(NBTConstants.BREED)){
+		if (tag.contains(NBTConstants.BREED)) {
 			return String.join(".", DMRBlocks.DRAGON_EGG_BLOCK.get().getDescriptionId(), tag.getString(NBTConstants.BREED));
 		}
 		
@@ -52,9 +55,9 @@ public class DragonEggItemBlock extends BlockItem
 	public Component getName(ItemStack pStack)
 	{
 		var breed = DragonBreed.getDragonType(pStack);
-		if(breed instanceof DragonHybridBreed hybridBreed){
+		if (breed instanceof DragonHybridBreed hybridBreed) {
 			var par1 = hybridBreed.parent1.getName().getString();
-			var par2 =  hybridBreed.parent2.getName().getString();
+			var par2 = hybridBreed.parent2.getName().getString();
 			var langKey = String.join(".", DMRBlocks.DRAGON_EGG_BLOCK.get().getDescriptionId(), "hybrid");
 			return Component.translatable(langKey, par1, par2);
 		}
@@ -70,12 +73,12 @@ public class DragonEggItemBlock extends BlockItem
 		
 		var tag = customData.copyTag();
 		
-		if(tag.contains("breed") && tag.contains("hatchTime")){
+		if (tag.contains("breed") && tag.contains("hatchTime")) {
 			var breed = DragonBreedsRegistry.getDragonBreed(tag.getString("breed"));
-			if(breed != null){
+			if (breed != null) {
 				var hatchTime = tag.getInt("hatchTime");
 				
-				if(hatchTime != breed.getHatchTime()) {
+				if (hatchTime != breed.getHatchTime()) {
 					var minutes = hatchTime / 60;
 					var seconds = hatchTime % 60;
 					var time = String.format("%d:%02d", minutes, seconds);
@@ -83,5 +86,7 @@ public class DragonEggItemBlock extends BlockItem
 				}
 			}
 		}
+		
+		tooltips.add(Component.translatable("item.dmr.dragon_egg.hatch").withStyle(ChatFormatting.GRAY));
 	}
 }

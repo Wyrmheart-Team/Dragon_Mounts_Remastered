@@ -1,18 +1,11 @@
 package dmr.DragonMounts.client.model;
 
 import dmr.DragonMounts.DragonMountsRemaster;
-import dmr.DragonMounts.common.config.DMRConfig;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.loading.math.MathParser;
-import software.bernie.geckolib.loading.math.MolangQueries;
 import software.bernie.geckolib.model.GeoModel;
 
 
@@ -22,8 +15,7 @@ public class DragonModel extends GeoModel<DMRDragonEntity>
 	@Override
 	public ResourceLocation getModelResource(DMRDragonEntity object)
 	{
-		if(object != null && object.getBreed() != null && object.getBreed().getDragonModelLocation() != null)
-			return object.getBreed().getDragonModelLocation();
+		if (object != null && object.getBreed() != null && object.getBreed().getDragonModelLocation() != null) return object.getBreed().getDragonModelLocation();
 		
 		return DragonMountsRemaster.id("geo/dragon.geo.json");
 	}
@@ -39,8 +31,7 @@ public class DragonModel extends GeoModel<DMRDragonEntity>
 	@Override
 	public ResourceLocation getAnimationResource(DMRDragonEntity animatable)
 	{
-		if(animatable != null && animatable.getBreed() != null && animatable.getBreed().getDragonAnimationLocation() != null)
-			return animatable.getBreed().getDragonAnimationLocation();
+		if (animatable != null && animatable.getBreed() != null && animatable.getBreed().getDragonAnimationLocation() != null) return animatable.getBreed().getDragonAnimationLocation();
 		
 		return DragonMountsRemaster.id("animations/dragon.animation.json");
 	}
@@ -55,7 +46,7 @@ public class DragonModel extends GeoModel<DMRDragonEntity>
 		
 		var viewVector = dragon.getDeltaMovement().multiply(0, 0.25, 0);
 		
-		if(viewVector != null) {
+		if (viewVector != null) {
 			var pitch = viewVector.y;
 			MathParser.setVariable("query.pitch", () -> Mth.clamp(pitch, -1, 1));
 		}

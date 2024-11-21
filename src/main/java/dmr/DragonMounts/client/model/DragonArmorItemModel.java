@@ -22,24 +22,20 @@ import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
 import net.neoforged.neoforge.client.model.IDynamicBakedModel;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.data.ModelProperty;
@@ -48,16 +44,14 @@ import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class DragonArmorItemModel
 {
-	public static class DragonArmorLoader implements IGeometryLoader<DragonArmorGeometry>{
+	public static class DragonArmorLoader implements IGeometryLoader<DragonArmorGeometry>
+	{
 		
 		@Override
 		public DragonArmorGeometry read(JsonObject jsonObject, JsonDeserializationContext deserializer) throws JsonParseException
@@ -66,19 +60,15 @@ public class DragonArmorItemModel
 			var dir = "models/item/dragon_armor";
 			var length = "models/".length();
 			var suffixLength = ".json".length();
-			for (var entry : Minecraft.getInstance().getResourceManager().listResources(dir, f -> f.getPath().endsWith(".json")).entrySet())
-			{
+			for (var entry : Minecraft.getInstance().getResourceManager().listResources(dir, f -> f.getPath().endsWith(".json")).entrySet()) {
 				var rl = entry.getKey();
 				var path = rl.getPath();
 				path = path.substring(length, path.length() - suffixLength);
 				var id = String.format("%s", path.substring("item/dragon_armor/".length(), path.length() - "_dragon_armor".length()));
 				
-				try (var reader = entry.getValue().openAsReader())
-				{
+				try (var reader = entry.getValue().openAsReader()) {
 					models.put(id, BlockModel.fromStream(reader));
-				}
-				catch (IOException e)
-				{
+				} catch (IOException e) {
 					throw new JsonParseException(e);
 				}
 			}
@@ -87,7 +77,8 @@ public class DragonArmorItemModel
 		}
 	}
 	
-	static class DragonArmorGeometry implements IUnbakedGeometry<DragonArmorGeometry>{
+	static class DragonArmorGeometry implements IUnbakedGeometry<DragonArmorGeometry>
+	{
 		private final ImmutableMap<String, BlockModel> models;
 		
 		public DragonArmorGeometry(ImmutableMap<String, BlockModel> models)
@@ -99,8 +90,7 @@ public class DragonArmorItemModel
 		public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides)
 		{
 			var baked = ImmutableMap.<String, BakedModel>builder();
-			for (var entry : models.entrySet())
-			{
+			for (var entry : models.entrySet()) {
 				var unbaked = entry.getValue();
 				unbaked.resolveParents(baker::getModel);
 				baked.put(entry.getKey(), unbaked.bake(baker, unbaked, spriteGetter, modelState, true));
@@ -132,8 +122,7 @@ public class DragonArmorItemModel
 		public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand, ModelData extraData, RenderType renderType)
 		{
 			var data = extraData.get(Data.PROPERTY);
-			if (data != null && models.containsKey(data.armorId))
-				return models.get(data.armorId()).getQuads(state, side, rand, extraData, renderType);
+			if (data != null && models.containsKey(data.armorId)) return models.get(data.armorId()).getQuads(state, side, rand, extraData, renderType);
 			
 			return FALLBACK.get().getQuads(state, side, rand, extraData, renderType);
 		}
@@ -172,8 +161,7 @@ public class DragonArmorItemModel
 		public TextureAtlasSprite getParticleIcon(ModelData modelData)
 		{
 			var data = modelData.get(Data.PROPERTY);
-			if (data != null && models.containsKey(data.armorId))
-				return models.get(data.armorId()).getParticleIcon(modelData);
+			if (data != null && models.containsKey(data.armorId)) return models.get(data.armorId()).getParticleIcon(modelData);
 			
 			return getParticleIcon();
 		}
@@ -215,7 +203,7 @@ public class DragonArmorItemModel
 			var override = nested.resolve(original, stack, level, entity, pSeed);
 			if (override != original) return override;
 			
-			if(stack.has(DataComponents.CUSTOM_DATA)){
+			if (stack.has(DataComponents.CUSTOM_DATA)) {
 				var customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
 				var tag = customData.copyTag();
 				var armor = tag.getString(NBTConstants.ARMOR);
@@ -227,7 +215,7 @@ public class DragonArmorItemModel
 		}
 	}
 	
-	@EventBusSubscriber( modid = DragonMountsRemaster.MOD_ID, bus = Bus.MOD, value = Dist.CLIENT)
+	@EventBusSubscriber( modid = DragonMountsRemaster.MOD_ID, bus = Bus.MOD, value = Dist.CLIENT )
 	public static class ClientEvents
 	{
 		@SubscribeEvent

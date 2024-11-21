@@ -4,7 +4,6 @@ import dmr.DragonMounts.DMRConstants.NBTConstants;
 import dmr.DragonMounts.common.config.DMRConfig;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.server.ai.DragonBodyController;
-import dmr.DragonMounts.server.ai.DragonMoveController;
 import dmr.DragonMounts.server.navigation.DragonPathNavigation;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import net.minecraft.core.BlockPos;
@@ -32,7 +31,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -48,7 +46,7 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 	public static final int ARMOR_SLOT = 1;
 	public static final int CHEST_SLOT = 2;
 	
-	private static final int INVENTORY_SIZE = 9*3;
+	private static final int INVENTORY_SIZE = 9 * 3;
 	
 	public SimpleContainer inventory;
 	
@@ -70,7 +68,8 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 	private static final EntityDataAccessor<BlockPos> DATA_PATHING_GOAL = SynchedEntityData.defineId(AbstractDMRDragonEntity.class, EntityDataSerializers.BLOCK_POS);
 	
 	@Override
-	protected PathNavigation createNavigation(Level pLevel) {
+	protected PathNavigation createNavigation(Level pLevel)
+	{
 		DragonPathNavigation dragonNavigation = new DragonPathNavigation(this, pLevel);
 		dragonNavigation.setCanFloat(true);
 		dragonNavigation.setMaxVisitedNodesMultiplier(2f);
@@ -83,20 +82,24 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		return new DragonBodyController((DMRDragonEntity)this);
 	}
 	
-	public UUID getDragonUUID(){
+	public UUID getDragonUUID()
+	{
 		var id = getEntityData().get(DATA_UUID);
 		return !id.isBlank() ? UUID.fromString(id) : null;
 	}
 	
-	public void setDragonUUID(UUID uuid){
+	public void setDragonUUID(UUID uuid)
+	{
 		getEntityData().set(DATA_UUID, uuid.toString());
 	}
 	
-	public void setSummonInstance(UUID uuid){
+	public void setSummonInstance(UUID uuid)
+	{
 		getEntityData().set(DATA_SUMMON_INSTANCE, uuid.toString());
 	}
 	
-	public UUID getSummonInstance(){
+	public UUID getSummonInstance()
+	{
 		var id = getEntityData().get(DATA_SUMMON_INSTANCE);
 		return !id.isBlank() ? UUID.fromString(id) : null;
 	}
@@ -126,11 +129,13 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		return isTame() && reproCount < DMRConfig.REPRO_LIMIT.get() && !getBreed().isHybrid();
 	}
 	
-	public boolean hasChest() {
+	public boolean hasChest()
+	{
 		return this.entityData.get(DATA_ID_CHEST);
 	}
 	
-	public void setChest(boolean pChested) {
+	public void setChest(boolean pChested)
+	{
 		this.entityData.set(DATA_ID_CHEST, pChested);
 	}
 	
@@ -148,31 +153,36 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		return entityData.get(DATA_SADDLED);
 	}
 	
-	public BlockPos getWanderTarget(){
+	public BlockPos getWanderTarget()
+	{
 		return getEntityData().get(DATA_WANDERING_POS);
 	}
 	
-	public void setWanderTarget(BlockPos pos){
-		if(pos == null){
+	public void setWanderTarget(BlockPos pos)
+	{
+		if (pos == null) {
 			getEntityData().set(DATA_WANDERING_POS, BlockPos.ZERO);
 			return;
 		}
 		getEntityData().set(DATA_WANDERING_POS, pos);
 	}
 	
-	public BlockPos getPathingGoal(){
+	public BlockPos getPathingGoal()
+	{
 		return getEntityData().get(DATA_PATHING_GOAL);
 	}
 	
-	public void setPathingGoal(BlockPos pos){
-		if(pos == null){
+	public void setPathingGoal(BlockPos pos)
+	{
+		if (pos == null) {
 			getEntityData().set(DATA_PATHING_GOAL, BlockPos.ZERO);
 			return;
 		}
 		getEntityData().set(DATA_PATHING_GOAL, pos);
 	}
 	
-	public boolean hasWanderTarget(){
+	public boolean hasWanderTarget()
+	{
 		return !getWanderTarget().equals(BlockPos.ZERO);
 	}
 	
@@ -181,14 +191,15 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		var origBreed = entityData.get(DATA_ORIG_BREED);
 		
 		//If there is a original breed stored, try to fetch the breed from that
-		if(!origBreed.isBlank()){
+		if (!origBreed.isBlank()) {
 			return DragonBreedsRegistry.getDragonBreed(origBreed);
 		}
 		
 		return DragonBreedsRegistry.getDragonBreed(getBreedId());
 	}
 	
-	public String getBreedId(){
+	public String getBreedId()
+	{
 		return getEntityData().get(DATA_BREED);
 	}
 	
@@ -196,7 +207,7 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 	{
 		if (breed != dragonBreed) // prevent loops, unnecessary work, etc.
 		{
-			if(dragonBreed == null || dragonBreed.getId() == null || dragonBreed.getId().isBlank()) return;
+			if (dragonBreed == null || dragonBreed.getId() == null || dragonBreed.getId().isBlank()) return;
 			
 			if (breed != null) breed.close((DMRDragonEntity)this);
 			this.breed = dragonBreed;
@@ -263,7 +274,8 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		return true;
 	}
 	
-	public boolean isWearingArmor() {
+	public boolean isWearingArmor()
+	{
 		return !this.getItemBySlot(EquipmentSlot.CHEST).isEmpty();
 	}
 	
@@ -274,7 +286,7 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 	
 	public double getHealthRelative()
 	{
-		return getHealth() / (double) getMaxHealth();
+		return getHealth() / (double)getMaxHealth();
 	}
 	
 	public int getMaxDeathTime()
@@ -287,7 +299,7 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 	{
 		super.defineSynchedData(builder);
 		
-		builder.define(DATA_BREED,"");
+		builder.define(DATA_BREED, "");
 		builder.define(DATA_ORIG_BREED, "");
 		builder.define(DATA_SADDLED, false);
 		builder.define(DATA_UUID, "");
@@ -300,13 +312,10 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 	@Override
 	public void onSyncedDataUpdated(EntityDataAccessor<?> data)
 	{
-		if (DATA_BREED.equals(data))
-		{
+		if (DATA_BREED.equals(data)) {
 			setBreed(DragonBreedsRegistry.getDragonBreed(entityData.get(DATA_BREED)));
 			updateAgeProperties();
-		}
-		else if (DATA_FLAGS_ID.equals(data)) refreshDimensions();
-		else super.onSyncedDataUpdated(data);
+		} else if (DATA_FLAGS_ID.equals(data)) {refreshDimensions();} else super.onSyncedDataUpdated(data);
 	}
 	
 	@Override
@@ -317,8 +326,8 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		var origBreed = entityData.get(DATA_ORIG_BREED);
 		
 		//If original breed exists but is same as current breed, no reason to keep original
-		if(!origBreed.isBlank()){
-			if(origBreed.equals(getBreed().getId())) {
+		if (!origBreed.isBlank()) {
+			if (origBreed.equals(getBreed().getId())) {
 				entityData.set(DATA_ORIG_BREED, "");
 			}
 		}
@@ -354,7 +363,7 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		setBreed(breed); // high priority...
 		
 		//If the breed is not the same as the intended breed, set the original breed
-		if(!Objects.equals(breed.getId(), breedKey)){
+		if (!Objects.equals(breed.getId(), breedKey)) {
 			entityData.set(DATA_ORIG_BREED, breedKey);
 		}
 		
@@ -374,32 +383,37 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 				this.inventory.setItem(j, ItemStack.parse(this.registryAccess(), compoundtag).orElse(ItemStack.EMPTY));
 			}
 		}
-	
+		
 		this.updateContainerEquipment();
 	}
-	protected int getInventorySize() {
+	
+	protected int getInventorySize()
+	{
 		return 3 + INVENTORY_SIZE;
 	}
 	
-	public boolean hasInventoryChanged(Container pInventory) {
+	public boolean hasInventoryChanged(Container pInventory)
+	{
 		return this.inventory != pInventory;
 	}
 	
-	public void updateContainerEquipment() {
+	public void updateContainerEquipment()
+	{
 		if (!this.level().isClientSide) {
 			setSaddled(!this.inventory.getItem(SADDLE_SLOT).isEmpty() && this.inventory.getItem(SADDLE_SLOT).is(Items.SADDLE));
 			setChest(!this.inventory.getItem(CHEST_SLOT).isEmpty() && (this.inventory.getItem(CHEST_SLOT).is(Items.CHEST) || this.inventory.getItem(CHEST_SLOT).is(Items.ENDER_CHEST)));
 		}
 	}
 	
-	protected void createInventory() {
+	protected void createInventory()
+	{
 		SimpleContainer simplecontainer = this.inventory;
 		this.inventory = new SimpleContainer(getInventorySize());
 		if (simplecontainer != null) {
 			simplecontainer.removeListener(this);
 			int i = Math.min(simplecontainer.getContainerSize(), this.inventory.getContainerSize());
 			
-			for(int j = 0; j < i; ++j) {
+			for (int j = 0; j < i; ++j) {
 				ItemStack itemstack = simplecontainer.getItem(j);
 				if (!itemstack.isEmpty()) {
 					this.inventory.setItem(j, itemstack.copy());
@@ -411,8 +425,9 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		this.updateContainerEquipment();
 	}
 	
-	public boolean inventoryEmpty(){
-		for(int i = 3; i < this.inventory.getContainerSize(); ++i) {
+	public boolean inventoryEmpty()
+	{
+		for (int i = 3; i < this.inventory.getContainerSize(); ++i) {
 			if (!this.inventory.getItem(i).isEmpty()) {
 				return false;
 			}
@@ -434,13 +449,14 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 	}
 	
 	@Override
-	public Vec3 getDismountLocationForPassenger(LivingEntity pLivingEntity) {
-		Vec3 vec3 = getCollisionHorizontalEscapeVector((double)this.getBbWidth(), (double)pLivingEntity.getBbWidth(), this.getYRot() + (pLivingEntity.getMainArm() == HumanoidArm.RIGHT ? 90.0F : -90.0F));
+	public Vec3 getDismountLocationForPassenger(LivingEntity pLivingEntity)
+	{
+		Vec3 vec3 = getCollisionHorizontalEscapeVector(this.getBbWidth(), pLivingEntity.getBbWidth(), this.getYRot() + (pLivingEntity.getMainArm() == HumanoidArm.RIGHT ? 90.0F : -90.0F));
 		Vec3 vec31 = this.getDismountLocationInDirection(vec3, pLivingEntity);
 		if (vec31 != null) {
 			return vec31;
 		} else {
-			Vec3 vec32 = getCollisionHorizontalEscapeVector((double)this.getBbWidth(), (double)pLivingEntity.getBbWidth(), this.getYRot() + (pLivingEntity.getMainArm() == HumanoidArm.LEFT ? 90.0F : -90.0F));
+			Vec3 vec32 = getCollisionHorizontalEscapeVector(this.getBbWidth(), pLivingEntity.getBbWidth(), this.getYRot() + (pLivingEntity.getMainArm() == HumanoidArm.LEFT ? 90.0F : -90.0F));
 			Vec3 vec33 = this.getDismountLocationInDirection(vec32, pLivingEntity);
 			return vec33 != null ? vec33 : this.position();
 		}
@@ -448,17 +464,18 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 	
 	
 	//AbstractHorse.java - 1.19.2
-	private Vec3 getDismountLocationInDirection(Vec3 pDirection, LivingEntity pPassenger) {
+	private Vec3 getDismountLocationInDirection(Vec3 pDirection, LivingEntity pPassenger)
+	{
 		double d0 = this.getX() + pDirection.x;
 		double d1 = this.getBoundingBox().minY;
 		double d2 = this.getZ() + pDirection.z;
 		BlockPos.MutableBlockPos blockpos_mutableblockpos = new BlockPos.MutableBlockPos();
 		
-		for(Pose pose : pPassenger.getDismountPoses()) {
+		for (Pose pose : pPassenger.getDismountPoses()) {
 			blockpos_mutableblockpos.set(d0, d1, d2);
 			double d3 = this.getBoundingBox().maxY + 0.75D;
 			
-			while(true) {
+			while (true) {
 				double d4 = this.level.getBlockFloorHeight(blockpos_mutableblockpos);
 				if ((double)blockpos_mutableblockpos.getY() + d4 > d3) {
 					break;
@@ -483,20 +500,18 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		return null;
 	}
 	
-	protected boolean isAboveGround() {
-		return this.onGround()
-		       || this.fallDistance < this.maxUpStep()
-		          && !this.level().noCollision(this, this.getBoundingBox().move(0.0, (double)(this.fallDistance - this.maxUpStep()), 0.0));
+	protected boolean isAboveGround()
+	{
+		return this.onGround() || this.fallDistance < this.maxUpStep() && !this.level().noCollision(this, this.getBoundingBox().move(0.0, this.fallDistance - this.maxUpStep(), 0.0));
 	}
 	
-	protected Vec3 maybeBackOffFromEdge(Vec3 pVec, MoverType pMover) {
-		if (pVec.y <= 0.0
-		    && this.isShiftKeyDown()
-		    && this.isAboveGround()) {
+	protected Vec3 maybeBackOffFromEdge(Vec3 pVec, MoverType pMover)
+	{
+		if (pVec.y <= 0.0 && this.isShiftKeyDown() && this.isAboveGround()) {
 			double d0 = pVec.x;
 			double d1 = pVec.z;
 			
-			while(d0 != 0.0 && this.level.noCollision(this, this.getBoundingBox().move(d0, -this.maxUpStep(), 0.0))) {
+			while (d0 != 0.0 && this.level.noCollision(this, this.getBoundingBox().move(d0, -this.maxUpStep(), 0.0))) {
 				if (d0 < 0.05 && d0 >= -0.05) {
 					d0 = 0.0;
 				} else if (d0 > 0.0) {
@@ -506,7 +521,7 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 				}
 			}
 			
-			while(d1 != 0.0 && this.level.noCollision(this, this.getBoundingBox().move(0.0, -this.maxUpStep(), d1))) {
+			while (d1 != 0.0 && this.level.noCollision(this, this.getBoundingBox().move(0.0, -this.maxUpStep(), d1))) {
 				if (d1 < 0.05 && d1 >= -0.05) {
 					d1 = 0.0;
 				} else if (d1 > 0.0) {
@@ -516,7 +531,7 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 				}
 			}
 			
-			while(d0 != 0.0 && d1 != 0.0 && this.level.noCollision(this, this.getBoundingBox().move(d0, -this.maxUpStep(), d1))) {
+			while (d0 != 0.0 && d1 != 0.0 && this.level.noCollision(this, this.getBoundingBox().move(d0, -this.maxUpStep(), d1))) {
 				if (d0 < 0.05 && d0 >= -0.05) {
 					d0 = 0.0;
 				} else if (d0 > 0.0) {
@@ -549,7 +564,7 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 	@Override
 	public LivingEntity getControllingPassenger()
 	{
-		return getFirstPassenger() instanceof LivingEntity driver && isOwnedBy(driver)? driver : null;
+		return getFirstPassenger() instanceof LivingEntity driver && isOwnedBy(driver) ? driver : null;
 	}
 	
 	@Override
