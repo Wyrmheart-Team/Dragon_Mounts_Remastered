@@ -18,7 +18,7 @@ dependencies {
     implementation "software.bernie.geckolib:geckolib-neoforge-$minecraft_version:$geckolib_version"
 
     compileOnly "mezz.jei:jei-$minecraft_version-common-api:$jei_version"
-    compileOnly"mezz.jei:jei-$minecraft_version-neoforge-api:$jei_version"
+    compileOnly "mezz.jei:jei-$minecraft_version-neoforge-api:$jei_version"
 
     runtimeOnly "mezz.jei:jei-$minecraft_version-neoforge:$jei_version"
 }
@@ -57,10 +57,6 @@ neoForge {
         "${mod_id}" {
             sourceSet(sourceSets.main)
         }
-    }
-
-    neoFormRuntime {
-        additionalResults.put('vanillaDeobfuscated', project.file('build/vanilla.jar'))
     }
 }
 

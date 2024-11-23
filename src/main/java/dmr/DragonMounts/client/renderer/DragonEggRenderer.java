@@ -25,11 +25,9 @@ public class DragonEggRenderer implements BlockEntityRenderer<DragonEggBlockEnti
 		if (model instanceof DragonEggModel.Baked eggModel) {
 			var bakedModel = eggModel.models.get(dragonEggBlockEntity.getBreedId());
 			
-			poseStack.pushPose();
-			var time = dragonEggBlockEntity.getLevel().getGameTime();
-			float hatchProgress = ((float)dragonEggBlockEntity.getHatchTime() / dragonEggBlockEntity.getBreed().getHatchTime());
-			float oscillationPeriod = 100;
-			float angle = (float)Math.sin((time % oscillationPeriod) * (2 * Math.PI / oscillationPeriod)) * (2 + (18 * hatchProgress)); // Oscillates between -10 and +10 degrees
+			poseStack.pushPose(); var time = dragonEggBlockEntity.tickCount;
+			float hatchProgress = ((float)dragonEggBlockEntity.getHatchTime() / dragonEggBlockEntity.getBreed().getHatchTime()); float oscillationPeriod = 100 - (hatchProgress * 50);
+			float angle = (float)Math.sin((time % oscillationPeriod) * (2 * Math.PI / oscillationPeriod)) * (2 + (5 * hatchProgress));
 			
 			poseStack.translate(0.5, 0, 0.5);
 			poseStack.rotateAround(Axis.XN.rotationDegrees(angle), 0, 0, 0);

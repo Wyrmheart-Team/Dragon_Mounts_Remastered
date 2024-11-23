@@ -120,7 +120,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Setup forge mdk
-        run: ./gradlew init
+        run: ./gradlew init --overwrite
 
       - name: Build with Gradle
         run: ./gradlew build

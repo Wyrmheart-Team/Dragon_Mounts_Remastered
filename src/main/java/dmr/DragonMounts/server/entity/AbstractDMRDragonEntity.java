@@ -2,16 +2,19 @@ package dmr.DragonMounts.server.entity;
 
 import dmr.DragonMounts.DMRConstants.NBTConstants;
 import dmr.DragonMounts.common.config.DMRConfig;
+import dmr.DragonMounts.registry.DMRMemoryModuleTypes;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.server.ai.DragonBodyController;
-import dmr.DragonMounts.server.navigation.DragonPathNavigation;
+import dmr.DragonMounts.server.ai.navigation.DragonPathNavigation;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.DebugPackets;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -27,6 +30,7 @@ import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -67,12 +71,13 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 	private static final EntityDataAccessor<Boolean> DATA_ID_CHEST = SynchedEntityData.defineId(AbstractDMRDragonEntity.class, EntityDataSerializers.BOOLEAN);
 	private static final EntityDataAccessor<BlockPos> DATA_PATHING_GOAL = SynchedEntityData.defineId(AbstractDMRDragonEntity.class, EntityDataSerializers.BLOCK_POS);
 	
+	public static final EntityDataAccessor<Long> LAST_POSE_CHANGE_TICK = SynchedEntityData.defineId(AbstractDMRDragonEntity.class, EntityDataSerializers.LONG);
+	
 	@Override
 	protected PathNavigation createNavigation(Level pLevel)
 	{
 		DragonPathNavigation dragonNavigation = new DragonPathNavigation(this, pLevel);
 		dragonNavigation.setCanFloat(true);
-		dragonNavigation.setMaxVisitedNodesMultiplier(2f);
 		return dragonNavigation;
 	}
 	
@@ -80,6 +85,32 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 	public BodyRotationControl createBodyControl()
 	{
 		return new DragonBodyController((DMRDragonEntity)this);
+	}
+	
+	@Override
+	protected AABB getAttackBoundingBox()
+	{
+		return super.getAttackBoundingBox().inflate(2, 2, 2);
+	}
+	
+	public boolean canChangePose()
+	{
+		return this.wouldNotSuffocateAtTargetPose(this.isInSittingPose() ? Pose.STANDING : Pose.SITTING);
+	}
+	
+	public long getPoseTime()
+	{
+		return this.level().getGameTime() - Math.abs(this.entityData.get(LAST_POSE_CHANGE_TICK));
+	}
+	
+	public void resetLastPoseChangeTick(long lastPoseChangeTick)
+	{
+		this.entityData.set(LAST_POSE_CHANGE_TICK, lastPoseChangeTick);
+	}
+	
+	public void resetLastPoseChangeTickToFullStand(long lastPoseChangedTick)
+	{
+		this.resetLastPoseChangeTick(Math.max(0L, lastPoseChangedTick - 52L - 1L));
 	}
 	
 	public UUID getDragonUUID()
@@ -160,11 +191,12 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 	
 	public void setWanderTarget(BlockPos pos)
 	{
-		if (pos == null) {
+		if (pos == null || pos.equals(BlockPos.ZERO)) {
+			getBrain().eraseMemory(DMRMemoryModuleTypes.WANDER_TARGET.get());
 			getEntityData().set(DATA_WANDERING_POS, BlockPos.ZERO);
 			return;
 		}
-		getEntityData().set(DATA_WANDERING_POS, pos);
+		getEntityData().set(DATA_WANDERING_POS, pos); getBrain().setMemory(DMRMemoryModuleTypes.WANDER_TARGET.get(), GlobalPos.of(level.dimension(), pos)); setOrderedToSit(false);
 	}
 	
 	public BlockPos getPathingGoal()
@@ -254,6 +286,12 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 	
 	public abstract void updateAgeProperties();
 	
+	@Override
+	public float getWalkTargetValue(BlockPos pos, LevelReader level)
+	{
+		return 0.0F;
+	}
+	
 	
 	@Override
 	public int getAge()
@@ -276,7 +314,7 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 	
 	public boolean isWearingArmor()
 	{
-		return !this.getItemBySlot(EquipmentSlot.CHEST).isEmpty();
+		return !getBodyArmorItem().isEmpty();
 	}
 	
 	public boolean isServer()
@@ -295,6 +333,40 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 	}
 	
 	@Override
+	public ItemStack getItemBySlot(EquipmentSlot slot)
+	{
+		return switch (slot) {
+			case BODY -> getBodyArmorItem(); default -> super.getItemBySlot(slot);
+		};
+	}
+	
+	@Override
+	public void setItemSlot(EquipmentSlot slot, ItemStack stack)
+	{
+		this.verifyEquippedItem(stack); if (slot == EquipmentSlot.BODY) {
+		ItemStack itemstack = getItemBySlot(slot); setBodyArmorItem(stack); this.onEquipItem(slot, itemstack, stack);
+	}
+	}
+	
+	@Override
+	public ItemStack getBodyArmorItem()
+	{
+		return inventory.getItem(ARMOR_SLOT);
+	}
+	
+	@Override
+	public void setBodyArmorItem(ItemStack stack)
+	{
+		inventory.setItem(ARMOR_SLOT, stack);
+	}
+	
+	@Override
+	public AABB getBoundingBoxForCulling()
+	{
+		return getBoundingBox().inflate(5, 5, 5);
+	}
+	
+	@Override
 	protected void defineSynchedData(SynchedEntityData.Builder builder)
 	{
 		super.defineSynchedData(builder);
@@ -306,7 +378,13 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		builder.define(DATA_SUMMON_INSTANCE, "");
 		builder.define(DATA_WANDERING_POS, BlockPos.ZERO);
 		builder.define(DATA_PATHING_GOAL, BlockPos.ZERO);
-		builder.define(DATA_ID_CHEST, false);
+		builder.define(DATA_ID_CHEST, false); builder.define(LAST_POSE_CHANGE_TICK, 0L);
+	}
+	
+	@Override
+	protected void sendDebugPackets()
+	{
+		super.sendDebugPackets(); DebugPackets.sendEntityBrain(this);
 	}
 	
 	@Override
@@ -338,7 +416,7 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		compound.putBoolean(NBTConstants.CHEST, hasChest());
 		compound.putInt(NBTConstants.REPRO_COUNT, reproCount);
 		compound.putString(NBTConstants.DRAGON_UUID, getDragonUUID().toString());
-		compound.put(NBTConstants.WANDERING_POS, NbtUtils.writeBlockPos(getWanderTarget()));
+		compound.put(NBTConstants.WANDERING_POS, NbtUtils.writeBlockPos(getWanderTarget())); compound.putLong("LastPoseTick", this.entityData.get(LAST_POSE_CHANGE_TICK));
 		
 		ListTag listtag = new ListTag();
 		for (int i = 0; i < this.inventory.getContainerSize(); i++) {
@@ -373,6 +451,10 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		this.reproCount = compound.getInt(NBTConstants.REPRO_COUNT);
 		setDragonUUID(UUID.fromString(compound.getString(NBTConstants.DRAGON_UUID)));
 		setWanderTarget(NbtUtils.readBlockPos(compound, NBTConstants.WANDERING_POS).orElse(null));
+		
+		if (isTame()) {
+			getBrain().setMemory(DMRMemoryModuleTypes.IS_TAMED.get(), true);
+		}
 		
 		ListTag listtag = compound.getList("Items", 10);
 		

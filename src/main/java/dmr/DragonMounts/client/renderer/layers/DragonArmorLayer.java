@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.FastColor;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoRenderer;
@@ -30,23 +29,20 @@ public class DragonArmorLayer extends GeoRenderLayer<DMRDragonEntity>
 	@Override
 	public void render(PoseStack matrixStackIn, DMRDragonEntity entityLivingBaseIn, BakedGeoModel bakedModel, RenderType renderType1, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay)
 	{
-		if (!entityLivingBaseIn.isWearingArmor()) return;
-		ItemStack armor = entityLivingBaseIn.getItemBySlot(EquipmentSlot.CHEST);
+		if (!entityLivingBaseIn.isWearingArmor()) return; ItemStack armor = entityLivingBaseIn.getBodyArmorItem();
 		if (armor.isEmpty()) return;
 		
 		DragonArmor armorType = DragonArmor.getArmorType(armor);
 		if (armorType == null) return;
 		
-		ResourceLocation glowTexture = DragonMountsRemaster.id("textures/entity/armor/" + armorType.getId() + "_dragon_armor.png");
+		ResourceLocation armorTexture = DragonMountsRemaster.id("textures/entity/armor/" + armorType.getId() + "_dragon_armor.png");
 		
-		Optional<Resource> resourceOptional = Minecraft.getInstance().getResourceManager().getResource(glowTexture);
+		Optional<Resource> resourceOptional = Minecraft.getInstance().getResourceManager().getResource(armorTexture);
 		if (resourceOptional.isEmpty()) return;
 		
 		if (DragonMountsRemaster.DEBUG) {
 			Minecraft.getInstance().getProfiler().push("armor_layer");
-		}
-		var renderType = RenderType.armorCutoutNoCull(glowTexture);
-		getRenderer().reRender(bakedModel, matrixStackIn, bufferSource, entityLivingBaseIn, renderType, bufferSource.getBuffer(renderType), partialTick, 15728640, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.opaque(0xFFFFFF));
+		} var renderType = RenderType.entityCutoutNoCullZOffset(armorTexture); getRenderer().reRender(bakedModel, matrixStackIn, bufferSource, entityLivingBaseIn, renderType, bufferSource.getBuffer(renderType), partialTick, packedLight, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.opaque(0xFFFFFF));
 		
 		if (DragonMountsRemaster.DEBUG) {
 			Minecraft.getInstance().getProfiler().pop();

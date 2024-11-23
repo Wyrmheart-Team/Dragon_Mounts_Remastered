@@ -71,7 +71,7 @@ public class DragonMountsRemaster
 		DMRSounds.SOUNDS.register(bus);
 		DMRCreativeTabs.CREATIVE_MODE_TABS.register(bus);
 		DMRMenus.MENU_TYPES.register(bus);
-		DMRCapability.ATTACHMENT_TYPES.register(bus);
+		DMRCapability.ATTACHMENT_TYPES.register(bus); DMRSensors.SENSORS.register(bus); DMRMemoryModuleTypes.MEMORY_MODULE_TYPE.register(bus);
 		
 		bus.addListener(NetworkHandler::registerEvent);
 		bus.addListener(DataPackHandler::newDataPack);

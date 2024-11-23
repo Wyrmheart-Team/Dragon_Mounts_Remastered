@@ -24,9 +24,9 @@ public class RidingCameraHandler
 		
 		if (currentPlayer != null && currentPlayer.getRootVehicle() instanceof DMRDragonEntity) {
 			if (setup.getCamera().isDetached()) {
-				float gradualIncrease = Mth.lerp(0.25f, lastCameraIncrease, info.getMaxZoom(DMRConfig.RIDING_CAMERA_OFFSET.get()));
+				float maxZoom = info.getMaxZoom(DMRConfig.RIDING_CAMERA_OFFSET.get()); float gradualIncrease = Mth.lerp(0.25f, lastCameraIncrease, maxZoom);
 				info.move(gradualIncrease * -1f, (gradualIncrease / 2f) * -1f, 0f);
-				lastCameraIncrease = gradualIncrease;
+				lastCameraIncrease = gradualIncrease; return;
 			}
 		}
 		

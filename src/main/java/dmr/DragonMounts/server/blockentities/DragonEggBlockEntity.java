@@ -85,7 +85,7 @@ public class DragonEggBlockEntity extends BlockEntity
 		this.customName = name;
 	}
 	
-	int tickCount = 0;
+	public int tickCount = 0;
 	
 	public void tick(Level pLevel, BlockPos pPos, BlockState pState)
 	{

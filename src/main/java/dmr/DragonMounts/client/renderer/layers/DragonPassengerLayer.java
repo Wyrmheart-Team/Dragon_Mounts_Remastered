@@ -70,6 +70,8 @@ public class DragonPassengerLayer <T extends DMRDragonEntity> extends GeoRenderL
 	
 	public <E extends Entity> void renderEntity(E entityIn, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn, int packedLight)
 	{
+		//		if(entityIn instanceof DMRDragonEntity) return; //Attempt at fixing crash with EMF mod
+		
 		boolean isFirstPerson = Minecraft.getInstance().options.getCameraType().isFirstPerson();
 		LocalPlayer clientPlayer = Minecraft.getInstance().player;
 		if (isFirstPerson && entityIn == clientPlayer) return;
