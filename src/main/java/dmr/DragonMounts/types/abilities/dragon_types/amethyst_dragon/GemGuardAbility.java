@@ -10,25 +10,23 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 
-
 @EventBusSubscriber
 public class GemGuardAbility implements Ability {
+
 	@Override
-	public String type()
-	{
+	public String type() {
 		return "gem_guard";
 	}
-	
+
 	private static final double deflect_chance = 0.25;
-	
+
 	@SubscribeEvent
-	public static void projectileEvent(ProjectileImpactEvent event)
-	{
+	public static void projectileEvent(ProjectileImpactEvent event) {
 		var hitResult = event.getRayTraceResult();
-		
+
 		if (hitResult instanceof EntityHitResult result && result.getType() == Type.ENTITY) {
 			var target = result.getEntity();
-			
+
 			if (target instanceof DMRDragonEntity dragon) {
 				if (dragon.getBreed().getAbilities().contains(DragonAbilities.GEM_GUARD)) {
 					if (dragon.getRandom().nextDouble() < deflect_chance) {

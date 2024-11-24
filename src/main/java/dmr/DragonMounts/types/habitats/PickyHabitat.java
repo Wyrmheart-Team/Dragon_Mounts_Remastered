@@ -7,11 +7,13 @@ import net.minecraft.world.level.Level;
 import java.util.List;
 
 public record PickyHabitat(List<Habitat> habitats) implements Habitat {
-	public static final Codec<PickyHabitat> CODEC = Habitat.CODEC.listOf().fieldOf("required_habitats").xmap(PickyHabitat::new, PickyHabitat::habitats).codec();
-	
+	public static final Codec<PickyHabitat> CODEC = Habitat.CODEC.listOf()
+		.fieldOf("required_habitats")
+		.xmap(PickyHabitat::new, PickyHabitat::habitats)
+		.codec();
+
 	@Override
-	public int getHabitatPoints(Level level, BlockPos pos)
-	{
+	public int getHabitatPoints(Level level, BlockPos pos) {
 		int points = 0;
 		for (var habitat : habitats) {
 			int i = habitat.getHabitatPoints(level, pos);
@@ -20,10 +22,9 @@ public record PickyHabitat(List<Habitat> habitats) implements Habitat {
 		}
 		return points;
 	}
-	
+
 	@Override
-	public String type()
-	{
+	public String type() {
 		return Habitat.PICKY;
 	}
 }

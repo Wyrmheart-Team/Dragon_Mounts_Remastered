@@ -3,9 +3,9 @@ package dmr.DragonMounts.client.model;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
-import dmr.DragonMounts.registry.DMRComponents;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
-import dmr.DragonMounts.server.blockentities.DragonEggBlockEntity;
+import dmr.DragonMounts.registry.ModComponents;
+import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
 import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -41,16 +41,21 @@ import java.util.function.Supplier;
  * A dynamic BakedModel which returns quads based on the given breed of the tile entity.
  */
 public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
+
 	private final ImmutableMap<String, BlockModel> models;
-	
-	public DragonEggModel(ImmutableMap<String, BlockModel> models)
-	{
+
+	public DragonEggModel(ImmutableMap<String, BlockModel> models) {
 		this.models = models;
 	}
-	
+
 	@Override
-	public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides)
-	{
+	public BakedModel bake(
+		IGeometryBakingContext context,
+		ModelBaker baker,
+		Function<Material, TextureAtlasSprite> spriteGetter,
+		ModelState modelState,
+		ItemOverrides overrides
+	) {
 		var baked = ImmutableMap.<String, BakedModel>builder();
 		for (var entry : models.entrySet()) {
 			var unbaked = entry.getValue();
@@ -59,126 +64,118 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
 		}
 		return new Baked(baked.build(), overrides);
 	}
-	
+
 	private record Data(String breedId) {
 		private static final ModelProperty<Data> PROPERTY = new ModelProperty<>();
 	}
-	
+
 	public static class Baked implements IDynamicBakedModel {
-		private static final Supplier<BakedModel> FALLBACK = Suppliers.memoize(() -> Minecraft.getInstance().getBlockRenderer().getBlockModel(Blocks.DRAGON_EGG.defaultBlockState()));
-		
+
+		public static final Supplier<BakedModel> FALLBACK = Suppliers.memoize(() ->
+			Minecraft.getInstance().getBlockRenderer().getBlockModel(Blocks.DRAGON_EGG.defaultBlockState())
+		);
+
 		public final ImmutableMap<String, BakedModel> models;
 		private final ItemOverrides overrides;
-		
-		public Baked(ImmutableMap<String, BakedModel> models, ItemOverrides overrides)
-		{
+
+		public Baked(ImmutableMap<String, BakedModel> models, ItemOverrides overrides) {
 			this.models = models;
 			this.overrides = new ItemModelResolver(this, overrides);
 		}
-		
+
 		@Override
-		public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand, ModelData extraData, RenderType renderType)
-		{
-			var data = extraData.get(Data.PROPERTY); if (data != null && models.containsKey(data.breedId)) {
-			return models.get(data.breedId()).getQuads(state, side, rand, extraData, renderType);
-		}
-			
+		public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand, ModelData extraData, RenderType renderType) {
+			var data = extraData.get(Data.PROPERTY);
+			if (data != null && models.containsKey(data.breedId)) {
+				return models.get(data.breedId()).getQuads(state, side, rand, extraData, renderType);
+			}
+
 			return FALLBACK.get().getQuads(state, side, rand, extraData, renderType);
 		}
-		
+
 		@Override
-		public boolean useAmbientOcclusion()
-		{
+		public boolean useAmbientOcclusion() {
 			return true;
 		}
-		
+
 		@Override
-		public boolean isGui3d()
-		{
+		public boolean isGui3d() {
 			return true;
 		}
-		
+
 		@Override
-		public boolean usesBlockLight()
-		{
+		public boolean usesBlockLight() {
 			return true;
 		}
-		
+
 		@Override
-		public boolean isCustomRenderer()
-		{
+		public boolean isCustomRenderer() {
 			return false;
 		}
-		
+
 		@Override
-		public TextureAtlasSprite getParticleIcon()
-		{
+		public TextureAtlasSprite getParticleIcon() {
 			return FALLBACK.get().getParticleIcon();
 		}
-		
+
 		@Override
-		public TextureAtlasSprite getParticleIcon(ModelData modelData)
-		{
-			var data = modelData.get(Data.PROPERTY); if (data != null && models.containsKey(data.breedId)) {
-			return models.get(data.breedId()).getParticleIcon(modelData);
-		}
-			
+		public TextureAtlasSprite getParticleIcon(ModelData modelData) {
+			var data = modelData.get(Data.PROPERTY);
+			if (data != null && models.containsKey(data.breedId)) {
+				return models.get(data.breedId()).getParticleIcon(modelData);
+			}
+
 			return getParticleIcon();
 		}
-		
+
 		@Override
-		public ItemOverrides getOverrides()
-		{
+		public ItemOverrides getOverrides() {
 			return overrides;
 		}
-		
+
 		@Override
-		public BakedModel applyTransform(ItemDisplayContext transformType, PoseStack poseStack, boolean applyLeftHandTransform)
-		{
+		public BakedModel applyTransform(ItemDisplayContext transformType, PoseStack poseStack, boolean applyLeftHandTransform) {
 			return FALLBACK.get().applyTransform(transformType, poseStack, applyLeftHandTransform);
 		}
-		
+
 		@Override
-		public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData)
-		{
-			if (level.getBlockEntity(pos) instanceof DragonEggBlockEntity e && e.isModelReady()) {
+		public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData) {
+			if (level.getBlockEntity(pos) instanceof DMREggBlockEntity e && e.isModelReady()) {
 				var breed = e.getBreed() instanceof DragonHybridBreed hybridBreed ? hybridBreed.parent1 : e.getBreed();
 				return modelData.derive().with(Data.PROPERTY, new Data(breed.getId())).build();
 			}
 			return modelData;
 		}
 	}
-	
+
 	public static class ItemModelResolver extends ItemOverrides {
+
 		private final Baked owner;
 		private final ItemOverrides nested;
-		
-		public ItemModelResolver(Baked owner, ItemOverrides nested)
-		{
+
+		public ItemModelResolver(Baked owner, ItemOverrides nested) {
 			this.owner = owner;
 			this.nested = nested;
 		}
-		
-		
+
 		@Override
-		public BakedModel resolve(BakedModel original, ItemStack stack, ClientLevel level, LivingEntity entity, int pSeed)
-		{
+		public BakedModel resolve(BakedModel original, ItemStack stack, ClientLevel level, LivingEntity entity, int pSeed) {
 			var override = nested.resolve(original, stack, level, entity, pSeed);
 			if (override != original) return override;
-			
-			var breed = stack.getOrDefault(DMRComponents.DRAGON_BREED, DragonBreedsRegistry.getDefault().getId());
-			
+
+			var breed = stack.getOrDefault(ModComponents.DRAGON_BREED, DragonBreedsRegistry.getDefault().getId());
+
 			if (breed.startsWith("hybrid_")) {
 				var breedObject = DragonBreedsRegistry.getDragonBreed(breed);
-				
+
 				if (breedObject instanceof DragonHybridBreed hybridBreed) {
 					breed = hybridBreed.parent1.getId();
 				}
 			}
-			
-			var model = owner.models.get(breed); if (model != null) return model;
-			
-			
+
+			var model = owner.models.get(breed);
+			if (model != null) return model;
+
 			return original;
 		}
 	}

@@ -1,8 +1,8 @@
 package dmr.DragonMounts.network.packets;
 
-import dmr.DragonMounts.DragonMountsRemaster;
+import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.network.IMessage;
-import dmr.DragonMounts.registry.DMRCapability;
+import dmr.DragonMounts.registry.ModCapabilities;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -12,33 +12,34 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record DragonRespawnDelayPacket(int index, int delay) implements IMessage<DragonRespawnDelayPacket> {
-	public static final CustomPacketPayload.Type<DragonStatePacket> TYPE = new CustomPacketPayload.Type<>(DragonMountsRemaster.id("respawn_delay_sync"));
-	
+	public static final CustomPacketPayload.Type<DragonStatePacket> TYPE = new CustomPacketPayload.Type<>(DMR.id("respawn_delay_sync"));
+
 	@Override
-	public Type<? extends CustomPacketPayload> type()
-	{
+	public Type<? extends CustomPacketPayload> type() {
 		return TYPE;
 	}
-	
+
 	@Override
-	public DragonRespawnDelayPacket decode(FriendlyByteBuf buffer)
-	{
+	public DragonRespawnDelayPacket decode(FriendlyByteBuf buffer) {
 		return new DragonRespawnDelayPacket(buffer.readInt(), buffer.readInt());
 	}
-	
+
 	@Override
-	public void handle(IPayloadContext context, Player player)
-	{
-		var state = player.getData(DMRCapability.PLAYER_CAPABILITY);
+	public void handle(IPayloadContext context, Player player) {
+		var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
 		state.respawnDelays.put(index, delay);
 	}
-	
-	public static final StreamCodec<FriendlyByteBuf, DragonRespawnDelayPacket> STREAM_CODEC =
-			StreamCodec.composite(ByteBufCodecs.INT, DragonRespawnDelayPacket::index, ByteBufCodecs.INT, DragonRespawnDelayPacket::delay, DragonRespawnDelayPacket::new);
-	
+
+	public static final StreamCodec<FriendlyByteBuf, DragonRespawnDelayPacket> STREAM_CODEC = StreamCodec.composite(
+		ByteBufCodecs.INT,
+		DragonRespawnDelayPacket::index,
+		ByteBufCodecs.INT,
+		DragonRespawnDelayPacket::delay,
+		DragonRespawnDelayPacket::new
+	);
+
 	@Override
-	public StreamCodec<? super RegistryFriendlyByteBuf, DragonRespawnDelayPacket> streamCodec()
-	{
+	public StreamCodec<? super RegistryFriendlyByteBuf, DragonRespawnDelayPacket> streamCodec() {
 		return STREAM_CODEC;
 	}
 }

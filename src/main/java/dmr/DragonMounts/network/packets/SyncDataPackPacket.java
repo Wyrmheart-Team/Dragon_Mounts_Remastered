@@ -1,6 +1,6 @@
 package dmr.DragonMounts.network.packets;
 
-import dmr.DragonMounts.DragonMountsRemaster;
+import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.network.IMessage;
 import dmr.DragonMounts.types.DataPackHandler;
 import net.minecraft.network.FriendlyByteBuf;
@@ -12,31 +12,26 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record SyncDataPackPacket() implements IMessage<SyncDataPackPacket> {
 	@Override
-	public SyncDataPackPacket decode(FriendlyByteBuf buffer)
-	{
+	public SyncDataPackPacket decode(FriendlyByteBuf buffer) {
 		return new SyncDataPackPacket();
 	}
-	
+
 	public static final StreamCodec<FriendlyByteBuf, SyncDataPackPacket> STREAM_CODEC = StreamCodec.unit(new SyncDataPackPacket());
-	
+
 	@Override
-	public StreamCodec<? super RegistryFriendlyByteBuf, SyncDataPackPacket> streamCodec()
-	{
+	public StreamCodec<? super RegistryFriendlyByteBuf, SyncDataPackPacket> streamCodec() {
 		return STREAM_CODEC;
 	}
-	
+
 	@Override
-	public void handle(IPayloadContext context, Player player)
-	{
+	public void handle(IPayloadContext context, Player player) {
 		DataPackHandler.run(player.level());
 	}
-	
-	
-	public static final CustomPacketPayload.Type<DragonStatePacket> TYPE = new CustomPacketPayload.Type<>(DragonMountsRemaster.id("sync_data"));
-	
+
+	public static final CustomPacketPayload.Type<DragonStatePacket> TYPE = new CustomPacketPayload.Type<>(DMR.id("sync_data"));
+
 	@Override
-	public Type<? extends CustomPacketPayload> type()
-	{
+	public Type<? extends CustomPacketPayload> type() {
 		return TYPE;
 	}
 }

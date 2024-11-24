@@ -1,0 +1,26 @@
+{
+  "parent": "dmr:main",
+  "display": {
+    "icon": {
+      "id": "minecraft:tropical_fish"
+    },
+    "title": {
+      "translate": "dmr.advancements.tame_dragon_1.title"
+    },
+    "description": {
+      "translate": "dmr.advancements.tame_dragon_1.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "tame_a_dragon": {
+      "trigger": "dmr:tame_dragon",
+      "conditions": {
+        "id": "dmr:tame_dragon"
+      }
+    }
+  }
+}

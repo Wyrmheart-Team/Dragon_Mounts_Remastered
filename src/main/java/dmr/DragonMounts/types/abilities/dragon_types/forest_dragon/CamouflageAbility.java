@@ -10,17 +10,16 @@ import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 
 @EventBusSubscriber
 public class CamouflageAbility implements Ability {
+
 	@Override
-	public String type()
-	{
+	public String type() {
 		return "camouflage";
 	}
-	
+
 	private static final int range = 5;
-	
+
 	@SubscribeEvent
-	public static void onLivingChangeTarget(LivingChangeTargetEvent event)
-	{
+	public static void onLivingChangeTarget(LivingChangeTargetEvent event) {
 		if (event.getNewAboutToBeSetTarget() instanceof DMRDragonEntity dragon) {
 			if (dragon.getBreed().getAbilities().contains(DragonAbilities.CAMOUFLAGE_ABILITY)) {
 				if (event.getEntity().distanceTo(dragon) > range) {

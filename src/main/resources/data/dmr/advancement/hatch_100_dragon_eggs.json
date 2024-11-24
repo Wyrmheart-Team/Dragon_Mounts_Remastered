@@ -1,0 +1,26 @@
+{
+  "parent": "dmr:hatch_10_dragon_eggs",
+  "display": {
+    "icon": {
+      "id": "dmr:dragon_egg"
+    },
+    "title": {
+      "translate": "dmr.advancements.hatch_egg_100.title"
+    },
+    "description": {
+      "translate": "dmr.advancements.hatch_egg_100.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "hatch_1_dragon_eggs": {
+      "trigger": "dmr:hatch_count",
+      "conditions": {
+        "count": 100
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "parent": "dmr:main",
+  "display": {
+    "icon": {
+      "id": "minecraft:egg"
+    },
+    "title": {
+      "translate": "dmr.advancements.find_egg.title"
+    },
+    "description": {
+      "translate": "dmr.advancements.find_egg.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "obtained_dragon_egg": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "dmr:dragon_egg"
+          }
+        ]
+      }
+    }
+  }
+}

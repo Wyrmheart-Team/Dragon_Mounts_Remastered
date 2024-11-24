@@ -1,8 +1,11 @@
 package dmr.DragonMounts.data;
 
 import com.google.common.collect.ImmutableMap;
-import dmr.DragonMounts.DragonMountsRemaster;
+import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.server.items.DragonWhistleItem;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeBuilder;
@@ -17,27 +20,34 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
 public class DMRRecipeProvider extends RecipeProvider {
-	public DMRRecipeProvider(PackOutput output, CompletableFuture<Provider> registries)
-	{
+
+	public DMRRecipeProvider(PackOutput output, CompletableFuture<Provider> registries) {
 		super(output, registries);
 	}
-	
+
 	@Override
-	protected void buildRecipes(RecipeOutput pRecipeOutput)
-	{
+	protected void buildRecipes(RecipeOutput pRecipeOutput) {
 		for (DyeColor color : DyeColor.values()) {
-			var pId = DragonMountsRemaster.id("dragon_whistle_item_" + color.getName());
-			Map<Character, Ingredient> keys = ImmutableMap.of('I', Ingredient.of(Items.IRON_INGOT), '#', Ingredient.of(ItemTags.PLANKS), 'D', Ingredient.of(DyeItem.byColor(color)));
+			var pId = DMR.id("dragon_whistle_item_" + color.getName());
+			Map<Character, Ingredient> keys = ImmutableMap.of(
+				'I',
+				Ingredient.of(Items.IRON_INGOT),
+				'#',
+				Ingredient.of(ItemTags.PLANKS),
+				'D',
+				Ingredient.of(DyeItem.byColor(color))
+			);
 			List<String> rows = List.of("I#I", "#D#", "I#I");
-			
-			ShapedRecipe shapedrecipe =
-					new ShapedRecipe("dragon", RecipeBuilder.determineBookCategory(RecipeCategory.MISC), ShapedRecipePattern.of(keys, rows), DragonWhistleItem.getWhistleItem(color), false);
-			
+
+			ShapedRecipe shapedrecipe = new ShapedRecipe(
+				"dragon",
+				RecipeBuilder.determineBookCategory(RecipeCategory.MISC),
+				ShapedRecipePattern.of(keys, rows),
+				DragonWhistleItem.getWhistleItem(color),
+				false
+			);
+
 			pRecipeOutput.accept(pId, shapedrecipe, null);
 		}
 	}

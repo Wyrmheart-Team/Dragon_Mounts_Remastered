@@ -10,17 +10,16 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
 @EventBusSubscriber
 public class CrystalHarmonyAbility implements Ability {
+
 	@Override
-	public String type()
-	{
+	public String type() {
 		return "crystal_harmony";
 	}
-	
+
 	private static final double protection_chance = 0.1;
-	
+
 	@SubscribeEvent
-	public static void entityHurt(LivingDamageEvent.Pre event)
-	{
+	public static void entityHurt(LivingDamageEvent.Pre event) {
 		if (event.getEntity() instanceof DMRDragonEntity dragon) {
 			if (dragon.getBreed().getAbilities().contains(DragonAbilities.CRYSTAL_HARMONY)) {
 				if (dragon.getRandom().nextDouble() <= protection_chance) {

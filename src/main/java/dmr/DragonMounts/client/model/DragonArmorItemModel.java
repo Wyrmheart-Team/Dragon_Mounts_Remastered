@@ -6,8 +6,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.vertex.PoseStack;
-import dmr.DragonMounts.DragonMountsRemaster;
-import dmr.DragonMounts.registry.DMRComponents;
+import dmr.DragonMounts.DMR;
+import dmr.DragonMounts.registry.ModComponents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderType;
@@ -47,43 +47,51 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class DragonArmorItemModel {
+
 	public static class DragonArmorLoader implements IGeometryLoader<DragonArmorGeometry> {
-		
+
 		@Override
-		public DragonArmorGeometry read(JsonObject jsonObject, JsonDeserializationContext deserializer) throws JsonParseException
-		{
+		public DragonArmorGeometry read(JsonObject jsonObject, JsonDeserializationContext deserializer) throws JsonParseException {
 			var models = ImmutableMap.<String, BlockModel>builder();
 			var dir = "models/item/dragon_armor";
 			var length = "models/".length();
 			var suffixLength = ".json".length();
-			for (var entry : Minecraft.getInstance().getResourceManager().listResources(dir, f -> f.getPath().endsWith(".json")).entrySet()) {
+			for (var entry : Minecraft.getInstance()
+				.getResourceManager()
+				.listResources(dir, f -> f.getPath().endsWith(".json"))
+				.entrySet()) {
 				var rl = entry.getKey();
 				var path = rl.getPath();
 				path = path.substring(length, path.length() - suffixLength);
 				var id = String.format("%s", path.substring("item/dragon_armor/".length(), path.length() - "_dragon_armor".length()));
-				
+
 				try (var reader = entry.getValue().openAsReader()) {
 					models.put(id, BlockModel.fromStream(reader));
 				} catch (IOException e) {
 					throw new JsonParseException(e);
 				}
 			}
-			
+
 			return new DragonArmorGeometry(models.build());
 		}
 	}
-	
+
 	static class DragonArmorGeometry implements IUnbakedGeometry<DragonArmorGeometry> {
+
 		private final ImmutableMap<String, BlockModel> models;
-		
-		public DragonArmorGeometry(ImmutableMap<String, BlockModel> models)
-		{
+
+		public DragonArmorGeometry(ImmutableMap<String, BlockModel> models) {
 			this.models = models;
 		}
-		
+
 		@Override
-		public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides)
-		{
+		public BakedModel bake(
+			IGeometryBakingContext context,
+			ModelBaker baker,
+			Function<Material, TextureAtlasSprite> spriteGetter,
+			ModelState modelState,
+			ItemOverrides overrides
+		) {
 			var baked = ImmutableMap.<String, BakedModel>builder();
 			for (var entry : models.entrySet()) {
 				var unbaked = entry.getValue();
@@ -93,123 +101,115 @@ public class DragonArmorItemModel {
 			return new Baked(baked.build(), overrides);
 		}
 	}
-	
+
 	private record Data(String armorId) {
 		private static final ModelProperty<Data> PROPERTY = new ModelProperty<>();
 	}
-	
+
 	public static class Baked implements IDynamicBakedModel {
-		private static final Supplier<BakedModel> FALLBACK = Suppliers.memoize(() -> Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(Items.LEATHER_HORSE_ARMOR));
-		
+
+		private static final Supplier<BakedModel> FALLBACK = Suppliers.memoize(() ->
+			Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(Items.LEATHER_HORSE_ARMOR)
+		);
+
 		private final ImmutableMap<String, BakedModel> models;
 		private final ItemOverrides overrides;
-		
-		public Baked(ImmutableMap<String, BakedModel> models, ItemOverrides overrides)
-		{
+
+		public Baked(ImmutableMap<String, BakedModel> models, ItemOverrides overrides) {
 			this.models = models;
 			this.overrides = new ItemModelResolver(this, overrides);
 		}
-		
+
 		@Override
-		public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand, ModelData extraData, RenderType renderType)
-		{
-			var data = extraData.get(Data.PROPERTY); if (data != null && models.containsKey(data.armorId)) {
-			return models.get(data.armorId()).getQuads(state, side, rand, extraData, renderType);
-		}
-			
+		public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand, ModelData extraData, RenderType renderType) {
+			var data = extraData.get(Data.PROPERTY);
+			if (data != null && models.containsKey(data.armorId)) {
+				return models.get(data.armorId()).getQuads(state, side, rand, extraData, renderType);
+			}
+
 			return FALLBACK.get().getQuads(state, side, rand, extraData, renderType);
 		}
-		
+
 		@Override
-		public boolean useAmbientOcclusion()
-		{
+		public boolean useAmbientOcclusion() {
 			return true;
 		}
-		
+
 		@Override
-		public boolean isGui3d()
-		{
+		public boolean isGui3d() {
 			return true;
 		}
-		
+
 		@Override
-		public boolean usesBlockLight()
-		{
+		public boolean usesBlockLight() {
 			return true;
 		}
-		
+
 		@Override
-		public boolean isCustomRenderer()
-		{
+		public boolean isCustomRenderer() {
 			return false;
 		}
-		
+
 		@Override
-		public TextureAtlasSprite getParticleIcon()
-		{
+		public TextureAtlasSprite getParticleIcon() {
 			return FALLBACK.get().getParticleIcon();
 		}
-		
+
 		@Override
-		public TextureAtlasSprite getParticleIcon(ModelData modelData)
-		{
-			var data = modelData.get(Data.PROPERTY); if (data != null && models.containsKey(data.armorId)) {
-			return models.get(data.armorId()).getParticleIcon(modelData);
-		}
-			
+		public TextureAtlasSprite getParticleIcon(ModelData modelData) {
+			var data = modelData.get(Data.PROPERTY);
+			if (data != null && models.containsKey(data.armorId)) {
+				return models.get(data.armorId()).getParticleIcon(modelData);
+			}
+
 			return getParticleIcon();
 		}
-		
+
 		@Override
-		public ItemOverrides getOverrides()
-		{
+		public ItemOverrides getOverrides() {
 			return overrides;
 		}
-		
+
 		@Override
-		public BakedModel applyTransform(ItemDisplayContext transformType, PoseStack poseStack, boolean applyLeftHandTransform)
-		{
+		public BakedModel applyTransform(ItemDisplayContext transformType, PoseStack poseStack, boolean applyLeftHandTransform) {
 			return FALLBACK.get().applyTransform(transformType, poseStack, applyLeftHandTransform);
 		}
-		
+
 		@Override
-		public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData)
-		{
+		public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData) {
 			return modelData;
 		}
 	}
-	
+
 	public static class ItemModelResolver extends ItemOverrides {
+
 		private final Baked owner;
 		private final ItemOverrides nested;
-		
-		public ItemModelResolver(Baked owner, ItemOverrides nested)
-		{
+
+		public ItemModelResolver(Baked owner, ItemOverrides nested) {
 			this.owner = owner;
 			this.nested = nested;
 		}
-		
-		
+
 		@Override
-		public BakedModel resolve(BakedModel original, ItemStack stack, ClientLevel level, LivingEntity entity, int pSeed)
-		{
+		public BakedModel resolve(BakedModel original, ItemStack stack, ClientLevel level, LivingEntity entity, int pSeed) {
 			var override = nested.resolve(original, stack, level, entity, pSeed);
 			if (override != original) return override;
-			
-			var armor = stack.get(DMRComponents.ARMOR_TYPE); var model = owner.models.get(armor); if (model != null) return model;
-			
+
+			var armor = stack.get(ModComponents.ARMOR_TYPE);
+			var model = owner.models.get(armor);
+			if (model != null) return model;
+
 			return original;
 		}
 	}
-	
-	@EventBusSubscriber( modid = DragonMountsRemaster.MOD_ID,
-	                     bus = Bus.MOD,
-	                     value = Dist.CLIENT )
+
+	@EventBusSubscriber(modid = DMR.MOD_ID, bus = Bus.MOD, value = Dist.CLIENT)
 	public static class ClientEvents {
+
 		@SubscribeEvent
-		public static void onRegisterGeometryLoaders(ModelEvent.RegisterGeometryLoaders event)
-		{
-			event.register(ResourceLocation.fromNamespaceAndPath(DragonMountsRemaster.MOD_ID, "dragon_armor"), new DragonArmorLoader());
+		public static void onRegisterGeometryLoaders(ModelEvent.RegisterGeometryLoaders event) {
+			event.register(ResourceLocation.fromNamespaceAndPath(DMR.MOD_ID, "dragon_armor"), new DragonArmorLoader());
 		}
 	}
 }

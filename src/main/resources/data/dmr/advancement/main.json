@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "dmr:dragon_egg"
+    },
+    "title": {
+      "translate": "dmr.advancements.root.title"
+    },
+    "description": {
+      "translate": "dmr.advancements.root.description"
+    },
+    "background": "minecraft:textures/block/amethyst_block.png",
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "unlock_right_away": {
+      "trigger": "minecraft:tick"
+    }
+  }
+}

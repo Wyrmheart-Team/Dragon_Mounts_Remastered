@@ -13,15 +13,14 @@ import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 
 @EventBusSubscriber
 public class InfernalPactAbility implements Ability {
+
 	@Override
-	public String type()
-	{
+	public String type() {
 		return "infernal_pact";
 	}
-	
+
 	@SubscribeEvent
-	public static void onLivingChangeTarget(LivingChangeTargetEvent event)
-	{
+	public static void onLivingChangeTarget(LivingChangeTargetEvent event) {
 		if (event.getEntity() instanceof AbstractPiglin || event.getEntity() instanceof Ghast || event.getEntity() instanceof MagmaCube) {
 			if (event.getNewAboutToBeSetTarget() instanceof DMRDragonEntity dragon) {
 				if (dragon.getBreed().getAbilities().contains(DragonAbilities.INFERNAL_PACT_ABILITY)) {

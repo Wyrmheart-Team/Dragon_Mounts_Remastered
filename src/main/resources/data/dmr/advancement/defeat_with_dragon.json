@@ -1,0 +1,26 @@
+{
+  "parent": "dmr:main",
+  "display": {
+    "icon": {
+      "id": "minecraft:iron_sword"
+    },
+    "title": {
+      "translate": "dmr.advancements.defeat_with_dragon.title"
+    },
+    "description": {
+      "translate": "dmr.advancements.defeat_with_dragon.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "defeat_with_dragon": {
+      "trigger": "dmr:defeat_with_dragon",
+      "conditions": {
+        "id": "dmr:defeat_with_dragon"
+      }
+    }
+  }
+}

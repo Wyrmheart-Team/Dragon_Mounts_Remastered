@@ -11,6 +11,7 @@ import dmr.DragonMounts.types.DataPackHandler;
 import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.types.habitats.Habitat;
 import dmr.DragonMounts.util.type_adapters.*;
+import java.util.List;
 import lombok.Getter;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceLocation;
@@ -26,20 +27,19 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Block;
 import net.neoforged.neoforge.common.NeoForge;
 
-import java.util.List;
+@Mod(DMR.MOD_ID)
+public class DMR {
 
-@Mod( DragonMountsRemaster.MOD_ID )
-public class DragonMountsRemaster {
 	public static final String MOD_ID = "dmr";
-	
-	@Getter private static Gson Gson;
-	
+
+	@Getter
+	private static Gson Gson;
+
 	public static boolean DEBUG = false;
-	
-	public DragonMountsRemaster(IEventBus bus, ModContainer container)
-	{
+
+	public DMR(IEventBus bus, ModContainer container) {
 		DEBUG = !FMLLoader.isProduction();
-		
+
 		var gsonBuilder = new GsonBuilder();
 		gsonBuilder.setPrettyPrinting();
 		gsonBuilder.registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer());
@@ -50,42 +50,43 @@ public class DragonMountsRemaster {
 		gsonBuilder.registerTypeAdapter(SoundEvent.class, new SoundEventAdapter());
 		gsonBuilder.registerTypeAdapter(Ability.class, new AbilityAdapter());
 		gsonBuilder.registerTypeAdapter(Habitat.class, new HabitatAdapter());
-		
+
 		container.registerConfig(Type.CLIENT, DMRConfig.CLIENT);
 		container.registerConfig(Type.COMMON, DMRConfig.COMMON);
 		container.registerConfig(Type.SERVER, DMRConfig.SERVER);
-		
+
 		Gson = gsonBuilder.create();
-		
+
 		bus.addListener(this::setupCommon);
-		
-		DMRCreativeTabs.init();
-		DMRItems.init();
-		
-		DMRBlocks.BLOCKS.register(bus);
-		DMRItems.ITEMS.register(bus);
-		DMREntities.ENTITIES.register(bus);
-		DMRBlockEntities.BLOCK_ENTITIES.register(bus);
-		DMRSounds.SOUNDS.register(bus);
-		DMRCreativeTabs.CREATIVE_MODE_TABS.register(bus);
-		DMRMenus.MENU_TYPES.register(bus); DMRCapability.ATTACHMENT_TYPES.register(bus); DMRSensors.SENSORS.register(bus); DMRMemoryModuleTypes.MEMORY_MODULE_TYPE.register(bus);
-		DMRComponents.COMPONENTS.register(bus); DMRCriterionTriggers.CRITERION_TRIGGERS.register(bus);
-		
+
+		ModCreativeTabs.init();
+		ModItems.init();
+
+		ModBlocks.BLOCKS.register(bus);
+		ModItems.ITEMS.register(bus);
+		ModEntities.ENTITIES.register(bus);
+		ModBlockEntities.BLOCK_ENTITIES.register(bus);
+		ModSounds.SOUNDS.register(bus);
+		ModCreativeTabs.CREATIVE_MODE_TABS.register(bus);
+		ModMenus.MENU_TYPES.register(bus);
+		ModCapabilities.ATTACHMENT_TYPES.register(bus);
+		ModSensors.SENSORS.register(bus);
+		ModMemoryModuleTypes.MEMORY_MODULE_TYPE.register(bus);
+		ModComponents.COMPONENTS.register(bus);
+		ModCriterionTriggers.CRITERION_TRIGGERS.register(bus);
+
 		bus.addListener(NetworkHandler::registerEvent);
 		bus.addListener(DataPackHandler::newDataPack);
-		
+
 		NeoForge.EVENT_BUS.addListener(DataPackHandler::dataPackData);
 		NeoForge.EVENT_BUS.addListener(LootTableInject::onLootLoad);
 	}
-	
-	public void setupCommon(final FMLCommonSetupEvent event) {
-	}
-	
-	public void setupServer(final FMLDedicatedServerSetupEvent event) {
-	}
-	
-	public static ResourceLocation id(String path)
-	{
+
+	public void setupCommon(final FMLCommonSetupEvent event) {}
+
+	public void setupServer(final FMLDedicatedServerSetupEvent event) {}
+
+	public static ResourceLocation id(String path) {
 		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
 	}
 }

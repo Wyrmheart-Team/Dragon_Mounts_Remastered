@@ -1,7 +1,7 @@
 package dmr.DragonMounts.server.entity;
 
 import com.mojang.serialization.Dynamic;
-import dmr.DragonMounts.DragonMountsRemaster;
+import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.common.capability.DragonOwnerCapability;
 import dmr.DragonMounts.common.config.DMRConfig;
 import dmr.DragonMounts.common.handlers.DragonWhistleHandler;
@@ -9,7 +9,7 @@ import dmr.DragonMounts.network.packets.DragonAgeSyncPacket;
 import dmr.DragonMounts.registry.*;
 import dmr.DragonMounts.server.ai.DragonAI;
 import dmr.DragonMounts.server.ai.DragonMoveController;
-import dmr.DragonMounts.server.blocks.DragonMountsEggBlock;
+import dmr.DragonMounts.server.blocks.DMREggBlock;
 import dmr.DragonMounts.server.container.DragonContainerMenu;
 import dmr.DragonMounts.server.items.DragonArmorItem;
 import dmr.DragonMounts.server.items.DragonSpawnEgg;
@@ -86,6 +86,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 import static net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED;
 
 public class DMRDragonEntity extends AbstractDMRDragonEntity {
+
 	// base attributes
 	public static final double BASE_SPEED_GROUND = 0.25;
 	public static final double BASE_SPEED_WATER = 0.25;
@@ -98,7 +99,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 	public static final float BASE_HEIGHT = 2.75f;
 	public static final int BREATH_COUNT = 5;
 	// other constants
-	public static final ResourceLocation SCALE_MODIFIER = ResourceLocation.fromNamespaceAndPath(DragonMountsRemaster.MOD_ID, "scale_attribute"); // just a random uuid I took online
+	public static final ResourceLocation SCALE_MODIFIER = ResourceLocation.fromNamespaceAndPath(DMR.MOD_ID, "scale_attribute"); // just a random uuid I took online
 	public static final int GROUND_CLEARENCE_THRESHOLD = 2;
 	public static final RawAnimation NECK_TURN = RawAnimation.begin().thenLoop("neck_turn");
 	public static final RawAnimation NECK_TURN_FLIGHT = RawAnimation.begin().thenLoop("neck_turn_flight");
@@ -118,151 +119,159 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 	public static final RawAnimation BITE = RawAnimation.begin().thenPlay("bite");
 	public static final RawAnimation BREATH = RawAnimation.begin().thenPlayXTimes("breath", BREATH_COUNT);
 	public static final RawAnimation IDLE = RawAnimation.begin().thenLoop("idle");
-	private static final ResourceLocation ARMOR_MODIFIER = ResourceLocation.fromNamespaceAndPath(DragonMountsRemaster.MOD_ID, "armor_attribute");
+	private static final ResourceLocation ARMOR_MODIFIER = ResourceLocation.fromNamespaceAndPath(DMR.MOD_ID, "armor_attribute");
 	private static final double breathLength = 0.5 * BREATH_COUNT;
 	private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 	public Vector3d breathSourcePosition;
 	private AnimationController<?> animationController;
 	private AnimationController<?> headController;
 	private long breathTime = -1;
-	
+
 	@Override
-	protected Brain<?> makeBrain(Dynamic<?> dynamic)
-	{
-		return DragonAI.makeBrain((Brain<DMRDragonEntity>)this.brainProvider().makeBrain(dynamic));
+	protected Brain<?> makeBrain(Dynamic<?> dynamic) {
+		return DragonAI.makeBrain((Brain<DMRDragonEntity>) this.brainProvider().makeBrain(dynamic));
 	}
-	
-	public DMRDragonEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel)
-	{
-		super(pEntityType, pLevel); moveControl = new DragonMoveController(this); setDragonUUID(UUID.randomUUID());
+
+	public DMRDragonEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
+		super(pEntityType, pLevel);
+		moveControl = new DragonMoveController(this);
+		setDragonUUID(UUID.randomUUID());
 	}
-	
-	public static AttributeSupplier.Builder createAttributes()
-	{
-		return Mob.createMobAttributes().add(MOVEMENT_SPEED, BASE_SPEED_GROUND).add(MAX_HEALTH, BASE_HEALTH).add(FOLLOW_RANGE, BASE_FOLLOW_RANGE).add(KNOCKBACK_RESISTANCE, BASE_KB_RESISTANCE)
-				.add(ATTACK_DAMAGE, BASE_DAMAGE).add(FLYING_SPEED, BASE_SPEED_FLYING).add(SWIM_SPEED, BASE_SPEED_WATER);
+
+	public static AttributeSupplier.Builder createAttributes() {
+		return Mob.createMobAttributes()
+			.add(MOVEMENT_SPEED, BASE_SPEED_GROUND)
+			.add(MAX_HEALTH, BASE_HEALTH)
+			.add(FOLLOW_RANGE, BASE_FOLLOW_RANGE)
+			.add(KNOCKBACK_RESISTANCE, BASE_KB_RESISTANCE)
+			.add(ATTACK_DAMAGE, BASE_DAMAGE)
+			.add(FLYING_SPEED, BASE_SPEED_FLYING)
+			.add(SWIM_SPEED, BASE_SPEED_WATER);
 	}
-	
+
 	@Override
-	protected Provider<?> brainProvider()
-	{
+	protected Provider<?> brainProvider() {
 		return DragonAI.brainProvider();
 	}
-	
+
 	@Override
-	protected void customServerAiStep()
-	{
-		this.level().getProfiler().push("dragonBrain"); this.getBrain().tick((ServerLevel)this.level, this); this.level().getProfiler().pop(); this.level().getProfiler().push("dragonActivityUpdate");
-		DragonAI.updateActivity(this); this.level().getProfiler().pop(); super.customServerAiStep();
+	protected void customServerAiStep() {
+		this.level().getProfiler().push("dragonBrain");
+		this.getBrain().tick((ServerLevel) this.level, this);
+		this.level().getProfiler().pop();
+		this.level().getProfiler().push("dragonActivityUpdate");
+		DragonAI.updateActivity(this);
+		this.level().getProfiler().pop();
+		super.customServerAiStep();
 	}
-	
+
 	@Override
-	public Brain<DMRDragonEntity> getBrain()
-	{
-		return (Brain<DMRDragonEntity>)super.getBrain();
+	public Brain<DMRDragonEntity> getBrain() {
+		return (Brain<DMRDragonEntity>) super.getBrain();
 	}
-	
+
 	@Override
-	public boolean isSaddleable()
-	{
+	public boolean isSaddleable() {
 		return isAlive() && !isHatchling() && isTame();
 	}
-	
-	
+
 	@Override
-	public void aiStep()
-	{
+	public void aiStep() {
 		super.aiStep();
-		
+
 		if (isNoGravity() != shouldFly()) {
 			setNoGravity(shouldFly());
 		}
-		
+
 		if (getControllingPassenger() == null && !hasWanderTarget() && !isOrderedToSit()) {
 			if (isPathFinding()) {
-				var dest = getNavigation().getTargetPos(); var farDist = dest.distManhattan(blockPosition()) >= 16d; setSprinting(farDist);
+				var dest = getNavigation().getTargetPos();
+				var farDist = dest.distManhattan(blockPosition()) >= 16d;
+				setSprinting(farDist);
 			} else {
 				if (isSprinting()) setSprinting(false);
 			}
 		}
 	}
-	
+
 	@Override
-	public void equipSaddle(ItemStack stack, SoundSource source)
-	{
-		setSaddled(true); level.playSound(null, getX(), getY(), getZ(), SoundEvents.HORSE_SADDLE, getSoundSource(), 1, 1); inventory.setItem(SADDLE_SLOT, stack);
+	public void equipSaddle(ItemStack stack, SoundSource source) {
+		setSaddled(true);
+		level.playSound(null, getX(), getY(), getZ(), SoundEvents.HORSE_SADDLE, getSoundSource(), 1, 1);
+		inventory.setItem(SADDLE_SLOT, stack);
 	}
-	
+
 	@Override
-	public ItemStack getPickedResult(HitResult target)
-	{
+	public ItemStack getPickedResult(HitResult target) {
 		return DragonSpawnEgg.create(getBreed());
 	}
-	
-	public void equipArmor(Player pPlayer, ItemStack pArmor)
-	{
+
+	public void equipArmor(Player pPlayer, ItemStack pArmor) {
 		if (this.isArmor(pArmor) && getBodyArmorItem().isEmpty()) {
-			this.setItemSlotAndDropWhenKilled(EquipmentSlot.BODY, pArmor.copyWithCount(1)); if (!pPlayer.getAbilities().instabuild) {
+			this.setItemSlotAndDropWhenKilled(EquipmentSlot.BODY, pArmor.copyWithCount(1));
+			if (!pPlayer.getAbilities().instabuild) {
 				pArmor.shrink(1);
-			} setArmor();
+			}
+			setArmor();
 		}
 	}
-	
+
 	@Override
-	protected boolean isAffectedByFluids()
-	{
+	protected boolean isAffectedByFluids() {
 		return canDrownInFluidType(Fluids.WATER.getFluidType());
 	}
-	
+
 	@Override
-	public boolean canDrownInFluidType(FluidType type)
-	{
+	public boolean canDrownInFluidType(FluidType type) {
 		if (type == Fluids.WATER.getFluidType()) {
 			if (getBreed() != null && getBreed().getImmunities().contains("drown")) {
 				return false;
 			}
-		} return super.canDrownInFluidType(type);
+		}
+		return super.canDrownInFluidType(type);
 	}
-	
-	public void setArmor()
-	{
-		ItemStack itemstack = this.getBodyArmorItem(); if (!this.level().isClientSide) {
-		this.getAttribute(Attributes.ARMOR).removeModifier(ARMOR_MODIFIER); if (this.isArmor(itemstack)) {
-			DragonArmor armor = DragonArmor.getArmorType(itemstack); if (armor != null) {
-				int i = armor.getProtection(); if (i != 0) {
-					this.getAttribute(Attributes.ARMOR).addTransientModifier(new AttributeModifier(ARMOR_MODIFIER, i, Operation.ADD_VALUE));
+
+	public void setArmor() {
+		ItemStack itemstack = this.getBodyArmorItem();
+		if (!this.level().isClientSide) {
+			this.getAttribute(Attributes.ARMOR).removeModifier(ARMOR_MODIFIER);
+			if (this.isArmor(itemstack)) {
+				DragonArmor armor = DragonArmor.getArmorType(itemstack);
+				if (armor != null) {
+					int i = armor.getProtection();
+					if (i != 0) {
+						this.getAttribute(Attributes.ARMOR).addTransientModifier(
+								new AttributeModifier(ARMOR_MODIFIER, i, Operation.ADD_VALUE)
+							);
+					}
 				}
 			}
 		}
 	}
-	}
-	
+
 	@Override
-	public void registerControllers(ControllerRegistrar controllers)
-	{
+	public void registerControllers(ControllerRegistrar controllers) {
 		addDragonAnimations(controllers);
 	}
-	
-	public boolean isArmor(ItemStack pStack)
-	{
+
+	public boolean isArmor(ItemStack pStack) {
 		return pStack.getItem() instanceof DragonArmorItem;
 	}
-	
-	private void addDragonAnimations(ControllerRegistrar data)
-	{
+
+	private void addDragonAnimations(ControllerRegistrar data) {
 		headController = new AnimationController<>(this, "head-controller", 0, state -> {
 			return state.setAndContinue(isFlying() ? NECK_TURN_FLIGHT : NECK_TURN);
 		});
-		
+
 		headController.triggerableAnim("bite", BITE);
 		headController.triggerableAnim("breath", BREATH);
 		data.add(headController);
-		
+
 		animationController = new AnimationController<>(this, "controller", 5, state -> {
 			Vec3 motio = new Vec3(getX() - xo, getY() - yo, getZ() - zo);
 			boolean isMovingHorizontal = Math.sqrt(Math.pow(motio.x, 2) + Math.pow(motio.z, 2)) > 0.1;
 			state.setControllerSpeed(1);
-			
+
 			if (isSwimming()) {
 				return state.setAndContinue(SWIM);
 			} else if (isInWater()) {
@@ -271,11 +280,11 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 				} else {
 					return state.setAndContinue(SWIM_IDLE);
 				}
-			} else if (isFlying() || isPathFinding() && !onGround() && !isInWater()) {
+			} else if (isFlying() || (isPathFinding() && !onGround() && !isInWater())) {
 				if (isMovingHorizontal) {
 					if (isSprinting()) {
 						var delta = getDeltaMovement().multiply(0, 0.25, 0);
-						
+
 						if (delta.y < -0.25) {
 							return state.setAndContinue(DIVE);
 						} else if (delta.y > 0.25) {
@@ -296,9 +305,11 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 			} else if (isInSittingPose() && !isOrderedToSit()) {
 				return state.setAndContinue(SIT);
 			} else if (isOrderedToSit()) {
-				var lookAtContext = TargetingConditions.forNonCombat().range(10).selector((p_25531_) -> EntitySelector.notRiding(this).test(p_25531_));
+				var lookAtContext = TargetingConditions.forNonCombat()
+					.range(10)
+					.selector(p_25531_ -> EntitySelector.notRiding(this).test(p_25531_));
 				var lookAt = level.getNearestPlayer(lookAtContext, this, getX(), getEyeY(), getZ());
-				
+
 				if (lookAt != null) {
 					return state.setAndContinue(SIT_ALT);
 				} else {
@@ -312,38 +323,35 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 					return state.setAndContinue(isShiftKeyDown() ? SNEAK_WALK : WALK);
 				}
 			}
-			
+
 			return state.setAndContinue(isShiftKeyDown() ? SNEAK_IDLE : IDLE);
 		});
-		
+
 		animationController.setSoundKeyframeHandler(sound -> {
 			if (sound.getKeyframeData().getSound().equalsIgnoreCase("flap")) {
 				onFlap();
 			}
 		});
-		
+
 		data.add(animationController);
 	}
-	
-	public boolean canFly()
-	{
+
+	public boolean canFly() {
 		// hatchling's can't fly
 		return !isHatchling() && getEyeInFluidType().isAir();
 	}
-	
+
 	@Override
-	public double getEyeY()
-	{
+	public double getEyeY() {
 		return super.getEyeY() * 1.2f;
 	}
-	
+
 	@Override
-	public boolean isShiftKeyDown()
-	{
+	public boolean isShiftKeyDown() {
 		if (getControllingPassenger() != null && getControllingPassenger().isShiftKeyDown()) {
 			return true;
 		}
-		
+
 		if (getControllingPassenger() == null && getOwner() != null) {
 			if (getWanderTarget() == BlockPos.ZERO && !isOrderedToSit() && getPose() != Pose.SLEEPING) {
 				if (getOwner() instanceof Player player && distanceTo(player) <= BASE_FOLLOW_RANGE) {
@@ -351,54 +359,58 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 				}
 			}
 		}
-		
+
 		return super.isShiftKeyDown();
 	}
-	
-	public void liftOff()
-	{
+
+	public void liftOff() {
 		if (canFly()) jumpFromGround();
 	}
-	
+
 	@Override
-	public float getSpeed()
-	{
-		return (isSprinting() ? 1.25f : 1) * (float)getAttributeValue(MOVEMENT_SPEED);
+	public float getSpeed() {
+		return (isSprinting() ? 1.25f : 1) * (float) getAttributeValue(MOVEMENT_SPEED);
 	}
-	
-	public void onFlap()
-	{
+
+	public void onFlap() {
 		if (this.level().isClientSide && !this.isSilent()) {
-			this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), getWingsSound(), this.getSoundSource(), 2.0F, 0.8F + this.random.nextFloat() * 0.3F, false);
+			this.level()
+				.playLocalSound(
+					this.getX(),
+					this.getY(),
+					this.getZ(),
+					getWingsSound(),
+					this.getSoundSource(),
+					2.0F,
+					0.8F + this.random.nextFloat() * 0.3F,
+					false
+				);
 		}
 	}
-	
+
 	@Override
-	public boolean fireImmune()
-	{
-		return super.fireImmune() || getBreed() != null && getBreed().getImmunities().contains("onFire");
+	public boolean fireImmune() {
+		return super.fireImmune() || (getBreed() != null && getBreed().getImmunities().contains("onFire"));
 	}
-	
+
 	@Override
-	public Vec3 getLightProbePosition(float p_20309_)
-	{
+	public Vec3 getLightProbePosition(float p_20309_) {
 		return new Vec3(getX(), getY() + getBbHeight(), getZ());
 	}
-	
+
 	@Override
-	public void positionRider(Entity passenger, Entity.MoveFunction pCallback)
-	{
+	public void positionRider(Entity passenger, Entity.MoveFunction pCallback) {
 		LivingEntity riddenByEntity = getControllingPassenger();
 		if (riddenByEntity != null) {
 			boolean customRidingPos = false;
-			
+
 			if (!customRidingPos) {
 				Vec3 vec3 = this.getPassengerRidingPosition(passenger);
-				Vec3 vec31 = passenger.getVehicleAttachmentPoint(this); Vec3 riderPos =
-						new Vec3(vec3.x - vec31.x, vec3.y - vec31.y, vec3.z - vec31.z); //.yRot((float) Math.toRadians(-yBodyRot)).add(0, getBbHeight() + breed.getVerticalRidingOffset(), getScale())
+				Vec3 vec31 = passenger.getVehicleAttachmentPoint(this);
+				Vec3 riderPos = new Vec3(vec3.x - vec31.x, vec3.y - vec31.y, vec3.z - vec31.z); //.yRot((float) Math.toRadians(-yBodyRot)).add(0, getBbHeight() + breed.getVerticalRidingOffset(), getScale())
 				pCallback.accept(passenger, riderPos.x, riderPos.y, riderPos.z);
 			}
-			
+
 			// fix rider rotation
 			if (getFirstPassenger() instanceof LivingEntity) {
 				riddenByEntity.xRotO = riddenByEntity.getXRot();
@@ -407,148 +419,141 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 			}
 		}
 	}
-	
-	public SoundEvent getWingsSound()
-	{
+
+	public SoundEvent getWingsSound() {
 		return SoundEvents.ENDER_DRAGON_FLAP;
 	}
-	
+
 	@Override
-	public boolean causeFallDamage(float pFallDistance, float pMultiplier, DamageSource pSource)
-	{
+	public boolean causeFallDamage(float pFallDistance, float pMultiplier, DamageSource pSource) {
 		return !canFly() && super.causeFallDamage(pFallDistance, pMultiplier, pSource);
 	}
-	
+
 	@Nullable
 	@Override
-	public LivingEntity getTarget()
-	{
+	public LivingEntity getTarget() {
 		return this.getTargetFromBrain();
 	}
-	
-	
+
 	@Override
-	public void setCustomName(Component pName)
-	{
-		super.setCustomName(pName); updateOwnerData();
+	public void setCustomName(Component pName) {
+		super.setCustomName(pName);
+		updateOwnerData();
 	}
-	
+
 	@Override
-	public AnimatableInstanceCache getAnimatableInstanceCache()
-	{
+	public AnimatableInstanceCache getAnimatableInstanceCache() {
 		return cache;
 	}
-	
-	public void updateAgeProperties()
-	{
+
+	public void updateAgeProperties() {
 		refreshDimensions();
-		
-		AttributeInstance stepHeightInstance = getAttribute(STEP_HEIGHT); stepHeightInstance.setBaseValue(Math.max(2 * getAgeProgress(), 1));
-		
-		AttributeInstance baseHealthInstance = getAttribute(MAX_HEALTH); baseHealthInstance.setBaseValue(DMRConfig.BASE_HEALTH.get());
-		
-		AttributeInstance attackDamageInstance = getAttribute(ATTACK_DAMAGE); attackDamageInstance.setBaseValue(DMRConfig.BASE_DAMAGE.get());
-		
-		
-		var mod = new AttributeModifier(SCALE_MODIFIER, getScale(), Operation.ADD_VALUE); for (var attribute : new Holder[]{MAX_HEALTH, ATTACK_DAMAGE}) // avoid duped code
-	{
-		AttributeInstance instance = getAttribute(attribute); instance.removeModifier(SCALE_MODIFIER); instance.addTransientModifier(mod);
+
+		AttributeInstance stepHeightInstance = getAttribute(STEP_HEIGHT);
+		stepHeightInstance.setBaseValue(Math.max(2 * getAgeProgress(), 1));
+
+		AttributeInstance baseHealthInstance = getAttribute(MAX_HEALTH);
+		baseHealthInstance.setBaseValue(DMRConfig.BASE_HEALTH.get());
+
+		AttributeInstance attackDamageInstance = getAttribute(ATTACK_DAMAGE);
+		attackDamageInstance.setBaseValue(DMRConfig.BASE_DAMAGE.get());
+
+		var mod = new AttributeModifier(SCALE_MODIFIER, getScale(), Operation.ADD_VALUE);
+		for (var attribute : new Holder[] { MAX_HEALTH, ATTACK_DAMAGE }) { // avoid duped code
+			AttributeInstance instance = getAttribute(attribute);
+			instance.removeModifier(SCALE_MODIFIER);
+			instance.addTransientModifier(mod);
 		}
 	}
-	
+
 	@Override
-	public void refreshDimensions()
-	{
+	public void refreshDimensions() {
 		double posXTmp = getX();
 		double posYTmp = getY();
 		double posZTmp = getZ();
 		boolean onGroundTmp = onGround();
-		
+
 		super.refreshDimensions();
-		
+
 		// workaround for a vanilla bug; the position is apparently not set correcty
 		// after changing the entity size, causing asynchronous server/client positioning
 		setPos(posXTmp, posYTmp, posZTmp);
-		
+
 		// otherwise, setScale stops the dragon from landing while it is growing
 		setOnGround(onGroundTmp);
 	}
-	
-	
+
 	@Override
-	public float getPathfindingMalus(PathType pathType)
-	{
+	public float getPathfindingMalus(PathType pathType) {
 		if (pathType == PathType.WATER && getBreed() != null && getBreed().getImmunities().contains("drown")) {
 			return 0;
-		} if (pathType == PathType.LAVA && getBreed() != null && getBreed().getImmunities().contains("lava")) {
-		return 0;
-	} return super.getPathfindingMalus(pathType);
+		}
+		if (pathType == PathType.LAVA && getBreed() != null && getBreed().getImmunities().contains("lava")) {
+			return 0;
+		}
+		return super.getPathfindingMalus(pathType);
 	}
-	
+
 	@Override
-	protected Vec3 getRiddenInput(Player driver, Vec3 move)
-	{
+	protected Vec3 getRiddenInput(Player driver, Vec3 move) {
 		double moveSideways = move.x;
 		double moveY = 0;
 		double moveForward = Math.min(Math.abs(driver.zza) + Math.abs(driver.xxa), 1);
-		
+
 		if (isFlying()) {
 			moveForward = moveForward > 0 ? moveForward : 0;
 			if (level.isClientSide) {
 				if (moveForward > 0 && DMRConfig.CAMERA_FLIGHT.get()) moveY = -(driver.getXRot() * (Math.PI / 180) * 0.5f);
 			}
-			
+
 			if (driver.jumping) moveY += 0.5;
 			if (driver.isShiftKeyDown()) moveY += -0.5;
 		} else if (isInFluidType()) {
 			moveForward = moveForward > 0 ? moveForward : 0;
-			
+
 			if (level.isClientSide) {
 				if (moveForward > 0 && DMRConfig.CAMERA_FLIGHT.get()) {
 					moveY = (-driver.getXRot() * (Math.PI / 180)) * 2;
 				}
 			}
-			
+
 			if (driver.jumping) moveY += 2;
 			if (driver.isShiftKeyDown()) moveY += -2;
 		}
-		
+
 		float f = isShiftKeyDown() ? 0.3F : 1f;
 		Vec3 movement = new Vec3(moveSideways * f, moveY, moveForward * f);
-		
+
 		return maybeBackOffFromEdge(movement, MoverType.SELF);
 	}
-	
+
 	@Override
-	public void baseTick()
-	{
+	public void baseTick() {
 		super.baseTick();
-		
+
 		if (!this.level.isClientSide && this.isAlive() && this.tickCount % 20 == 0) {
 			this.heal(1.0F);
 		}
-		
+
 		if (isControlledByLocalInstance() && getControllingPassenger() != null) {
 			setSprinting(getControllingPassenger().isSprinting());
 		}
 	}
-	
+
 	@Override
-	protected void tickRidden(Player driver, Vec3 move)
-	{
+	protected void tickRidden(Player driver, Vec3 move) {
 		super.tickRidden(driver, move);
 		// rotate head to match driver.
 		float yaw = driver.yHeadRot;
-		if (move.z > 0) // rotate in the direction of the drivers controls1
-		{
-			yaw += (float)Mth.atan2(driver.zza, driver.xxa) * (180f / (float)Math.PI) - 90;
+		if (move.z > 0) { // rotate in the direction of the drivers controls1
+			yaw += (float) Mth.atan2(driver.zza, driver.xxa) * (180f / (float) Math.PI) - 90;
 		}
 		yHeadRot = driver.yHeadRot;
 		setXRot(driver.getXRot() * 0.68f);
-		
+
 		// rotate body towards the head
 		setYRot(Mth.rotateIfNecessary(yaw, getYRot(), 8));
-		
+
 		if (isControlledByLocalInstance()) {
 			if (driver.jumping) {
 				if (!isFlying() && canFly()) {
@@ -559,60 +564,71 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 			}
 		}
 	}
-	
+
 	@Override
-	public void tick()
-	{
+	public void tick() {
 		super.tick();
-		
+
 		if (getPose() == Pose.STANDING) {
 			if (isShiftKeyDown()) setPose(Pose.CROUCHING);
 		} else if (getPose() == Pose.CROUCHING) {
 			if (!isShiftKeyDown()) setPose(Pose.STANDING);
 		}
-		
+
 		if (this.breed == null && getBreed() != null) {
 			setBreed(getBreed());
 		}
-		
+
 		if (isOrderedToSit()) {
-			getBrain().setMemory(DMRMemoryModuleTypes.IS_SITTING.get(), true);
+			getBrain().setMemory(ModMemoryModuleTypes.IS_SITTING.get(), true);
 		}
-		
-		if (!isOrderedToSit() && !isInSittingPose() && getBrain().getMemory(DMRMemoryModuleTypes.IS_SITTING.get()).isPresent()) {
-			getBrain().eraseMemory(DMRMemoryModuleTypes.IS_SITTING.get());
+
+		if (!isOrderedToSit() && !isInSittingPose() && getBrain().getMemory(ModMemoryModuleTypes.IS_SITTING.get()).isPresent()) {
+			getBrain().eraseMemory(ModMemoryModuleTypes.IS_SITTING.get());
 		}
-		
+
 		// update nearGround state when moving for flight and animation logic
-		var dimensions = getDimensions(getPose()); nearGround = onGround() || !level.noCollision(this, new AABB(
-			getX() - dimensions.width() / 2,
-			getY(),
-			getZ() - dimensions.width() / 2,
-			getX() + dimensions.width() / 2,
-			getY() - (GROUND_CLEARENCE_THRESHOLD * getScale()),
-			getZ() + dimensions.width() / 2
-	));
-		
+		var dimensions = getDimensions(getPose());
+		nearGround =
+			onGround() ||
+			!level.noCollision(
+				this,
+				new AABB(
+					getX() - dimensions.width() / 2,
+					getY(),
+					getZ() - dimensions.width() / 2,
+					getX() + dimensions.width() / 2,
+					getY() - (GROUND_CLEARENCE_THRESHOLD * getScale()),
+					getZ() + dimensions.width() / 2
+				)
+			);
+
 		// update flying state based on the distance to the ground
-		boolean flying = shouldFly(); if (flying != isFlying()) {
-		setFlying(flying);
-	}
-		
+		boolean flying = shouldFly();
+		if (flying != isFlying()) {
+			setFlying(flying);
+		}
+
 		if (isPathFinding()) {
 			if (getNavigation().getPath() != null) {
-				var type = getNavigation().getPath().getNextNode().type; if (type == PathType.WALKABLE) {
+				var type = getNavigation().getPath().getNextNode().type;
+				if (type == PathType.WALKABLE) {
 					setFlying(false);
 				} else if (type == PathType.WATER || type == PathType.WATER_BORDER) {
-					setFlying(false); setSwimming(true);
+					setFlying(false);
+					setSwimming(true);
 				}
 			}
 		}
-		
+
 		if (tickCount % 20 == 0) getBreed().tick(this);
-		
+
 		if (level.isClientSide) {
 			if (headController != null && headController.isPlayingTriggeredAnimation()) {
-				if (headController.getCurrentAnimation() != null && Objects.equals(headController.getCurrentAnimation().animation().name(), "breath")) {
+				if (
+					headController.getCurrentAnimation() != null &&
+					Objects.equals(headController.getCurrentAnimation().animation().name(), "breath")
+				) {
 					clientBreathAttack();
 				}
 			}
@@ -622,135 +638,164 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 			}
 		}
 	}
-	
+
 	@Override
-	public EntityDimensions getDimensions(Pose poseIn)
-	{
-		var height = isInSittingPose() ? 2.15f : isShiftKeyDown() ? 2.5f : BASE_HEIGHT; var scale = getScale(); var dimWidth = BASE_WIDTH * scale; var dimHeight = height * scale;
-		return EntityDimensions.scalable(dimWidth, dimHeight).withAttachments(EntityAttachments.builder().attach(EntityAttachment.PASSENGER, 0.0F, dimHeight - 0.15625F, getScale()));
+	public EntityDimensions getDimensions(Pose poseIn) {
+		var height = isInSittingPose() ? 2.15f : isShiftKeyDown() ? 2.5f : BASE_HEIGHT;
+		var scale = getScale();
+		var dimWidth = BASE_WIDTH * scale;
+		var dimHeight = height * scale;
+		return EntityDimensions.scalable(dimWidth, dimHeight).withAttachments(
+			EntityAttachments.builder().attach(EntityAttachment.PASSENGER, 0.0F, dimHeight - 0.15625F, getScale())
+		);
 	}
-	
+
 	@Override
-	protected float getFlyingSpeed()
-	{
-		return (isSprinting() ? 1.25f : 1) * (float)getAttributeValue(FLYING_SPEED);
+	protected float getFlyingSpeed() {
+		return (isSprinting() ? 1.25f : 1) * (float) getAttributeValue(FLYING_SPEED);
 	}
-	
+
 	@Override
-	public float getScale()
-	{
-		var scale = getBreed() != null ? getBreed().getSizeModifier() : 1; return scale * (isBaby() ? 0.5f : 1f);
+	public float getScale() {
+		var scale = getBreed() != null ? getBreed().getSizeModifier() : 1;
+		return scale * (isBaby() ? 0.5f : 1f);
 	}
-	
-	public boolean shouldFly()
-	{
-		if (!canFly()) return false; if (isFlying()) return !onGround(); // more natural landings
+
+	public boolean shouldFly() {
+		if (!canFly()) return false;
+		if (isFlying()) return !onGround(); // more natural landings
 		return canFly() && !isInWater() && !isNearGround();
 	}
-	
-	public boolean isTamingItem(ItemStack stack)
-	{
-		var list = breed.getTamingItems(); return !stack.isEmpty() && (list != null && !list.isEmpty() ? list.contains(stack.getItem()) : stack.is(ItemTags.FISHES));
+
+	public boolean isTamingItem(ItemStack stack) {
+		var list = breed.getTamingItems();
+		return !stack.isEmpty() && (list != null && !list.isEmpty() ? list.contains(stack.getItem()) : stack.is(ItemTags.FISHES));
 	}
-	
-	@OnlyIn( Dist.CLIENT )
-	public void clientBreathAttack()
-	{
+
+	@OnlyIn(Dist.CLIENT)
+	public void clientBreathAttack() {
 		if (getControllingPassenger() == null) return;
-		
+
 		float degrees = Mth.wrapDegrees(getControllingPassenger().yBodyRot);
-		
-		double yawRadians = Math.toRadians(degrees); double f4 = -Math.sin(yawRadians); double f5 = Math.cos(yawRadians); Vec3 lookVector = new Vec3(f4, 0, f5);
-		
+
+		double yawRadians = Math.toRadians(degrees);
+		double f4 = -Math.sin(yawRadians);
+		double f5 = Math.cos(yawRadians);
+		Vec3 lookVector = new Vec3(f4, 0, f5);
+
 		var viewVector = getControllingPassenger().getViewVector(1f);
-		
+
 		if (breathSourcePosition != null) {
 			for (int i = 0; i < 20; i++) {
-				Vec3 speed = new Vec3(lookVector.x * (0.5f + (random.nextFloat() / 2)), viewVector.y, lookVector.z * (0.5f + (random.nextFloat() / 2)));
-				
+				Vec3 speed = new Vec3(
+					lookVector.x * (0.5f + (random.nextFloat() / 2)),
+					viewVector.y,
+					lookVector.z * (0.5f + (random.nextFloat() / 2))
+				);
+
 				var particle = ParticleTypes.FLAME;
-				level.addParticle(particle, getX() + breathSourcePosition.x, getY() + breathSourcePosition.y, getZ() + breathSourcePosition.z, speed.x, speed.y, speed.z);
+				level.addParticle(
+					particle,
+					getX() + breathSourcePosition.x,
+					getY() + breathSourcePosition.y,
+					getZ() + breathSourcePosition.z,
+					speed.x,
+					speed.y,
+					speed.z
+				);
 			}
 		}
 	}
-	
-	public void serverBreathAttack()
-	{
+
+	public void serverBreathAttack() {
 		if (breathTime == -1) {
 			breathTime = 0;
 		} else {
-			if (breathTime >= (int)(breathLength * 20)) {
+			if (breathTime >= (int) (breathLength * 20)) {
 				breathTime = -1;
 			} else {
 				breathTime++;
-				
-				if (getControllingPassenger() == null) return; var viewVector = getControllingPassenger().getViewVector(1f);
-				
+
+				if (getControllingPassenger() == null) return;
+				var viewVector = getControllingPassenger().getViewVector(1f);
+
 				float degrees = Mth.wrapDegrees(getControllingPassenger().yBodyRot);
-				
-				double yawRadians = Math.toRadians(degrees); double f4 = -Math.sin(yawRadians); double f5 = Math.cos(yawRadians); Vec3 lookVector = new Vec3(f4, viewVector.y, f5);
-				
-				var dimensions = getDimensions(getPose()); float size = 15f;
-				
+
+				double yawRadians = Math.toRadians(degrees);
+				double f4 = -Math.sin(yawRadians);
+				double f5 = Math.cos(yawRadians);
+				Vec3 lookVector = new Vec3(f4, viewVector.y, f5);
+
+				var dimensions = getDimensions(getPose());
+				float size = 15f;
+
 				var offsetBoundingBox = new AABB(
-						getX() + (dimensions.width() / 2),
-						getY() + (dimensions.height() / 2),
-						getZ() + (dimensions.width() / 2),
-						getX() + (dimensions.width() / 2) + lookVector.x * size,
-						getY() + (dimensions.height() / 2) + lookVector.y * size,
-						getZ() + (dimensions.width() / 2) + lookVector.z * size
-				); var entities = level.getNearbyEntities(
-						LivingEntity.class,
-						TargetingConditions.forCombat().ignoreInvisibilityTesting().selector(getControllingPassenger()::canAttack).selector(s -> !s.isAlliedTo(getControllingPassenger())),
-						getControllingPassenger(),
-						offsetBoundingBox
+					getX() + (dimensions.width() / 2),
+					getY() + (dimensions.height() / 2),
+					getZ() + (dimensions.width() / 2),
+					getX() + (dimensions.width() / 2) + lookVector.x * size,
+					getY() + (dimensions.height() / 2) + lookVector.y * size,
+					getZ() + (dimensions.width() / 2) + lookVector.z * size
 				);
-				
-				entities.stream().filter(e -> e != this && e != getControllingPassenger()).forEach(ent -> {
-					ent.hurt(level.damageSources().mobAttack(this), 2); ent.setRemainingFireTicks(5);
-				});
+				var entities = level.getNearbyEntities(
+					LivingEntity.class,
+					TargetingConditions.forCombat()
+						.ignoreInvisibilityTesting()
+						.selector(getControllingPassenger()::canAttack)
+						.selector(s -> !s.isAlliedTo(getControllingPassenger())),
+					getControllingPassenger(),
+					offsetBoundingBox
+				);
+
+				entities
+					.stream()
+					.filter(e -> e != this && e != getControllingPassenger())
+					.forEach(ent -> {
+						ent.hurt(level.damageSources().mobAttack(this), 2);
+						ent.setRemainingFireTicks(5);
+					});
 			}
 		}
 	}
-	
+
 	@Override
-	protected void tickDeath()
-	{
+	protected void tickDeath() {
 		// unmount any riding entities
 		ejectPassengers();
-		
+
 		// freeze at place
-		setDeltaMovement(Vec3.ZERO); setYRot(yRotO); setYHeadRot(yHeadRotO);
-		
+		setDeltaMovement(Vec3.ZERO);
+		setYRot(yRotO);
+		setYHeadRot(yHeadRotO);
+
 		if (deathTime >= getMaxDeathTime()) remove(RemovalReason.KILLED); // actually delete entity after the time is up
-		
+
 		deathTime++;
 	}
-	
+
 	@Override
-	public InteractionResult mobInteract(Player player, InteractionHand hand)
-	{
+	public InteractionResult mobInteract(Player player, InteractionHand hand) {
 		var stack = player.getItemInHand(hand);
-		
+
 		var stackResult = stack.interactLivingEntity(player, this, hand);
 		if (stackResult.consumesAction()) return stackResult;
-		
+
 		// tame
 		if (!isTame()) {
 			if (isServer() && isTamingItem(stack)) {
 				stack.shrink(1);
 				tamedFor(player, getRandom().nextInt(5) == 0);
-				
+
 				if (player instanceof ServerPlayer serverPlayer) {
-					DMRCriterionTriggers.TAME_DRAGON.get().trigger(serverPlayer);
+					ModCriterionTriggers.TAME_DRAGON.get().trigger(serverPlayer);
 				}
-				
+
 				return InteractionResult.SUCCESS;
 			}
-			
+
 			return InteractionResult.PASS; // pass regardless. We don't want to perform breeding, age ups, etc. on untamed.
 		}
-		
+
 		// heal
 		if (getHealthRelative() < 1 && isFoodItem(stack)) {
 			//noinspection ConstantConditions
@@ -759,7 +804,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 			stack.shrink(1);
 			return InteractionResult.sidedSuccess(level.isClientSide);
 		}
-		
+
 		// saddle up!
 		if (isTamedFor(player) && isSaddleable() && !isSaddled() && stack.getItem() instanceof SaddleItem) {
 			if (!player.getAbilities().instabuild) {
@@ -769,14 +814,14 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 			updateContainerEquipment();
 			return InteractionResult.sidedSuccess(level.isClientSide);
 		}
-		
+
 		// equip armor
 		if (isTamedFor(player) && isArmor(stack)) {
 			equipArmor(player, stack);
 			updateContainerEquipment();
 			return InteractionResult.sidedSuccess(level.isClientSide);
 		}
-		
+
 		if (isTamedFor(player) && !hasChest() && stack.is(Items.CHEST)) {
 			this.inventory.setItem(CHEST_SLOT, stack.copyWithCount(1));
 			if (!player.getAbilities().instabuild) {
@@ -785,13 +830,13 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 			updateContainerEquipment();
 			return InteractionResult.sidedSuccess(level.isClientSide);
 		}
-		
+
 		// open menu
 		if (isTamedFor(player) && player.isSecondaryUseActive()) {
 			if (!level.isClientSide) this.openCustomInventoryScreen(player);
 			return InteractionResult.sidedSuccess(level.isClientSide);
 		}
-		
+
 		// ride on
 		if (isTamedFor(player) && isSaddled() && !isHatchling() && !isFood(stack)) {
 			if (isServer()) {
@@ -803,284 +848,273 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 			setInSittingPose(false);
 			return InteractionResult.sidedSuccess(level.isClientSide);
 		}
-		
+
 		return super.mobInteract(player, hand);
 	}
-	
+
 	@Override
-	public boolean hurt(DamageSource src, float par2)
-	{
-		if (isInvulnerableTo(src)) return false; setOrderedToSit(false); boolean flag = super.hurt(src, par2);
-		
+	public boolean hurt(DamageSource src, float par2) {
+		if (isInvulnerableTo(src)) return false;
+		setOrderedToSit(false);
+		boolean flag = super.hurt(src, par2);
+
 		if (flag && src.getEntity() instanceof LivingEntity) {
-			DragonAI.wasHurtBy(this, (LivingEntity)src.getEntity());
-		} return flag;
+			DragonAI.wasHurtBy(this, (LivingEntity) src.getEntity());
+		}
+		return flag;
 	}
-	
+
 	@Override
-	public boolean isInvulnerableTo(DamageSource src)
-	{
-		Entity srcEnt = src.getEntity(); if (srcEnt != null && (srcEnt == this || hasPassenger(srcEnt))) return true;
-		
-		if (src == level.damageSources().dragonBreath() // inherited from it anyway
-		    || src == level.damageSources().cactus() // assume cactus needles don't hurt thick scaled lizards
-		    || src == level.damageSources().inWall())
-		{
+	public boolean isInvulnerableTo(DamageSource src) {
+		Entity srcEnt = src.getEntity();
+		if (srcEnt != null && (srcEnt == this || hasPassenger(srcEnt))) return true;
+
+		if (
+			src == level.damageSources().dragonBreath() || // inherited from it anyway
+			src == level.damageSources().cactus() || // assume cactus needles don't hurt thick scaled lizards
+			src == level.damageSources().inWall()
+		) {
 			return true;
 		}
-		
+
 		return getBreed().getImmunities().contains(src.getMsgId()) || super.isInvulnerableTo(src);
 	}
-	
+
 	@Override
-	protected void dropEquipment()
-	{
+	protected void dropEquipment() {
 		super.dropEquipment();
-		
+
 		//Dont drop equipment if the dragon is selected and can be summoned again
 		if (getOwner() instanceof Player player) {
 			DragonOwnerCapability capability = PlayerStateUtils.getHandler(player);
-			
+
 			if (capability.isSelectedDragon(this)) {
 				return;
 			}
 		}
-		
+
 		if (this.inventory != null) {
 			for (int i = 0; i < this.inventory.getContainerSize(); ++i) {
-				ItemStack itemstack = this.inventory.getItem(i); if (!itemstack.isEmpty() && !EnchantmentHelper.has(itemstack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)) {
+				ItemStack itemstack = this.inventory.getItem(i);
+				if (!itemstack.isEmpty() && !EnchantmentHelper.has(itemstack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)) {
 					this.spawnAtLocation(itemstack);
 				}
 			}
 		}
 	}
-	
+
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSourceIn)
-	{
+	protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
 		return SoundEvents.ENDER_DRAGON_HURT;
 	}
-	
+
 	/**
 	 * Returns the sound this mob makes on death.
 	 */
 	@Override
-	protected SoundEvent getDeathSound()
-	{
-		return DMRSounds.DRAGON_DEATH_SOUND.get();
+	protected SoundEvent getDeathSound() {
+		return ModSounds.DRAGON_DEATH_SOUND.get();
 	}
-	
+
 	@Override
-	protected SoundEvent getAmbientSound()
-	{
-		return getBreed().getAmbientSound() != null ? getBreed().getAmbientSound() : DMRSounds.DRAGON_AMBIENT_SOUND.get();
+	protected SoundEvent getAmbientSound() {
+		return getBreed().getAmbientSound() != null ? getBreed().getAmbientSound() : ModSounds.DRAGON_AMBIENT_SOUND.get();
 	}
-	
+
 	@Override
-	protected ResourceKey<LootTable> getDefaultLootTable()
-	{
-		return getBreed().getDeathLootTable() != null ? ResourceKey.create(Registries.LOOT_TABLE, getBreed().getDeathLootTable()) : super.getDefaultLootTable();
+	protected ResourceKey<LootTable> getDefaultLootTable() {
+		return getBreed().getDeathLootTable() != null
+			? ResourceKey.create(Registries.LOOT_TABLE, getBreed().getDeathLootTable())
+			: super.getDefaultLootTable();
 	}
-	
+
 	@Override
-	protected void onChangedBlock(ServerLevel level, BlockPos pos)
-	{
+	protected void onChangedBlock(ServerLevel level, BlockPos pos) {
 		super.onChangedBlock(level, pos);
 		getBreed().onMove(this);
 	}
-	
+
 	@Override
-	protected void dropCustomDeathLoot(ServerLevel level, DamageSource damageSource, boolean recentlyHit)
-	{
-		super.dropCustomDeathLoot(level, damageSource, recentlyHit); if (isSaddled()) spawnAtLocation(Items.SADDLE);
+	protected void dropCustomDeathLoot(ServerLevel level, DamageSource damageSource, boolean recentlyHit) {
+		super.dropCustomDeathLoot(level, damageSource, recentlyHit);
+		if (isSaddled()) spawnAtLocation(Items.SADDLE);
 	}
-	
+
 	@Override
-	@SuppressWarnings( "ConstantConditions" )
-	public boolean doHurtTarget(Entity entityIn)
-	{
-		DamageSource damageSource = level().damageSources().mobAttack(this); boolean attacked = entityIn.hurt(damageSource, (float)getAttribute(ATTACK_DAMAGE).getValue()); if (attacked) {
-		if (this.level() instanceof ServerLevel serverlevel1) {
-			EnchantmentHelper.doPostAttackEffects(serverlevel1, entityIn, damageSource);
+	@SuppressWarnings("ConstantConditions")
+	public boolean doHurtTarget(Entity entityIn) {
+		DamageSource damageSource = level().damageSources().mobAttack(this);
+		boolean attacked = entityIn.hurt(damageSource, (float) getAttribute(ATTACK_DAMAGE).getValue());
+		if (attacked) {
+			if (this.level() instanceof ServerLevel serverlevel1) {
+				EnchantmentHelper.doPostAttackEffects(serverlevel1, entityIn, damageSource);
+			}
 		}
-	}
-		
+
 		if (attacked) {
 			triggerAnim("head-controller", "bite");
 		}
-		
+
 		return attacked;
 	}
-	
+
 	@Override
-	protected void playStepSound(BlockPos entityPos, BlockState state)
-	{
+	protected void playStepSound(BlockPos entityPos, BlockState state) {
 		if (isInWater()) return;
-		
+
 		if (isHatchling()) {
 			super.playStepSound(entityPos, state);
 			return;
 		}
-		
+
 		// override sound type if the top block is snowy
-		var soundType = state.getSoundType(); if (level.getBlockState(entityPos.above()).getBlock() == Blocks.SNOW) {
-		soundType = Blocks.SNOW.getSoundType(state, level, entityPos, this);
-	}
-		
+		var soundType = state.getSoundType();
+		if (level.getBlockState(entityPos.above()).getBlock() == Blocks.SNOW) {
+			soundType = Blocks.SNOW.getSoundType(state, level, entityPos, this);
+		}
+
 		// play stomping for bigger dragons
 		playSound(getStepSound(), soundType.getVolume() * 0.15f, soundType.getPitch() * getVoicePitch());
 	}
-	
-	public SoundEvent getStepSound()
-	{
-		return DMRSounds.DRAGON_STEP_SOUND.get();
+
+	public SoundEvent getStepSound() {
+		return ModSounds.DRAGON_STEP_SOUND.get();
 	}
-	
+
 	@Override
-	@SuppressWarnings( "ConstantConditions" )
-	public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob mob)
-	{
-		var offspring = DMREntities.DRAGON_ENTITY.get().create(level); offspring.setBreed(getBreed()); return offspring;
+	@SuppressWarnings("ConstantConditions")
+	public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob mob) {
+		var offspring = ModEntities.DRAGON_ENTITY.get().create(level);
+		offspring.setBreed(getBreed());
+		return offspring;
 	}
-	
+
 	@Override
-	public void setAge(int pAge)
-	{
-		super.setAge(pAge); if (!level.isClientSide) {
-		PacketDistributor.sendToPlayersTrackingEntity(this, new DragonAgeSyncPacket(getId(), pAge));
+	public void setAge(int pAge) {
+		super.setAge(pAge);
+		if (!level.isClientSide) {
+			PacketDistributor.sendToPlayersTrackingEntity(this, new DragonAgeSyncPacket(getId(), pAge));
 		}
 	}
-	
+
 	@Override
-	public boolean canAttack(LivingEntity target)
-	{
+	public boolean canAttack(LivingEntity target) {
 		return !isHatchling() && !hasControllingPassenger() && super.canAttack(target);
 	}
-	
+
 	@Override
-	public SoundEvent getEatingSound(ItemStack itemStackIn)
-	{
+	public SoundEvent getEatingSound(ItemStack itemStackIn) {
 		return SoundEvents.GENERIC_EAT;
 	}
-	
+
 	@Override
-	public boolean wantsToAttack(LivingEntity target, LivingEntity owner)
-	{
+	public boolean wantsToAttack(LivingEntity target, LivingEntity owner) {
 		return !(target instanceof TamableAnimal tameable) || !Objects.equals(tameable.getOwner(), owner);
 	}
-	
-	public SoundEvent getAttackSound()
-	{
+
+	public SoundEvent getAttackSound() {
 		return SoundEvents.GENERIC_EAT;
 	}
-	
+
 	@Override
-	public void containerChanged(Container pContainer)
-	{
+	public void containerChanged(Container pContainer) {
 		// Update the saved dragon so that summoning the dragon doesnt wipe the inventory
-		updateOwnerData(); setArmor();
+		updateOwnerData();
+		setArmor();
 	}
-	
-	public void updateOwnerData()
-	{
+
+	public void updateOwnerData() {
 		if (getOwner() instanceof Player player && !player.level.isClientSide) {
-			var handler = player.getData(DMRCapability.PLAYER_CAPABILITY);
-			
+			var handler = player.getData(ModCapabilities.PLAYER_CAPABILITY);
+
 			if (handler.isSelectedDragon(this)) {
-				handler.setPlayer(player); handler.setDragon(this, DragonWhistleHandler.getDragonSummonIndex(player, getDragonUUID()));
+				handler.setPlayer(player);
+				handler.setDragon(this, DragonWhistleHandler.getDragonSummonIndex(player, getDragonUUID()));
 			}
 		}
 	}
-	
-	
+
 	@Override
-	public boolean isFood(ItemStack stack)
-	{
+	public boolean isFood(ItemStack stack) {
 		var list = breed.getBreedingItems();
 		return !stack.isEmpty() && (list != null && list.size() > 0 ? list.contains(stack.getItem()) : stack.is(ItemTags.FISHES));
 	}
-	
-	public boolean isFoodItem(ItemStack stack)
-	{
+
+	public boolean isFoodItem(ItemStack stack) {
 		var food = stack.getItem().getFoodProperties(stack, this);
 		return food != null && stack.is(ItemTags.MEAT);
 	}
-	
-	public void tamedFor(Player player, boolean successful)
-	{
+
+	public void tamedFor(Player player, boolean successful) {
 		if (successful) {
 			setTame(true, true);
 			navigation.stop();
 			setTarget(null);
-			setOwnerUUID(player.getUUID()); level.broadcastEntityEvent(this, (byte)7);
+			setOwnerUUID(player.getUUID());
+			level.broadcastEntityEvent(this, (byte) 7);
 		} else {
-			level.broadcastEntityEvent(this, (byte)6);
+			level.broadcastEntityEvent(this, (byte) 6);
 		}
 	}
-	
+
 	@Override
 	public void setTame(boolean tame, boolean applyTamingSideEffects) {
 		super.setTame(tame, applyTamingSideEffects);
-		
+
 		if (tame) {
-			getBrain().setMemory(DMRMemoryModuleTypes.IS_TAMED.get(), true);
+			getBrain().setMemory(ModMemoryModuleTypes.IS_TAMED.get(), true);
 		} else {
-			getBrain().eraseMemory(DMRMemoryModuleTypes.IS_TAMED.get());
+			getBrain().eraseMemory(ModMemoryModuleTypes.IS_TAMED.get());
 		}
 	}
-	
-	public boolean isTamedFor(Player player)
-	{
+
+	public boolean isTamedFor(Player player) {
 		return isTame() && isOwnedBy(player);
 	}
-	
-	
+
 	//TODO
 	//	@Override
 	//	public float getMyRidingOffset(Entity pEntity)
 	//	{
 	//		return getBbHeight() - 0.175f + breed.getVerticalRidingOffset();
 	//	}
-	
-	public void setRidingPlayer(Player player)
-	{
+
+	public void setRidingPlayer(Player player) {
 		player.setYRot(getYRot());
 		player.setXRot(getXRot());
 		player.startRiding(this);
 	}
-	
+
 	@Override
-	public void setOrderedToSit(boolean pOrderedToSit)
-	{
+	public void setOrderedToSit(boolean pOrderedToSit) {
 		super.setOrderedToSit(pOrderedToSit);
 		setWanderTarget(null);
-		navigation.stop(); setTarget(null); setInSittingPose(pOrderedToSit); if (pOrderedToSit) {
-		getBrain().setMemory(DMRMemoryModuleTypes.IS_SITTING.get(), true);
-	} else {
-		getBrain().eraseMemory(DMRMemoryModuleTypes.IS_SITTING.get());
+		navigation.stop();
+		setTarget(null);
+		setInSittingPose(pOrderedToSit);
+		if (pOrderedToSit) {
+			getBrain().setMemory(ModMemoryModuleTypes.IS_SITTING.get(), true);
+		} else {
+			getBrain().eraseMemory(ModMemoryModuleTypes.IS_SITTING.get());
 		}
 	}
-	
-	
+
 	@Override
-	public void swing(InteractionHand hand)
-	{
+	public void swing(InteractionHand hand) {
 		playSound(getAttackSound(), 1, 0.7f);
 		super.swing(hand);
 	}
-	
-	
+
 	@Override
-	public boolean canMate(Animal mate)
-	{
+	public boolean canMate(Animal mate) {
 		if (mate == this) {
 			return false;
 		} else if (!(mate instanceof DMRDragonEntity)) {
 			return false;
 		} else if (!canReproduce()) return false;
-		
-		DMRDragonEntity dragonMate = (DMRDragonEntity)mate;
-		
+
+		DMRDragonEntity dragonMate = (DMRDragonEntity) mate;
+
 		if (!dragonMate.isTame()) {
 			return false;
 		} else if (!dragonMate.canReproduce()) {
@@ -1089,9 +1123,8 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 			return isInLove() && dragonMate.isInLove();
 		}
 	}
-	
-	private List<IDragonBreed> getBreeds()
-	{
+
+	private List<IDragonBreed> getBreeds() {
 		List<IDragonBreed> breeds = new ArrayList<>();
 		if (getBreed() instanceof DragonHybridBreed hybridBreed) {
 			breeds.add(hybridBreed.parent1);
@@ -1101,54 +1134,52 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 		breeds.add(getBreed());
 		return breeds;
 	}
-	
+
 	@Override
-	public void spawnChildFromBreeding(ServerLevel level, Animal animal)
-	{
+	public void spawnChildFromBreeding(ServerLevel level, Animal animal) {
 		if (!(animal instanceof DMRDragonEntity mate)) return;
-		
+
 		// pick a breed to inherit from, and place hatching.
-		var state = DMRBlocks.DRAGON_EGG_BLOCK.get().defaultBlockState().setValue(DragonMountsEggBlock.HATCHING, true);
+		var state = ModBlocks.DRAGON_EGG_BLOCK.get().defaultBlockState().setValue(DMREggBlock.HATCHING, true);
 		var eggOutcomes = getEggOutcomes(level, mate);
-		
+
 		// Pick a random breed from the list to use as the offspring
 		var offSpringBreed = eggOutcomes.get(getRandom().nextInt(eggOutcomes.size()));
-		var egg = DragonMountsEggBlock.place(level, blockPosition(), state, offSpringBreed);
-		
+		var egg = DMREggBlock.place(level, blockPosition(), state, offSpringBreed);
+
 		// mix the custom names in case both parents have one
 		if (hasCustomName() && animal.hasCustomName()) {
 			String babyName = BreedingUtils.generateCustomName(this, animal);
 			egg.setCustomName(Component.literal(babyName));
 		}
-		
+
 		// increase reproduction counter
 		addReproCount();
 		mate.addReproCount();
 	}
-	
-	private ArrayList<IDragonBreed> getEggOutcomes(ServerLevel level, DMRDragonEntity mate)
-	{
+
+	private ArrayList<IDragonBreed> getEggOutcomes(ServerLevel level, DMRDragonEntity mate) {
 		var eggOutcomes = new ArrayList<IDragonBreed>();
-		
+
 		eggOutcomes.addAll(getBreeds());
 		eggOutcomes.addAll(mate.getBreeds());
-		
+
 		if (DMRConfig.HABITAT_OFFSPRING.get()) {
 			IDragonBreed highestBreed1 = BreedingUtils.getHabitatBreedOutcome(level, blockPosition());
 			IDragonBreed highestBreed2 = BreedingUtils.getHabitatBreedOutcome(level, mate.blockPosition());
-			
+
 			if (highestBreed1 != null) {
 				if (!eggOutcomes.contains(highestBreed1)) eggOutcomes.add(highestBreed1);
 			}
-			
+
 			if (highestBreed2 != null) {
 				if (!eggOutcomes.contains(highestBreed2)) eggOutcomes.add(highestBreed2);
 			}
 		}
-		
+
 		if (DMRConfig.ALLOW_HYBRIDIZATION.get()) {
 			var newList = new ArrayList<IDragonBreed>();
-			
+
 			for (IDragonBreed breed1 : eggOutcomes) {
 				for (IDragonBreed breed2 : eggOutcomes) {
 					if (breed1 != breed2) {
@@ -1161,19 +1192,18 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 			}
 			eggOutcomes.addAll(newList);
 		}
-		
+
 		return eggOutcomes;
 	}
-	
-	
+
 	@Override
-	public void openCustomInventoryScreen(Player pPlayer)
-	{
-		pPlayer.openMenu(new SimpleMenuProvider((pId, pInventory, pPlayer1) -> createMenu(pId, pInventory), getDisplayName()), buf -> buf.writeInt(getId()));
+	public void openCustomInventoryScreen(Player pPlayer) {
+		pPlayer.openMenu(new SimpleMenuProvider((pId, pInventory, pPlayer1) -> createMenu(pId, pInventory), getDisplayName()), buf ->
+			buf.writeInt(getId())
+		);
 	}
-	
-	private DragonContainerMenu createMenu(int pId, Inventory pInventory)
-	{
+
+	private DragonContainerMenu createMenu(int pId, Inventory pInventory) {
 		FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
 		buffer.writeInt(getId());
 		return new DragonContainerMenu(pId, pInventory, buffer);

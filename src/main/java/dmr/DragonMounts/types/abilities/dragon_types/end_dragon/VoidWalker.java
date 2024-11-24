@@ -10,23 +10,27 @@ import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 
 @EventBusSubscriber
 public class VoidWalker implements Ability {
+
 	@Override
-	public String type()
-	{
+	public String type() {
 		return "void_walker";
 	}
-	
+
 	@SubscribeEvent
-	public static void onFallDamage(LivingFallEvent event)
-	{
+	public static void onFallDamage(LivingFallEvent event) {
 		if (event.getEntity() instanceof Player player) {
 			var level = player.level;
-			var dragons = level.getNearbyEntities(DMRDragonEntity.class, TargetingConditions.forNonCombat(), player, player.getBoundingBox().inflate(5));
-			
+			var dragons = level.getNearbyEntities(
+				DMRDragonEntity.class,
+				TargetingConditions.forNonCombat(),
+				player,
+				player.getBoundingBox().inflate(5)
+			);
+
 			for (var dragon : dragons) {
 				if (dragon.getOwner() != player) continue;
 				var hasVoidWalker = dragon.getBreed().getAbilities().stream().anyMatch(ability -> ability.type().equals("void_walker"));
-				
+
 				if (hasVoidWalker) {
 					event.setCanceled(true);
 					break;

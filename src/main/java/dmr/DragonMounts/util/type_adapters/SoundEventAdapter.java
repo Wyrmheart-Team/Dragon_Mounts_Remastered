@@ -10,9 +10,9 @@ import net.minecraft.sounds.SoundEvent;
 import java.lang.reflect.Type;
 
 public class SoundEventAdapter implements JsonDeserializer<SoundEvent>, JsonSerializer<SoundEvent> {
+
 	@Override
-	public SoundEvent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
-	{
+	public SoundEvent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 		if (!json.isJsonObject()) {
 			try {
 				ResourceLocation location = ResourceLocation.parse(json.getAsString());
@@ -21,13 +21,13 @@ public class SoundEventAdapter implements JsonDeserializer<SoundEvent>, JsonSeri
 				e.printStackTrace();
 			}
 		}
-		
+
 		try {
 			var event = SoundEvent.CODEC.parse(JsonOps.INSTANCE, json).resultOrPartial(System.err::println).orElse(null);
-			
+
 			if (event != null) {
 				var sound = event.unwrap().right().orElse(null);
-				
+
 				if (sound != null) {
 					return sound;
 				}
@@ -35,13 +35,12 @@ public class SoundEventAdapter implements JsonDeserializer<SoundEvent>, JsonSeri
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
-	
+
 	@Override
-	public JsonElement serialize(SoundEvent src, Type typeOfSrc, JsonSerializationContext context)
-	{
+	public JsonElement serialize(SoundEvent src, Type typeOfSrc, JsonSerializationContext context) {
 		return SoundEvent.CODEC.encode(Holder.direct(src), JsonOps.INSTANCE, null).getOrThrow();
 	}
 }

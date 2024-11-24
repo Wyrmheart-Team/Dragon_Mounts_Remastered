@@ -1,9 +1,9 @@
 package dmr.DragonMounts.types.armor;
 
 import com.google.gson.annotations.SerializedName;
-import dmr.DragonMounts.DragonMountsRemaster;
-import dmr.DragonMounts.registry.DMRComponents;
+import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.registry.DragonArmorRegistry;
+import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.LootTableEntry;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,29 +14,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DragonArmor {
-	private @Getter
-	@Setter String id;
-	
-	@SerializedName( "protection" )
+
+	@Getter
+	@Setter
+	private String id;
+
+	@SerializedName("protection")
 	@Getter
 	private int protection = 0;
-	
-	public Component getName()
-	{
-		return Component.translatable(DragonMountsRemaster.MOD_ID + ".dragon_armor." + getId());
+
+	public Component getName() {
+		return Component.translatable(DMR.MOD_ID + ".dragon_armor." + getId());
 	}
-	
-	@SerializedName( "loot_tables" )
+
+	@SerializedName("loot_tables")
 	@Getter
 	private List<LootTableEntry> lootTable = new ArrayList<>();
-	
-	public static DragonArmor getArmorType(ItemStack stack)
-	{
-		var type = stack.get(DMRComponents.ARMOR_TYPE); return DragonArmorRegistry.getDragonArmor(type);
+
+	public static DragonArmor getArmorType(ItemStack stack) {
+		var type = stack.get(ModComponents.ARMOR_TYPE);
+		return DragonArmorRegistry.getDragonArmor(type);
 	}
-	
-	public static void setArmorType(ItemStack stack, DragonArmor type)
-	{
-		if (type == null) return; stack.set(DMRComponents.ARMOR_TYPE, type.getId());
+
+	public static void setArmorType(ItemStack stack, DragonArmor type) {
+		if (type == null) return;
+		stack.set(ModComponents.ARMOR_TYPE, type.getId());
 	}
 }
