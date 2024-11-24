@@ -12,8 +12,7 @@ import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 
 
 @EventBusSubscriber
-public class GemGuardAbility implements Ability
-{
+public class GemGuardAbility implements Ability {
 	@Override
 	public String type()
 	{

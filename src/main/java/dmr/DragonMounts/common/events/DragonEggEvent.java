@@ -14,14 +14,15 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 
 @EventBusSubscriber( bus = Bus.GAME )
-public class DragonEggEvent
-{
+public class DragonEggEvent {
 	@SubscribeEvent
 	public static void interactWithEgg(PlayerInteractEvent.RightClickBlock e)
 	{
 		if (DMRConfig.ALLOW_EGG_OVERRIDE.get() && e.getLevel().getBlockState(e.getPos()).is(Blocks.DRAGON_EGG)) {
 			if (DragonBreedsRegistry.hasDragonBreed("end")) {
-				if (e.getLevel().isClientSide) {e.getEntity().swing(InteractionHand.MAIN_HAND);} else {
+				if (e.getLevel().isClientSide) {
+					e.getEntity().swing(InteractionHand.MAIN_HAND);
+				} else {
 					var state = DMRBlocks.DRAGON_EGG_BLOCK.get().defaultBlockState().setValue(DragonMountsEggBlock.HATCHING, true);
 					DragonMountsEggBlock.place((ServerLevel)e.getLevel(), e.getPos(), state, DragonBreedsRegistry.getDragonBreed("end"));
 				}

@@ -14,9 +14,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin( Entity.class )
-public class EntityDismountMixin
-{
-	@Inject( method = "stopRiding", at = @At( "HEAD" ) )
+public class EntityDismountMixin {
+	@Inject( method = "stopRiding",
+	         at = @At( "HEAD" ) )
 	public void stopRiding(CallbackInfo ci)
 	{
 		if (((Entity)(Object)this) instanceof Player player) {

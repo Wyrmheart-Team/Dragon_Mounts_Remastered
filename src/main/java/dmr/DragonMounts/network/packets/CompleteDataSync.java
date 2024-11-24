@@ -13,14 +13,14 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record CompleteDataSync(int playerId, CompoundTag tag) implements IMessage<CompleteDataSync>
-{
+public record CompleteDataSync(int playerId, CompoundTag tag) implements IMessage<CompleteDataSync> {
 	public CompleteDataSync(Player player)
 	{
 		this(player.getId(), player.getData(DMRCapability.PLAYER_CAPABILITY).serializeNBT(player.level.registryAccess()));
 	}
 	
-	public static final StreamCodec<FriendlyByteBuf, CompleteDataSync> STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.INT, CompleteDataSync::playerId, ByteBufCodecs.COMPOUND_TAG, CompleteDataSync::tag, CompleteDataSync::new);
+	public static final StreamCodec<FriendlyByteBuf, CompleteDataSync> STREAM_CODEC =
+			StreamCodec.composite(ByteBufCodecs.INT, CompleteDataSync::playerId, ByteBufCodecs.COMPOUND_TAG, CompleteDataSync::tag, CompleteDataSync::new);
 	
 	@Override
 	public StreamCodec<? super RegistryFriendlyByteBuf, CompleteDataSync> streamCodec()

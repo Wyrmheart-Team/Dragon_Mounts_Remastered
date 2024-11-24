@@ -18,12 +18,13 @@ import java.util.function.Supplier;
 
 import static dmr.DragonMounts.DragonMountsRemaster.MOD_ID;
 
-@EventBusSubscriber( modid = MOD_ID, bus = Bus.GAME )
-public class DMRCapability
-{
+@EventBusSubscriber( modid = MOD_ID,
+                     bus = Bus.GAME )
+public class DMRCapability {
 	public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, MOD_ID);
 	
-	public static Supplier<AttachmentType<DragonOwnerCapability>> PLAYER_CAPABILITY = ATTACHMENT_TYPES.register("dragon_owner", () -> AttachmentType.serializable(DragonOwnerCapability::new).copyOnDeath().build());
+	public static Supplier<AttachmentType<DragonOwnerCapability>> PLAYER_CAPABILITY =
+			ATTACHMENT_TYPES.register("dragon_owner", () -> AttachmentType.serializable(DragonOwnerCapability::new).copyOnDeath().build());
 	
 	
 	@SubscribeEvent

@@ -14,13 +14,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DragonHybridBreed implements IDragonBreed
-{
-	@SerializedName( "parent1" )
-	public IDragonBreed parent1;
+public class DragonHybridBreed implements IDragonBreed {
+	@SerializedName( "parent1" ) public IDragonBreed parent1;
 	
-	@SerializedName( "parent1" )
-	public IDragonBreed parent2;
+	@SerializedName( "parent1" ) public IDragonBreed parent2;
 	
 	public DragonHybridBreed(IDragonBreed parent1, IDragonBreed parent2)
 	{
@@ -216,9 +213,13 @@ public class DragonHybridBreed implements IDragonBreed
 	{
 		List<LootTableEntry> list = new ArrayList<>();
 		
-		if (parent1.getLootTable() != null) list.addAll(parent1.getLootTable().subList(0, parent1.getLootTable().size() / 2));
+		if (parent1.getLootTable() != null) {
+			list.addAll(parent1.getLootTable().subList(0, parent1.getLootTable().size() / 2));
+		}
 		
-		if (parent2.getLootTable() != null) list.addAll(parent2.getLootTable().subList(parent2.getLootTable().size() / 2, parent2.getLootTable().size()));
+		if (parent2.getLootTable() != null) {
+			list.addAll(parent2.getLootTable().subList(parent2.getLootTable().size() / 2, parent2.getLootTable().size()));
+		}
 		
 		return list;
 	}

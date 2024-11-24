@@ -10,8 +10,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record SummonDragonPacket() implements IMessage<SummonDragonPacket>
-{
+public record SummonDragonPacket() implements IMessage<SummonDragonPacket> {
 	public static final StreamCodec<FriendlyByteBuf, SummonDragonPacket> STREAM_CODEC = StreamCodec.unit(new SummonDragonPacket());
 	
 	@Override

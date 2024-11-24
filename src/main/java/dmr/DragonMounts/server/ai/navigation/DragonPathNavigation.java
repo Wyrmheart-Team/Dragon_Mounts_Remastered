@@ -10,10 +10,10 @@ import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathFinder;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.Tags.Fluids;
 import org.jetbrains.annotations.Nullable;
 
-public class DragonPathNavigation extends FlyingPathNavigation
-{
+public class DragonPathNavigation extends FlyingPathNavigation {
 	public DragonPathNavigation(Mob pMob, Level pLevel)
 	{
 		super(pMob, pLevel);
@@ -24,7 +24,8 @@ public class DragonPathNavigation extends FlyingPathNavigation
 	@Override
 	protected PathFinder createPathFinder(int pMaxVisitedNodes)
 	{
-		this.dragonNodeEvaluator = new DragonNodeEvaluator(mob); this.nodeEvaluator = dragonNodeEvaluator; this.nodeEvaluator.setCanPassDoors(true); return new PathFinder(this.nodeEvaluator, pMaxVisitedNodes);
+		this.dragonNodeEvaluator = new DragonNodeEvaluator(mob); this.nodeEvaluator = dragonNodeEvaluator; this.nodeEvaluator.setCanPassDoors(true);
+		return new PathFinder(this.nodeEvaluator, pMaxVisitedNodes);
 	}
 	
 	@Override
@@ -42,15 +43,20 @@ public class DragonPathNavigation extends FlyingPathNavigation
 	@Override
 	protected double getGroundY(Vec3 p_217794_)
 	{
-		return dragonNodeEvaluator.isAmphibious() ? p_217794_.y : super.getGroundY(p_217794_);
+		return dragonNodeEvaluator.allowSwimming ? p_217794_.y : super.getGroundY(p_217794_);
 	}
 	
 	@Override
 	public @Nullable Path createPath(BlockPos pos, int accuracy)
 	{
-		var distance = Math.sqrt(mob.distanceToSqr(pos.getX(), pos.getY(), pos.getZ())); dragonNodeEvaluator.allowFlying = distance > 16 * 16; dragonNodeEvaluator.allowSwimming = false; if (mob instanceof DMRDragonEntity dragon) {
-		dragonNodeEvaluator.allowSwimming = dragon.getBreed() != null && dragon.getBreed().getImmunities().contains("drown");
-	}
+		var distance = Math.sqrt(mob.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()));
+		
+		dragonNodeEvaluator.allowSwimming = false; dragonNodeEvaluator.allowFlying = false;
+		
+		if (mob instanceof DMRDragonEntity dragon) {
+			dragonNodeEvaluator.allowSwimming = dragon.getBreed() != null && dragon.getBreed().getImmunities().contains("drown") && dragon.level.getFluidState(pos).is(Fluids.WATER);
+			dragonNodeEvaluator.allowFlying = distance > 16 * 16 && dragon.canFly();
+		}
 		
 		Path path = super.createPath(pos, accuracy);
 		
@@ -64,7 +70,14 @@ public class DragonPathNavigation extends FlyingPathNavigation
 	@Override
 	public Path createPath(Entity entity, int accuracy)
 	{
-		var distance = Math.sqrt(mob.distanceToSqr(entity)); dragonNodeEvaluator.allowFlying = distance > Math.sqrt(16);
+		var distance = Math.sqrt(mob.distanceToSqr(entity));
+		
+		dragonNodeEvaluator.allowSwimming = false; dragonNodeEvaluator.allowFlying = false;
+		
+		if (mob instanceof DMRDragonEntity dragon) {
+			dragonNodeEvaluator.allowSwimming = dragon.getBreed() != null && dragon.getBreed().getImmunities().contains("drown") && entity.isInWater();
+			dragonNodeEvaluator.allowFlying = distance > Math.sqrt(16) && dragon.canFly();
+		}
 		
 		Path path = super.createPath(entity, accuracy);
 		
@@ -86,7 +99,6 @@ public class DragonPathNavigation extends FlyingPathNavigation
 	{
 		return dragonNodeEvaluator.allowSwimming && this.mob.isInLiquid() && isClearForMovementBetween(this.mob, p_217796_, p_217797_, true);
 	}
-	
 	
 	public boolean isStableDestination(BlockPos pPos)
 	{

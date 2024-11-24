@@ -8,8 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.Map;
 
-public interface Ability
-{
+public interface Ability {
 	Codec<Ability> CODEC = Codec.STRING.dispatch(Ability::type, DragonAbilities.REGISTRY::get);
 	String type();
 	

@@ -10,8 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 
-public class DragonAbilityButton extends ExtendedButton
-{
+public class DragonAbilityButton extends ExtendedButton {
 	private static final ResourceLocation EFFECT_BACKGROUND_LARGE_SPRITE = ResourceLocation.parse("container/inventory/effect_background_large");
 	private ResourceLocation ABILITY_ICON;
 	

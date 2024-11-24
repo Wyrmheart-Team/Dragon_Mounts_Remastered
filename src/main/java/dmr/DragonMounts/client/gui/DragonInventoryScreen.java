@@ -18,8 +18,7 @@ import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 @OnlyIn( Dist.CLIENT )
-public class DragonInventoryScreen extends AbstractContainerScreen<DragonContainerMenu>
-{
+public class DragonInventoryScreen extends AbstractContainerScreen<DragonContainerMenu> {
 	private static final ResourceLocation INVENTORY_LOCATION = DragonMountsRemaster.id("textures/gui/dragon.png");
 	private final DMRDragonEntity dragon;
 	/**
@@ -65,17 +64,11 @@ public class DragonInventoryScreen extends AbstractContainerScreen<DragonContain
 		}
 	}
 	
-	protected void renderBg(GuiGraphics pGuiGraphics, float pPartialTick, int pMouseX, int pMouseY)
+	public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick)
 	{
-		pGuiGraphics.blit(INVENTORY_LOCATION, leftPos, topPos, 0, 0, 176, 233, 512, 512);
-		
-		if (dragon.hasChest()) {
-			pGuiGraphics.blit(INVENTORY_LOCATION, leftPos + 7, topPos + 83, 176, 0, 9 * 18, 54, 512, 512);
-		}
-		
-		InventoryScreen.renderEntityInInventoryFollowsMouse(pGuiGraphics, leftPos + 28, topPos + 18, leftPos + 28 + 81, topPos + 18 + 52, 10, 1, this.xMouse, this.yMouse, this.dragon);
+		this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick); this.xMouse = (float)pMouseX; this.yMouse = (float)pMouseY; super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+		this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
 	}
-	
 	
 	protected void renderLabels(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY)
 	{
@@ -92,12 +85,14 @@ public class DragonInventoryScreen extends AbstractContainerScreen<DragonContain
 		pGuiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 4210752, false);
 	}
 	
-	public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick)
+	protected void renderBg(GuiGraphics pGuiGraphics, float pPartialTick, int pMouseX, int pMouseY)
 	{
-		this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-		this.xMouse = (float)pMouseX;
-		this.yMouse = (float)pMouseY;
-		super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-		this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
+		pGuiGraphics.blit(INVENTORY_LOCATION, leftPos, topPos, 0, 0, 176, 233, 512, 512);
+		
+		if (dragon.hasChest()) {
+			pGuiGraphics.blit(INVENTORY_LOCATION, leftPos + 7, topPos + 83, 176, 0, 9 * 18, 54, 512, 512);
+		}
+		
+		InventoryScreen.renderEntityInInventoryFollowsMouse(pGuiGraphics, leftPos + 28, topPos + 18, leftPos + 28 + 81, topPos + 18 + 52, 10, 1, this.xMouse, this.yMouse, this.dragon);
 	}
 }

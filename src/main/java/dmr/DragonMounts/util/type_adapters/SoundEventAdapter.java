@@ -9,8 +9,7 @@ import net.minecraft.sounds.SoundEvent;
 
 import java.lang.reflect.Type;
 
-public class SoundEventAdapter implements JsonDeserializer<SoundEvent>, JsonSerializer<SoundEvent>
-{
+public class SoundEventAdapter implements JsonDeserializer<SoundEvent>, JsonSerializer<SoundEvent> {
 	@Override
 	public SoundEvent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
 	{

@@ -9,8 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 
 
-public class NatureBlessingAbility implements NearbyAbility
-{
+public class NatureBlessingAbility implements NearbyAbility {
 	@Override
 	public String type()
 	{

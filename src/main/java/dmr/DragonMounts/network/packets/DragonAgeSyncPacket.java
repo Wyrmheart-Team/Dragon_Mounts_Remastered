@@ -11,8 +11,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record DragonAgeSyncPacket(int dragonId, int age) implements IMessage<DragonAgeSyncPacket>
-{
+public record DragonAgeSyncPacket(int dragonId, int age) implements IMessage<DragonAgeSyncPacket> {
 	public static final CustomPacketPayload.Type<DragonStatePacket> TYPE = new CustomPacketPayload.Type<>(DragonMountsRemaster.id("age_sync"));
 	
 	@Override
@@ -37,7 +36,8 @@ public record DragonAgeSyncPacket(int dragonId, int age) implements IMessage<Dra
 		}
 	}
 	
-	public static final StreamCodec<FriendlyByteBuf, DragonAgeSyncPacket> STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.INT, DragonAgeSyncPacket::dragonId, ByteBufCodecs.INT, DragonAgeSyncPacket::age, DragonAgeSyncPacket::new);
+	public static final StreamCodec<FriendlyByteBuf, DragonAgeSyncPacket> STREAM_CODEC =
+			StreamCodec.composite(ByteBufCodecs.INT, DragonAgeSyncPacket::dragonId, ByteBufCodecs.INT, DragonAgeSyncPacket::age, DragonAgeSyncPacket::new);
 	
 	@Override
 	public StreamCodec<? super RegistryFriendlyByteBuf, DragonAgeSyncPacket> streamCodec()

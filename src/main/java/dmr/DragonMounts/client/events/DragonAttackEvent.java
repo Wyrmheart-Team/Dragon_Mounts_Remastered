@@ -16,8 +16,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import java.util.concurrent.TimeUnit;
 
 @EventBusSubscriber( bus = Bus.GAME )
-public class DragonAttackEvent
-{
+public class DragonAttackEvent {
 	private static Long lastAttack = null;
 	
 	@SubscribeEvent

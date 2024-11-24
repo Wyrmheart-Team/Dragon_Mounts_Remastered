@@ -11,8 +11,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record DragonBreathPacket(int entityId) implements IMessage<DragonBreathPacket>
-{
+public record DragonBreathPacket(int entityId) implements IMessage<DragonBreathPacket> {
 	public static final CustomPacketPayload.Type<DragonStatePacket> TYPE = new CustomPacketPayload.Type<>(DragonMountsRemaster.id("dragon_breath"));
 	
 	@Override

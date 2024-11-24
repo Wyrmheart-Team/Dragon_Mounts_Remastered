@@ -6,8 +6,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 
-public class InstantHatchItem extends DMRDevItem
-{
+public class InstantHatchItem extends DMRDevItem {
 	@Override
 	public InteractionResult useOn(UseOnContext pContext)
 	{

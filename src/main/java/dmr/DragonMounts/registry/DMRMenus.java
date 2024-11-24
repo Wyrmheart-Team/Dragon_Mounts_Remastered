@@ -9,8 +9,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
 
-public class DMRMenus
-{
+public class DMRMenus {
 	public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(Registries.MENU, DragonMountsRemaster.MOD_ID);
 	public static final Supplier<MenuType<DragonContainerMenu>> DRAGON_MENU = MENU_TYPES.register("dragon_menu", () -> IMenuTypeExtension.create(DragonContainerMenu::new));
 }

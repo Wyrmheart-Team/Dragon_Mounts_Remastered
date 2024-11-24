@@ -6,8 +6,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.UUID;
 
-public class DragonWorldDataManager
-{
+public class DragonWorldDataManager {
 	public static DragonWorldData getInstance(Level level)
 	{
 		return DragonWorldData.getInstance(level);

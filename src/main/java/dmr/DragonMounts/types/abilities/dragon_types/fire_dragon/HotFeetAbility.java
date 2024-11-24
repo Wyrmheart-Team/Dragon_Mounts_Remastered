@@ -12,8 +12,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 
 
-public class HotFeetAbility implements FootprintAbility
-{
+public class HotFeetAbility implements FootprintAbility {
 	public static final TagKey<Block> BURNABLES_TAG = BlockTags.create(DragonMountsRemaster.id("hot_feet_burnables"));
 	
 	@Override

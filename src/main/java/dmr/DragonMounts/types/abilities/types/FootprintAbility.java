@@ -4,8 +4,7 @@ import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import net.minecraft.core.BlockPos;
 
 
-public interface FootprintAbility extends Ability
-{
+public interface FootprintAbility extends Ability {
 	@Override
 	default void onMove(DMRDragonEntity dragon)
 	{
@@ -16,7 +15,7 @@ public interface FootprintAbility extends Ability
 		
 		for (int i = 0; i < 4; i++) {
 			// place only if randomly selected
-			if (dragon.getRandom().nextFloat() > chance) continue;
+			if (dragon.getRandom().nextFloat() > chance) {continue;}
 			
 			// get footprint position
 			int bx = (int)(dragon.getX() + (i % 2 * 2 - 1) * 0.25f);

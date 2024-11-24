@@ -3,7 +3,7 @@ package dmr.DragonMounts.client.model;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
-import dmr.DragonMounts.DMRConstants.NBTConstants;
+import dmr.DragonMounts.registry.DMRComponents;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.server.blockentities.DragonEggBlockEntity;
 import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
@@ -20,12 +20,10 @@ import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -42,8 +40,7 @@ import java.util.function.Supplier;
 /**
  * A dynamic BakedModel which returns quads based on the given breed of the tile entity.
  */
-public class DragonEggModel implements IUnbakedGeometry<DragonEggModel>
-{
+public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
 	private final ImmutableMap<String, BlockModel> models;
 	
 	public DragonEggModel(ImmutableMap<String, BlockModel> models)
@@ -63,13 +60,11 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel>
 		return new Baked(baked.build(), overrides);
 	}
 	
-	private record Data(String breedId)
-	{
+	private record Data(String breedId) {
 		private static final ModelProperty<Data> PROPERTY = new ModelProperty<>();
 	}
 	
-	public static class Baked implements IDynamicBakedModel
-	{
+	public static class Baked implements IDynamicBakedModel {
 		private static final Supplier<BakedModel> FALLBACK = Suppliers.memoize(() -> Minecraft.getInstance().getBlockRenderer().getBlockModel(Blocks.DRAGON_EGG.defaultBlockState()));
 		
 		public final ImmutableMap<String, BakedModel> models;
@@ -84,8 +79,9 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel>
 		@Override
 		public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand, ModelData extraData, RenderType renderType)
 		{
-			var data = extraData.get(Data.PROPERTY);
-			if (data != null && models.containsKey(data.breedId)) return models.get(data.breedId()).getQuads(state, side, rand, extraData, renderType);
+			var data = extraData.get(Data.PROPERTY); if (data != null && models.containsKey(data.breedId)) {
+			return models.get(data.breedId()).getQuads(state, side, rand, extraData, renderType);
+		}
 			
 			return FALLBACK.get().getQuads(state, side, rand, extraData, renderType);
 		}
@@ -123,8 +119,9 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel>
 		@Override
 		public TextureAtlasSprite getParticleIcon(ModelData modelData)
 		{
-			var data = modelData.get(Data.PROPERTY);
-			if (data != null && models.containsKey(data.breedId)) return models.get(data.breedId()).getParticleIcon(modelData);
+			var data = modelData.get(Data.PROPERTY); if (data != null && models.containsKey(data.breedId)) {
+			return models.get(data.breedId()).getParticleIcon(modelData);
+		}
 			
 			return getParticleIcon();
 		}
@@ -152,8 +149,7 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel>
 		}
 	}
 	
-	public static class ItemModelResolver extends ItemOverrides
-	{
+	public static class ItemModelResolver extends ItemOverrides {
 		private final Baked owner;
 		private final ItemOverrides nested;
 		
@@ -170,23 +166,18 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel>
 			var override = nested.resolve(original, stack, level, entity, pSeed);
 			if (override != original) return override;
 			
-			if (stack.has(DataComponents.CUSTOM_DATA)) {
-				var customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+			var breed = stack.getOrDefault(DMRComponents.DRAGON_BREED, DragonBreedsRegistry.getDefault().getId());
+			
+			if (breed.startsWith("hybrid_")) {
+				var breedObject = DragonBreedsRegistry.getDragonBreed(breed);
 				
-				var tag = customData.copyTag();
-				var breed = tag.getString(NBTConstants.BREED);
-				
-				if (breed.startsWith("hybrid_")) {
-					var breedObject = DragonBreedsRegistry.getDragonBreed(breed);
-					
-					if (breedObject instanceof DragonHybridBreed hybridBreed) {
-						breed = hybridBreed.parent1.getId();
-					}
+				if (breedObject instanceof DragonHybridBreed hybridBreed) {
+					breed = hybridBreed.parent1.getId();
 				}
-				
-				var model = owner.models.get(breed);
-				if (model != null) return model;
 			}
+			
+			var model = owner.models.get(breed); if (model != null) return model;
+			
 			
 			return original;
 		}

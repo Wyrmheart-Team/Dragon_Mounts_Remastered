@@ -10,9 +10,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin( Player.class )
-public class PlayerDismountMixin
-{
-	@Inject( method = "wantsToStopRiding", at = @At( "HEAD" ), cancellable = true )
+public class PlayerDismountMixin {
+	@Inject( method = "wantsToStopRiding",
+	         at = @At( "HEAD" ),
+	         cancellable = true )
 	protected void wantsToStopRiding(CallbackInfoReturnable<Boolean> ci)
 	{
 		var player = (Player)(Object)this;

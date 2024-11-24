@@ -10,8 +10,7 @@ import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 
 import java.io.IOException;
 
-public class DragonEggModelLoader implements IGeometryLoader<DragonEggModel>
-{
+public class DragonEggModelLoader implements IGeometryLoader<DragonEggModel> {
 	public static final DragonEggModelLoader INSTANCE = new DragonEggModelLoader();
 	
 	private DragonEggModelLoader() {}

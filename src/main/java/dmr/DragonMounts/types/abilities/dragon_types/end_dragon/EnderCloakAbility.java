@@ -11,8 +11,7 @@ import java.util.List;
 
 
 @EventBusSubscriber
-public class EnderCloakAbility implements Ability
-{
+public class EnderCloakAbility implements Ability {
 	@Override
 	public String type()
 	{

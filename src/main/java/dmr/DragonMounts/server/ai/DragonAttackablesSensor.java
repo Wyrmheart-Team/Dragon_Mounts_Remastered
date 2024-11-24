@@ -8,13 +8,14 @@ import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 
 
-public class DragonAttackablesSensor extends NearestVisibleLivingEntitySensor
-{
+public class DragonAttackablesSensor extends NearestVisibleLivingEntitySensor {
 	@Override
 	protected boolean isMatchingEntity(LivingEntity attacker, LivingEntity target)
 	{
-		var dragon = (DMRDragonEntity)attacker; return this.isClose(attacker, target) && Sensor.isEntityAttackable(attacker, target) && !(target instanceof DMRDragonEntity) && TargetingConditions.forCombat().ignoreInvisibilityTesting().selector(attacker::canAttack).selector(
-			s -> !s.isAlliedTo(dragon) && (!dragon.isTame() || dragon.getOwner() != null && !s.isAlliedTo(dragon.getOwner()))).test(attacker, target);
+		var dragon = (DMRDragonEntity)attacker; return this.isClose(attacker, target) && Sensor.isEntityAttackable(attacker, target) && !(target instanceof DMRDragonEntity) &&
+		                                               TargetingConditions.forCombat().ignoreInvisibilityTesting().selector(attacker::canAttack)
+				                                               .selector(s -> !s.isAlliedTo(dragon) && (!dragon.isTame() || dragon.getOwner() != null && !s.isAlliedTo(dragon.getOwner())))
+				                                               .test(attacker, target);
 	}
 	
 	private boolean isClose(LivingEntity attacker, LivingEntity target)

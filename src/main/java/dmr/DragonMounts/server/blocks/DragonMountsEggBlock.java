@@ -1,7 +1,9 @@
 package dmr.DragonMounts.server.blocks;
 
 import dmr.DragonMounts.DMRConstants.NBTConstants;
+import dmr.DragonMounts.common.config.DMRConfig;
 import dmr.DragonMounts.registry.DMRBlockEntities;
+import dmr.DragonMounts.registry.DMRComponents;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.server.blockentities.DragonEggBlockEntity;
 import dmr.DragonMounts.server.items.DragonEggItemBlock;
@@ -32,7 +34,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
@@ -42,23 +43,19 @@ import org.joml.Vector3f;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
-public class DragonMountsEggBlock extends DragonEggBlock implements EntityBlock, SimpleWaterloggedBlock
-{
-	public static final IntegerProperty HATCH_STAGE = IntegerProperty.create("hatch_stage", 0, 3);
+public class DragonMountsEggBlock extends DragonEggBlock implements EntityBlock, SimpleWaterloggedBlock {
 	public static final BooleanProperty HATCHING = BooleanProperty.create("hatching");
 	
 	public DragonMountsEggBlock(Properties pProperties)
 	{
-		super(pProperties);
-		registerDefaultState(defaultBlockState().setValue(HATCH_STAGE, 0).setValue(HATCHING, false).setValue(WATERLOGGED, false));
+		super(pProperties); registerDefaultState(defaultBlockState().setValue(HATCHING, false).setValue(WATERLOGGED, false));
 	}
 	
 	@Override
 	protected void createBlockStateDefinition(Builder<Block, BlockState> pBuilder)
 	{
-		pBuilder.add(HATCH_STAGE, HATCHING, WATERLOGGED);
+		pBuilder.add(HATCHING, WATERLOGGED);
 	}
-	
 	
 	@Override
 	public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState)
@@ -70,21 +67,17 @@ public class DragonMountsEggBlock extends DragonEggBlock implements EntityBlock,
 	public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, LivingEntity pPlacer, ItemStack pStack)
 	{
 		if (pLevel.getBlockEntity(pPos) instanceof DragonEggBlockEntity e) {
-			if (pStack.has(DataComponents.CUSTOM_DATA)) {
-				var customData = pStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-				
-				var tag = customData.copyTag();
-				if (tag.contains(NBTConstants.BREED)) {
-					e.setBreedId(tag.getString(NBTConstants.BREED));
-				}
-				
-				if (tag.contains("hatchTime")) {
-					e.setHatchTime(tag.getInt("hatchTime"));
-				}
-				
-				if (tag.contains("hatching")) {
-					if (tag.getBoolean("hatching")) {
-						pLevel.setBlock(pPos, pState.setValue(HATCHING, true), Block.UPDATE_ALL);
+			var breedId = pStack.get(DMRComponents.DRAGON_BREED); var hatchTime = pStack.getOrDefault(DMRComponents.EGG_HATCH_TIME, DMRConfig.HATCH_TIME_CONFIG.get());
+			e.setOwner(pPlacer.getUUID().toString());
+			
+			if (breedId != null) {
+				e.setBreedId(breedId); e.setHatchTime(hatchTime);
+			} else {
+				if (pStack.has(DataComponents.CUSTOM_DATA)) {
+					var customData = pStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+					
+					var tag = customData.copyTag(); if (tag.contains(NBTConstants.BREED)) {
+						e.setBreedId(tag.getString(NBTConstants.BREED));
 					}
 				}
 			}
@@ -141,7 +134,9 @@ public class DragonMountsEggBlock extends DragonEggBlock implements EntityBlock,
 	@Override
 	public void attack(BlockState state, Level level, BlockPos at, Player pPlayer)
 	{
-		if (level.getBlockEntity(at) instanceof DragonEggBlockEntity e && e.getBreedId().equals("end") && !state.getValue(HATCHING)) teleport(state, level, at); // retain original dragon egg teleport behavior
+		if (level.getBlockEntity(at) instanceof DragonEggBlockEntity e && e.getBreedId().equals("end") && !state.getValue(HATCHING)) {
+			teleport(state, level, at); // retain original dragon egg teleport behavior
+		}
 	}
 	
 	
@@ -186,8 +181,7 @@ public class DragonMountsEggBlock extends DragonEggBlock implements EntityBlock,
 		
 		// Forcibly add new BlockEntity, so we can set the specific breed.
 		var data = ((DragonEggBlockEntity)((DragonMountsEggBlock)state.getBlock()).newBlockEntity(pos, state));
-		data.setBreed(breed);
-		data.setHatchTime(breed.getHatchTime() - ((breed.getHatchTime() / 3) * state.getValue(HATCH_STAGE)));
+		data.setBreed(breed); data.setHatchTime(breed.getHatchTime());
 		level.setBlockEntity(data);
 		level.updateNeighborsAt(pos, state.getBlock());
 		return data;
@@ -196,7 +190,11 @@ public class DragonMountsEggBlock extends DragonEggBlock implements EntityBlock,
 	@Override
 	public void animateTick(BlockState pState, Level pLevel, BlockPos pPos, RandomSource random)
 	{
-		if (pState.getValue(HATCHING) && pLevel.getBlockEntity(pPos) instanceof DragonEggBlockEntity e) for (int i = 0; i < random.nextIntBetweenInclusive(4, 7); i++) {addHatchingParticles(e.getBreed(), pLevel, pPos, random);}
+		if (pState.getValue(HATCHING) && pLevel.getBlockEntity(pPos) instanceof DragonEggBlockEntity e) {
+			for (int i = 0; i < random.nextIntBetweenInclusive(4, 7); i++) {
+				addHatchingParticles(e.getBreed(), pLevel, pPos, random);
+			}
+		}
 	}
 	
 	public void addHatchingParticles(IDragonBreed breed, Level level, BlockPos pos, RandomSource random)
@@ -208,8 +206,9 @@ public class DragonMountsEggBlock extends DragonEggBlock implements EntityBlock,
 		double oy = 0;
 		double oz = 0;
 		
-		var particle = getHatchingParticles(breed, random);
-		if (particle.getType() == ParticleTypes.DUST) {py = pos.getY() + (random.nextDouble() - 0.5) + 1;} else if (particle.getType() == ParticleTypes.PORTAL) {
+		var particle = getHatchingParticles(breed, random); if (particle.getType() == ParticleTypes.DUST) {
+		py = pos.getY() + (random.nextDouble() - 0.5) + 1;
+	} else if (particle.getType() == ParticleTypes.PORTAL) {
 			ox = (random.nextDouble() - 0.5) * 2;
 			oy = (random.nextDouble() - 0.5) * 2;
 			oz = (random.nextDouble() - 0.5) * 2;

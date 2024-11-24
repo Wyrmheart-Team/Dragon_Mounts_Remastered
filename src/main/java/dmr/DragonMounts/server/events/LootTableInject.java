@@ -1,28 +1,25 @@
 package dmr.DragonMounts.server.events;
 
+import dmr.DragonMounts.registry.DMRComponents;
+import dmr.DragonMounts.registry.DMRItems;
 import dmr.DragonMounts.registry.DragonArmorRegistry;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
-import dmr.DragonMounts.server.items.DragonArmorItem;
-import dmr.DragonMounts.server.items.DragonEggItemBlock;
 import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.LootTableEntry;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.level.storage.loot.functions.SetCustomDataFunction;
+import net.minecraft.world.level.storage.loot.functions.SetComponentsFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.LootTableLoadEvent;
 
 
-public class LootTableInject
-{
+public class LootTableInject {
 	// Hacky method to add egg loot tables without having to run /reload
 	// This is due to NeoForge running the LootTableLoadEvent event before the data pack is loaded
 	public static void firstLoadInjectBreeds(LevelAccessor level)
@@ -76,11 +73,7 @@ public class LootTableInject
 	
 	public static LootPool injectEggLoot(IDragonBreed breed, LootTableEntry entry)
 	{
-		var stack = DragonEggItemBlock.getDragonEggStack(breed);
-		var customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-		
-		var lootItemBuilder = LootItem.lootTableItem(stack.getItem()).apply(SetCustomDataFunction.setCustomData(customData.copyTag()));
-		
+		var lootItemBuilder = LootItem.lootTableItem(DMRItems.DRAGON_EGG_BLOCK_ITEM.get()).apply(SetComponentsFunction.setComponent(DMRComponents.DRAGON_BREED.get(), breed.getId()));
 		var lootPoolBuilder = LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(entry.getChance())).add(lootItemBuilder).name(breed.getId() + "-egg");
 		
 		return lootPoolBuilder.build();
@@ -88,13 +81,8 @@ public class LootTableInject
 	
 	public static LootPool injectArmorLoot(DragonArmor armor, LootTableEntry entry)
 	{
-		var stack = DragonArmorItem.getArmorStack(armor);
-		var customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-		
-		var lootItemBuilder = LootItem.lootTableItem(stack.getItem()).apply(SetCustomDataFunction.setCustomData(customData.copyTag()));
-		
+		var lootItemBuilder = LootItem.lootTableItem(DMRItems.DRAGON_ARMOR.get()).apply(SetComponentsFunction.setComponent(DMRComponents.ARMOR_TYPE.get(), armor.getId()));
 		var lootPoolBuilder = LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(entry.getChance())).add(lootItemBuilder).name(armor.getId() + "-armor");
-		
 		return lootPoolBuilder.build();
 	}
 	

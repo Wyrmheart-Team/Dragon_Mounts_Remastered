@@ -7,8 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class DragonArmorRegistry
-{
+public class DragonArmorRegistry {
 	private static final HashMap<String, DragonArmor> ARMOR_TYPES = new HashMap<>();
 	
 	public static void register(DragonArmor armor)

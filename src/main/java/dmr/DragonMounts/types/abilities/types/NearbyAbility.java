@@ -3,8 +3,7 @@ package dmr.DragonMounts.types.abilities.types;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import net.minecraft.world.entity.player.Player;
 
-public interface NearbyAbility extends Ability
-{
+public interface NearbyAbility extends Ability {
 	@Override
 	default void tick(DMRDragonEntity dragon)
 	{

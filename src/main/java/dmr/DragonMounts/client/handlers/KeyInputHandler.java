@@ -23,9 +23,10 @@ import java.util.concurrent.TimeUnit;
 
 
 @OnlyIn( Dist.CLIENT )
-@EventBusSubscriber( modid = DragonMountsRemaster.MOD_ID, value = Dist.CLIENT, bus = Bus.MOD )
-public class KeyInputHandler
-{
+@EventBusSubscriber( modid = DragonMountsRemaster.MOD_ID,
+                     value = Dist.CLIENT,
+                     bus = Bus.MOD )
+public class KeyInputHandler {
 	public static KeyMapping SUMMON_DRAGON = new KeyMapping("dmr.keybind.summon_dragon", GLFW.GLFW_KEY_V, "dmr.keybind.category");
 	public static KeyMapping ATTACK_KEY = new KeyMapping("dmr.keybind.attack", GLFW.GLFW_KEY_LEFT_ALT, "dmr.keybind.category");
 	
@@ -37,9 +38,10 @@ public class KeyInputHandler
 	}
 	
 	@OnlyIn( Dist.CLIENT )
-	@EventBusSubscriber( modid = DragonMountsRemaster.MOD_ID, value = Dist.CLIENT, bus = Bus.GAME )
-	public static class KeyClickHandler
-	{
+	@EventBusSubscriber( modid = DragonMountsRemaster.MOD_ID,
+	                     value = Dist.CLIENT,
+	                     bus = Bus.GAME )
+	public static class KeyClickHandler {
 		@OnlyIn( Dist.CLIENT )
 		@SubscribeEvent
 		public static void clientTick(ClientTickEvent.Post event)

@@ -29,12 +29,10 @@ import net.neoforged.neoforge.common.NeoForge;
 import java.util.List;
 
 @Mod( DragonMountsRemaster.MOD_ID )
-public class DragonMountsRemaster
-{
+public class DragonMountsRemaster {
 	public static final String MOD_ID = "dmr";
 	
-	@Getter
-	private static Gson Gson;
+	@Getter private static Gson Gson;
 	
 	public static boolean DEBUG = false;
 	
@@ -70,8 +68,8 @@ public class DragonMountsRemaster
 		DMRBlockEntities.BLOCK_ENTITIES.register(bus);
 		DMRSounds.SOUNDS.register(bus);
 		DMRCreativeTabs.CREATIVE_MODE_TABS.register(bus);
-		DMRMenus.MENU_TYPES.register(bus);
-		DMRCapability.ATTACHMENT_TYPES.register(bus); DMRSensors.SENSORS.register(bus); DMRMemoryModuleTypes.MEMORY_MODULE_TYPE.register(bus);
+		DMRMenus.MENU_TYPES.register(bus); DMRCapability.ATTACHMENT_TYPES.register(bus); DMRSensors.SENSORS.register(bus); DMRMemoryModuleTypes.MEMORY_MODULE_TYPE.register(bus);
+		DMRComponents.COMPONENTS.register(bus); DMRCriterionTriggers.CRITERION_TRIGGERS.register(bus);
 		
 		bus.addListener(NetworkHandler::registerEvent);
 		bus.addListener(DataPackHandler::newDataPack);
@@ -80,9 +78,11 @@ public class DragonMountsRemaster
 		NeoForge.EVENT_BUS.addListener(LootTableInject::onLootLoad);
 	}
 	
-	public void setupCommon(final FMLCommonSetupEvent event) {}
+	public void setupCommon(final FMLCommonSetupEvent event) {
+	}
 	
-	public void setupServer(final FMLDedicatedServerSetupEvent event) {}
+	public void setupServer(final FMLDedicatedServerSetupEvent event) {
+	}
 	
 	public static ResourceLocation id(String path)
 	{

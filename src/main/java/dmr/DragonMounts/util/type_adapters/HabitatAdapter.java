@@ -6,8 +6,7 @@ import dmr.DragonMounts.types.habitats.Habitat;
 
 import java.lang.reflect.Type;
 
-public class HabitatAdapter implements JsonDeserializer<Habitat>, JsonSerializer<Habitat>
-{
+public class HabitatAdapter implements JsonDeserializer<Habitat>, JsonSerializer<Habitat> {
 	@Override
 	public Habitat deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
 	{

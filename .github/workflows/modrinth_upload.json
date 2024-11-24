@@ -1,0 +1,24 @@
+{
+  "dependencies": [
+    {
+      "project_id": "8BmcQJ2H",
+      "dependency_type": "required"
+    }
+  ],
+  "version_type": "release",
+  "loaders": [
+    "neoforge"
+  ],
+  "name": "${version}-neoforge",
+  "featured": false,
+  "game_versions": [
+    "${game_version}"
+  ],
+  "changelog": "${changelog}",
+  "version_number": "${version}",
+  "project_id": "DUx05jFK",
+  "file_parts": [
+    "jar"
+  ],
+  "primary_file": "jar"
+}

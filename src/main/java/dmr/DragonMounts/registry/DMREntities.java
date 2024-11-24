@@ -14,12 +14,16 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
 
-@EventBusSubscriber( modid = DragonMountsRemaster.MOD_ID, bus = Bus.MOD )
-public class DMREntities
-{
+@EventBusSubscriber( modid = DragonMountsRemaster.MOD_ID,
+                     bus = Bus.MOD )
+public class DMREntities {
 	public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, DragonMountsRemaster.MOD_ID);
 	
-	public static final Supplier<EntityType<DMRDragonEntity>> DRAGON_ENTITY = ENTITIES.register("dragon", () -> EntityType.Builder.of(DMRDragonEntity::new, MobCategory.CREATURE).sized(DMRDragonEntity.BASE_WIDTH, DMRDragonEntity.BASE_HEIGHT).clientTrackingRange(10).updateInterval(3).build("dragon"));
+	public static final Supplier<EntityType<DMRDragonEntity>> DRAGON_ENTITY = ENTITIES.register(
+			"dragon",
+			() -> EntityType.Builder.of(DMRDragonEntity::new, MobCategory.CREATURE).sized(DMRDragonEntity.BASE_WIDTH, DMRDragonEntity.BASE_HEIGHT).clientTrackingRange(10).updateInterval(3)
+					.build("dragon")
+	);
 	
 	@SubscribeEvent
 	public static void attributeCreationEvent(EntityAttributeCreationEvent event)

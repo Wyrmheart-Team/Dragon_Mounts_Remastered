@@ -21,8 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class DMRRecipeProvider extends RecipeProvider
-{
+public class DMRRecipeProvider extends RecipeProvider {
 	public DMRRecipeProvider(PackOutput output, CompletableFuture<Provider> registries)
 	{
 		super(output, registries);
@@ -36,7 +35,8 @@ public class DMRRecipeProvider extends RecipeProvider
 			Map<Character, Ingredient> keys = ImmutableMap.of('I', Ingredient.of(Items.IRON_INGOT), '#', Ingredient.of(ItemTags.PLANKS), 'D', Ingredient.of(DyeItem.byColor(color)));
 			List<String> rows = List.of("I#I", "#D#", "I#I");
 			
-			ShapedRecipe shapedrecipe = new ShapedRecipe("dragon", RecipeBuilder.determineBookCategory(RecipeCategory.MISC), ShapedRecipePattern.of(keys, rows), DragonWhistleItem.getWhistleItem(color), false);
+			ShapedRecipe shapedrecipe =
+					new ShapedRecipe("dragon", RecipeBuilder.determineBookCategory(RecipeCategory.MISC), ShapedRecipePattern.of(keys, rows), DragonWhistleItem.getWhistleItem(color), false);
 			
 			pRecipeOutput.accept(pId, shapedrecipe, null);
 		}

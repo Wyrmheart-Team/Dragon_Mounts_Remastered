@@ -1,29 +1,25 @@
 package dmr.DragonMounts.types.dragonBreeds;
 
 import com.google.gson.annotations.SerializedName;
-import dmr.DragonMounts.DMRConstants.NBTConstants;
 import dmr.DragonMounts.DragonMountsRemaster;
 import dmr.DragonMounts.common.config.DMRConfig;
+import dmr.DragonMounts.registry.DMRComponents;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.types.habitats.Habitat;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DragonBreed implements IDragonBreed
-{
+public class DragonBreed implements IDragonBreed {
 	private String id;
 	
 	@Override
@@ -38,8 +34,7 @@ public class DragonBreed implements IDragonBreed
 		this.id = id;
 	}
 	
-	@SerializedName( "ambient_sound" )
-	private SoundEvent ambientSound;
+	@SerializedName( "ambient_sound" ) private SoundEvent ambientSound;
 	
 	@Override
 	public SoundEvent getAmbientSound()
@@ -47,8 +42,7 @@ public class DragonBreed implements IDragonBreed
 		return ambientSound;
 	}
 	
-	@SerializedName( "death_loot" )
-	private ResourceLocation deathLoot;
+	@SerializedName( "death_loot" ) private ResourceLocation deathLoot;
 	
 	@Override
 	public ResourceLocation getDeathLootTable()
@@ -56,8 +50,7 @@ public class DragonBreed implements IDragonBreed
 		return deathLoot;
 	}
 	
-	@SerializedName( "hatch_time" )
-	private int hatchTime = -1;
+	@SerializedName( "hatch_time" ) private int hatchTime = -1;
 	
 	@Override
 	public int getHatchTime()
@@ -65,8 +58,7 @@ public class DragonBreed implements IDragonBreed
 		if (hatchTime <= 0) {return DMRConfig.HATCH_TIME_CONFIG.get();} else return hatchTime;
 	}
 	
-	@SerializedName( "growth_time" )
-	private int growthTime = -1;
+	@SerializedName( "growth_time" ) private int growthTime = -1;
 	
 	@Override
 	public int getGrowthTime()
@@ -74,17 +66,17 @@ public class DragonBreed implements IDragonBreed
 		if (growthTime <= 0) {return DMRConfig.GROWTH_TIME_CONFIG.get() * 20;} else return growthTime;
 	}
 	
-	@SerializedName( "size_modifier" )
-	private float sizeModifier = -1;
+	@SerializedName( "size_modifier" ) private float sizeModifier = -1;
 	
 	@Override
 	public float getSizeModifier()
 	{
-		if (sizeModifier <= 0) {return DMRConfig.SIZE_MODIFIER.get().floatValue();} else return sizeModifier;
+		if (sizeModifier <= 0) {
+			return DMRConfig.SIZE_MODIFIER.get().floatValue();
+		} else {return sizeModifier;}
 	}
 	
-	@SerializedName( "riding_offset" )
-	private float riding_offset = 0;
+	@SerializedName( "riding_offset" ) private float riding_offset = 0;
 	
 	@Override
 	public float getVerticalRidingOffset()
@@ -92,11 +84,9 @@ public class DragonBreed implements IDragonBreed
 		return riding_offset;
 	}
 	
-	@SerializedName( "primary_color" )
-	private String primary_color;
+	@SerializedName( "primary_color" ) private String primary_color;
 	
-	@SerializedName( "secondary_color" )
-	private String secondary_color;
+	@SerializedName( "secondary_color" ) private String secondary_color;
 	
 	public int getPrimaryColor()
 	{
@@ -108,8 +98,7 @@ public class DragonBreed implements IDragonBreed
 		return Integer.parseInt(secondary_color, 16);
 	}
 	
-	@SerializedName( "immunities" )
-	private List<String> immunities = new ArrayList<>();
+	@SerializedName( "immunities" ) private List<String> immunities = new ArrayList<>();
 	
 	@Override
 	public List<String> getImmunities()
@@ -117,8 +106,7 @@ public class DragonBreed implements IDragonBreed
 		return immunities;
 	}
 	
-	@SerializedName( "attributes" )
-	private Map<ResourceLocation, Double> attributes = new HashMap<>();
+	@SerializedName( "attributes" ) private Map<ResourceLocation, Double> attributes = new HashMap<>();
 	
 	@Override
 	public Map<ResourceLocation, Double> getAttributes()
@@ -126,8 +114,7 @@ public class DragonBreed implements IDragonBreed
 		return attributes;
 	}
 	
-	@SerializedName( "habitats" )
-	private List<Habitat> habitats = new ArrayList<>();
+	@SerializedName( "habitats" ) private List<Habitat> habitats = new ArrayList<>();
 	
 	@Override
 	public List<Habitat> getHabitats()
@@ -135,8 +122,7 @@ public class DragonBreed implements IDragonBreed
 		return habitats;
 	}
 	
-	@SerializedName( "abilities" )
-	private List<Ability> abilities = new ArrayList<>();
+	@SerializedName( "abilities" ) private List<Ability> abilities = new ArrayList<>();
 	
 	@Override
 	public List<Ability> getAbilities()
@@ -144,8 +130,7 @@ public class DragonBreed implements IDragonBreed
 		return abilities;
 	}
 	
-	@SerializedName( "taming_items" )
-	private List<Item> tamingItems = new ArrayList<>();
+	@SerializedName( "taming_items" ) private List<Item> tamingItems = new ArrayList<>();
 	
 	@Override
 	public List<Item> getTamingItems()
@@ -153,8 +138,7 @@ public class DragonBreed implements IDragonBreed
 		return tamingItems;
 	}
 	
-	@SerializedName( "breeding_items" )
-	private List<Item> breedingItems = new ArrayList<>();
+	@SerializedName( "breeding_items" ) private List<Item> breedingItems = new ArrayList<>();
 	
 	@Override
 	public List<Item> getBreedingItems()
@@ -162,8 +146,7 @@ public class DragonBreed implements IDragonBreed
 		return breedingItems;
 	}
 	
-	@SerializedName( "hatch_particles" )
-	private ParticleOptions hatchParticles;
+	@SerializedName( "hatch_particles" ) private ParticleOptions hatchParticles;
 	
 	@Override
 	public ParticleOptions getHatchParticles()
@@ -172,11 +155,9 @@ public class DragonBreed implements IDragonBreed
 	}
 	
 	//This is to keep backwards compatibility with DML
-	@SerializedName( "model_properties" )
-	private Map<String, Boolean> oldModelProperties = new HashMap<>();
+	@SerializedName( "model_properties" ) private Map<String, Boolean> oldModelProperties = new HashMap<>();
 	
-	@SerializedName( "accessories" )
-	private List<String> modelAccessories = new ArrayList<>();
+	@SerializedName( "accessories" ) private List<String> modelAccessories = new ArrayList<>();
 	
 	@Override
 	public List<String> getAccessories()
@@ -187,8 +168,7 @@ public class DragonBreed implements IDragonBreed
 		return list;
 	}
 	
-	@SerializedName( "loot_tables" )
-	private List<LootTableEntry> lootTable = new ArrayList<>();
+	@SerializedName( "loot_tables" ) private List<LootTableEntry> lootTable = new ArrayList<>();
 	
 	@Override
 	public List<LootTableEntry> getLootTable()
@@ -207,8 +187,7 @@ public class DragonBreed implements IDragonBreed
 		return DragonMountsRemaster.id(getId());
 	}
 	
-	@SerializedName( "model_location" )
-	private ResourceLocation modelLocation;
+	@SerializedName( "model_location" ) private ResourceLocation modelLocation;
 	
 	@Override
 	public ResourceLocation getDragonModelLocation()
@@ -216,8 +195,7 @@ public class DragonBreed implements IDragonBreed
 		return modelLocation;
 	}
 	
-	@SerializedName( "animation_location" )
-	private ResourceLocation animationLocation;
+	@SerializedName( "animation_location" ) private ResourceLocation animationLocation;
 	
 	@Override
 	public ResourceLocation getDragonAnimationLocation()
@@ -227,23 +205,11 @@ public class DragonBreed implements IDragonBreed
 	
 	public static IDragonBreed getDragonType(ItemStack stack)
 	{
-		var customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-		
-		CompoundTag tag = customData.copyTag();
-		
-		if (tag.contains(NBTConstants.BREED)) {
-			return DragonBreedsRegistry.getDragonBreed(tag.getString(NBTConstants.BREED));
-		}
-		
-		return null;
+		var breedId = stack.get(DMRComponents.DRAGON_BREED); return DragonBreedsRegistry.getDragonBreed(breedId);
 	}
 	
 	public static void setDragonType(ItemStack stack, IDragonBreed type)
 	{
-		if (type == null) return;
-		
-		CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-		tag.putString(NBTConstants.BREED, type.getId());
-		stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+		if (type == null) return; stack.set(DMRComponents.DRAGON_BREED, type.getId());
 	}
 }

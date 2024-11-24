@@ -8,8 +8,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public interface IMessage <T extends CustomPacketPayload> extends CustomPacketPayload
-{
+public interface IMessage <T extends CustomPacketPayload> extends CustomPacketPayload {
 	T decode(FriendlyByteBuf buffer);
 	StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec();
 	

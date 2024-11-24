@@ -19,15 +19,16 @@ import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 import java.util.Optional;
 
-public class DragonArmorLayer extends GeoRenderLayer<DMRDragonEntity>
-{
+public class DragonArmorLayer extends GeoRenderLayer<DMRDragonEntity> {
 	public DragonArmorLayer(GeoRenderer<DMRDragonEntity> entityRendererIn)
 	{
 		super(entityRendererIn);
 	}
 	
 	@Override
-	public void render(PoseStack matrixStackIn, DMRDragonEntity entityLivingBaseIn, BakedGeoModel bakedModel, RenderType renderType1, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay)
+	public void render(
+			PoseStack matrixStackIn, DMRDragonEntity entityLivingBaseIn, BakedGeoModel bakedModel, RenderType renderType1, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick,
+			int packedLight, int packedOverlay)
 	{
 		if (!entityLivingBaseIn.isWearingArmor()) return; ItemStack armor = entityLivingBaseIn.getBodyArmorItem();
 		if (armor.isEmpty()) return;
@@ -42,7 +43,18 @@ public class DragonArmorLayer extends GeoRenderLayer<DMRDragonEntity>
 		
 		if (DragonMountsRemaster.DEBUG) {
 			Minecraft.getInstance().getProfiler().push("armor_layer");
-		} var renderType = RenderType.entityCutoutNoCullZOffset(armorTexture); getRenderer().reRender(bakedModel, matrixStackIn, bufferSource, entityLivingBaseIn, renderType, bufferSource.getBuffer(renderType), partialTick, packedLight, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.opaque(0xFFFFFF));
+		} var renderType = RenderType.entityCutoutNoCullZOffset(armorTexture); getRenderer().reRender(
+			bakedModel,
+			matrixStackIn,
+			bufferSource,
+			entityLivingBaseIn,
+			renderType,
+			bufferSource.getBuffer(renderType),
+			partialTick,
+			packedLight,
+			OverlayTexture.NO_OVERLAY,
+			FastColor.ARGB32.opaque(0xFFFFFF)
+	);
 		
 		if (DragonMountsRemaster.DEBUG) {
 			Minecraft.getInstance().getProfiler().pop();

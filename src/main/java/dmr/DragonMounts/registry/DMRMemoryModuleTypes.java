@@ -10,8 +10,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class DMRMemoryModuleTypes
-{
+public class DMRMemoryModuleTypes {
 	public static final DeferredRegister<MemoryModuleType<?>> MEMORY_MODULE_TYPE = DeferredRegister.create(Registries.MEMORY_MODULE_TYPE, DragonMountsRemaster.MOD_ID);
 	public static final Supplier<MemoryModuleType<GlobalPos>> WANDER_TARGET = register("wander_target", GlobalPos.CODEC);
 	public static final Supplier<MemoryModuleType<Boolean>> IS_SITTING = register("sitting", Codec.BOOL);

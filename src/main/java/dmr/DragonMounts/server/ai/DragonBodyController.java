@@ -4,8 +4,7 @@ import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 
-public class DragonBodyController extends BodyRotationControl
-{
+public class DragonBodyController extends BodyRotationControl {
 	private final DMRDragonEntity dragon;
 	
 	public DragonBodyController(DMRDragonEntity dragon)

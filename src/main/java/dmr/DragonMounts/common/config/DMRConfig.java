@@ -5,8 +5,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.concurrent.TimeUnit;
 
-public class DMRConfig
-{
+public class DMRConfig {
 	public static final ModConfigSpec CLIENT;
 	public static final ModConfigSpec COMMON;
 	public static final ModConfigSpec SERVER;
@@ -22,24 +21,25 @@ public class DMRConfig
 	
 	public static final ModConfigSpec.BooleanValue DOUBLE_PRESS_DISMOUNT;
 	public static final ModConfigSpec.BooleanValue USE_ALTERNATE_ATTACK_KEY;
-	
 	static //Client
 	{
 		var configurator = new ModConfigSpec.Builder();
 		
 		CAMERA_FLIGHT = configurator.comment("Should the dragon be controlled by the camera during flight?").define("camera_flight", true);
 		
-		DOUBLE_PRESS_DISMOUNT = configurator.comment("Should dismounting the dragon require double pressing the dismount button? Disabling this will not allow using sneak or the dismount button to descend.").define("alternate_dismount", true);
+		DOUBLE_PRESS_DISMOUNT =
+				configurator.comment("Should dismounting the dragon require double pressing the dismount button? Disabling this will not allow using sneak or the dismount button to descend.")
+						.define("alternate_dismount", true);
 		
 		USE_ALTERNATE_ATTACK_KEY = configurator.comment("Should dragon attacks require holding down the dragon attack key?").define("alternate_attack_key", true);
 		
-		RIDING_CAMERA_OFFSET = configurator.comment("The zoom offset for the riding camera.").comment("Higher values will zoom the camera out further.").defineInRange("riding_camera_offset", 10, 1, 100);
+		RIDING_CAMERA_OFFSET =
+				configurator.comment("The zoom offset for the riding camera.").comment("Higher values will zoom the camera out further.").defineInRange("riding_camera_offset", 10, 1, 100);
 		
 		CLIENT = configurator.build();
 	}
 	
 	public static final ModConfigSpec.BooleanValue ALLOW_EGG_OVERRIDE;
-	
 	static //Common
 	{
 		var configurator = new ModConfigSpec.Builder();
@@ -65,12 +65,12 @@ public class DMRConfig
 	
 	public static final ModConfigSpec.BooleanValue ALLOW_RESPAWN;
 	public static final ModConfigSpec.IntValue RESPAWN_TIME;
-	
 	static //Server
 	{
 		var configurator = new ModConfigSpec.Builder();
 		
-		REPLENISH_EGGS = configurator.comment("Should Ender Dragon Eggs replenish on the exit portal after a respawned dragon is deafeated?", "Useful for multiplayer scenarios.").define("replenish_eggs", true);
+		REPLENISH_EGGS = configurator.comment("Should Ender Dragon Eggs replenish on the exit portal after a respawned dragon is deafeated?", "Useful for multiplayer scenarios.")
+				.define("replenish_eggs", true);
 		
 		REPRO_LIMIT = configurator.comment("Number of times a dragon is able to breed.").defineInRange("breed_limit", BASE_REPRO_LIMIT, 0, Integer.MAX_VALUE);
 		

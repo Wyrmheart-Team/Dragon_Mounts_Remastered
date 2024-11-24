@@ -14,8 +14,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.pathfinder.Node;
 
-public class DragonPathHighligther extends DMRDevItem
-{
+public class DragonPathHighligther extends DMRDevItem {
 	@Override
 	public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected)
 	{
@@ -25,7 +24,7 @@ public class DragonPathHighligther extends DMRDevItem
 				
 				var armorStands = pPlayer.level.getEntitiesOfClass(ArmorStand.class, pPlayer.getBoundingBox().inflate(128));
 				armorStands.forEach(stand -> {
-					if (stand.getCustomName().getString().equals("PathHighlighter")) stand.kill();
+					if (stand.getCustomName().getString().equals("PathHighlighter")) {stand.kill();}
 				});
 				
 				for (DMRDragonEntity dragon : dragons) {

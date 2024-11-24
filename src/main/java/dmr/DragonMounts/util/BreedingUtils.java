@@ -17,8 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 
-public class BreedingUtils
-{
+public class BreedingUtils {
 	public static List<Entry<Integer, IDragonBreed>> getHabitatBreedOutcomes(ServerLevel level, BlockPos pos)
 	{
 		var outcomes = new ArrayList<Entry<Integer, IDragonBreed>>();
@@ -73,9 +72,9 @@ public class BreedingUtils
 			// scramble two words
 			// "Eirmod" + "Voluptua"
 			// = "Eirvolu" or "Volueir" or "Modptua" or "Ptuamod" or ...
-			if (mate1.getRandom().nextBoolean()) {p1Name = p1Name.substring(0, (p1Name.length() - 1) / 2);} else p1Name = p1Name.substring((p1Name.length() - 1) / 2);
+			if (mate1.getRandom().nextBoolean()) {p1Name = p1Name.substring(0, (p1Name.length() - 1) / 2);} else {p1Name = p1Name.substring((p1Name.length() - 1) / 2);}
 			
-			if (mate1.getRandom().nextBoolean()) {p2Name = p2Name.substring(0, (p2Name.length() - 1) / 2);} else p2Name = p2Name.substring((p2Name.length() - 1) / 2);
+			if (mate1.getRandom().nextBoolean()) {p2Name = p2Name.substring(0, (p2Name.length() - 1) / 2);} else {p2Name = p2Name.substring((p2Name.length() - 1) / 2);}
 			
 			p2Name = StringUtils.capitalize(p2Name);
 			

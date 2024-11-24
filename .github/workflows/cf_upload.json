@@ -1,0 +1,20 @@
+{
+  "changelog": "${changelog}",
+  "changelogType": "markdown",
+  "gameVersions": [
+    "${mc_version_id}",
+    "${java_version_id}",
+    "${client_version_id}",
+    "${server_version_id}",
+    "${neoforge_version_id}"
+  ],
+  "releaseType": "release",
+  "relations": {
+    "projects": [
+      {
+        "slug": "geckolib",
+        "type": "requiredDependency"
+      }
+    ]
+  }
+}

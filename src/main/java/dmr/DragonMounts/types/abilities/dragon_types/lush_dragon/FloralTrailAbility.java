@@ -12,8 +12,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 
-public class FloralTrailAbility implements FootprintAbility
-{
+public class FloralTrailAbility implements FootprintAbility {
 	private static final int GRASS_LIGHT_THRESHOLD = 4;
 	
 	// grow mushrooms and plants
@@ -27,15 +26,19 @@ public class FloralTrailAbility implements FootprintAbility
 		if (steppingOn.is(Blocks.DIRT) && level.getLightEmission(pos) >= GRASS_LIGHT_THRESHOLD) {
 			level.setBlockAndUpdate(groundPos, Blocks.GRASS_BLOCK.defaultBlockState());
 			return;
-		}
-		if (!level.getBlockState(pos).isAir()) return; // place only on empty space
+		} if (!level.getBlockState(pos).isAir()) {
+		return; // place only on empty space
+	}
 		
 		BlockState placing = null;
 		
-		if (steppingOn.is(BlockTags.MUSHROOM_GROW_BLOCK)) {placing = (level.getRandom().nextBoolean() ? Blocks.RED_MUSHROOM : Blocks.BROWN_MUSHROOM).defaultBlockState();} else if (steppingOn.is(BlockTags.DIRT)) // different from the actual dirt block. Could be grass or moss
+		if (steppingOn.is(BlockTags.MUSHROOM_GROW_BLOCK)) {
+			placing = (level.getRandom().nextBoolean() ? Blocks.RED_MUSHROOM : Blocks.BROWN_MUSHROOM).defaultBlockState();
+		} else if (steppingOn.is(BlockTags.DIRT)) // different from the actual dirt block. Could be grass or moss
 		{
 			//noinspection deprecation
-			placing = level.registryAccess().registryOrThrow(Registries.BLOCK).getTag(BlockTags.SMALL_FLOWERS).flatMap(tag -> tag.getRandomElement(dragon.getRandom())).map(Holder::value).filter(b -> b != Blocks.WITHER_ROSE).orElse(Blocks.DANDELION).defaultBlockState();
+			placing = level.registryAccess().registryOrThrow(Registries.BLOCK).getTag(BlockTags.SMALL_FLOWERS).flatMap(tag -> tag.getRandomElement(dragon.getRandom())).map(Holder::value)
+					.filter(b -> b != Blocks.WITHER_ROSE).orElse(Blocks.DANDELION).defaultBlockState();
 		}
 		
 		if (placing != null && placing.canSurvive(level, pos)) {

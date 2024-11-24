@@ -8,10 +8,10 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
-public record NearbyBlocksHabitat(float multiplier, TagKey<Block> tag) implements Habitat
-{
-	public static final Codec<NearbyBlocksHabitat> CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(Habitat.withMultiplier(0.5f, NearbyBlocksHabitat::multiplier), TagKey.codec(Registries.BLOCK).fieldOf("block_tag").forGetter(NearbyBlocksHabitat::tag)).apply(instance, NearbyBlocksHabitat::new));
+public record NearbyBlocksHabitat(float multiplier, TagKey<Block> tag) implements Habitat {
+	public static final Codec<NearbyBlocksHabitat> CODEC = RecordCodecBuilder.create(instance -> instance.group(Habitat.withMultiplier(0.5f, NearbyBlocksHabitat::multiplier),
+			TagKey.codec(Registries.BLOCK).fieldOf("block_tag").forGetter(NearbyBlocksHabitat::tag)
+	).apply(instance, NearbyBlocksHabitat::new));
 	
 	@Override
 	public int getHabitatPoints(Level level, BlockPos basePos)

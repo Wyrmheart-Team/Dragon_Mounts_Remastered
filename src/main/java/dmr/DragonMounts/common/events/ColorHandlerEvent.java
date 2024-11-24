@@ -11,9 +11,9 @@ import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 
 //TODO This is temporary until a new armor texture is made
 
-@EventBusSubscriber( modid = DragonMountsRemaster.MOD_ID, bus = Bus.MOD )
-public class ColorHandlerEvent
-{
+@EventBusSubscriber( modid = DragonMountsRemaster.MOD_ID,
+                     bus = Bus.MOD )
+public class ColorHandlerEvent {
 	@SubscribeEvent
 	public static void registerColorHandlers(RegisterColorHandlersEvent.Item event)
 	{

@@ -7,8 +7,7 @@ import dmr.DragonMounts.types.abilities.types.Ability;
 import java.lang.reflect.Type;
 
 
-public class AbilityAdapter implements JsonDeserializer<Ability>, JsonSerializer<Ability>
-{
+public class AbilityAdapter implements JsonDeserializer<Ability>, JsonSerializer<Ability> {
 	@Override
 	public Ability deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
 	{

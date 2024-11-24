@@ -12,8 +12,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 
 @EventBusSubscriber
-public class InfernalPactAbility implements Ability
-{
+public class InfernalPactAbility implements Ability {
 	@Override
 	public String type()
 	{
@@ -27,7 +26,6 @@ public class InfernalPactAbility implements Ability
 			if (event.getNewAboutToBeSetTarget() instanceof DMRDragonEntity dragon) {
 				if (dragon.getBreed().getAbilities().contains(DragonAbilities.INFERNAL_PACT_ABILITY)) {
 					event.setCanceled(true);
-					
 				}
 			} else if (event.getNewAboutToBeSetTarget() instanceof Player player) {
 				if (player.getVehicle() instanceof DMRDragonEntity dragon) {

@@ -7,8 +7,7 @@ import net.minecraft.world.level.block.Block;
 
 import java.lang.reflect.Type;
 
-public class BlockAdapter implements JsonDeserializer<Block>, JsonSerializer<Block>
-{
+public class BlockAdapter implements JsonDeserializer<Block>, JsonSerializer<Block> {
 	@Override
 	public Block deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
 	{

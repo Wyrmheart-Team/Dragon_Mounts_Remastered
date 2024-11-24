@@ -18,8 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class ResourcePackLoader
-{
+public class ResourcePackLoader {
 	//Assign the groups of bones that should be hidden when a certain property is true in the modelProperties value in a dragon breed
 	public static HashMap<String, List<String>> modelProperties = new HashMap<>();
 	//Assign the groups of bones that should be hidden when a certain property is false in the negativeModelProperties value in a dragon breed
@@ -70,8 +69,7 @@ public class ResourcePackLoader
 		}
 	}
 	
-	static class AccessoryJson
-	{
+	static class AccessoryJson {
 		public List<String> bones = new ArrayList<>();
 		public List<String> negativeBones = new ArrayList<>();
 	}

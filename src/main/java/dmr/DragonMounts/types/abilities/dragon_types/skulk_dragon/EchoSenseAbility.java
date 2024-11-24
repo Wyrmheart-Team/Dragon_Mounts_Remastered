@@ -9,8 +9,7 @@ import net.minecraft.world.entity.monster.Monster;
 
 import java.util.List;
 
-public class EchoSenseAbility implements Ability
-{
+public class EchoSenseAbility implements Ability {
 	private static final double range = 20.0d;
 	private static final TargetingConditions conditions = TargetingConditions.forCombat().range(range).ignoreLineOfSight();
 	

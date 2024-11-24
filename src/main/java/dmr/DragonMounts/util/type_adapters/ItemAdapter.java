@@ -7,8 +7,7 @@ import net.minecraft.world.item.Item;
 
 import java.lang.reflect.Type;
 
-public class ItemAdapter implements JsonDeserializer<Item>, JsonSerializer<Item>
-{
+public class ItemAdapter implements JsonDeserializer<Item>, JsonSerializer<Item> {
 	@Override
 	public Item deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
 	{

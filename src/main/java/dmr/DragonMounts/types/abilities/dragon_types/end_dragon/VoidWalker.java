@@ -9,8 +9,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 
 @EventBusSubscriber
-public class VoidWalker implements Ability
-{
+public class VoidWalker implements Ability {
 	@Override
 	public String type()
 	{

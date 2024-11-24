@@ -11,8 +11,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.StringJoiner;
 
-public class HabitatOutcomeCheck extends DMRDevItem
-{
+public class HabitatOutcomeCheck extends DMRDevItem {
 	@Override
 	public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected)
 	{

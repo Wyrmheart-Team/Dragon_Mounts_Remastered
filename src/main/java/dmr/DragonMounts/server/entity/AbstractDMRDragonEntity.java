@@ -38,8 +38,7 @@ import software.bernie.geckolib.animatable.GeoEntity;
 import java.util.Objects;
 import java.util.UUID;
 
-public abstract class AbstractDMRDragonEntity extends TamableAnimal implements Saddleable, FlyingAnimal, PlayerRideable, GeoEntity, HasCustomInventoryScreen, ContainerListener
-{
+public abstract class AbstractDMRDragonEntity extends TamableAnimal implements Saddleable, FlyingAnimal, PlayerRideable, GeoEntity, HasCustomInventoryScreen, ContainerListener {
 	protected AbstractDMRDragonEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel)
 	{
 		super(pEntityType, pLevel);
@@ -195,8 +194,7 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 			getBrain().eraseMemory(DMRMemoryModuleTypes.WANDER_TARGET.get());
 			getEntityData().set(DATA_WANDERING_POS, BlockPos.ZERO);
 			return;
-		}
-		getEntityData().set(DATA_WANDERING_POS, pos); getBrain().setMemory(DMRMemoryModuleTypes.WANDER_TARGET.get(), GlobalPos.of(level.dimension(), pos)); setOrderedToSit(false);
+		} getEntityData().set(DATA_WANDERING_POS, pos); getBrain().setMemory(DMRMemoryModuleTypes.WANDER_TARGET.get(), GlobalPos.of(level.dimension(), pos)); setOrderedToSit(false);
 	}
 	
 	public BlockPos getPathingGoal()
@@ -239,7 +237,9 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 	{
 		if (breed != dragonBreed) // prevent loops, unnecessary work, etc.
 		{
-			if (dragonBreed == null || dragonBreed.getId() == null || dragonBreed.getId().isBlank()) return;
+			if (dragonBreed == null || dragonBreed.getId() == null || dragonBreed.getId().isBlank()) {
+				return;
+			}
 			
 			if (breed != null) breed.close((DMRDragonEntity)this);
 			this.breed = dragonBreed;
@@ -377,8 +377,7 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		builder.define(DATA_UUID, "");
 		builder.define(DATA_SUMMON_INSTANCE, "");
 		builder.define(DATA_WANDERING_POS, BlockPos.ZERO);
-		builder.define(DATA_PATHING_GOAL, BlockPos.ZERO);
-		builder.define(DATA_ID_CHEST, false); builder.define(LAST_POSE_CHANGE_TICK, 0L);
+		builder.define(DATA_PATHING_GOAL, BlockPos.ZERO); builder.define(DATA_ID_CHEST, false); builder.define(LAST_POSE_CHANGE_TICK, 0L);
 	}
 	
 	@Override
@@ -393,7 +392,11 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		if (DATA_BREED.equals(data)) {
 			setBreed(DragonBreedsRegistry.getDragonBreed(entityData.get(DATA_BREED)));
 			updateAgeProperties();
-		} else if (DATA_FLAGS_ID.equals(data)) {refreshDimensions();} else super.onSyncedDataUpdated(data);
+		} else if (DATA_FLAGS_ID.equals(data)) {
+			refreshDimensions();
+		} else {
+			super.onSyncedDataUpdated(data);
+		}
 	}
 	
 	@Override
@@ -415,8 +418,8 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		compound.putBoolean(NBTConstants.SADDLED, isSaddled());
 		compound.putBoolean(NBTConstants.CHEST, hasChest());
 		compound.putInt(NBTConstants.REPRO_COUNT, reproCount);
-		compound.putString(NBTConstants.DRAGON_UUID, getDragonUUID().toString());
-		compound.put(NBTConstants.WANDERING_POS, NbtUtils.writeBlockPos(getWanderTarget())); compound.putLong("LastPoseTick", this.entityData.get(LAST_POSE_CHANGE_TICK));
+		compound.putString(NBTConstants.DRAGON_UUID, getDragonUUID().toString()); compound.put(NBTConstants.WANDERING_POS, NbtUtils.writeBlockPos(getWanderTarget()));
+		compound.putLong("LastPoseTick", this.entityData.get(LAST_POSE_CHANGE_TICK));
 		
 		ListTag listtag = new ListTag();
 		for (int i = 0; i < this.inventory.getContainerSize(); i++) {
@@ -454,6 +457,8 @@ public abstract class AbstractDMRDragonEntity extends TamableAnimal implements S
 		
 		if (isTame()) {
 			getBrain().setMemory(DMRMemoryModuleTypes.IS_TAMED.get(), true);
+		} else {
+			getBrain().eraseMemory(DMRMemoryModuleTypes.IS_TAMED.get());
 		}
 		
 		ListTag listtag = compound.getList("Items", 10);

@@ -12,9 +12,9 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
-@EventBusSubscriber( bus = Bus.MOD, value = Dist.CLIENT )
-public class ClientModHandler
-{
+@EventBusSubscriber( bus = Bus.MOD,
+                     value = Dist.CLIENT )
+public class ClientModHandler {
 	public static DragonModel MODEL_INSTANCE = new DragonModel();
 	
 	@OnlyIn( Dist.CLIENT )

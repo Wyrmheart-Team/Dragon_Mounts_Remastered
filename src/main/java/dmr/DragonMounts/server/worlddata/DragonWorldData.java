@@ -12,15 +12,15 @@ import net.minecraft.world.level.storage.DimensionDataStorage;
 
 import java.util.*;
 
-public class DragonWorldData extends SavedData
-{
+public class DragonWorldData extends SavedData {
 	private static final String name = DragonMountsRemaster.MOD_ID + "_dragon_world_data";
 	
 	public Map<UUID, Integer> deathDelay = new HashMap<>();
 	public Map<UUID, String> deathMessages = new HashMap<>();
 	public List<UUID> deadDragons = new ArrayList<>();
 	
-	public DragonWorldData() {}
+	public DragonWorldData() {
+	}
 	
 	public static DragonWorldData load(CompoundTag nbt, Provider provider)
 	{
@@ -31,6 +31,11 @@ public class DragonWorldData extends SavedData
 		
 		for (int i = 0; i < num; i++) {
 			CompoundTag compoundtag = listtag.getCompound(i);
+			
+			if (compoundtag == null || compoundtag.isEmpty()) {
+				continue;
+			}
+			
 			UUID uuid = compoundtag.getUUID("uuid");
 			int delay = compoundtag.getInt("delay");
 			String message = compoundtag.getString("message");

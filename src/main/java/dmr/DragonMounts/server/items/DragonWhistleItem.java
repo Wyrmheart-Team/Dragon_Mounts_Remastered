@@ -30,10 +30,8 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
 
-public class DragonWhistleItem extends Item
-{
-	@Getter
-	private final DyeColor color;
+public class DragonWhistleItem extends Item {
+	@Getter private final DyeColor color;
 	
 	public DragonWhistleItem(Properties pProperties, DyeColor color)
 	{
@@ -114,7 +112,8 @@ public class DragonWhistleItem extends Item
 				}
 				
 				if (state.respawnDelays.containsKey(color.getId()) && state.respawnDelays.get(color.getId()) > 0) {
-					pTooltipComponents.add(Component.translatable("dmr.dragon_summon.tooltip.2", state.respawnDelays.get(color.getId()) / 20).withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.RED));
+					pTooltipComponents.add(Component.translatable("dmr.dragon_summon.tooltip.2", state.respawnDelays.get(color.getId()) / 20).withStyle(ChatFormatting.ITALIC)
+							.withStyle(ChatFormatting.RED));
 				}
 			}
 		}

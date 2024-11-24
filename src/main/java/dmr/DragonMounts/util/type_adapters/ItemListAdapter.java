@@ -13,8 +13,7 @@ import net.minecraft.world.item.Item;
 import java.lang.reflect.Type;
 import java.util.List;
 
-public class ItemListAdapter implements JsonDeserializer<List<Item>>, JsonSerializer<List<Item>>
-{
+public class ItemListAdapter implements JsonDeserializer<List<Item>>, JsonSerializer<List<Item>> {
 	@Override
 	public List<Item> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
 	{
@@ -33,7 +32,9 @@ public class ItemListAdapter implements JsonDeserializer<List<Item>>, JsonSerial
 	@Override
 	public JsonElement serialize(List<Item> src, Type typeOfSrc, JsonSerializationContext context)
 	{
-		if (src.isEmpty()) return DragonMountsRemaster.getGson().toJsonTree(List.of());
+		if (src.isEmpty()) {
+			return DragonMountsRemaster.getGson().toJsonTree(List.of());
+		}
 		
 		try {
 			var obj = RegistryCodecs.homogeneousList(Registries.ITEM);

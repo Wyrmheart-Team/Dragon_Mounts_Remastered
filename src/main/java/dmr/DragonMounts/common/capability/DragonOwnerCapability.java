@@ -15,12 +15,12 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
-{
-	@Setter
-	private Player player;
+public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
+	@Setter private Player player;
 	
 	public Long lastCall;
+	
+	public int dragonsHatched;
 	
 	public ConcurrentHashMap<Integer, Integer> respawnDelays = new ConcurrentHashMap<>();
 	public ConcurrentHashMap<Integer, UUID> dragonUUIDs = new ConcurrentHashMap<>();
@@ -102,7 +102,7 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 	{
 		CompoundTag tag = new CompoundTag();
 		
-		tag.putBoolean("shouldDismount", shouldDismount);
+		tag.putBoolean("shouldDismount", shouldDismount); tag.putInt("dragonsHatched", dragonsHatched);
 		
 		for (DyeColor color : DyeColor.values()) {
 			if (respawnDelays.containsKey(color.getId())) {
@@ -131,6 +131,8 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag>
 		if (base.contains("shouldDismount")) {
 			shouldDismount = base.getBoolean("shouldDismount");
 		}
+		
+		dragonsHatched = base.getInt("dragonsHatched");
 		
 		respawnDelays.clear();
 		dragonUUIDs.clear();

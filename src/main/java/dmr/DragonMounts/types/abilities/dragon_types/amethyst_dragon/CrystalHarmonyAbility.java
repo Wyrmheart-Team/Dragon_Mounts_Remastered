@@ -9,8 +9,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
 @EventBusSubscriber
-public class CrystalHarmonyAbility implements Ability
-{
+public class CrystalHarmonyAbility implements Ability {
 	@Override
 	public String type()
 	{

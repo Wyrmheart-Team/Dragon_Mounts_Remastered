@@ -11,10 +11,10 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record DragonStatePacket(int entityId, int state) implements IMessage<DragonStatePacket>
-{
+public record DragonStatePacket(int entityId, int state) implements IMessage<DragonStatePacket> {
 	
-	public static final StreamCodec<FriendlyByteBuf, DragonStatePacket> STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.INT, DragonStatePacket::entityId, ByteBufCodecs.INT, DragonStatePacket::state, DragonStatePacket::new);
+	public static final StreamCodec<FriendlyByteBuf, DragonStatePacket> STREAM_CODEC =
+			StreamCodec.composite(ByteBufCodecs.INT, DragonStatePacket::entityId, ByteBufCodecs.INT, DragonStatePacket::state, DragonStatePacket::new);
 	
 	@Override
 	public StreamCodec<? super RegistryFriendlyByteBuf, DragonStatePacket> streamCodec()

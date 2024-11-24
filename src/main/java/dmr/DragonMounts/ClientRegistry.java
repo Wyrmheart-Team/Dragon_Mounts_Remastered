@@ -21,9 +21,9 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 import static net.neoforged.fml.common.EventBusSubscriber.Bus.MOD;
 
-@EventBusSubscriber( bus = MOD, value = Dist.CLIENT )
-public class ClientRegistry
-{
+@EventBusSubscriber( bus = MOD,
+                     value = Dist.CLIENT )
+public class ClientRegistry {
 	@OnlyIn( Dist.CLIENT )
 	@SubscribeEvent
 	public static void setupClient(final FMLClientSetupEvent event)

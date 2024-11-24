@@ -7,8 +7,7 @@ import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
-public class DMRItemModelProvider extends ItemModelProvider
-{
+public class DMRItemModelProvider extends ItemModelProvider {
 	public DMRItemModelProvider(PackOutput output, String modid, ExistingFileHelper existingFileHelper)
 	{
 		super(output, modid, existingFileHelper);

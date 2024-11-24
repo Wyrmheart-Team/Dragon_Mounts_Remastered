@@ -28,8 +28,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @EventBusSubscriber( Dist.CLIENT )
-public class DragonPassengerLayer <T extends DMRDragonEntity> extends GeoRenderLayer<T>
-{
+public class DragonPassengerLayer <T extends DMRDragonEntity> extends GeoRenderLayer<T> {
 	private final String passengerBone;
 	private final int passengerNumber;
 	public static Set<UUID> passengers = new HashSet<>();
@@ -47,9 +46,10 @@ public class DragonPassengerLayer <T extends DMRDragonEntity> extends GeoRenderL
 	}
 	
 	@Override
-	public void renderForBone(PoseStack matrixStackIn, T entity, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay)
+	public void renderForBone(
+			PoseStack matrixStackIn, T entity, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay)
 	{
-		if (!bone.getName().equals(passengerBone)) return;
+		if (!bone.getName().equals(passengerBone)) {return;}
 		
 		Entity passenger = entity.getPassengers().size() > passengerNumber ? entity.getPassengers().get(passengerNumber) : null;
 		if (passenger != null) {

@@ -2,8 +2,7 @@ package dmr.DragonMounts.util;
 
 import net.minecraft.util.Mth;
 
-public class RotUtil
-{
+public class RotUtil {
 	//MoveController.java - 1.19.2
 	public static float rotlerp(float pSourceAngle, float pTargetAngle, float pMaximumChange)
 	{

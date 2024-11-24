@@ -1,15 +1,12 @@
 package dmr.DragonMounts.server.items;
 
-import dmr.DragonMounts.DMRConstants.NBTConstants;
+import dmr.DragonMounts.registry.DMRComponents;
 import dmr.DragonMounts.registry.DMRItems;
 import dmr.DragonMounts.types.armor.DragonArmor;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 
-public class DragonArmorItem extends Item
-{
+public class DragonArmorItem extends Item {
 	public DragonArmorItem(Properties pProperties)
 	{
 		super(pProperties);
@@ -30,14 +27,6 @@ public class DragonArmorItem extends Item
 	@Override
 	public String getDescriptionId(ItemStack pStack)
 	{
-		var customData = pStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-		
-		var tag = customData.copyTag();
-		
-		if (tag.contains(NBTConstants.ARMOR)) {
-			return String.join(".", DMRItems.DRAGON_ARMOR.get().getDescriptionId(), tag.getString(NBTConstants.ARMOR));
-		}
-		
-		return super.getDescriptionId(pStack);
+		var type = pStack.get(DMRComponents.ARMOR_TYPE); return String.join(".", DMRItems.DRAGON_ARMOR.get().getDescriptionId(), type);
 	}
 }

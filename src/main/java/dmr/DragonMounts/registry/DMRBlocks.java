@@ -10,8 +10,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
 
-public class DMRBlocks
-{
+public class DMRBlocks {
 	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Registries.BLOCK, DragonMountsRemaster.MOD_ID);
-	public static final Supplier<DragonMountsEggBlock> DRAGON_EGG_BLOCK = BLOCKS.register("dragon_egg", () -> new DragonMountsEggBlock(BlockBehaviour.Properties.of().mapColor(DyeColor.BLACK).strength(0f, 9f).lightLevel(s -> 1).noOcclusion()));
+	public static final Supplier<DragonMountsEggBlock> DRAGON_EGG_BLOCK =
+			BLOCKS.register("dragon_egg", () -> new DragonMountsEggBlock(BlockBehaviour.Properties.of().mapColor(DyeColor.BLACK).strength(0f, 9f).lightLevel(s -> 1).noOcclusion()));
 }

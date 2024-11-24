@@ -9,8 +9,7 @@ import net.minecraft.world.entity.monster.Monster;
 
 import java.util.List;
 
-public class FrostAuraAbility implements Ability
-{
+public class FrostAuraAbility implements Ability {
 	private static final double range = 10.0d;
 	private static final TargetingConditions conditions = TargetingConditions.forCombat().range(range).ignoreLineOfSight();
 	

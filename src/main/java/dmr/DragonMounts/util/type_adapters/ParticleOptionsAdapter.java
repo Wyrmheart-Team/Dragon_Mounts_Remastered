@@ -7,8 +7,7 @@ import net.minecraft.core.particles.ParticleTypes;
 
 import java.lang.reflect.Type;
 
-public class ParticleOptionsAdapter implements JsonDeserializer<ParticleOptions>, JsonSerializer<ParticleOptions>
-{
+public class ParticleOptionsAdapter implements JsonDeserializer<ParticleOptions>, JsonSerializer<ParticleOptions> {
 	@Override
 	public ParticleOptions deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
 	{

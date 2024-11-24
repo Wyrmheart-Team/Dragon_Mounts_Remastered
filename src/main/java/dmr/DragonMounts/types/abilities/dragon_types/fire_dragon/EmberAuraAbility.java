@@ -7,8 +7,7 @@ import net.minecraft.world.entity.monster.Monster;
 
 import java.util.List;
 
-public class EmberAuraAbility implements Ability
-{
+public class EmberAuraAbility implements Ability {
 	private static final double range = 10.0d;
 	private static final TargetingConditions conditions = TargetingConditions.forCombat().range(range).ignoreLineOfSight();
 	

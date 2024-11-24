@@ -24,8 +24,7 @@ import dmr.DragonMounts.types.abilities.types.Ability;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DragonAbilities
-{
+public class DragonAbilities {
 	public static final Map<String, MapCodec<? extends Ability>> REGISTRY = new HashMap<>();
 	
 	public static final FireProofAbility FIRE_PROOF = register(new FireProofAbility());

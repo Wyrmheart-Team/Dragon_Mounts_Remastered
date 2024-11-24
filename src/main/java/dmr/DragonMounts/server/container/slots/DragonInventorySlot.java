@@ -3,8 +3,7 @@ package dmr.DragonMounts.server.container.slots;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 
-public class DragonInventorySlot extends Slot
-{
+public class DragonInventorySlot extends Slot {
 	private final Container enderChest;
 	private final Container dragonInv;
 	private final int origId;

@@ -10,8 +10,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record SyncDataPackPacket() implements IMessage<SyncDataPackPacket>
-{
+public record SyncDataPackPacket() implements IMessage<SyncDataPackPacket> {
 	@Override
 	public SyncDataPackPacket decode(FriendlyByteBuf buffer)
 	{

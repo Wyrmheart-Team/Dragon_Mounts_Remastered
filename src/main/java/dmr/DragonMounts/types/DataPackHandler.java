@@ -7,6 +7,7 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import dmr.DragonMounts.DragonMountsRemaster;
 import dmr.DragonMounts.network.packets.SyncDataPackPacket;
+import dmr.DragonMounts.registry.DMRAdvancements;
 import dmr.DragonMounts.registry.DragonArmorRegistry;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.server.events.LootTableInject;
@@ -17,6 +18,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.LevelAccessor;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -26,14 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-public class DataPackHandler
-{
-	
+public class DataPackHandler {
 	public static final ResourceKey<Registry<DragonBreed>> BREEDS_KEY = ResourceKey.createRegistryKey(DragonMountsRemaster.id("breeds"));
 	public static final ResourceKey<Registry<DragonArmor>> ARMORS_KEY = ResourceKey.createRegistryKey(DragonMountsRemaster.id("armor"));
 	
-	public static final Codec<DragonBreed> BREED_CODEC = new PrimitiveCodec<>()
-	{
+	public static final Codec<DragonBreed> BREED_CODEC = new PrimitiveCodec<>() {
 		
 		@Override
 		public <T> DataResult<DragonBreed> read(DynamicOps<T> ops, T input)
@@ -48,8 +47,7 @@ public class DataPackHandler
 		}
 	};
 	
-	public static final Codec<DragonArmor> ARMOR_CODEC = new PrimitiveCodec<>()
-	{
+	public static final Codec<DragonArmor> ARMOR_CODEC = new PrimitiveCodec<>() {
 		
 		@Override
 		public <T> DataResult<DragonArmor> read(DynamicOps<T> ops, T input)
@@ -110,6 +108,10 @@ public class DataPackHandler
 		
 		LootTableInject.firstLoadInjectArmor(level);
 		LootTableInject.firstLoadInjectBreeds(level);
+		
+		if (level instanceof ServerLevel serverLevel) {
+			DMRAdvancements.init(serverLevel);
+		}
 	}
 	
 	private static <T> DataResult<T> readData(Object input, Class<T> clas)

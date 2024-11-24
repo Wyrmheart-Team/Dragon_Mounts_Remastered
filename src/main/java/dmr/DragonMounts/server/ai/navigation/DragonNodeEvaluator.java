@@ -5,13 +5,15 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.pathfinder.*;
+import net.minecraft.world.level.pathfinder.FlyNodeEvaluator;
+import net.minecraft.world.level.pathfinder.Node;
+import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.pathfinder.PathfindingContext;
 
 import javax.annotation.Nullable;
 
 
-public class DragonNodeEvaluator extends FlyNodeEvaluator
-{
+public class DragonNodeEvaluator extends FlyNodeEvaluator {
 	private final Mob mob;
 	public boolean allowFlying = false;
 	public boolean allowSwimming = false;
@@ -24,25 +26,20 @@ public class DragonNodeEvaluator extends FlyNodeEvaluator
 	@Override
 	public Node getStart()
 	{
-		if (isAmphibious()) {
-			return !this.mob.isInWater() ? super.getStart() : this.getStartNode(new BlockPos(Mth.floor(this.mob.getBoundingBox().minX), Mth.floor(this.mob.getBoundingBox().minY + 0.5), Mth.floor(this.mob.getBoundingBox().minZ)));
+		if (allowSwimming) {
+			return !this.mob.isInWater() ? super.getStart() : this.getStartNode(new BlockPos(Mth.floor(this.mob.getBoundingBox().minX),
+					Mth.floor(this.mob.getBoundingBox().minY + 0.5),
+					Mth.floor(this.mob.getBoundingBox().minZ)
+			));
 		} else {
 			return super.getStart();
 		}
 	}
 	
-	
-	@Override
-	public Target getTarget(double x, double y, double z)
-	{
-		return this.getTargetNodeAt(x, y + 1, z);
-	}
-	
-	
 	@Override
 	protected boolean isAmphibious()
 	{
-		return !mob.canDrownInFluidType(Fluids.WATER.getFluidType());
+		return !mob.canDrownInFluidType(Fluids.WATER.getFluidType()) || allowSwimming;
 	}
 	
 	@Override
@@ -53,14 +50,16 @@ public class DragonNodeEvaluator extends FlyNodeEvaluator
 		}
 		
 		if (this.allowSwimming) {
-			int i = super.getNeighbors(outputArray, p_node); PathType pathtype = this.getCachedPathType(p_node.x, p_node.y + 1, p_node.z); PathType pathtype1 = this.getCachedPathType(p_node.x, p_node.y, p_node.z); int j;
+			int i = super.getNeighbors(outputArray, p_node); PathType pathtype = this.getCachedPathType(p_node.x, p_node.y + 1, p_node.z);
+			PathType pathtype1 = this.getCachedPathType(p_node.x, p_node.y, p_node.z); int j;
 			if (this.mob.getPathfindingMalus(pathtype) >= 0.0F && pathtype1 != PathType.STICKY_HONEY) {
 				j = Mth.floor(Math.max(1.0F, this.mob.maxUpStep()));
 			} else {
 				j = 0;
 			}
 			
-			double d0 = this.getFloorLevel(new BlockPos(p_node.x, p_node.y, p_node.z)); Node node = this.findAcceptedNode(p_node.x, p_node.y + 1, p_node.z, Math.max(0, j - 1), d0, Direction.UP, pathtype1);
+			double d0 = this.getFloorLevel(new BlockPos(p_node.x, p_node.y, p_node.z));
+			Node node = this.findAcceptedNode(p_node.x, p_node.y + 1, p_node.z, Math.max(0, j - 1), d0, Direction.UP, pathtype1);
 			Node node1 = this.findAcceptedNode(p_node.x, p_node.y - 1, p_node.z, j, d0, Direction.DOWN, pathtype1); if (this.isVerticalNeighborValid(node, p_node)) {
 				outputArray[i++] = node;
 			}
@@ -72,21 +71,31 @@ public class DragonNodeEvaluator extends FlyNodeEvaluator
 			return i;
 		}
 		
-		int i = 0; int j = 0; PathType pathtype = this.getCachedPathType(p_node.x, p_node.y + 1, p_node.z); PathType pathtype1 = this.getCachedPathType(p_node.x, p_node.y, p_node.z); if (this.mob.getPathfindingMalus(pathtype) >= 0.0F && pathtype1 != PathType.STICKY_HONEY) {
-		j = Mth.floor(Math.max(1.0F, this.mob.maxUpStep()));
-	}
+		int i = 0; int j = 0; PathType pathtype = this.getCachedPathType(p_node.x, p_node.y + 1, p_node.z); PathType pathtype1 = this.getCachedPathType(p_node.x, p_node.y, p_node.z);
+		if (this.mob.getPathfindingMalus(pathtype) >= 0.0F && pathtype1 != PathType.STICKY_HONEY) {
+			j = Mth.floor(Math.max(1.0F, this.mob.maxUpStep()));
+		}
 		
 		double d0 = this.getFloorLevel(new BlockPos(p_node.x, p_node.y, p_node.z));
 		
 		for (Direction direction : Direction.Plane.HORIZONTAL) {
-			Node node = this.findAcceptedNode(p_node.x + direction.getStepX(), p_node.y, p_node.z + direction.getStepZ(), j, d0, direction, pathtype1); this.reusableNeighbors[direction.get2DDataValue()] = node; if (this.isNeighborValid(node, p_node)) {
+			Node node = this.findAcceptedNode(p_node.x + direction.getStepX(), p_node.y, p_node.z + direction.getStepZ(), j, d0, direction, pathtype1);
+			this.reusableNeighbors[direction.get2DDataValue()] = node; if (this.isNeighborValid(node, p_node)) {
 				outputArray[i++] = node;
 			}
 		}
 		
 		for (Direction direction1 : Direction.Plane.HORIZONTAL) {
-			Direction direction2 = direction1.getClockWise(); if (this.isDiagonalValid(p_node, this.reusableNeighbors[direction1.get2DDataValue()], this.reusableNeighbors[direction2.get2DDataValue()])) {
-				Node node1 = this.findAcceptedNode(p_node.x + direction1.getStepX() + direction2.getStepX(), p_node.y, p_node.z + direction1.getStepZ() + direction2.getStepZ(), j, d0, direction1, pathtype1); if (this.isDiagonalValid(node1)) {
+			Direction direction2 = direction1.getClockWise();
+			if (this.isDiagonalValid(p_node, this.reusableNeighbors[direction1.get2DDataValue()], this.reusableNeighbors[direction2.get2DDataValue()])) {
+				Node node1 = this.findAcceptedNode(p_node.x + direction1.getStepX() + direction2.getStepX(),
+						p_node.y,
+						p_node.z + direction1.getStepZ() + direction2.getStepZ(),
+						j,
+						d0,
+						direction1,
+						pathtype1
+				); if (this.isDiagonalValid(node1)) {
 					outputArray[i++] = node1;
 				}
 			}
@@ -96,8 +105,7 @@ public class DragonNodeEvaluator extends FlyNodeEvaluator
 	}
 	
 	private boolean isVerticalNeighborValid(
-			@Nullable
-			Node neighbor, Node node)
+			@Nullable Node neighbor, Node node)
 	{
 		return this.isNeighborValid(neighbor, node) && neighbor.type == PathType.WATER;
 	}
@@ -110,7 +118,9 @@ public class DragonNodeEvaluator extends FlyNodeEvaluator
 				BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 				
 				for (Direction direction : Direction.values()) {
-					blockpos$mutableblockpos.set(x, y, z).move(direction); PathType pathtype1 = context.getPathTypeFromState(blockpos$mutableblockpos.getX(), blockpos$mutableblockpos.getY(), blockpos$mutableblockpos.getZ()); if (pathtype1 == PathType.BLOCKED) {
+					blockpos$mutableblockpos.set(x, y, z).move(direction);
+					PathType pathtype1 = context.getPathTypeFromState(blockpos$mutableblockpos.getX(), blockpos$mutableblockpos.getY(), blockpos$mutableblockpos.getZ());
+					if (pathtype1 == PathType.BLOCKED) {
 						return PathType.WATER_BORDER;
 					}
 				}

@@ -1,21 +1,18 @@
 package compatibility.jei;
 
-import dmr.DragonMounts.DMRConstants.NBTConstants;
 import dmr.DragonMounts.DragonMountsRemaster;
+import dmr.DragonMounts.registry.DMRComponents;
 import dmr.DragonMounts.registry.DMRItems;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.ISubtypeRegistration;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 
 @JeiPlugin
-public class DMRJeiPlugin implements IModPlugin
-{
+public class DMRJeiPlugin implements IModPlugin {
 	@Override
 	public ResourceLocation getPluginUid()
 	{
@@ -32,76 +29,44 @@ public class DMRJeiPlugin implements IModPlugin
 }
 
 
-class DragonSpawnEggInterpreter implements ISubtypeInterpreter<ItemStack>
-{
-	
+class DragonSpawnEggInterpreter implements ISubtypeInterpreter<ItemStack> {
 	@Override
 	public Object getSubtypeData(ItemStack ingredient, UidContext context)
 	{
-		return ingredient.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+		return ingredient.getOrDefault(DMRComponents.DRAGON_BREED, "NONE");
 	}
 	
 	@Override
 	public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context)
 	{
-		if (ingredient.has(DataComponents.CUSTOM_DATA)) {
-			var customData = ingredient.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-			
-			var entityTag = customData.copyTag();
-			
-			if (entityTag.contains(NBTConstants.BREED)) {
-				return entityTag.getString(NBTConstants.BREED);
-			}
-		}
-		return "NONE";
+		return "";
 	}
 }
 
-class DragonEggInterpreter implements ISubtypeInterpreter<ItemStack>
-{
-	
+class DragonEggInterpreter implements ISubtypeInterpreter<ItemStack> {
 	@Override
 	public Object getSubtypeData(ItemStack ingredient, UidContext context)
 	{
-		return ingredient.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+		return ingredient.getOrDefault(DMRComponents.DRAGON_BREED, "NONE");
 	}
 	
 	@Override
 	public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context)
 	{
-		if (ingredient.has(DataComponents.CUSTOM_DATA)) {
-			var customData = ingredient.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-			var entityTag = customData.copyTag();
-			
-			if (entityTag.contains(NBTConstants.BREED)) {
-				return entityTag.getString(NBTConstants.BREED);
-			}
-		}
-		return "NONE";
+		return "";
 	}
 }
 
-class DragonArmorInterpreter implements ISubtypeInterpreter<ItemStack>
-{
-	
+class DragonArmorInterpreter implements ISubtypeInterpreter<ItemStack> {
 	@Override
 	public Object getSubtypeData(ItemStack ingredient, UidContext context)
 	{
-		return ingredient.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+		return ingredient.getOrDefault(DMRComponents.ARMOR_TYPE, "NONE");
 	}
 	
 	@Override
 	public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context)
 	{
-		if (ingredient.has(DataComponents.CUSTOM_DATA)) {
-			var customData = ingredient.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-			
-			var entityTag = customData.copyTag();
-			
-			if (entityTag.contains(NBTConstants.ARMOR)) {
-				return entityTag.getString(NBTConstants.ARMOR);
-			}
-		}
-		return "NONE";
+		return "";
 	}
 }

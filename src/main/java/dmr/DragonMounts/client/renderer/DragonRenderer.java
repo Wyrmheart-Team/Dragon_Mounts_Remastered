@@ -19,8 +19,7 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import java.util.Optional;
 
-public class DragonRenderer extends GeoEntityRenderer<DMRDragonEntity>
-{
+public class DragonRenderer extends GeoEntityRenderer<DMRDragonEntity> {
 	public DragonRenderer(Context renderManager, GeoModel<DMRDragonEntity> modelProvider)
 	{
 		super(renderManager, modelProvider);

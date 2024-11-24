@@ -11,8 +11,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record DragonRespawnDelayPacket(int index, int delay) implements IMessage<DragonRespawnDelayPacket>
-{
+public record DragonRespawnDelayPacket(int index, int delay) implements IMessage<DragonRespawnDelayPacket> {
 	public static final CustomPacketPayload.Type<DragonStatePacket> TYPE = new CustomPacketPayload.Type<>(DragonMountsRemaster.id("respawn_delay_sync"));
 	
 	@Override
@@ -34,7 +33,8 @@ public record DragonRespawnDelayPacket(int index, int delay) implements IMessage
 		state.respawnDelays.put(index, delay);
 	}
 	
-	public static final StreamCodec<FriendlyByteBuf, DragonRespawnDelayPacket> STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.INT, DragonRespawnDelayPacket::index, ByteBufCodecs.INT, DragonRespawnDelayPacket::delay, DragonRespawnDelayPacket::new);
+	public static final StreamCodec<FriendlyByteBuf, DragonRespawnDelayPacket> STREAM_CODEC =
+			StreamCodec.composite(ByteBufCodecs.INT, DragonRespawnDelayPacket::index, ByteBufCodecs.INT, DragonRespawnDelayPacket::delay, DragonRespawnDelayPacket::new);
 	
 	@Override
 	public StreamCodec<? super RegistryFriendlyByteBuf, DragonRespawnDelayPacket> streamCodec()

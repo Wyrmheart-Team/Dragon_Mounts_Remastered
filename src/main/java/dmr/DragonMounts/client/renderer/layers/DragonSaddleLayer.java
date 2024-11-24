@@ -17,15 +17,16 @@ import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 import java.util.Optional;
 
-public class DragonSaddleLayer extends GeoRenderLayer<DMRDragonEntity>
-{
+public class DragonSaddleLayer extends GeoRenderLayer<DMRDragonEntity> {
 	public DragonSaddleLayer(GeoRenderer<DMRDragonEntity> entityRendererIn)
 	{
 		super(entityRendererIn);
 	}
 	
 	@Override
-	public void render(PoseStack matrixStackIn, DMRDragonEntity entityLivingBaseIn, BakedGeoModel bakedModel, RenderType renderType1, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay)
+	public void render(
+			PoseStack matrixStackIn, DMRDragonEntity entityLivingBaseIn, BakedGeoModel bakedModel, RenderType renderType1, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick,
+			int packedLight, int packedOverlay)
 	{
 		if (DragonMountsRemaster.DEBUG) {
 			Minecraft.getInstance().getProfiler().push("saddle_layer");
@@ -39,8 +40,17 @@ public class DragonSaddleLayer extends GeoRenderLayer<DMRDragonEntity>
 			if (resourceOptional.isEmpty()) return;
 			
 			RenderType type = RenderType.entityCutoutNoCullZOffset(saddleTexture);
-			VertexConsumer vertexConsumer = bufferSource.getBuffer(type);
-			getRenderer().reRender(bakedModel, matrixStackIn, bufferSource, entityLivingBaseIn, type, vertexConsumer, partialTick, packedLight, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.opaque(0xFFFFFF));
+			VertexConsumer vertexConsumer = bufferSource.getBuffer(type); getRenderer().reRender(bakedModel,
+					matrixStackIn,
+					bufferSource,
+					entityLivingBaseIn,
+					type,
+					vertexConsumer,
+					partialTick,
+					packedLight,
+					OverlayTexture.NO_OVERLAY,
+					FastColor.ARGB32.opaque(0xFFFFFF)
+			);
 		}
 		if (DragonMountsRemaster.DEBUG) {
 			Minecraft.getInstance().getProfiler().pop();

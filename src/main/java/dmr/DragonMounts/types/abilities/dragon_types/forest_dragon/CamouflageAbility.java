@@ -9,8 +9,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 
 @EventBusSubscriber
-public class CamouflageAbility implements Ability
-{
+public class CamouflageAbility implements Ability {
 	@Override
 	public String type()
 	{

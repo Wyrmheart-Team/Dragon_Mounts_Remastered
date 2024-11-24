@@ -20,8 +20,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class DragonWhistleHandler
-{
+public class DragonWhistleHandler {
 	public static boolean canCall(Player player, int index)
 	{
 		var handler = PlayerStateUtils.getHandler(player);

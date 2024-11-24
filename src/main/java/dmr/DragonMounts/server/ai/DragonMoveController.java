@@ -11,8 +11,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
-public class DragonMoveController extends MoveControl
-{
+public class DragonMoveController extends MoveControl {
 	private final DMRDragonEntity dragon;
 	
 	public DragonMoveController(DMRDragonEntity dragon)
@@ -25,10 +24,6 @@ public class DragonMoveController extends MoveControl
 	@Override
 	public void tick()
 	{
-		if (this.operation == MoveControl.Operation.MOVE_TO && !dragon.isLeashed() && dragon.isInSittingPose() && dragon.canChangePose()) {
-			dragon.setInSittingPose(false);
-		}
-		
 		// original movement behavior if the entity isn't flying
 		if (this.operation == MoveControl.Operation.MOVE_TO) {
 			this.operation = MoveControl.Operation.WAIT;
@@ -48,7 +43,7 @@ public class DragonMoveController extends MoveControl
 			BlockPos blockpos = this.mob.blockPosition();
 			BlockState blockstate = this.mob.level.getBlockState(blockpos);
 			
-			var shouldFly = !blockstate.isSolid() && (!blockstate.is(Blocks.WATER) || !isAmphibious); dragon.setNoGravity(shouldFly || (isAmphibious && dragon.isInWater()));
+			var shouldFly = !blockstate.isSolid() && dragon.canFly() && (!blockstate.is(Blocks.WATER) || !isAmphibious); dragon.setNoGravity(shouldFly || (isAmphibious && dragon.isInWater()));
 			dragon.setFlying(shouldFly);
 			
 			float yaw = (float)(Mth.atan2(zDif, xDif) * (double)(180F / (float)Math.PI)) - 90.0F;
@@ -72,27 +67,26 @@ public class DragonMoveController extends MoveControl
 			boolean isInWater = this.mob.isInWater();
 			
 			if (!isInWater) {
-				if (mob.getNavigation().getPath() != null && mob.getNavigation().getPath().getNextNode() != null) {
-					var type = mob.getNavigation().getPath().getNextNode().type; if (type == PathType.WATER || type == PathType.WATER_BORDER) {
+				if (mob.getNavigation().getPath() != null) {
+					mob.getNavigation().getPath().getNextNode(); var type = mob.getNavigation().getPath().getNextNode().type; if (type == PathType.WATER || type == PathType.WATER_BORDER) {
 						isInWater = true;
 					}
 				}
 			}
 			
-			this.mob.setSpeed(speed);
-			double d4 = Math.sqrt(xDif * xDif + zDif * zDif); if (isInWater && isAmphibious) {
+			this.mob.setSpeed(speed); double d4 = Math.sqrt(xDif * xDif + zDif * zDif); if (isInWater && isAmphibious) {
 				if (Math.abs(yDif) > 1.0E-5F || Math.abs(d4) > 1.0E-5F) {
-					float f3 = -((float)(Mth.atan2(yDif, d4) * 180.0F / (float)Math.PI)); f3 = Mth.clamp(Mth.wrapDegrees(f3), (float)(-85), (float)10); this.mob.setXRot(this.rotlerp(this.mob.getXRot(), f3, 5.0F));
+					float f3 = -((float)(Mth.atan2(yDif, d4) * 180.0F / (float)Math.PI)); f3 = Mth.clamp(Mth.wrapDegrees(f3), (float)(-85), (float)10);
+					this.mob.setXRot(this.rotlerp(this.mob.getXRot(), f3, 5.0F));
 				}
 				
-				float f6 = Mth.cos(this.mob.getXRot() * (float)(Math.PI / 180.0)); float f4 = Mth.sin(this.mob.getXRot() * (float)(Math.PI / 180.0)); this.mob.zza = f6 * speed; this.mob.yya = -f4 * speed * 5;
-				
+				float f6 = Mth.cos(this.mob.getXRot() * (float)(Math.PI / 180.0)); float f4 = Mth.sin(this.mob.getXRot() * (float)(Math.PI / 180.0)); this.mob.zza = f6 * speed;
+				this.mob.yya = -f4 * speed * 5;
 			} else {
 				if (Math.abs(yDif) > 1.0E-5F || Math.abs(d4) > 1.0E-5F) {
 					this.mob.setYya(yDif > 0.0 ? speed : -speed);
 				}
 			}
-			
 		} else if (this.operation == Operation.WAIT) {
 			this.mob.setYya(0.0F);
 			this.mob.setZza(0.0F);
@@ -101,6 +95,4 @@ public class DragonMoveController extends MoveControl
 			super.tick();
 		}
 	}
-	
-	
 }

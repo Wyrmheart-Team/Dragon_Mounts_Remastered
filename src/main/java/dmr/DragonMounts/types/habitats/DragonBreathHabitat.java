@@ -7,8 +7,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 
-public enum DragonBreathHabitat implements Habitat
-{
+public enum DragonBreathHabitat implements Habitat {
 	INSTANCE;
 	
 	public static final Codec<DragonBreathHabitat> CODEC = Codec.unit(INSTANCE);

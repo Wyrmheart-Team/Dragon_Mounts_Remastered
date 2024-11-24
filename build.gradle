@@ -58,6 +58,8 @@ neoForge {
             sourceSet(sourceSets.main)
         }
     }
+
+    additionalMinecraftArtifacts.put('vanillaDeobfuscated', project.file('vanilla.jar'))
 }
 
 sourceSets.main.resources {

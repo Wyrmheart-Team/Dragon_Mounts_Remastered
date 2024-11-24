@@ -10,8 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public interface Habitat
-{
+public interface Habitat {
 	Map<String, MapCodec<? extends Habitat>> REGISTRY = new HashMap<>();
 	
 	Codec<Habitat> CODEC = Codec.STRING.dispatch(Habitat::type, REGISTRY::get);

@@ -6,8 +6,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.vertex.PoseStack;
-import dmr.DragonMounts.DMRConstants.NBTConstants;
 import dmr.DragonMounts.DragonMountsRemaster;
+import dmr.DragonMounts.registry.DMRComponents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderType;
@@ -21,14 +21,12 @@ import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
@@ -48,10 +46,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class DragonArmorItemModel
-{
-	public static class DragonArmorLoader implements IGeometryLoader<DragonArmorGeometry>
-	{
+public class DragonArmorItemModel {
+	public static class DragonArmorLoader implements IGeometryLoader<DragonArmorGeometry> {
 		
 		@Override
 		public DragonArmorGeometry read(JsonObject jsonObject, JsonDeserializationContext deserializer) throws JsonParseException
@@ -77,8 +73,7 @@ public class DragonArmorItemModel
 		}
 	}
 	
-	static class DragonArmorGeometry implements IUnbakedGeometry<DragonArmorGeometry>
-	{
+	static class DragonArmorGeometry implements IUnbakedGeometry<DragonArmorGeometry> {
 		private final ImmutableMap<String, BlockModel> models;
 		
 		public DragonArmorGeometry(ImmutableMap<String, BlockModel> models)
@@ -97,16 +92,13 @@ public class DragonArmorItemModel
 			}
 			return new Baked(baked.build(), overrides);
 		}
-		
 	}
 	
-	private record Data(String armorId)
-	{
+	private record Data(String armorId) {
 		private static final ModelProperty<Data> PROPERTY = new ModelProperty<>();
 	}
 	
-	public static class Baked implements IDynamicBakedModel
-	{
+	public static class Baked implements IDynamicBakedModel {
 		private static final Supplier<BakedModel> FALLBACK = Suppliers.memoize(() -> Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(Items.LEATHER_HORSE_ARMOR));
 		
 		private final ImmutableMap<String, BakedModel> models;
@@ -121,8 +113,9 @@ public class DragonArmorItemModel
 		@Override
 		public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand, ModelData extraData, RenderType renderType)
 		{
-			var data = extraData.get(Data.PROPERTY);
-			if (data != null && models.containsKey(data.armorId)) return models.get(data.armorId()).getQuads(state, side, rand, extraData, renderType);
+			var data = extraData.get(Data.PROPERTY); if (data != null && models.containsKey(data.armorId)) {
+			return models.get(data.armorId()).getQuads(state, side, rand, extraData, renderType);
+		}
 			
 			return FALLBACK.get().getQuads(state, side, rand, extraData, renderType);
 		}
@@ -160,8 +153,9 @@ public class DragonArmorItemModel
 		@Override
 		public TextureAtlasSprite getParticleIcon(ModelData modelData)
 		{
-			var data = modelData.get(Data.PROPERTY);
-			if (data != null && models.containsKey(data.armorId)) return models.get(data.armorId()).getParticleIcon(modelData);
+			var data = modelData.get(Data.PROPERTY); if (data != null && models.containsKey(data.armorId)) {
+			return models.get(data.armorId()).getParticleIcon(modelData);
+		}
 			
 			return getParticleIcon();
 		}
@@ -185,8 +179,7 @@ public class DragonArmorItemModel
 		}
 	}
 	
-	public static class ItemModelResolver extends ItemOverrides
-	{
+	public static class ItemModelResolver extends ItemOverrides {
 		private final Baked owner;
 		private final ItemOverrides nested;
 		
@@ -203,21 +196,16 @@ public class DragonArmorItemModel
 			var override = nested.resolve(original, stack, level, entity, pSeed);
 			if (override != original) return override;
 			
-			if (stack.has(DataComponents.CUSTOM_DATA)) {
-				var customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-				var tag = customData.copyTag();
-				var armor = tag.getString(NBTConstants.ARMOR);
-				var model = owner.models.get(armor);
-				if (model != null) return model;
-			}
+			var armor = stack.get(DMRComponents.ARMOR_TYPE); var model = owner.models.get(armor); if (model != null) return model;
 			
 			return original;
 		}
 	}
 	
-	@EventBusSubscriber( modid = DragonMountsRemaster.MOD_ID, bus = Bus.MOD, value = Dist.CLIENT )
-	public static class ClientEvents
-	{
+	@EventBusSubscriber( modid = DragonMountsRemaster.MOD_ID,
+	                     bus = Bus.MOD,
+	                     value = Dist.CLIENT )
+	public static class ClientEvents {
 		@SubscribeEvent
 		public static void onRegisterGeometryLoaders(ModelEvent.RegisterGeometryLoaders event)
 		{

@@ -9,13 +9,14 @@ import software.bernie.geckolib.loading.math.MathParser;
 import software.bernie.geckolib.model.GeoModel;
 
 
-public class DragonModel extends GeoModel<DMRDragonEntity>
-{
+public class DragonModel extends GeoModel<DMRDragonEntity> {
 	
 	@Override
 	public ResourceLocation getModelResource(DMRDragonEntity object)
 	{
-		if (object != null && object.getBreed() != null && object.getBreed().getDragonModelLocation() != null) return object.getBreed().getDragonModelLocation();
+		if (object != null && object.getBreed() != null && object.getBreed().getDragonModelLocation() != null) {
+			return object.getBreed().getDragonModelLocation();
+		}
 		
 		return DragonMountsRemaster.id("geo/dragon.geo.json");
 	}
@@ -31,7 +32,9 @@ public class DragonModel extends GeoModel<DMRDragonEntity>
 	@Override
 	public ResourceLocation getAnimationResource(DMRDragonEntity animatable)
 	{
-		if (animatable != null && animatable.getBreed() != null && animatable.getBreed().getDragonAnimationLocation() != null) return animatable.getBreed().getDragonAnimationLocation();
+		if (animatable != null && animatable.getBreed() != null && animatable.getBreed().getDragonAnimationLocation() != null) {
+			return animatable.getBreed().getDragonAnimationLocation();
+		}
 		
 		return DragonMountsRemaster.id("animations/dragon.animation.json");
 	}

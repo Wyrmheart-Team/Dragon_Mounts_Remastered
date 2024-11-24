@@ -12,9 +12,9 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record DismountDragonPacket(int entityId, boolean state) implements IMessage<DismountDragonPacket>
-{
-	public static final StreamCodec<FriendlyByteBuf, DismountDragonPacket> STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.INT, DismountDragonPacket::entityId, ByteBufCodecs.BOOL, DismountDragonPacket::state, DismountDragonPacket::new);
+public record DismountDragonPacket(int entityId, boolean state) implements IMessage<DismountDragonPacket> {
+	public static final StreamCodec<FriendlyByteBuf, DismountDragonPacket> STREAM_CODEC =
+			StreamCodec.composite(ByteBufCodecs.INT, DismountDragonPacket::entityId, ByteBufCodecs.BOOL, DismountDragonPacket::state, DismountDragonPacket::new);
 	
 	@Override
 	public StreamCodec<? super RegistryFriendlyByteBuf, DismountDragonPacket> streamCodec()

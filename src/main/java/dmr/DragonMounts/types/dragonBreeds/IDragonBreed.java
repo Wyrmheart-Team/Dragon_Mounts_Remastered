@@ -22,10 +22,8 @@ import net.minecraft.world.level.pathfinder.PathType;
 import java.util.List;
 import java.util.Map;
 
-public interface IDragonBreed
-{
-	class LootTableEntry
-	{
+public interface IDragonBreed {
+	class LootTableEntry {
 		private @Getter ResourceLocation table;
 		private @Getter float chance;
 		private @Getter int minAmount;
@@ -39,8 +37,7 @@ public interface IDragonBreed
 	
 	default void initialize(DMRDragonEntity dragon)
 	{
-		applyAttributes(dragon);
-		for (Ability a : getAbilities()) a.initialize(dragon);
+		applyAttributes(dragon); for (Ability a : getAbilities()) {a.initialize(dragon);}
 		
 		if (getImmunities().contains("drown")) {
 			dragon.setPathfindingMalus(PathType.WATER, 0.0F);
@@ -50,17 +47,17 @@ public interface IDragonBreed
 	default void close(DMRDragonEntity dragon)
 	{
 		dragon.getAttributes().assignAllValues(new AttributeMap(DMRDragonEntity.createAttributes().build())); // restore default attributes
-		for (Ability a : getAbilities()) a.close(dragon);
+		for (Ability a : getAbilities()) {a.close(dragon);}
 	}
 	
 	default void tick(DMRDragonEntity dragon)
 	{
-		for (Ability a : getAbilities()) a.tick(dragon);
+		for (Ability a : getAbilities()) {a.tick(dragon);}
 	}
 	
 	default void onMove(DMRDragonEntity dragon)
 	{
-		for (Ability a : getAbilities()) a.onMove(dragon);
+		for (Ability a : getAbilities()) {a.onMove(dragon);}
 	}
 	
 	default void applyAttributes(DMRDragonEntity dragon)
@@ -80,8 +77,9 @@ public interface IDragonBreed
 				ability.getAttributes().forEach((att, value) -> {
 					Attribute attr = BuiltInRegistries.ATTRIBUTE.get(att);
 					if (attr != null) {
-						AttributeInstance inst = dragon.getAttribute(new Direct<>(attr));
-						if (inst != null) inst.addPermanentModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(DragonMountsRemaster.MOD_ID, ability.type()), value, Operation.ADD_VALUE));
+						AttributeInstance inst = dragon.getAttribute(new Direct<>(attr)); if (inst != null) {
+							inst.addPermanentModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(DragonMountsRemaster.MOD_ID, ability.type()), value, Operation.ADD_VALUE));
+						}
 					}
 				});
 			}

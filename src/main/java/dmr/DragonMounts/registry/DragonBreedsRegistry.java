@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 
-public class DragonBreedsRegistry
-{
+public class DragonBreedsRegistry {
 	private static final HashMap<String, IDragonBreed> DRAGON_TYPES = new HashMap<>();
 	
 	public static void register(IDragonBreed breed)

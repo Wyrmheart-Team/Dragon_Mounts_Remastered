@@ -15,8 +15,7 @@ import net.minecraft.world.item.Items;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DragonContainerMenu extends AbstractContainerMenu
-{
+public class DragonContainerMenu extends AbstractContainerMenu {
 	private final Container dragonContainer;
 	public final DMRDragonEntity dragon;
 	
@@ -28,9 +27,7 @@ public class DragonContainerMenu extends AbstractContainerMenu
 		dragon = (DMRDragonEntity)pPlayerInventory.player.level.getEntity(data.readInt());
 		this.dragonContainer = dragon.inventory;
 		
-		dragonContainer.startOpen(pPlayerInventory.player);
-		this.addSlot(new Slot(dragonContainer, DMRDragonEntity.SADDLE_SLOT, 8, 18)
-		{
+		dragonContainer.startOpen(pPlayerInventory.player); this.addSlot(new Slot(dragonContainer, DMRDragonEntity.SADDLE_SLOT, 8, 18) {
 			
 			public boolean mayPlace(ItemStack p_39677_)
 			{
@@ -51,8 +48,7 @@ public class DragonContainerMenu extends AbstractContainerMenu
 			}
 		});
 		
-		this.addSlot(new Slot(dragonContainer, DMRDragonEntity.ARMOR_SLOT, 8, 36)
-		{
+		this.addSlot(new Slot(dragonContainer, DMRDragonEntity.ARMOR_SLOT, 8, 36) {
 			
 			public boolean mayPlace(ItemStack p_39690_)
 			{
@@ -72,8 +68,7 @@ public class DragonContainerMenu extends AbstractContainerMenu
 			}
 		});
 		
-		this.addSlot(new Slot(dragonContainer, DMRDragonEntity.CHEST_SLOT, 8, 54)
-		{
+		this.addSlot(new Slot(dragonContainer, DMRDragonEntity.CHEST_SLOT, 8, 54) {
 			
 			@Override
 			public boolean mayPickup(Player pPlayer)
@@ -104,8 +99,7 @@ public class DragonContainerMenu extends AbstractContainerMenu
 		
 		for (int k = 0; k < 3; ++k) {
 			for (int l = 0; l < 9; ++l) {
-				var chestSlot = new DragonInventorySlot(l + k * 9, 8 + l * 18, 84 + k * 18, dragonContainer, pPlayerInventory.player.getEnderChestInventory())
-				{
+				var chestSlot = new DragonInventorySlot(l + k * 9, 8 + l * 18, 84 + k * 18, dragonContainer, pPlayerInventory.player.getEnderChestInventory()) {
 					
 					@Override
 					public boolean isActive()

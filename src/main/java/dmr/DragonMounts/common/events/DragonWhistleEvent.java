@@ -28,8 +28,7 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @EventBusSubscriber( modid = DragonMountsRemaster.MOD_ID )
-public class DragonWhistleEvent
-{
+public class DragonWhistleEvent {
 	private static boolean despawnCheck(DMRDragonEntity dragon)
 	{
 		LivingEntity owner = dragon.getOwner();
@@ -163,7 +162,6 @@ public class DragonWhistleEvent
 						state.summonInstances.remove(index);
 						state.respawnDelays.remove(index);
 						PacketDistributor.sendToPlayer((ServerPlayer)player, new CompleteDataSync(player));
-						
 					} else if (DMRConfig.RESPAWN_TIME.get() > 0) {
 						var state = player.getData(DMRCapability.PLAYER_CAPABILITY);
 						state.respawnDelays.put(index, DMRConfig.RESPAWN_TIME.get() * 20);

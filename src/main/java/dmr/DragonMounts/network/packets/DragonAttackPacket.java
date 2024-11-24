@@ -2,12 +2,14 @@ package dmr.DragonMounts.network.packets;
 
 import dmr.DragonMounts.DragonMountsRemaster;
 import dmr.DragonMounts.network.IMessage;
+import dmr.DragonMounts.registry.DMRCriterionTriggers;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,8 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record DragonAttackPacket(int entityId) implements IMessage<DragonAttackPacket>
-{
+public record DragonAttackPacket(int entityId) implements IMessage<DragonAttackPacket> {
 	public static final CustomPacketPayload.Type<DragonStatePacket> TYPE = new CustomPacketPayload.Type<>(DragonMountsRemaster.id("dragon_attack"));
 	
 	@Override
@@ -55,7 +56,13 @@ public record DragonAttackPacket(int entityId) implements IMessage<DragonAttackP
 			var target = entities.stream().filter(e -> e != dragon && e != player).findFirst().orElse(null);
 			
 			if (target != null) {
-				dragon.doHurtTarget(target);
+				if (dragon.doHurtTarget(target)) {
+					if (target.isDeadOrDying()) {
+						if (player instanceof ServerPlayer serverPlayer) {
+							DMRCriterionTriggers.DEFEAT_WITH_DRAGON.get().trigger(serverPlayer);
+						}
+					}
+				}
 			}
 		}
 	}

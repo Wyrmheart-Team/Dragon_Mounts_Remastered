@@ -11,8 +11,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.pathfinder.PathType;
 
-public class FrostWalkerAbility implements Ability
-{
+public class FrostWalkerAbility implements Ability {
 	@Override
 	public void initialize(DMRDragonEntity dragon)
 	{

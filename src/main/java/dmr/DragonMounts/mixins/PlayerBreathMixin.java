@@ -11,9 +11,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin( LivingEntity.class )
-public abstract class PlayerBreathMixin
-{
-	@Inject( method = "canBreatheUnderwater", at = @At( "HEAD" ), cancellable = true )
+public abstract class PlayerBreathMixin {
+	@Inject( method = "canBreatheUnderwater",
+	         at = @At( "HEAD" ),
+	         cancellable = true )
 	public void canBreatheUnderwater(CallbackInfoReturnable<Boolean> ci)
 	{
 		if (((LivingEntity)(Object)this) instanceof Player player) {
