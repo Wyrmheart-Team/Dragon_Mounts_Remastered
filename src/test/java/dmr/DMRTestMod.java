@@ -24,7 +24,7 @@ public class DMRTestMod {
 				ClientConfiguration.builder().toggleOverlayKey(GLFW.GLFW_KEY_J).openManagerKey(GLFW.GLFW_KEY_N).build()
 			)
 			.onMissingDescription(MissingDescriptionAction.WARNING)
-			.dumpers(new DMRTestDumper(), new GitHubActionsStepSummaryDumper())
+			.dumpers(new DMRTestDumper(), new DMRGithubTestDumper())
 			.build()
 			.create();
 

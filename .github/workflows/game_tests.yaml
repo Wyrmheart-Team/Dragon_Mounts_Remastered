@@ -49,12 +49,9 @@ jobs:
       - name: Setup mdk
         run: ./gradlew init --overwrite
       
-      - name: Run game tests
-        run: ./gradlew runGameTest
-      
       - name: Run game test server
         run: ./gradlew runGameTestServer
-          
+        
       - name: Repository Dispatch
         if: success()
         uses: peter-evans/repository-dispatch@v3
