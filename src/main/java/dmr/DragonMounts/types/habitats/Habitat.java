@@ -3,12 +3,11 @@ package dmr.DragonMounts.types.habitats;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 public interface Habitat {
 	Map<String, MapCodec<? extends Habitat>> REGISTRY = new HashMap<>();

@@ -8,6 +8,9 @@ import dmr.DragonMounts.registry.ModEntities;
 import dmr.DragonMounts.registry.ModMemoryModuleTypes;
 import dmr.DragonMounts.registry.ModSensors;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.EntityType;
@@ -23,10 +26,6 @@ import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.level.gameevent.GameEvent;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
 public class DragonAI {
 

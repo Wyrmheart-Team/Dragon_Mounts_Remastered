@@ -9,16 +9,15 @@ import dmr.DragonMounts.registry.ModSounds;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.server.items.DragonWhistleItem;
 import dmr.DragonMounts.util.PlayerStateUtils;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.neoforged.neoforge.network.PacketDistributor;
-
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class DragonWhistleHandler {
 

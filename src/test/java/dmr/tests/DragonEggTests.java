@@ -7,6 +7,7 @@ import dmr.DragonMounts.server.blocks.DMREggBlock;
 import dmr.DragonMounts.server.entity.AbstractDMRDragonEntity;
 import dmr.DragonMounts.server.items.DragonEggItemBlock;
 import dmr.DragonMounts.util.PlayerStateUtils;
+import java.util.Objects;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
@@ -18,8 +19,6 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
-
-import java.util.Objects;
 
 @PrefixGameTestTemplate(false)
 @ForEachTest(groups = "Dragon Eggs")

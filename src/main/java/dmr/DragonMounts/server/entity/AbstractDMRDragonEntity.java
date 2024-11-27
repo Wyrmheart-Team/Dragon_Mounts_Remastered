@@ -7,6 +7,8 @@ import dmr.DragonMounts.registry.ModMemoryModuleTypes;
 import dmr.DragonMounts.server.ai.DragonBodyController;
 import dmr.DragonMounts.server.ai.navigation.DragonPathNavigation;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
+import java.util.Objects;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
@@ -36,9 +38,6 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
-
-import java.util.Objects;
-import java.util.UUID;
 
 public abstract class AbstractDMRDragonEntity
 	extends TamableAnimal

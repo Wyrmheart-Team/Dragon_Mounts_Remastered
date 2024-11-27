@@ -1,10 +1,13 @@
 package dmr.DragonMounts.server.blockentities;
 
+import static dmr.DragonMounts.server.blocks.DMREggBlock.HATCHING;
+
 import dmr.DragonMounts.ModConstants.NBTConstants;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.*;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.util.PlayerStateUtils;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
@@ -23,10 +26,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-
-import java.util.UUID;
-
-import static dmr.DragonMounts.server.blocks.DMREggBlock.HATCHING;
 
 public class DMREggBlockEntity extends BlockEntity {
 

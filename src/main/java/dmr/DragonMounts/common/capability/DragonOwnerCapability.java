@@ -1,6 +1,9 @@
 package dmr.DragonMounts.common.capability;
 
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.HolderLookup.Provider;
@@ -11,10 +14,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.util.INBTSerializable;
-
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 

@@ -2,9 +2,8 @@ package dmr.DragonMounts.server.worlddata;
 
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import net.minecraft.world.level.Level;
-
 import java.util.UUID;
+import net.minecraft.world.level.Level;
 
 public class DragonWorldDataManager {
 

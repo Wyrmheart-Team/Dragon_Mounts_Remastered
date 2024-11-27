@@ -1,5 +1,7 @@
 package dmr.DragonMounts;
 
+import static net.neoforged.fml.common.EventBusSubscriber.Bus.MOD;
+
 import dmr.DragonMounts.client.gui.DragonInventoryScreen;
 import dmr.DragonMounts.client.model.DragonEggModelLoader;
 import dmr.DragonMounts.registry.ModItems;
@@ -18,8 +20,6 @@ import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-
-import static net.neoforged.fml.common.EventBusSubscriber.Bus.MOD;
 
 @EventBusSubscriber(bus = MOD, value = Dist.CLIENT)
 public class ClientRegistry {

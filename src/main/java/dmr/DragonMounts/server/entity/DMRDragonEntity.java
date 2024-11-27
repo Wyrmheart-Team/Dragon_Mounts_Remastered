@@ -1,5 +1,8 @@
 package dmr.DragonMounts.server.entity;
 
+import static net.minecraft.world.entity.ai.attributes.Attributes.*;
+import static net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED;
+
 import com.mojang.serialization.Dynamic;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.common.capability.DragonOwnerCapability;
@@ -20,6 +23,11 @@ import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.util.BreedingUtils;
 import dmr.DragonMounts.util.PlayerStateUtils;
 import io.netty.buffer.Unpooled;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
@@ -76,15 +84,6 @@ import software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar;
 import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-
-import static net.minecraft.world.entity.ai.attributes.Attributes.*;
-import static net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED;
 
 public class DMRDragonEntity extends AbstractDMRDragonEntity {
 

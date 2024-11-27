@@ -12,6 +12,7 @@ import dmr.DragonMounts.types.DataPackHandler;
 import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.types.habitats.Habitat;
 import dmr.DragonMounts.util.type_adapters.*;
+import java.util.List;
 import lombok.Getter;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceLocation;
@@ -26,8 +27,6 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Block;
 import net.neoforged.neoforge.common.NeoForge;
-
-import java.util.List;
 
 @Mod(DMR.MOD_ID)
 public class DMR {

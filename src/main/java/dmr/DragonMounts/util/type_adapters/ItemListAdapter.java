@@ -3,15 +3,14 @@ package dmr.DragonMounts.util.type_adapters;
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
 import dmr.DragonMounts.DMR;
+import java.lang.reflect.Type;
+import java.util.List;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Holder.Direct;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Item;
-
-import java.lang.reflect.Type;
-import java.util.List;
 
 public class ItemListAdapter implements JsonDeserializer<List<Item>>, JsonSerializer<List<Item>> {
 

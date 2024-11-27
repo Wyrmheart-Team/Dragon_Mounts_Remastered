@@ -2,12 +2,11 @@ package dmr.DragonMounts.types.abilities.dragon_types.skulk_dragon;
 
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.types.abilities.types.Ability;
+import java.util.List;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Monster;
-
-import java.util.List;
 
 public class EchoSenseAbility implements Ability {
 

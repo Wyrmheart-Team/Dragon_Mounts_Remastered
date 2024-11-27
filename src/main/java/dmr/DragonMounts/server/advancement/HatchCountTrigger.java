@@ -4,13 +4,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dmr.DragonMounts.registry.ModCriterionTriggers;
 import dmr.DragonMounts.server.advancement.HatchCountTrigger.HatchCountTriggerInstance;
+import java.util.Optional;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.server.level.ServerPlayer;
-
-import java.util.Optional;
 
 public class HatchCountTrigger extends SimpleCriterionTrigger<HatchCountTriggerInstance> {
 

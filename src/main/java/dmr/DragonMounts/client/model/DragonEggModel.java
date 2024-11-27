@@ -7,6 +7,9 @@ import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
 import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderType;
@@ -32,10 +35,6 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.data.ModelProperty;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
-
-import java.util.List;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * A dynamic BakedModel which returns quads based on the given breed of the tile entity.
