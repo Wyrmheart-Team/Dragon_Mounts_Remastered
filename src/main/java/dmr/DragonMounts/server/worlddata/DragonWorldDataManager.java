@@ -1,6 +1,6 @@
 package dmr.DragonMounts.server.worlddata;
 
-import dmr.DragonMounts.common.config.DMRConfig;
+import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import net.minecraft.world.level.Level;
 
@@ -39,7 +39,7 @@ public class DragonWorldDataManager {
 		var level = dragon.level;
 		DragonWorldData data = DragonWorldData.getInstance(level);
 		data.deadDragons.add(dragon.getDragonUUID());
-		data.deathDelay.put(dragon.getDragonUUID(), DMRConfig.RESPAWN_TIME.get() * 20);
+		data.deathDelay.put(dragon.getDragonUUID(), ServerConfig.RESPAWN_TIME.get() * 20);
 		data.deathMessages.put(dragon.getDragonUUID(), message);
 		data.setDirty();
 	}

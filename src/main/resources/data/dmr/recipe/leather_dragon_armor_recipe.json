@@ -17,7 +17,7 @@
   "result": {
     "id": "dmr:dragon_armor",
     "components": {
-      "minecraft:custom_data": "{armor_type:\"leather\"}"
+      "dmr:armor_type": "leather"
     }
   }
 }

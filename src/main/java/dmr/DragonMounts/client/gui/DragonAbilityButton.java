@@ -12,6 +12,8 @@ import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 
 public class DragonAbilityButton extends ExtendedButton {
 
+	//TODO Overhaul visual to use more similar style to advancements
+
 	private static final ResourceLocation EFFECT_BACKGROUND_LARGE_SPRITE = ResourceLocation.parse(
 		"container/inventory/effect_background_large"
 	);
@@ -23,12 +25,7 @@ public class DragonAbilityButton extends ExtendedButton {
 		super(xPos, yPos, 120, 32, Component.empty(), bt -> {});
 		this.ability = ability;
 		this.setTooltip(Tooltip.create(ability.getTranslatedDescription()));
-
 		ABILITY_ICON = DMR.id("textures/gui/ability_icons/" + ability.type() + ".png");
-
-		if (Minecraft.getInstance().getTextureManager().getTexture(ABILITY_ICON, null) == null) {
-			ABILITY_ICON = DMR.id("textures/gui/ability_icons/missing.png");
-		}
 	}
 
 	@Override

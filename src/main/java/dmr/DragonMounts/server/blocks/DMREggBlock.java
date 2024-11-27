@@ -1,7 +1,9 @@
 package dmr.DragonMounts.server.blocks;
 
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
+
 import dmr.DragonMounts.ModConstants.NBTConstants;
-import dmr.DragonMounts.common.config.DMRConfig;
+import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModBlockEntities;
 import dmr.DragonMounts.registry.ModComponents;
@@ -41,8 +43,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
-
 public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWaterloggedBlock {
 
 	public static final BooleanProperty HATCHING = BooleanProperty.create("hatching");
@@ -66,7 +66,7 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
 	public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, LivingEntity pPlacer, ItemStack pStack) {
 		if (pLevel.getBlockEntity(pPos) instanceof DMREggBlockEntity e) {
 			var breedId = pStack.get(ModComponents.DRAGON_BREED);
-			var hatchTime = pStack.getOrDefault(ModComponents.EGG_HATCH_TIME, DMRConfig.HATCH_TIME_CONFIG.get());
+			var hatchTime = pStack.getOrDefault(ModComponents.EGG_HATCH_TIME, ServerConfig.HATCH_TIME_CONFIG.get());
 			e.setOwner(pPlacer.getUUID().toString());
 
 			if (breedId != null) {

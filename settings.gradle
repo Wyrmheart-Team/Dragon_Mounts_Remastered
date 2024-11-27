@@ -2,13 +2,18 @@ pluginManagement {
     repositories {
         mavenLocal()
         gradlePluginPortal()
-        maven { url = 'https://maven.neoforged.net/releases' }
+        maven { url = 'https://maven.neoforged.net/releases'
+            content {
+                includeModule('net.neoforged', 'testframework')
+                includeModule('net.neoforged', 'neoforge')
+            }
+        }
         maven { url = 'https://maven.parchmentmc.org' }
     }
 
     plugins {
-        id 'net.neoforged.moddev' version '2.0.44-beta'
-        id 'net.neoforged.moddev.repositories' version '2.0.44-beta'
+        id 'net.neoforged.moddev' version '2.0.47-beta'
+        id 'net.neoforged.moddev.repositories' version '2.0.47-beta'
     }
 }
 

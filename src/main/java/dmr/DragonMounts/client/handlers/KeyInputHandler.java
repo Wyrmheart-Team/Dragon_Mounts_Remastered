@@ -2,10 +2,11 @@ package dmr.DragonMounts.client.handlers;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dmr.DragonMounts.DMR;
-import dmr.DragonMounts.common.config.DMRConfig;
+import dmr.DragonMounts.config.ClientConfig;
 import dmr.DragonMounts.network.packets.DismountDragonPacket;
 import dmr.DragonMounts.network.packets.SummonDragonPacket;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import java.util.concurrent.TimeUnit;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
@@ -18,8 +19,6 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.concurrent.TimeUnit;
 
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = DMR.MOD_ID, value = Dist.CLIENT, bus = Bus.MOD)
@@ -66,7 +65,7 @@ public class KeyInputHandler {
 					event.getAction() == InputConstants.PRESS &&
 					event.getKey() == Minecraft.getInstance().options.keyShift.getKey().getValue()
 				) {
-					if (DMRConfig.DOUBLE_PRESS_DISMOUNT.get()) {
+					if (ClientConfig.DOUBLE_PRESS_DISMOUNT.get()) {
 						if (
 							lastDismountClick != null &&
 							System.currentTimeMillis() < lastDismountClick + TimeUnit.MILLISECONDS.convert(1, TimeUnit.SECONDS)

@@ -2,6 +2,8 @@ package dmr.DragonMounts;
 
 public class ModConstants {
 
+	public static final String TEST_STRUCTURE = "empty";
+
 	public static class NBTConstants {
 
 		public static final String BREED = "breed";

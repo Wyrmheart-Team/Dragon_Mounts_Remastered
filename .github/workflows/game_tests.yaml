@@ -1,0 +1,63 @@
+name: Run game tests
+
+on:
+  push:
+
+jobs:
+  run-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      
+      - name: Read properties file and set as env
+        run: |
+          while IFS= read -r line || [[ -n "$line" ]]; do
+            if [[ $line == \#* ]] || [[ -z $line ]]; then
+              continue # Skip comments and empty lines
+            fi
+            IFS='=' read -r key value <<< "$line"
+            key=$(echo $key | xargs) # Trim key
+            value=$(echo $value | xargs) # Trim value
+            if [ ! -z "$key" ]; then
+              echo "Setting $key=$value"
+              echo "$key=$value" >> $GITHUB_ENV
+            fi
+          done < ./gradle.properties
+      
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.java_version }}
+          distribution: 'temurin'
+          cache: 'gradle'
+      
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ./build/fg_cache
+          key: ${{ runner.os }}-gradle-${{ hashFiles('gradle.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      
+      - name: Setup mdk
+        run: ./gradlew init --overwrite
+      
+      - name: Run game tests
+        run: ./gradlew runGameTest
+      
+      - name: Run game test server
+        run: ./gradlew runGameTestServer
+          
+      - name: Repository Dispatch
+        if: success()
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          event-type: gametests_passed

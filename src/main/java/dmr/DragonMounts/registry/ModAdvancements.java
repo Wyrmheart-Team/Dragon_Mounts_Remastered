@@ -14,10 +14,10 @@ import net.minecraft.advancements.*;
 import net.minecraft.advancements.Advancement.Builder;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger.TriggerInstance;
 import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.ServerAdvancementManager;
 import net.minecraft.server.level.ServerLevel;
 
@@ -32,6 +32,7 @@ public class ModAdvancements {
 			manager.tree().addAll(List.of(holder));
 		};
 
+		var origMap = new HashMap<>(manager.advancements);
 		var main = manager.get(DMR.id("main"));
 
 		List<ItemPredicate> hybridStacks = new ArrayList<>();
@@ -64,7 +65,7 @@ public class ModAdvancements {
 			.addCriterion("obtained_hybrid_egg", TriggerInstance.hasItems(hybridStacks.toArray(new ItemPredicate[0])))
 			.build(DMR.id("find_hybrid"));
 
-		register.accept(findHybrid);
+		origMap.put(DMR.id("find_hybrid"), findHybrid);
 
 		for (IDragonBreed breed : DragonBreedsRegistry.getDragonBreeds()) {
 			if (breed.isHybrid() || breed.getLootTable().isEmpty()) {
@@ -75,8 +76,14 @@ public class ModAdvancements {
 				.parent(manager.get(DMR.id("find_egg")))
 				.display(
 					DragonEggItemBlock.getDragonEggStack(breed),
-					Component.translatable("dmr.advancements.dragon_egg.title", I18n.get("block.dmr.dragon_egg." + breed.getId())),
-					Component.translatable("dmr.advancements.dragon_egg.description", I18n.get("block.dmr.dragon_egg." + breed.getId())),
+					Component.translatable(
+						"dmr.advancements.dragon_egg.title",
+						Component.translatable("block.dmr.dragon_egg." + breed.getId())
+					),
+					Component.translatable(
+						"dmr.advancements.dragon_egg.description",
+						Component.translatable("block.dmr.dragon_egg." + breed.getId())
+					),
 					null,
 					AdvancementType.TASK,
 					true,
@@ -98,8 +105,11 @@ public class ModAdvancements {
 				.parent(egg)
 				.display(
 					DragonSpawnEgg.create(breed),
-					Component.translatable("dmr.advancements.hatch_egg.title", I18n.get("dmr.dragon_breed." + breed.getId())),
-					Component.translatable("dmr.advancements.hatch_egg.description", I18n.get("dmr.dragon_breed." + breed.getId())),
+					Component.translatable("dmr.advancements.hatch_egg.title", Component.translatable("dmr.dragon_breed." + breed.getId())),
+					Component.translatable(
+						"dmr.advancements.hatch_egg.description",
+						Component.translatable("dmr.dragon_breed." + breed.getId())
+					),
 					null,
 					AdvancementType.CHALLENGE,
 					true,
@@ -116,10 +126,11 @@ public class ModAdvancements {
 			register.accept(hatch);
 		}
 
-		manager.advancements = ImmutableMap.<ResourceLocation, AdvancementHolder>builder()
-			.putAll(level.getServer().getAdvancements().advancements)
-			.putAll(map)
-			.build();
+		var tempMap = new HashMap<>(origMap);
+		map.keySet().forEach(tempMap::remove);
+		tempMap.putAll(map);
+
+		manager.advancements = ImmutableMap.<ResourceLocation, AdvancementHolder>builder().putAll(tempMap).build();
 
 		for (AdvancementNode advancementnode : manager.tree().roots()) {
 			if (advancementnode.holder().id().getNamespace().equals(DMR.MOD_ID)) {
@@ -128,7 +139,8 @@ public class ModAdvancements {
 				}
 			}
 		}
-
-		level.getServer().getPlayerList().reloadResources();
+		for (PlayerAdvancements playeradvancements : level.getServer().getPlayerList().advancements.values()) {
+			playeradvancements.reload(level.getServer().getPlayerList().getServer().getAdvancements());
+		}
 	}
 }

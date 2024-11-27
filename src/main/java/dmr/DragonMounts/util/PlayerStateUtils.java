@@ -12,11 +12,9 @@ public class PlayerStateUtils {
 		}
 
 		var handler = player.getData(ModCapabilities.PLAYER_CAPABILITY);
-
-		if (handler == null) {
-			return new DragonOwnerCapability();
+		if (handler.getPlayer() == null) {
+			handler.setPlayer(player);
 		}
-
 		return handler;
 	}
 }

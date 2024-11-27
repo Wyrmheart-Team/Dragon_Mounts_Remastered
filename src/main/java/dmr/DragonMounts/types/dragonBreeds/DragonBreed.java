@@ -2,7 +2,7 @@ package dmr.DragonMounts.types.dragonBreeds;
 
 import com.google.gson.annotations.SerializedName;
 import dmr.DragonMounts.DMR;
-import dmr.DragonMounts.common.config.DMRConfig;
+import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.types.abilities.types.Ability;
@@ -54,7 +54,7 @@ public class DragonBreed implements IDragonBreed {
 	@Override
 	public int getHatchTime() {
 		if (hatchTime <= 0) {
-			return DMRConfig.HATCH_TIME_CONFIG.get();
+			return ServerConfig.HATCH_TIME_CONFIG.get();
 		} else return hatchTime;
 	}
 
@@ -64,7 +64,7 @@ public class DragonBreed implements IDragonBreed {
 	@Override
 	public int getGrowthTime() {
 		if (growthTime <= 0) {
-			return DMRConfig.GROWTH_TIME_CONFIG.get() * 20;
+			return ServerConfig.GROWTH_TIME_CONFIG.get() * 20;
 		} else return growthTime;
 	}
 
@@ -74,7 +74,7 @@ public class DragonBreed implements IDragonBreed {
 	@Override
 	public float getSizeModifier() {
 		if (sizeModifier <= 0) {
-			return DMRConfig.SIZE_MODIFIER.get().floatValue();
+			return ServerConfig.SIZE_MODIFIER.get().floatValue();
 		} else {
 			return sizeModifier;
 		}

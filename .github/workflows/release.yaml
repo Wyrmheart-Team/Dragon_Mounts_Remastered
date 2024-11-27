@@ -1,8 +1,10 @@
 name: Automatic Build Pipeline
 
 on:
-  push:
-
+  repository_dispatch:
+    types: [gametests_passed]
+  workflow_dispatch:
+  
 permissions:
   contents: write
 
@@ -119,7 +121,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Setup forge mdk
+      - name: Setup mdk
         run: ./gradlew init --overwrite
 
       - name: Build with Gradle
@@ -346,7 +348,7 @@ jobs:
             -F "jar=@${{ steps.find_jar.outputs.jar_path }}"
 
     after-release:
-      needs: semantic-release
+      needs:  upload-to-modrinth, upload-to-curseforge
       if: needs.semantic-release.outputs.new_release_published == 'true'
       runs-on: ubuntu-latest
       steps:
@@ -368,13 +370,13 @@ jobs:
             fi
           done < ./gradle.properties
 
-        - name: Notify Discord
-          uses: Sniddl/discord-commits@v1.6
-          with:
-            webhook: ${{ secrets.DISCORD_ANNOUNCEMENT_WEBHOOK_URL }}
-            last-commit-only: true
-            message: "Version ${{ steps.semantic.outputs.new_release_version }} of ${{env.mod_name}} has been released on Modrinth and CurseForge! "
-            embed: |
-              {
-                "description": "Changelog:\n\n${{ needs.semantic-release.outputs.changelog }}\n"
-              }
+      - name: Notify Discord
+        uses: Sniddl/discord-commits@v1.6
+        with:
+          webhook: ${{ secrets.DISCORD_ANNOUNCEMENT_WEBHOOK_URL }}
+          last-commit-only: true
+          message: "Version ${{ steps.semantic.outputs.new_release_version }} of ${{env.mod_name}} has been released on Modrinth and CurseForge! "
+          embed: |
+            {
+              "description": "Changelog:\n\n${{ needs.semantic-release.outputs.changelog }}\n"
+            }

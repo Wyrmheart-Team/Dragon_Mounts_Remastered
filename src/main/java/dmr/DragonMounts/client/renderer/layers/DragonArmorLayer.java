@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.types.armor.DragonArmor;
+import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -16,8 +17,6 @@ import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
-
-import java.util.Optional;
 
 public class DragonArmorLayer extends GeoRenderLayer<DMRDragonEntity> {
 

@@ -7,6 +7,7 @@ import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModCapabilities;
 import dmr.DragonMounts.registry.ModItems;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import java.util.List;
 import lombok.Getter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -27,8 +28,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.network.PacketDistributor;
-
-import java.util.List;
 
 public class DragonWhistleItem extends Item {
 

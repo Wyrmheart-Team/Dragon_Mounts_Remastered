@@ -1,14 +1,14 @@
 package dmr.DragonMounts.server.entity;
 
 import dmr.DragonMounts.ModConstants.NBTConstants;
-import dmr.DragonMounts.common.config.DMRConfig;
+import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModMemoryModuleTypes;
 import dmr.DragonMounts.server.ai.DragonBodyController;
 import dmr.DragonMounts.server.ai.navigation.DragonPathNavigation;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
-import java.util.Objects;
-import java.util.UUID;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
@@ -37,6 +37,9 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 
+import java.util.Objects;
+import java.util.UUID;
+
 public abstract class AbstractDMRDragonEntity
 	extends TamableAnimal
 	implements Saddleable, FlyingAnimal, PlayerRideable, GeoEntity, HasCustomInventoryScreen, ContainerListener {
@@ -57,7 +60,12 @@ public abstract class AbstractDMRDragonEntity
 	// server/client delegates
 	protected IDragonBreed breed;
 	protected int reproCount;
+
+	@Setter
+	@Getter
 	protected boolean flying;
+
+	@Getter
 	protected boolean nearGround;
 
 	// data value IDs
@@ -151,24 +159,12 @@ public abstract class AbstractDMRDragonEntity
 		return !id.isBlank() ? UUID.fromString(id) : null;
 	}
 
-	public void setFlying(boolean flying) {
-		this.flying = flying;
-	}
-
-	public boolean isFlying() {
-		return flying;
-	}
-
-	public boolean isNearGround() {
-		return nearGround;
-	}
-
 	public void addReproCount() {
 		reproCount++;
 	}
 
 	public boolean canReproduce() {
-		return isTame() && reproCount < DMRConfig.REPRO_LIMIT.get() && !getBreed().isHybrid();
+		return isTame() && reproCount < ServerConfig.REPRO_LIMIT.get() && !getBreed().isHybrid();
 	}
 
 	public boolean hasChest() {

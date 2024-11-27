@@ -1,6 +1,6 @@
 package dmr.DragonMounts.client.handlers;
 
-import dmr.DragonMounts.common.config.DMRConfig;
+import dmr.DragonMounts.config.ClientConfig;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -23,7 +23,7 @@ public class RidingCameraHandler {
 
 		if (currentPlayer != null && currentPlayer.getRootVehicle() instanceof DMRDragonEntity) {
 			if (setup.getCamera().isDetached()) {
-				float maxZoom = info.getMaxZoom(DMRConfig.RIDING_CAMERA_OFFSET.get());
+				float maxZoom = info.getMaxZoom(ClientConfig.RIDING_CAMERA_OFFSET.get());
 				float gradualIncrease = Mth.lerp(0.25f, lastCameraIncrease, maxZoom);
 				info.move(gradualIncrease * -1f, (gradualIncrease / 2f) * -1f, 0f);
 				lastCameraIncrease = gradualIncrease;

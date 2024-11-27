@@ -1,8 +1,8 @@
 package dmr.DragonMounts.common.events;
 
 import dmr.DragonMounts.DMR;
-import dmr.DragonMounts.common.config.DMRConfig;
 import dmr.DragonMounts.common.handlers.DragonWhistleHandler;
+import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.network.packets.CompleteDataSync;
 import dmr.DragonMounts.network.packets.DragonRespawnDelayPacket;
 import dmr.DragonMounts.registry.ModCapabilities;
@@ -93,7 +93,7 @@ public class DragonWhistleEvent {
 								player.displayClientMessage(mes, false);
 							}
 
-							if (DMRConfig.ALLOW_RESPAWN.get()) {
+							if (ServerConfig.ALLOW_RESPAWN.get()) {
 								state.respawnDelays.put(index, dragonRespawnDelay);
 							} else {
 								state.dragonUUIDs.remove(index);
@@ -151,7 +151,7 @@ public class DragonWhistleEvent {
 
 					var index = DragonWhistleHandler.getDragonSummonIndex(player, dragon.getDragonUUID());
 
-					if (!DMRConfig.ALLOW_RESPAWN.get()) {
+					if (!ServerConfig.ALLOW_RESPAWN.get()) {
 						var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
 
 						state.dragonUUIDs.remove(index);
@@ -159,17 +159,19 @@ public class DragonWhistleEvent {
 						state.summonInstances.remove(index);
 						state.respawnDelays.remove(index);
 						PacketDistributor.sendToPlayer((ServerPlayer) player, new CompleteDataSync(player));
-					} else if (DMRConfig.RESPAWN_TIME.get() > 0) {
+					} else if (ServerConfig.RESPAWN_TIME.get() > 0) {
 						var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
-						state.respawnDelays.put(index, DMRConfig.RESPAWN_TIME.get() * 20);
+						state.respawnDelays.put(index, ServerConfig.RESPAWN_TIME.get() * 20);
 
 						var whistle = ModItems.DRAGON_WHISTLES.get(index).get();
 
 						if (!player.getCooldowns().isOnCooldown(whistle)) {
-							player.getCooldowns().addCooldown(whistle, DMRConfig.RESPAWN_TIME.get() * 20);
+							player.getCooldowns().addCooldown(whistle, ServerConfig.RESPAWN_TIME.get() * 20);
 						}
 
-						PacketDistributor.sendToPlayer((ServerPlayer) player, new CompleteDataSync(player));
+						if (player instanceof ServerPlayer serverPlayer) {
+							PacketDistributor.sendToPlayer(serverPlayer, new CompleteDataSync(player));
+						}
 					}
 				} else {
 					//Player isnt online, save to world

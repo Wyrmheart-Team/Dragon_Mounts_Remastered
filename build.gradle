@@ -14,7 +14,34 @@ base {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+
+sourceSets {
+    test {
+        java {
+            srcDirs 'src/test/java'
+        }
+        resources {
+            srcDirs 'src/test/resources'
+        }
+    }
+    generated {
+        resources {
+            srcDir 'src/generated/resources'
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
 dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation "net.neoforged:testframework:${project.neo_version}"
+
+    testImplementation sourceSets.main.output
+
     implementation "software.bernie.geckolib:geckolib-neoforge-$minecraft_version:$geckolib_version"
 
     compileOnly "mezz.jei:jei-$minecraft_version-common-api:$jei_version"
@@ -23,8 +50,10 @@ dependencies {
     runtimeOnly "mezz.jei:jei-$minecraft_version-neoforge:$jei_version"
 }
 
+
 neoForge {
     version = project.neo_version
+    addModdingDependenciesTo sourceSets.test
 
     parchment {
         minecraftVersion = project.parchment_mc_version
@@ -42,11 +71,26 @@ neoForge {
 //            devLogin {
 //                enabled true
 //            }
+            systemProperties.put("mixin.debug.export", "true")
         }
         server {
             server()
             programArgument '--nogui'
         }
+        // This run config launches GameTestServer and runs all registered gametests, then exits.
+        // By default, the server will crash when no gametests are provided.
+        // The gametest system is also enabled by default for other run configs under the /test command.
+        gameTestServer {
+            type = "gameTestServer"
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            sourceSet = sourceSets.test
+            mods {
+                "${mod_id}" {
+                    sourceSet(sourceSets.test)
+                }
+            }
+        }
+
         data {
             data()
             programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
@@ -55,11 +99,16 @@ neoForge {
 
     mods {
         "${mod_id}" {
-            sourceSet(sourceSets.main)
+            sourceSet sourceSets.main
         }
     }
 
-    additionalMinecraftArtifacts.put('vanillaDeobfuscated', project.file('vanilla.jar'))
+    unitTest {
+        enable()
+        testedMod = mods."${mod_id}"
+    }
+
+    additionalMinecraftArtifacts.put('vanillaDeobfuscated', project.file('build/vanilla.jar'))
 }
 
 sourceSets.main.resources {

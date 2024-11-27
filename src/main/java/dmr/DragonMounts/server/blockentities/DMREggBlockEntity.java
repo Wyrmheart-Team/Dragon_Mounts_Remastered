@@ -1,13 +1,10 @@
 package dmr.DragonMounts.server.blockentities;
 
-import static dmr.DragonMounts.server.blocks.DMREggBlock.HATCHING;
-
 import dmr.DragonMounts.ModConstants.NBTConstants;
-import dmr.DragonMounts.common.config.DMRConfig;
+import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.*;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.util.PlayerStateUtils;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
@@ -27,6 +24,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.UUID;
+
+import static dmr.DragonMounts.server.blocks.DMREggBlock.HATCHING;
+
 public class DMREggBlockEntity extends BlockEntity {
 
 	@Getter
@@ -35,7 +36,7 @@ public class DMREggBlockEntity extends BlockEntity {
 
 	@Getter
 	@Setter
-	private int hatchTime = DMRConfig.HATCH_TIME_CONFIG.get();
+	private int hatchTime = ServerConfig.HATCH_TIME_CONFIG.get();
 
 	@Getter
 	@Setter
@@ -84,7 +85,7 @@ public class DMREggBlockEntity extends BlockEntity {
 	protected void applyImplicitComponents(DataComponentInput componentInput) {
 		super.applyImplicitComponents(componentInput);
 		setBreedId(componentInput.get(ModComponents.DRAGON_BREED));
-		setHatchTime(componentInput.getOrDefault(ModComponents.EGG_HATCH_TIME, DMRConfig.HATCH_TIME_CONFIG.get()));
+		setHatchTime(componentInput.getOrDefault(ModComponents.EGG_HATCH_TIME, ServerConfig.HATCH_TIME_CONFIG.get()));
 		setOwner(componentInput.get(ModComponents.EGG_OWNER));
 	}
 

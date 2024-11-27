@@ -49,6 +49,7 @@ public class DragonAI {
 	private static final Collection<? extends SensorType<? extends Sensor<? super LivingEntity>>> SENSORS = ImmutableList.of(
 		SensorType.HURT_BY,
 		SensorType.NEAREST_LIVING_ENTITIES,
+		SensorType.NEAREST_PLAYERS,
 		ModSensors.DRAGON_ATTACKABLES.get()
 	);
 

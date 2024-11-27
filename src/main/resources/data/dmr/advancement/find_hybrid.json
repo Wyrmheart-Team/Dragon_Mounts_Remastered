@@ -1,0 +1,12 @@
+{
+  "display": {
+    "title": "blank",
+    "description": "blank",
+    "hidden": false
+  },
+  "criteria": {
+    "unlock_right_away": {
+      "trigger": "minecraft:tick"
+    }
+  }
+}

@@ -1,6 +1,6 @@
 package dmr.DragonMounts.common.events;
 
-import dmr.DragonMounts.common.config.DMRConfig;
+import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModBlocks;
 import dmr.DragonMounts.server.blocks.DMREggBlock;
@@ -17,7 +17,7 @@ public class DragonEggEvent {
 
 	@SubscribeEvent
 	public static void interactWithEgg(PlayerInteractEvent.RightClickBlock e) {
-		if (DMRConfig.ALLOW_EGG_OVERRIDE.get() && e.getLevel().getBlockState(e.getPos()).is(Blocks.DRAGON_EGG)) {
+		if (ServerConfig.ALLOW_EGG_OVERRIDE.get() && e.getLevel().getBlockState(e.getPos()).is(Blocks.DRAGON_EGG)) {
 			if (DragonBreedsRegistry.hasDragonBreed("end")) {
 				if (e.getLevel().isClientSide) {
 					e.getEntity().swing(InteractionHand.MAIN_HAND);

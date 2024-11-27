@@ -3,8 +3,9 @@ package dmr.DragonMounts.server.entity;
 import com.mojang.serialization.Dynamic;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.common.capability.DragonOwnerCapability;
-import dmr.DragonMounts.common.config.DMRConfig;
 import dmr.DragonMounts.common.handlers.DragonWhistleHandler;
+import dmr.DragonMounts.config.ClientConfig;
+import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.network.packets.DragonAgeSyncPacket;
 import dmr.DragonMounts.registry.*;
 import dmr.DragonMounts.server.ai.DragonAI;
@@ -207,8 +208,8 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 	}
 
 	public void equipArmor(Player pPlayer, ItemStack pArmor) {
-		if (this.isArmor(pArmor) && getBodyArmorItem().isEmpty()) {
-			this.setItemSlotAndDropWhenKilled(EquipmentSlot.BODY, pArmor.copyWithCount(1));
+		if (!isWearingArmor()) {
+			this.setItemSlot(EquipmentSlot.BODY, pArmor.copyWithCount(1));
 			if (!pPlayer.getAbilities().instabuild) {
 				pArmor.shrink(1);
 			}
@@ -453,10 +454,10 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 		stepHeightInstance.setBaseValue(Math.max(2 * getAgeProgress(), 1));
 
 		AttributeInstance baseHealthInstance = getAttribute(MAX_HEALTH);
-		baseHealthInstance.setBaseValue(DMRConfig.BASE_HEALTH.get());
+		baseHealthInstance.setBaseValue(ServerConfig.BASE_HEALTH.get());
 
 		AttributeInstance attackDamageInstance = getAttribute(ATTACK_DAMAGE);
-		attackDamageInstance.setBaseValue(DMRConfig.BASE_DAMAGE.get());
+		attackDamageInstance.setBaseValue(ServerConfig.BASE_DAMAGE.get());
 
 		var mod = new AttributeModifier(SCALE_MODIFIER, getScale(), Operation.ADD_VALUE);
 		for (var attribute : new Holder[] { MAX_HEALTH, ATTACK_DAMAGE }) { // avoid duped code
@@ -503,7 +504,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 		if (isFlying()) {
 			moveForward = moveForward > 0 ? moveForward : 0;
 			if (level.isClientSide) {
-				if (moveForward > 0 && DMRConfig.CAMERA_FLIGHT.get()) moveY = -(driver.getXRot() * (Math.PI / 180) * 0.5f);
+				if (moveForward > 0 && ClientConfig.CAMERA_FLIGHT.get()) moveY = -(driver.getXRot() * (Math.PI / 180) * 0.5f);
 			}
 
 			if (driver.jumping) moveY += 0.5;
@@ -512,7 +513,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 			moveForward = moveForward > 0 ? moveForward : 0;
 
 			if (level.isClientSide) {
-				if (moveForward > 0 && DMRConfig.CAMERA_FLIGHT.get()) {
+				if (moveForward > 0 && ClientConfig.CAMERA_FLIGHT.get()) {
 					moveY = (-driver.getXRot() * (Math.PI / 180)) * 2;
 				}
 			}
@@ -893,6 +894,8 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 			}
 		}
 
+		if (isSaddled()) spawnAtLocation(Items.SADDLE);
+
 		if (this.inventory != null) {
 			for (int i = 0; i < this.inventory.getContainerSize(); ++i) {
 				ItemStack itemstack = this.inventory.getItem(i);
@@ -1069,15 +1072,8 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 	}
 
 	public boolean isTamedFor(Player player) {
-		return isTame() && isOwnedBy(player);
+		return isTame() && (isOwnedBy(player) || Objects.equals(getOwnerUUID(), player.getUUID()));
 	}
-
-	//TODO
-	//	@Override
-	//	public float getMyRidingOffset(Entity pEntity)
-	//	{
-	//		return getBbHeight() - 0.175f + breed.getVerticalRidingOffset();
-	//	}
 
 	public void setRidingPlayer(Player player) {
 		player.setYRot(getYRot());
@@ -1164,7 +1160,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 		eggOutcomes.addAll(getBreeds());
 		eggOutcomes.addAll(mate.getBreeds());
 
-		if (DMRConfig.HABITAT_OFFSPRING.get()) {
+		if (ServerConfig.HABITAT_OFFSPRING.get()) {
 			IDragonBreed highestBreed1 = BreedingUtils.getHabitatBreedOutcome(level, blockPosition());
 			IDragonBreed highestBreed2 = BreedingUtils.getHabitatBreedOutcome(level, mate.blockPosition());
 
@@ -1177,7 +1173,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 			}
 		}
 
-		if (DMRConfig.ALLOW_HYBRIDIZATION.get()) {
+		if (ServerConfig.ALLOW_HYBRIDIZATION.get()) {
 			var newList = new ArrayList<IDragonBreed>();
 
 			for (IDragonBreed breed1 : eggOutcomes) {

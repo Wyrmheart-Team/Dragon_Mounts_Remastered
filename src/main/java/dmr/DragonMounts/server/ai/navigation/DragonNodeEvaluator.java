@@ -1,5 +1,6 @@
 package dmr.DragonMounts.server.ai.navigation;
 
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
@@ -9,8 +10,6 @@ import net.minecraft.world.level.pathfinder.FlyNodeEvaluator;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.PathfindingContext;
-
-import javax.annotation.Nullable;
 
 public class DragonNodeEvaluator extends FlyNodeEvaluator {
 

@@ -1,7 +1,7 @@
 package dmr.DragonMounts.common.handlers;
 
 import dmr.DragonMounts.common.capability.DragonOwnerCapability;
-import dmr.DragonMounts.common.config.DMRConfig;
+import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.network.packets.DragonStatePacket;
 import dmr.DragonMounts.registry.ModCapabilities;
 import dmr.DragonMounts.registry.ModItems;
@@ -9,15 +9,16 @@ import dmr.DragonMounts.registry.ModSounds;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.server.items.DragonWhistleItem;
 import dmr.DragonMounts.util.PlayerStateUtils;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class DragonWhistleHandler {
 
@@ -49,15 +50,15 @@ public class DragonWhistleHandler {
 			return false;
 		}
 
-		if (DMRConfig.CALL_CHECK_SPACE.get()) {
+		if (ServerConfig.CALL_CHECK_SPACE.get()) {
 			if (!player.level.collidesWithSuffocatingBlock(null, player.getBoundingBox().inflate(1, 1, 1))) {
 				player.displayClientMessage(Component.translatable("dmr.dragon_call.nospace").withStyle(ChatFormatting.RED), true);
 				return false;
 			}
 		}
 
-		if (handler.lastCall != null && DMRConfig.WHISTLE_COOLDOWN_CONFIG.get() > 0) {
-			if (handler.lastCall + DMRConfig.WHISTLE_COOLDOWN_CONFIG.get() > System.currentTimeMillis()) {
+		if (handler.lastCall != null && ServerConfig.WHISTLE_COOLDOWN_CONFIG.get() > 0) {
+			if (handler.lastCall + ServerConfig.WHISTLE_COOLDOWN_CONFIG.get() > System.currentTimeMillis()) {
 				player.displayClientMessage(Component.translatable("dmr.dragon_call.on_cooldown").withStyle(ChatFormatting.RED), true);
 				return false;
 			}
@@ -78,7 +79,7 @@ public class DragonWhistleHandler {
 								.getCooldowns()
 								.addCooldown(
 									s.get(),
-									(int) TimeUnit.SECONDS.convert(DMRConfig.WHISTLE_COOLDOWN_CONFIG.get(), TimeUnit.MILLISECONDS) * 20
+									(int) TimeUnit.SECONDS.convert(ServerConfig.WHISTLE_COOLDOWN_CONFIG.get(), TimeUnit.MILLISECONDS) * 20
 								);
 						}
 					});

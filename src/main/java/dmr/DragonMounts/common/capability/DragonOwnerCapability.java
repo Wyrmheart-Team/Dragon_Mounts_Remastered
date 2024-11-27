@@ -1,6 +1,7 @@
 package dmr.DragonMounts.common.capability;
 
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
@@ -18,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 
 	@Setter
+	@Getter
 	private Player player;
 
 	public Long lastCall;

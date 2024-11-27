@@ -19,7 +19,7 @@
     "hidden": false
   },
   "criteria": {
-    "hatch_hybrid_dragon_egg": {
+    "hatch_egg_hybrid": {
       "trigger": "dmr:hatch_hybrid_dragon_egg",
       "conditions": {
         "id": "dmr:hatch_hybrid_dragon_egg"
