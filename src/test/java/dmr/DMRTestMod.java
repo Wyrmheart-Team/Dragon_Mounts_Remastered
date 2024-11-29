@@ -31,11 +31,5 @@ public class DMRTestMod {
 		GlobalTestReporter.replaceWith(new DMRTestReporter());
 
 		framework.init(eventBus, container);
-
-		NeoForge.EVENT_BUS.addListener((final RegisterCommandsEvent event) -> {
-			final LiteralArgumentBuilder<CommandSourceStack> node = Commands.literal("tests");
-			framework.registerCommands(node);
-			event.getDispatcher().register(node);
-		});
 	}
 }

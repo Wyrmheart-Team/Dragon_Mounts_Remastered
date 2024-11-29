@@ -61,12 +61,7 @@ public class DMRTestDumper implements FileSummaryDumper {
 			List<TestSummary.TestInfo> failedTests = testsByStatus.getOrDefault(Test.Result.FAILED, List.of());
 			List<TestSummary.TestInfo> passedTests = testsByStatus.getOrDefault(Test.Result.PASSED, List.of());
 			List<TestSummary.TestInfo> skippedTests = testsByStatus.getOrDefault(Result.NOT_PROCESSED, List.of());
-			summaryBuilder.addRow(
-				group.getFirst(),
-				String.valueOf(passedTests.size()),
-				String.valueOf(failedTests.size()),
-				String.valueOf(skippedTests.size())
-			);
+			summaryBuilder.addRow(group.getFirst(), passedTests.size(), failedTests.size(), skippedTests.size());
 		});
 
 		Map<Result, List<TestInfo>> testsByStatus = summary

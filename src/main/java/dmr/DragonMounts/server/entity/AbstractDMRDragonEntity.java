@@ -97,11 +97,6 @@ public abstract class AbstractDMRDragonEntity
 		AbstractDMRDragonEntity.class,
 		EntityDataSerializers.BOOLEAN
 	);
-	private static final EntityDataAccessor<BlockPos> DATA_PATHING_GOAL = SynchedEntityData.defineId(
-		AbstractDMRDragonEntity.class,
-		EntityDataSerializers.BLOCK_POS
-	);
-
 	public static final EntityDataAccessor<Long> LAST_POSE_CHANGE_TICK = SynchedEntityData.defineId(
 		AbstractDMRDragonEntity.class,
 		EntityDataSerializers.LONG
@@ -199,18 +194,6 @@ public abstract class AbstractDMRDragonEntity
 		getEntityData().set(DATA_WANDERING_POS, pos);
 		getBrain().setMemory(ModMemoryModuleTypes.WANDER_TARGET.get(), GlobalPos.of(level.dimension(), pos));
 		setOrderedToSit(false);
-	}
-
-	public BlockPos getPathingGoal() {
-		return getEntityData().get(DATA_PATHING_GOAL);
-	}
-
-	public void setPathingGoal(BlockPos pos) {
-		if (pos == null) {
-			getEntityData().set(DATA_PATHING_GOAL, BlockPos.ZERO);
-			return;
-		}
-		getEntityData().set(DATA_PATHING_GOAL, pos);
 	}
 
 	public boolean hasWanderTarget() {
@@ -357,7 +340,6 @@ public abstract class AbstractDMRDragonEntity
 		builder.define(DATA_UUID, "");
 		builder.define(DATA_SUMMON_INSTANCE, "");
 		builder.define(DATA_WANDERING_POS, BlockPos.ZERO);
-		builder.define(DATA_PATHING_GOAL, BlockPos.ZERO);
 		builder.define(DATA_ID_CHEST, false);
 		builder.define(LAST_POSE_CHANGE_TICK, 0L);
 	}

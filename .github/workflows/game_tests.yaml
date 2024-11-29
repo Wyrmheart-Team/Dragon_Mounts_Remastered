@@ -2,6 +2,7 @@ name: Run game tests
 
 on:
   push:
+  pull_request:
 
 jobs:
   run-checks:
@@ -53,7 +54,7 @@ jobs:
         run: ./gradlew runGameTestServer
         
       - name: Repository Dispatch
-        if: success()
+        if: github.event_name == 'push' && success()
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.GH_TOKEN }}

@@ -56,6 +56,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.behavior.EntityTracker;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Inventory;
@@ -339,11 +341,6 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 	public boolean canFly() {
 		// hatchling's can't fly
 		return !isHatchling() && getEyeInFluidType().isAir();
-	}
-
-	@Override
-	public double getEyeY() {
-		return super.getEyeY() * 1.2f;
 	}
 
 	@Override
@@ -1012,6 +1009,15 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 	@Override
 	public boolean wantsToAttack(LivingEntity target, LivingEntity owner) {
 		return !(target instanceof TamableAnimal tameable) || !Objects.equals(tameable.getOwner(), owner);
+	}
+
+	@Override
+	public void setTarget(@org.jetbrains.annotations.Nullable LivingEntity target) {
+		super.setTarget(target);
+		getBrain().setMemory(MemoryModuleType.ATTACK_TARGET, target);
+		if (target != null) {
+			getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(target, true));
+		}
 	}
 
 	public SoundEvent getAttackSound() {

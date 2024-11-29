@@ -116,10 +116,6 @@ public class DragonWhistleHandler {
 						dragon.setWanderTarget(null);
 
 						if (!player.level.isClientSide) {
-							dragon.setPathingGoal(player.blockPosition());
-						}
-
-						if (!player.level.isClientSide) {
 							PacketDistributor.sendToPlayersTrackingEntity(dragon, new DragonStatePacket(dragon.getId(), 1));
 						}
 					} else {

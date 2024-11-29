@@ -10,6 +10,7 @@ import dmr.DragonMounts.util.PlayerStateUtils;
 import java.util.Objects;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
@@ -28,20 +29,18 @@ public class DragonTests {
 	@TestHolder
 	public static void tameDragon(ExtendedGameTestHelper helper) {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		player.moveToCentre();
 		var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
 		dragon.setBreed(DragonBreedsRegistry.getDefault());
 
-		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.TROPICAL_FISH, 64));
-
-		for (int i = 0; i < 100; i++) {
+		helper.succeedWhen(() -> {
+			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.TROPICAL_FISH, 64));
 			dragon.interact(player, InteractionHand.MAIN_HAND);
-			if (dragon.isTame()) {
-				helper.succeed();
-				return;
-			}
-		}
 
-		helper.fail("Dragon was not tamed");
+			if (!dragon.isTame()) {
+				helper.fail("Dragon was not tamed");
+			}
+		});
 	}
 
 	@EmptyTemplate(floor = true)
@@ -49,6 +48,7 @@ public class DragonTests {
 	@TestHolder
 	public static void tamedFor(ExtendedGameTestHelper helper) {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		player.moveToCentre();
 		var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
 		dragon.setBreed(DragonBreedsRegistry.getDefault());
 		dragon.tamedFor(player, true);
@@ -67,21 +67,47 @@ public class DragonTests {
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
-	public static void willAttackOwnerTarget(ExtendedGameTestHelper helper) {
+	public static void willLookAtPlayer(ExtendedGameTestHelper helper) {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		player.moveToCentre();
 		var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
 		dragon.setBreed(DragonBreedsRegistry.getDefault());
+		dragon.tamedFor(player, true);
+		helper.succeedWhen(() ->
+			dragon
+				.getBrain()
+				.getMemory(MemoryModuleType.LOOK_TARGET)
+				.ifPresent(lookTarget -> {
+					if (lookTarget.currentPosition().distanceTo(player.position()) > 0.5) {
+						helper.fail("Dragon did not look at player");
+					}
+				})
+		);
+	}
+
+	@EmptyTemplate(floor = true)
+	@GameTest(setupTicks = 100L)
+	@TestHolder
+	public static void willAttackOwnerTarget(ExtendedGameTestHelper helper) {
+		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		player.moveToCentre();
 
 		var target = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		target.moveToCorner();
+
+		var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
+		dragon.setBreed(DragonBreedsRegistry.getDefault());
 
 		dragon.tamedFor(player, true);
 		player.attack(target);
 
-		if (dragon.getTarget() != target) {
-			helper.fail("Dragon did not attack target");
-		}
+		helper.succeedWhen(() -> {
+			dragon.tick();
 
-		helper.succeed();
+			if (dragon.getTarget() != target) {
+				helper.fail("Dragon did not attack owner's target");
+			}
+		});
 	}
 
 	@EmptyTemplate(floor = true)
@@ -89,6 +115,7 @@ public class DragonTests {
 	@TestHolder
 	public static void defendWhileSitting(ExtendedGameTestHelper helper) {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		player.moveToCentre();
 		var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
 		dragon.setBreed(DragonBreedsRegistry.getDefault());
 
@@ -97,13 +124,15 @@ public class DragonTests {
 		dragon.tamedFor(player, true);
 		dragon.setOrderedToSit(true);
 
-		player.attack(otherPlayer);
+		otherPlayer.attack(player);
 
-		if (dragon.getTarget() != otherPlayer) {
-			helper.fail("Dragon did not defend while sitting");
-		}
+		helper.succeedWhen(() -> {
+			dragon.tick();
 
-		helper.succeed();
+			if (dragon.getTarget() != otherPlayer) {
+				helper.fail("Dragon did not defend while sitting");
+			}
+		});
 	}
 
 	@EmptyTemplate(floor = true)
@@ -111,19 +140,22 @@ public class DragonTests {
 	@TestHolder
 	public static void willAttackNonOwner(ExtendedGameTestHelper helper) {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		player.moveToCentre();
 		var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
 		dragon.setBreed(DragonBreedsRegistry.getDefault());
 
 		var otherPlayer = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
 
 		dragon.tamedFor(player, true);
-		otherPlayer.attack(dragon);
+		player.attack(otherPlayer);
 
-		if (dragon.getTarget() != otherPlayer) {
-			helper.fail("Dragon did not attack non-owner");
-		}
+		helper.succeedWhen(() -> {
+			dragon.tick();
 
-		helper.succeed();
+			if (dragon.getTarget() != otherPlayer) {
+				helper.fail("Dragon did not attack non-owner");
+			}
+		});
 	}
 
 	@EmptyTemplate(floor = true)
@@ -131,11 +163,14 @@ public class DragonTests {
 	@TestHolder
 	public static void willNotAttackOwner(ExtendedGameTestHelper helper) {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		player.moveToCentre();
 		var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
 		dragon.setBreed(DragonBreedsRegistry.getDefault());
 
 		dragon.tamedFor(player, true);
 		player.attack(dragon);
+
+		dragon.tick();
 
 		if (dragon.getTarget() == player) {
 			helper.fail("Dragon attacked owner");
@@ -149,6 +184,7 @@ public class DragonTests {
 	@TestHolder
 	public static void willNotAttackTamed(ExtendedGameTestHelper helper) {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		player.moveToCentre();
 		var dragon1 = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
 		var dragon2 = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
 		dragon1.setBreed(DragonBreedsRegistry.getDefault());
@@ -157,18 +193,24 @@ public class DragonTests {
 		dragon1.tamedFor(player, true);
 		dragon2.tamedFor(player, true);
 
-		if (dragon1.getTarget() == dragon2) {
-			helper.fail("Tamed dragon attacked another tamed dragon");
-		}
+		player.attack(dragon2);
 
-		helper.succeed();
+		helper.succeedWhen(() -> {
+			dragon1.tick();
+			dragon2.tick();
+
+			if (dragon1.getTarget() == dragon2) {
+				helper.fail("Dragon attacked tamed dragon");
+			}
+		});
 	}
 
-	@EmptyTemplate(floor = true)
+	@EmptyTemplate(floor = true, value = "9x9x9") //Larger area to ensure dragon can move
 	@GameTest
 	@TestHolder
 	public static void dontMoveWhileSitting(ExtendedGameTestHelper helper) {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		player.moveToCentre();
 		var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
 		dragon.setBreed(DragonBreedsRegistry.getDefault());
 
@@ -176,11 +218,34 @@ public class DragonTests {
 		dragon.setOrderedToSit(true);
 		var pos = dragon.blockPosition();
 
-		helper.onEachTick(dragon::tick);
+		for (int i = 0; i < 100; i++) {
+			dragon.tick();
+		}
 
-		helper.succeedOnTickWhen(100, () -> {
-			if (dragon.getDeltaMovement().length() > 0 || !dragon.blockPosition().equals(pos)) {
-				helper.fail("Dragon moved while sitting");
+		if (!dragon.blockPosition().equals(pos)) {
+			helper.fail("Dragon moved while sitting");
+		}
+
+		helper.succeed();
+	}
+
+	@EmptyTemplate(floor = true, value = "9x9x9") //Larger area to ensure dragon can move
+	@GameTest
+	@TestHolder
+	public static void wanderWhenNotSitting(ExtendedGameTestHelper helper) {
+		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		player.moveToCentre();
+		var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
+		dragon.setBreed(DragonBreedsRegistry.getDefault());
+		dragon.tamedFor(player, true);
+		dragon.setOrderedToSit(false);
+		var pos = dragon.blockPosition();
+
+		helper.succeedWhen(() -> {
+			dragon.tick();
+
+			if (dragon.blockPosition().equals(pos)) {
+				helper.fail("Dragon did not move while not sitting");
 			}
 		});
 	}
@@ -190,6 +255,7 @@ public class DragonTests {
 	@TestHolder
 	public static void saddleDragon(ExtendedGameTestHelper helper) {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		player.moveToCentre();
 		var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
 		dragon.setBreed(DragonBreedsRegistry.getDefault());
 
@@ -210,6 +276,7 @@ public class DragonTests {
 	@TestHolder
 	public static void armorDragon(ExtendedGameTestHelper helper) {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		player.moveToCentre();
 		var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
 		dragon.setBreed(DragonBreedsRegistry.getDefault());
 
@@ -230,6 +297,7 @@ public class DragonTests {
 	@TestHolder
 	public static void giveChestToDragon(ExtendedGameTestHelper helper) {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		player.moveToCentre();
 		var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
 		dragon.setBreed(DragonBreedsRegistry.getDefault());
 
@@ -250,6 +318,7 @@ public class DragonTests {
 	@TestHolder
 	public static void dontDropWhenSelected(ExtendedGameTestHelper helper) {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		player.moveToCentre();
 		var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
 		dragon.setBreed(DragonBreedsRegistry.getDefault());
 		dragon.tamedFor(player, true);
@@ -268,6 +337,7 @@ public class DragonTests {
 	@TestHolder
 	public static void dropChestContentsOnDeath(ExtendedGameTestHelper helper) {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		player.moveToCentre();
 		var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
 		dragon.setBreed(DragonBreedsRegistry.getDefault());
 
@@ -285,6 +355,7 @@ public class DragonTests {
 	@TestHolder
 	public static void dropSaddleOnDeath(ExtendedGameTestHelper helper) {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		player.moveToCentre();
 		var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
 		dragon.setBreed(DragonBreedsRegistry.getDefault());
 
@@ -301,6 +372,7 @@ public class DragonTests {
 	@TestHolder
 	public static void dropArmorOnDeath(ExtendedGameTestHelper helper) {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		player.moveToCentre();
 		var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
 		dragon.setBreed(DragonBreedsRegistry.getDefault());
 
@@ -319,6 +391,7 @@ public class DragonTests {
 	@TestHolder
 	public static void rideDragon(ExtendedGameTestHelper helper) {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		player.moveToCentre();
 		var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
 		dragon.setBreed(DragonBreedsRegistry.getDefault());
 
@@ -342,6 +415,7 @@ public class DragonTests {
 	@TestHolder
 	public static void dismountDragon(ExtendedGameTestHelper helper) {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		player.moveToCentre();
 		var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
 		dragon.setBreed(DragonBreedsRegistry.getDefault());
 
