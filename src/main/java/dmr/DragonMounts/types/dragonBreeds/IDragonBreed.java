@@ -120,7 +120,6 @@ public interface IDragonBreed {
 	int getHatchTime();
 	int getGrowthTime();
 	float getSizeModifier();
-	float getVerticalRidingOffset();
 
 	List<String> getImmunities();
 	Map<ResourceLocation, Double> getAttributes();

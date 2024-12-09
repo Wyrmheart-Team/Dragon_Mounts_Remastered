@@ -80,14 +80,6 @@ public class DragonBreed implements IDragonBreed {
 		}
 	}
 
-	@SerializedName("riding_offset")
-	private float riding_offset = 0;
-
-	@Override
-	public float getVerticalRidingOffset() {
-		return riding_offset;
-	}
-
 	@SerializedName("primary_color")
 	private String primary_color;
 
@@ -95,11 +87,11 @@ public class DragonBreed implements IDragonBreed {
 	private String secondary_color;
 
 	public int getPrimaryColor() {
-		return Integer.parseInt(primary_color, 16);
+		return primary_color == null ? 0 : Integer.parseInt(primary_color, 16);
 	}
 
 	public int getSecondaryColor() {
-		return Integer.parseInt(secondary_color, 16);
+		return secondary_color == null ? 0 : Integer.parseInt(secondary_color, 16);
 	}
 
 	@SerializedName("immunities")
@@ -158,19 +150,12 @@ public class DragonBreed implements IDragonBreed {
 		return hatchParticles;
 	}
 
-	//This is to keep backwards compatibility with DML
-	@SerializedName("model_properties")
-	private Map<String, Boolean> oldModelProperties = new HashMap<>();
-
 	@SerializedName("accessories")
 	private List<String> modelAccessories = new ArrayList<>();
 
 	@Override
 	public List<String> getAccessories() {
-		ArrayList<String> list = new ArrayList<>();
-		list.addAll(modelAccessories);
-		list.addAll(oldModelProperties.keySet());
-		return list;
+		return new ArrayList<>(modelAccessories);
 	}
 
 	@SerializedName("loot_tables")

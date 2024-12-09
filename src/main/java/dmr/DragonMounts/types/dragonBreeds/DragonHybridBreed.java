@@ -85,11 +85,6 @@ public class DragonHybridBreed implements IDragonBreed {
 	}
 
 	@Override
-	public float getVerticalRidingOffset() {
-		return parent1 != null ? parent1.getVerticalRidingOffset() : parent2.getVerticalRidingOffset();
-	}
-
-	@Override
 	public float getSizeModifier() {
 		return (parent1.getSizeModifier() + parent2.getSizeModifier()) / 2;
 	}

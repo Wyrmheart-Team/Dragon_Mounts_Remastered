@@ -18,6 +18,7 @@ public class ModMemoryModuleTypes {
 	public static final Supplier<MemoryModuleType<GlobalPos>> WANDER_TARGET = register("wander_target", GlobalPos.CODEC);
 	public static final Supplier<MemoryModuleType<Boolean>> IS_SITTING = register("sitting", Codec.BOOL);
 	public static final Supplier<MemoryModuleType<Boolean>> IS_TAMED = register("is_tamed", Codec.BOOL);
+	public static final Supplier<MemoryModuleType<Boolean>> HAS_BREATH_COOLDOWN = register("has_breath_cooldown", Codec.BOOL);
 
 	private static <U> Supplier<MemoryModuleType<U>> register(String key, Codec<U> codec) {
 		return MEMORY_MODULE_TYPE.register(key, () -> new MemoryModuleType<>(Optional.of(codec)));

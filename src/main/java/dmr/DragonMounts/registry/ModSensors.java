@@ -1,7 +1,7 @@
 package dmr.DragonMounts.registry;
 
 import dmr.DragonMounts.DMR;
-import dmr.DragonMounts.server.ai.DragonAttackablesSensor;
+import dmr.DragonMounts.server.ai.sensors.DragonAttackablesSensor;
 import java.util.function.Supplier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.ai.sensing.Sensor;

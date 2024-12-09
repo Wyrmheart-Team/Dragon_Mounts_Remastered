@@ -30,6 +30,8 @@ public class ServerConfig {
 
 	private static final Long WHISTLE_COOLDOWN = TimeUnit.MILLISECONDS.convert(5, TimeUnit.SECONDS); // 5 minutes
 
+	public static final ModConfigSpec.BooleanValue ENABLE_DRAGON_BREATH;
+
 	static {
 		var configurator = new ModConfigSpec.Builder();
 
@@ -85,6 +87,12 @@ public class ServerConfig {
 		RESPAWN_TIME = configurator
 			.comment("Time in seconds for a dragon to respawn.")
 			.defineInRange("respawn_time", 60, 0, Integer.MAX_VALUE);
+
+		ENABLE_DRAGON_BREATH = configurator
+			.comment(
+				"Enable dragon breath attacks, this is still highly WIP and is not representative of the final version. Issues and bug reports will not be accepted for this feature in the current state."
+			)
+			.define("enable_dragon_breath", false);
 
 		MOD_CONFIG_SPEC = configurator.build();
 	}

@@ -24,9 +24,12 @@ public class BreedingUtils {
 		// Add the highest habitat point breed to the list of possible outcomes
 		for (IDragonBreed dragonBreed : DragonBreedsRegistry.getDragonBreeds()) {
 			if (dragonBreed.isHybrid()) continue;
+			if (dragonBreed.getHabitats() == null || dragonBreed.getHabitats().isEmpty()) continue;
 
 			var points = 0;
 			for (Habitat habitat : dragonBreed.getHabitats()) {
+				if (habitat == null) continue;
+
 				var point = habitat.getHabitatPoints(level, pos);
 				points += point;
 			}

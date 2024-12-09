@@ -5,8 +5,9 @@ on:
   pull_request:
 
 jobs:
-  run-checks:
+  game-tests:
     runs-on: ubuntu-latest
+    name: Run game tests
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3

@@ -1,4 +1,4 @@
-package dmr.DragonMounts.server.ai;
+package dmr.DragonMounts.server.ai.sensors;
 
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import net.minecraft.world.entity.LivingEntity;

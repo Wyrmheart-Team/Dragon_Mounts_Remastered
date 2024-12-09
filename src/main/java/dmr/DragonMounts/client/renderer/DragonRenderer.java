@@ -8,6 +8,7 @@ import dmr.DragonMounts.client.renderer.layers.DragonPassengerLayer;
 import dmr.DragonMounts.client.renderer.layers.DragonSaddleLayer;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.types.ResourcePackLoader;
+import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -112,5 +113,16 @@ public class DragonRenderer extends GeoEntityRenderer<DMRDragonEntity> {
 		}
 
 		model.getBone("bottomjaw").ifPresent(bone -> entity.breathSourcePosition = bone.getLocalPosition());
+
+		if (entity.hasBreathAttack()) {
+			if (entity.headController != null && entity.headController.isPlayingTriggeredAnimation()) {
+				if (
+					entity.headController.getCurrentAnimation() != null &&
+					Objects.equals(entity.headController.getCurrentAnimation().animation().name(), "breath")
+				) {
+					entity.renderDragonBreath(entityYaw, partialTicks, stack, bufferIn);
+				}
+			}
+		}
 	}
 }

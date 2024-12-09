@@ -50,6 +50,7 @@ public record DismountDragonPacket(int entityId, boolean state) implements IMess
 		if (entity instanceof Player player1) {
 			DragonOwnerCapability cap = player1.getData(ModCapabilities.PLAYER_CAPABILITY);
 			cap.shouldDismount = state;
+			player1.stopRiding();
 		}
 	}
 }

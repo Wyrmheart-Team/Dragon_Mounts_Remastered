@@ -63,8 +63,11 @@ public class DragonInventoryScreen extends AbstractContainerScreen<DragonContain
 		);
 
 		int i = 0;
+		int offsetY = 0;
 		for (Ability ability : dragon.getBreed().getAbilities()) {
-			addRenderableWidget(new DragonAbilityButton(leftPos - 124, topPos + 5 + i * 34, ability));
+			var btn = new DragonAbilityButton(leftPos - 124, topPos + 5 + offsetY, ability);
+			addRenderableWidget(btn);
+			offsetY += 40 + btn.description.size() * 9;
 			i++;
 		}
 	}

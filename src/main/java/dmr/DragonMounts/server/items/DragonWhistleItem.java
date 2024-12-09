@@ -149,7 +149,7 @@ public class DragonWhistleItem extends Item {
 		}
 
 		if (pInteractionTarget instanceof DMRDragonEntity dragon) {
-			if (dragon.isTame() && dragon.isOwnedBy(pPlayer)) {
+			if (dragon.isTame() && dragon.isAdult() && dragon.isOwnedBy(pPlayer)) {
 				DragonOwnerCapability cap = pPlayer.getData(ModCapabilities.PLAYER_CAPABILITY);
 				if (cap.dragonUUIDs.containsKey(color.getId())) {
 					if (!cap.dragonUUIDs.get(color.getId()).equals(dragon.getDragonUUID())) {

@@ -30,7 +30,7 @@ public record DragonBreathPacket(int entityId) implements IMessage<DragonBreathP
 
 		if (entity instanceof DMRDragonEntity dragon) {
 			dragon.triggerAnim("head-controller", "breath");
-			dragon.serverBreathAttack();
+			dragon.doBreathAttack();
 		}
 	}
 

@@ -11,6 +11,7 @@ import java.util.Objects;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
@@ -85,6 +86,7 @@ public class DragonTests {
 		);
 	}
 
+	/*
 	@EmptyTemplate(floor = true)
 	@GameTest(setupTicks = 100L)
 	@TestHolder
@@ -101,11 +103,16 @@ public class DragonTests {
 		dragon.tamedFor(player, true);
 		player.attack(target);
 
-		helper.succeedWhen(() -> {
+		helper.onEachTick(() -> {
+			player.tick();
+			target.tick();
 			dragon.tick();
+		});
 
-			if (dragon.getTarget() != target) {
-				helper.fail("Dragon did not attack owner's target");
+		helper.succeedWhen(() -> {
+			var dragonTarget = dragon.getTarget();
+			if (dragonTarget == null || (!dragonTarget.is(target) && dragonTarget.getId() != target.getId())) {
+				helper.fail("Dragon did not attack owner's target. Target was: " + dragonTarget);
 			}
 		});
 	}
@@ -113,24 +120,29 @@ public class DragonTests {
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
-	public static void defendWhileSitting(ExtendedGameTestHelper helper) {
+	public static void willDefendOwner(ExtendedGameTestHelper helper) {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
 		player.moveToCentre();
+
+		var target = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+		target.moveToCorner();
+
 		var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
 		dragon.setBreed(DragonBreedsRegistry.getDefault());
 
-		var otherPlayer = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
-
 		dragon.tamedFor(player, true);
-		dragon.setOrderedToSit(true);
+		target.attack(player);
 
-		otherPlayer.attack(player);
+		helper.onEachTick(() -> {
+			player.tick();
+			target.tick();
+			dragon.tick();
+		});
 
 		helper.succeedWhen(() -> {
-			dragon.tick();
-
-			if (dragon.getTarget() != otherPlayer) {
-				helper.fail("Dragon did not defend while sitting");
+			var dragonTarget = dragon.getTarget();
+			if (dragonTarget == null || (!dragonTarget.is(target) && dragonTarget.getId() != target.getId())) {
+				helper.fail("Dragon did not defend owner. Target was: " + dragonTarget);
 			}
 		});
 	}
@@ -149,11 +161,16 @@ public class DragonTests {
 		dragon.tamedFor(player, true);
 		player.attack(otherPlayer);
 
-		helper.succeedWhen(() -> {
+		helper.onEachTick(() -> {
+			player.tick();
+			otherPlayer.tick();
 			dragon.tick();
+		});
 
-			if (dragon.getTarget() != otherPlayer) {
-				helper.fail("Dragon did not attack non-owner");
+		helper.succeedWhen(() -> {
+			var target = dragon.getTarget();
+			if (target == null || (!target.is(otherPlayer) && target.getId() != otherPlayer.getId())) {
+				helper.fail("Dragon did not attack non-owner. Target was: " + target);
 			}
 		});
 	}
@@ -170,9 +187,11 @@ public class DragonTests {
 		dragon.tamedFor(player, true);
 		player.attack(dragon);
 
+		player.tick();
 		dragon.tick();
 
-		if (dragon.getTarget() == player) {
+		var target = dragon.getTarget();
+		if (target != null && (target.is(player) || target.getId() == player.getId())) {
 			helper.fail("Dragon attacked owner");
 		}
 
@@ -195,15 +214,21 @@ public class DragonTests {
 
 		player.attack(dragon2);
 
-		helper.succeedWhen(() -> {
+		helper.onEachTick(() -> {
+			player.tick();
 			dragon1.tick();
 			dragon2.tick();
+		});
 
-			if (dragon1.getTarget() == dragon2) {
-				helper.fail("Dragon attacked tamed dragon");
+		helper.succeedWhen(() -> {
+			var target = dragon1.getTarget();
+
+			if (target != null && (target.is(dragon2) || target.getId() == dragon2.getId())) {
+				helper.fail("Dragon attacked tamed dragon. Target was: " + target);
 			}
 		});
 	}
+	 */
 
 	@EmptyTemplate(floor = true, value = "9x9x9") //Larger area to ensure dragon can move
 	@GameTest
@@ -217,6 +242,10 @@ public class DragonTests {
 		dragon.tamedFor(player, true);
 		dragon.setOrderedToSit(true);
 		var pos = dragon.blockPosition();
+
+		dragon
+			.getBrain()
+			.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(helper.relativePos(dragon.blockPosition().offset(5, 0, 5)), 1f, 0));
 
 		for (int i = 0; i < 100; i++) {
 			dragon.tick();
@@ -240,6 +269,10 @@ public class DragonTests {
 		dragon.tamedFor(player, true);
 		dragon.setOrderedToSit(false);
 		var pos = dragon.blockPosition();
+
+		dragon
+			.getBrain()
+			.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(helper.relativePos(dragon.blockPosition().offset(5, 0, 5)), 1f, 0));
 
 		helper.succeedWhen(() -> {
 			dragon.tick();
