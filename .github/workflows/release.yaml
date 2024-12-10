@@ -33,7 +33,7 @@ jobs:
            registry-url: 'https://npm.pkg.github.com'
 
       - name: Cache npm dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -111,7 +111,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Cache Gradle packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -229,7 +229,7 @@ jobs:
            registry-url: 'https://npm.pkg.github.com'
 
       - name: Cache npm dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -295,14 +295,14 @@ jobs:
 
       - name: Replace placeholders in cf_upload.json
         run: |
-          sed -i "s/\\${java_version_id}/${{ steps.fetch_ids.outputs.java }}/g" cf_upload.json
-          sed -i "s/\\${client_version_id}/${{ steps.fetch_ids.outputs.client }}/g" cf_upload.json
-          sed -i "s/\\${server_version_id}/${{ steps.fetch_ids.outputs.server }}/g" cf_upload.json
-          sed -i "s/\\${neoforge_version_id}/${{ steps.fetch_ids.outputs.neoforge }}/g" cf_upload.json
-          sed -i "s/\\${mc_version_id}/${{ steps.fetch_ids.outputs.mc_version }}/g" cf_upload.json
-
-          sed -i "s|\\${version}|${{ needs.semantic-release.outputs.new_release_version }}|g" cf_upload.json
-          sed -i "s|\\${changelog}|${{ needs.semantic-release.outputs.changelog }}|g" cf_upload.json
+          sed -i 's/\\${java_version_id}/'"${{ steps.fetch_ids.outputs.java }}"'/g' cf_upload.json
+          sed -i 's/\\${client_version_id}/'"${{ steps.fetch_ids.outputs.client }}"'/g' cf_upload.json
+          sed -i 's/\\${server_version_id}/'"${{ steps.fetch_ids.outputs.server }}"'/g' cf_upload.json
+          sed -i 's/\\${neoforge_version_id}/'"${{ steps.fetch_ids.outputs.neoforge }}"'/g' cf_upload.json
+          sed -i 's/\\${mc_version_id}/'"${{ steps.fetch_ids.outputs.mc_version }}"'/g' cf_upload.json
+          
+          sed -i 's|\\${version}|'"${{ needs.semantic-release.outputs.new_release_version }}"'|g' cf_upload.json
+          sed -i 's|\\${changelog}|'"${{ needs.semantic-release.outputs.changelog }}"'|g' cf_upload.json
 
       - name: Debug cf_upload.json
         run: cat cf_upload.json
@@ -345,9 +345,9 @@ jobs:
 
       - name: Replace placeholders in modrinth_upload.json
         run: |
-          sed -i "s|\\${version}|${{ needs.semantic-release.outputs.new_release_version }}|g" modrinth_upload.json
-          sed -i "s|\\${changelog}|${{ needs.semantic-release.outputs.changelog }}|g" modrinth_upload.json
-          sed -i "s|\\${game_version}|${{ env.minecraft_version }}|g" modrinth_upload.json
+          sed -i 's|\\${version}|'"${{ needs.semantic-release.outputs.new_release_version }}"'|g' modrinth_upload.json
+          sed -i 's|\\${changelog}|'"${{ needs.semantic-release.outputs.changelog }}"'|g' modrinth_upload.json
+          sed -i 's|\\${game_version}|'"${{ env.minecraft_version }}"'|g' modrinth_upload.json
 
       - name: Debug modrinth_upload.json
         run: cat modrinth_upload.json
