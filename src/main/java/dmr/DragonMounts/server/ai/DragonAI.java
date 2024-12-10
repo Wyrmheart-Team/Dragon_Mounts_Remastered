@@ -121,7 +121,7 @@ public class DragonAI {
 				Pair.of(
 					4,
 					new BehaviorWrapper<>(
-						e -> !e.isOrderedToSit() && !e.hasWanderTarget(),
+						e -> !e.isOrderedToSit() && !e.isInSittingPose() && !e.hasWanderTarget(),
 						ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT),
 						RandomStroll.stroll(0.8f),
 						RandomStroll.swim(1f),

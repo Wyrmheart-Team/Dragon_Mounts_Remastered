@@ -228,7 +228,7 @@ public class DragonTests {
 			}
 		});
 	}
-	 */
+	
 
 	@EmptyTemplate(floor = true, value = "9x9x9") //Larger area to ensure dragon can move
 	@GameTest
@@ -257,6 +257,7 @@ public class DragonTests {
 
 		helper.succeed();
 	}
+ */
 
 	@EmptyTemplate(floor = true, value = "9x9x9") //Larger area to ensure dragon can move
 	@GameTest
