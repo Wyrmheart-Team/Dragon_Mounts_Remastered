@@ -204,7 +204,7 @@ public abstract class AbstractDMRDragonEntity
 		var origBreed = entityData.get(DATA_ORIG_BREED);
 
 		//If there is a original breed stored, try to fetch the breed from that
-		if (!origBreed.isBlank()) {
+		if (!origBreed.isBlank() && DragonBreedsRegistry.hasDragonBreed(origBreed)) {
 			return DragonBreedsRegistry.getDragonBreed(origBreed);
 		}
 
