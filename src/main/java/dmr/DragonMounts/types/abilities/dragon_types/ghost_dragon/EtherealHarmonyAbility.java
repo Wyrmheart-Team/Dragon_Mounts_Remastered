@@ -14,7 +14,7 @@ public class EtherealHarmonyAbility implements Ability {
 
 	@Override
 	public String type() {
-		return "etheral_harmony";
+		return "ethereal_harmony";
 	}
 
 	@SubscribeEvent
