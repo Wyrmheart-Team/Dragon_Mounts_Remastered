@@ -105,6 +105,7 @@ public class DragonAI {
 					1,
 					new BehaviorWrapper<>(
 						e -> e.isTame() && !e.isOrderedToSit() && !e.hasWanderTarget(),
+						ImmutableMap.of(ModMemoryModuleTypes.WANDER_TARGET.get(), MemoryStatus.VALUE_ABSENT),
 						StayCloseToTarget.create(DragonAI::getOwnerPosition, e -> true, 8, 16, 1F)
 					)
 				),

@@ -30,10 +30,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
@@ -635,6 +632,12 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 
 		if (getPassengers().stream().anyMatch(e -> e instanceof Player player && PlayerStateUtils.getHandler(player).shouldDismount)) {
 			ejectPassengers();
+			getPassengers()
+				.stream()
+				.filter(e -> e instanceof Player player && PlayerStateUtils.getHandler(player).shouldDismount)
+				.forEach(player -> {
+					PlayerStateUtils.getHandler((Player) player).shouldDismount = false;
+				});
 		}
 
 		// Disallow non-players and non-mobs from riding

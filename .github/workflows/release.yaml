@@ -254,6 +254,9 @@ jobs:
     needs: [publish-release, semantic-release]
 
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        
       - name: Download JAR artifact
         uses: actions/download-artifact@v3
         with:
@@ -327,6 +330,9 @@ jobs:
     needs: [publish-release, semantic-release]
 
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        
       - name: Download JAR artifact
         uses: actions/download-artifact@v3
         with:
