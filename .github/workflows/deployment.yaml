@@ -4,32 +4,29 @@ on:
   push:
   pull_request:
   workflow_dispatch:
-  
+
 concurrency:
-    group: ${{ github.workflow }}
-    cancel-in-progress: true
-    
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
   game-tests:
     uses: ./.github/workflows/game_tests.yaml
-    id: game-tests
-    
+  
   semantic-release:
     needs: game-tests
     uses: ./.github/workflows/semantic-release.yaml
     with:
       dry-run: true
-    id: semantic-release
-    
+  
   deploy:
     needs: semantic-release
-    runs-on: ubuntu-latest
     uses: ./.github/workflows/release.yaml
     if: ${{ needs.semantic-release.outputs.new_release_published }} == 'true' && github.ref == 'refs/heads/main' && github.event_name == 'push' && success()
     with:
       new_release_version: ${{ needs.semantic-release.outputs.new_release_version }}
       changelog: ${{ needs.semantic-release.outputs.changelog }}
-      
+  
   post-release-semantic-release:
     needs: game-tests
     uses: ./.github/workflows/semantic-release.yaml
