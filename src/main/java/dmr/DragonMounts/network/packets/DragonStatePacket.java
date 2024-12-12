@@ -51,8 +51,8 @@ public record DragonStatePacket(int entityId, int state) implements IMessage<Dra
 		if (entity instanceof DMRDragonEntity dragon && dragon.getControllingPassenger() == null) {
 			switch (state) {
 				case 0 -> { //Sit
-					dragon.setToldToSit(true);
 					dragon.setWanderTarget(Optional.empty());
+					dragon.setToldToSit(true);
 				}
 				case 1 -> { //Follow
 					dragon.setToldToSit(false);

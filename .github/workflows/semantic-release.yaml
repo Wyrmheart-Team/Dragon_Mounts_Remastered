@@ -68,5 +68,5 @@ jobs:
           description="${description//'%'/'\n'}"
           description="${description//$'\n'/'\n'}"
           description="${description//$'\r'/'\n'}"
-          echo $description
-          echo "::set-output name=description::$description"
+          echo "$description"
+          echo "description=$description" >> $GITHUB_OUTPUT

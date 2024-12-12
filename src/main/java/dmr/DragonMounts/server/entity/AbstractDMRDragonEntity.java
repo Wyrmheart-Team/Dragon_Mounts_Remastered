@@ -418,6 +418,7 @@ public abstract class AbstractDMRDragonEntity
 		compound.putBoolean(NBTConstants.CHEST, hasChest());
 		compound.putInt(NBTConstants.REPRO_COUNT, reproCount);
 		compound.putString(NBTConstants.DRAGON_UUID, getDragonUUID().toString());
+		compound.putBoolean("sit", isToldToSit());
 
 		getWanderTarget()
 			.flatMap(p_337878_ -> GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, p_337878_).resultOrPartial(System.err::println))
@@ -451,6 +452,7 @@ public abstract class AbstractDMRDragonEntity
 		setChest(compound.getBoolean(NBTConstants.CHEST));
 		this.reproCount = compound.getInt(NBTConstants.REPRO_COUNT);
 		setDragonUUID(UUID.fromString(compound.getString(NBTConstants.DRAGON_UUID)));
+		setToldToSit(compound.getBoolean("sit"));
 
 		Optional<GlobalPos> wanderTarget = GlobalPos.CODEC.parse(NbtOps.INSTANCE, compound.get(NBTConstants.WANDERING_POS)).resultOrPartial(
 			System.err::println
