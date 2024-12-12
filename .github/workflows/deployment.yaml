@@ -28,7 +28,7 @@ jobs:
       changelog: ${{ needs.semantic-release.outputs.changelog }}
   
   post-release-semantic-release:
-    needs: game-tests
+    needs: deploy
     uses: ./.github/workflows/semantic-release.yaml
     with:
       dry-run: false
