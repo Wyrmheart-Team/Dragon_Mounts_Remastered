@@ -48,8 +48,8 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 					dragon.clearFire();
 					dragon.hurtTime = 0;
 
-					dragon.setOrderedToSit(false);
-					dragon.setWanderTarget(null);
+					dragon.stopSitting();
+					dragon.setWanderTarget(Optional.empty());
 
 					setDragon(dragon, index);
 					dragon.setHealth(Math.max(1, dragon.getHealth()));
@@ -74,15 +74,15 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 		var wanderPos = dragon.getWanderTarget();
 		var sit = dragon.isOrderedToSit();
 
-		dragon.setWanderTarget(null);
-		dragon.setOrderedToSit(false);
+		dragon.setWanderTarget(Optional.empty());
+		dragon.setToldToSit(false);
 
 		//noinspection removal
 		var nbtData = dragon.serializeNBT(dragon.level.registryAccess());
 		dragonNBTs.put(index, nbtData);
 
 		dragon.setWanderTarget(wanderPos);
-		dragon.setOrderedToSit(sit);
+		dragon.setToldToSit(sit);
 	}
 
 	public boolean isSelectedDragon(DMRDragonEntity dragon) {

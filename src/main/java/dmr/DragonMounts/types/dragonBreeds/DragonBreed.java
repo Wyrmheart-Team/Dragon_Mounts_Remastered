@@ -200,4 +200,9 @@ public class DragonBreed implements IDragonBreed {
 		if (type == null) return;
 		stack.set(ModComponents.DRAGON_BREED, type.getId());
 	}
+
+	@Override
+	public String toString() {
+		return "DragonBreed{" + "id='" + id + '\'' + '}';
+	}
 }

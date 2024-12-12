@@ -213,45 +213,10 @@ jobs:
           name: dragon-mounts-jar
           path: build/libs/*.jar
 
-  publish-release:
-    name: Publish Release
-    needs: java-build-release
-    if: needs.semantic-release.outputs.new_release_published == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-           node-version: '18.x'
-           registry-url: 'https://npm.pkg.github.com'
-
-      - name: Cache npm dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@v4
-        id: semantic
-        with:
-            extra_plugins: |
-              @semantic-release/commit-analyzer
-              @semantic-release/release-notes-generator
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-
+ 
   upload-to-curseforge:
     runs-on: ubuntu-latest
-    needs: [publish-release, semantic-release]
+    needs: [java-build-release]
 
     steps:
       - name: Checkout Code
@@ -327,7 +292,7 @@ jobs:
 
   upload-to-modrinth:
     runs-on: ubuntu-latest
-    needs: [publish-release, semantic-release]
+    needs: [java-build-release]
 
     steps:
       - name: Checkout Code
@@ -370,11 +335,37 @@ jobs:
 
   after-release:
       needs:  [upload-to-modrinth, upload-to-curseforge]
-      if: needs.semantic-release.outputs.new_release_published == 'true'
       runs-on: ubuntu-latest
       steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          registry-url: 'https://npm.pkg.github.com'
+        
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      
+      - name: Install Dependencies
+        run: npm install
+      
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v4
+        id: semantic
+        with:
+          extra_plugins: |
+            @semantic-release/commit-analyzer
+            @semantic-release/release-notes-generator
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Read properties file and set as env
         run: |

@@ -1,0 +1,10 @@
+{
+  "remove": [
+    "minecraft:bee"
+  ],
+  "values": [
+    "#minecraft:undead",
+    "#minecraft:arthropod",
+    "#minecraft:raiders"
+  ]
+}

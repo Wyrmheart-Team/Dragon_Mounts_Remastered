@@ -10,6 +10,7 @@ import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
 import dmr.DragonMounts.server.items.DragonEggItemBlock;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
+import java.util.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
@@ -128,7 +129,7 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
 
 	@Override
 	public void attack(BlockState state, Level level, BlockPos at, Player pPlayer) {
-		if (level.getBlockEntity(at) instanceof DMREggBlockEntity e && e.getBreedId().equals("end") && !state.getValue(HATCHING)) {
+		if (level.getBlockEntity(at) instanceof DMREggBlockEntity e && Objects.equals(e.getBreedId(), "end") && !state.getValue(HATCHING)) {
 			teleport(state, level, at); // retain original dragon egg teleport behavior
 		}
 	}
@@ -175,13 +176,14 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
 
 	public static DMREggBlockEntity place(ServerLevel level, BlockPos pos, BlockState state, IDragonBreed breed) {
 		level.setBlock(pos, state, Block.UPDATE_ALL);
+		var data = (DMREggBlockEntity) level.getBlockEntity(pos);
 
-		// Forcibly add new BlockEntity, so we can set the specific breed.
-		var data = ((DMREggBlockEntity) ((DMREggBlock) state.getBlock()).newBlockEntity(pos, state));
+		if (breed == null) {
+			throw new IllegalArgumentException("Breed cannot be null");
+		}
+
 		data.setBreed(breed);
 		data.setHatchTime(breed.getHatchTime());
-		level.setBlockEntity(data);
-		level.updateNeighborsAt(pos, state.getBlock());
 		return data;
 	}
 

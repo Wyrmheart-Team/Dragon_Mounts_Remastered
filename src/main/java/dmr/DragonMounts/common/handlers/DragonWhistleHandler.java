@@ -9,6 +9,7 @@ import dmr.DragonMounts.registry.ModSounds;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.server.items.DragonWhistleItem;
 import dmr.DragonMounts.util.PlayerStateUtils;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -112,16 +113,16 @@ public class DragonWhistleHandler {
 
 					if (dragon.position().distanceTo(player.position()) <= DMRDragonEntity.BASE_FOLLOW_RANGE * 2) {
 						//Walk to player
-						dragon.setOrderedToSit(false);
-						dragon.setWanderTarget(null);
+						dragon.setToldToSit(false);
+						dragon.setWanderTarget(Optional.empty());
 
 						if (!player.level.isClientSide) {
 							PacketDistributor.sendToPlayersTrackingEntity(dragon, new DragonStatePacket(dragon.getId(), 1));
 						}
 					} else {
 						//Teleport to player
-						dragon.setOrderedToSit(false);
-						dragon.setWanderTarget(null);
+						dragon.setToldToSit(false);
+						dragon.setWanderTarget(Optional.empty());
 
 						if (!player.level.isClientSide) {
 							dragon.setPos(player.getX(), player.getY(), player.getZ());

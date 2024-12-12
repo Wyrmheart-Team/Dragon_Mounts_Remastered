@@ -22,6 +22,10 @@ public class DataProvider {
 			event.includeServer(),
 			new BlockTagProvider(output, event.getLookupProvider(), DMR.MOD_ID, existingFileHelper)
 		);
+		generator.addProvider(
+			event.includeServer(),
+			new EntityTagProvider(output, event.getLookupProvider(), DMR.MOD_ID, existingFileHelper)
+		);
 		generator.addProvider(event.includeServer(), new DMRRecipeProvider(output, event.getLookupProvider()));
 		generator.addProvider(event.includeServer(), new DMRItemModelProvider(output, DMR.MOD_ID, existingFileHelper));
 	}

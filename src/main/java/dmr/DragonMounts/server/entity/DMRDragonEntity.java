@@ -20,14 +20,11 @@ import dmr.DragonMounts.server.container.DragonContainerMenu;
 import dmr.DragonMounts.server.items.DragonArmorItem;
 import dmr.DragonMounts.server.items.DragonSpawnEgg;
 import dmr.DragonMounts.types.armor.DragonArmor;
-import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.util.BreedingUtils;
 import dmr.DragonMounts.util.PlayerStateUtils;
 import io.netty.buffer.Unpooled;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -307,9 +304,9 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 				}
 			} else if (swinging && getTarget() != null) {
 				return state.setAndContinue(BITE);
-			} else if (isInSittingPose() && !isOrderedToSit()) {
+			} else if (isRandomlySitting()) {
 				return state.setAndContinue(SIT);
-			} else if (isOrderedToSit()) {
+			} else if (isToldToSit()) {
 				var lookAtContext = TargetingConditions.forNonCombat()
 					.range(10)
 					.selector(p_25531_ -> EntitySelector.notRiding(this).test(p_25531_));
@@ -353,7 +350,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 		}
 
 		if (getControllingPassenger() == null && getOwner() != null) {
-			if (getWanderTarget() == BlockPos.ZERO && !isOrderedToSit() && getPose() != Pose.SLEEPING) {
+			if (!hasWanderTarget() && !isOrderedToSit() && getPose() != Pose.SLEEPING) {
 				if (getOwner() instanceof Player player && distanceTo(player) <= BASE_FOLLOW_RANGE) {
 					return player.isShiftKeyDown();
 				}
@@ -622,32 +619,6 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 			setBreed(getBreed());
 		}
 
-		if (isOrderedToSit()) {
-			getBrain().setMemory(ModMemoryModuleTypes.IS_SITTING.get(), true);
-		}
-
-		if (!isOrderedToSit() && !isInSittingPose() && getBrain().getMemory(ModMemoryModuleTypes.IS_SITTING.get()).isPresent()) {
-			getBrain().eraseMemory(ModMemoryModuleTypes.IS_SITTING.get());
-		}
-
-		if (getPassengers().stream().anyMatch(e -> e instanceof Player player && PlayerStateUtils.getHandler(player).shouldDismount)) {
-			ejectPassengers();
-			getPassengers()
-				.stream()
-				.filter(e -> e instanceof Player player && PlayerStateUtils.getHandler(player).shouldDismount)
-				.forEach(player -> {
-					PlayerStateUtils.getHandler((Player) player).shouldDismount = false;
-				});
-		}
-
-		// Disallow non-players and non-mobs from riding
-		getPassengers()
-			.forEach(e -> {
-				if (!(e instanceof Player) && !(e instanceof Mob)) {
-					e.stopRiding();
-				}
-			});
-
 		// update nearGround state when moving for flight and animation logic
 		var dimensions = getDimensions(getPose());
 		nearGround =
@@ -869,8 +840,9 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 				navigation.stop();
 			}
 			setTarget(null);
-			setOrderedToSit(false);
-			setInSittingPose(false);
+			setWanderTarget(Optional.empty());
+			stopSitting();
+			getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 			return InteractionResult.sidedSuccess(level.isClientSide);
 		}
 
@@ -880,7 +852,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 	@Override
 	public boolean hurt(DamageSource src, float par2) {
 		if (isInvulnerableTo(src)) return false;
-		setOrderedToSit(false);
+		stopSitting();
 		boolean flag = super.hurt(src, par2);
 
 		if (flag && src.getEntity() instanceof LivingEntity) {
@@ -1108,17 +1080,6 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 		}
 	}
 
-	@Override
-	public void setTame(boolean tame, boolean applyTamingSideEffects) {
-		super.setTame(tame, applyTamingSideEffects);
-
-		if (tame) {
-			getBrain().setMemory(ModMemoryModuleTypes.IS_TAMED.get(), true);
-		} else {
-			getBrain().eraseMemory(ModMemoryModuleTypes.IS_TAMED.get());
-		}
-	}
-
 	public boolean isTamedFor(Player player) {
 		return isTame() && (isOwnedBy(player) || Objects.equals(getOwnerUUID(), player.getUUID()));
 	}
@@ -1132,15 +1093,10 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 	@Override
 	public void setOrderedToSit(boolean pOrderedToSit) {
 		super.setOrderedToSit(pOrderedToSit);
-		setWanderTarget(null);
 		navigation.stop();
 		setTarget(null);
 		setInSittingPose(pOrderedToSit);
-		if (pOrderedToSit) {
-			getBrain().setMemory(ModMemoryModuleTypes.IS_SITTING.get(), true);
-		} else {
-			getBrain().eraseMemory(ModMemoryModuleTypes.IS_SITTING.get());
-		}
+		setToldToSit(pOrderedToSit);
 	}
 
 	@Override
@@ -1168,24 +1124,13 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 		}
 	}
 
-	private List<IDragonBreed> getBreeds() {
-		List<IDragonBreed> breeds = new ArrayList<>();
-		if (getBreed() instanceof DragonHybridBreed hybridBreed) {
-			breeds.add(hybridBreed.parent1);
-			breeds.add(hybridBreed.parent2);
-			return breeds;
-		}
-		breeds.add(getBreed());
-		return breeds;
-	}
-
 	@Override
 	public void spawnChildFromBreeding(ServerLevel level, Animal animal) {
 		if (!(animal instanceof DMRDragonEntity mate)) return;
 
 		// pick a breed to inherit from, and place hatching.
 		var state = ModBlocks.DRAGON_EGG_BLOCK.get().defaultBlockState().setValue(DMREggBlock.HATCHING, true);
-		var eggOutcomes = getEggOutcomes(level, mate);
+		var eggOutcomes = DragonBreedsRegistry.getEggOutcomes(this, level, mate);
 
 		// Pick a random breed from the list to use as the offspring
 		var offSpringBreed = eggOutcomes.get(getRandom().nextInt(eggOutcomes.size()));
@@ -1200,44 +1145,6 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 		// increase reproduction counter
 		addReproCount();
 		mate.addReproCount();
-	}
-
-	private ArrayList<IDragonBreed> getEggOutcomes(ServerLevel level, DMRDragonEntity mate) {
-		var eggOutcomes = new ArrayList<IDragonBreed>();
-
-		eggOutcomes.addAll(getBreeds());
-		eggOutcomes.addAll(mate.getBreeds());
-
-		if (ServerConfig.HABITAT_OFFSPRING.get()) {
-			IDragonBreed highestBreed1 = BreedingUtils.getHabitatBreedOutcome(level, blockPosition());
-			IDragonBreed highestBreed2 = BreedingUtils.getHabitatBreedOutcome(level, mate.blockPosition());
-
-			if (highestBreed1 != null) {
-				if (!eggOutcomes.contains(highestBreed1)) eggOutcomes.add(highestBreed1);
-			}
-
-			if (highestBreed2 != null) {
-				if (!eggOutcomes.contains(highestBreed2)) eggOutcomes.add(highestBreed2);
-			}
-		}
-
-		if (ServerConfig.ALLOW_HYBRIDIZATION.get()) {
-			var newList = new ArrayList<IDragonBreed>();
-
-			for (IDragonBreed breed1 : eggOutcomes) {
-				for (IDragonBreed breed2 : eggOutcomes) {
-					if (breed1 != breed2) {
-						var hybrid = DragonBreedsRegistry.getHybridBreed(breed1, breed2);
-						if (hybrid != null) {
-							newList.add(hybrid);
-						}
-					}
-				}
-			}
-			eggOutcomes.addAll(newList);
-		}
-
-		return eggOutcomes;
 	}
 
 	@Override

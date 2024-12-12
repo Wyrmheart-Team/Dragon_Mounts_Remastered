@@ -2,6 +2,7 @@ package dmr.DragonMounts.server.ai.navigation;
 
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
@@ -31,7 +32,7 @@ public class DragonPathNavigation extends FlyingPathNavigation {
 
 	@Override
 	public boolean canCutCorner(PathType pathType) {
-		return false;
+		return super.canCutCorner(pathType) || pathType == PathType.WATER;
 	}
 
 	@Override
@@ -46,8 +47,6 @@ public class DragonPathNavigation extends FlyingPathNavigation {
 
 	@Override
 	public @Nullable Path createPath(BlockPos pos, int accuracy) {
-		var distance = Math.sqrt(mob.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()));
-
 		dragonNodeEvaluator.allowSwimming = false;
 		dragonNodeEvaluator.allowFlying = false;
 
@@ -56,14 +55,18 @@ public class DragonPathNavigation extends FlyingPathNavigation {
 				dragon.getBreed() != null &&
 				dragon.getBreed().getImmunities().contains("drown") &&
 				dragon.level.getFluidState(pos).is(Fluids.WATER);
-			dragonNodeEvaluator.allowFlying = distance > 16 * 16 && dragon.canFly();
 		}
 
 		Path path = super.createPath(pos, accuracy);
 
 		if (path == null || !path.canReach() || path.getNodeCount() <= 1) {
-			dragonNodeEvaluator.allowFlying = true;
-			path = super.createPath(pos, accuracy);
+			var dif = mob.blockPosition().getY() - pos.getY();
+			var jumpHeight = Math.max(1.125, (double) this.mob.maxUpStep());
+
+			if (Mth.abs(dif) >= jumpHeight) {
+				dragonNodeEvaluator.allowFlying = true;
+				path = super.createPath(pos, accuracy);
+			}
 		}
 
 		return path;
@@ -71,22 +74,24 @@ public class DragonPathNavigation extends FlyingPathNavigation {
 
 	@Override
 	public Path createPath(Entity entity, int accuracy) {
-		var distance = Math.sqrt(mob.distanceToSqr(entity));
-
 		dragonNodeEvaluator.allowSwimming = false;
 		dragonNodeEvaluator.allowFlying = false;
 
 		if (mob instanceof DMRDragonEntity dragon) {
 			dragonNodeEvaluator.allowSwimming =
 				dragon.getBreed() != null && dragon.getBreed().getImmunities().contains("drown") && entity.isInWater();
-			dragonNodeEvaluator.allowFlying = distance > Math.sqrt(16) && dragon.canFly();
 		}
 
 		Path path = super.createPath(entity, accuracy);
 
 		if (path == null || !path.canReach() || path.getNodeCount() <= 1) {
-			dragonNodeEvaluator.allowFlying = true;
-			path = this.createPath(entity, accuracy);
+			var dif = mob.blockPosition().getY() - entity.blockPosition().getY();
+			var jumpHeight = Math.max(1.125, (double) this.mob.maxUpStep());
+
+			if (Mth.abs(dif) >= jumpHeight) {
+				dragonNodeEvaluator.allowFlying = true;
+				path = super.createPath(entity, accuracy);
+			}
 		}
 
 		return path;
@@ -105,6 +110,15 @@ public class DragonPathNavigation extends FlyingPathNavigation {
 	}
 
 	public boolean isStableDestination(BlockPos pPos) {
-		return dragonNodeEvaluator.allowFlying || dragonNodeEvaluator.allowSwimming || super.isStableDestination(pPos);
+		if (dragonNodeEvaluator.allowFlying) {
+			return this.level.getBlockState(pPos).entityCanStandOn(this.level, pPos, this.mob);
+		}
+
+		if (dragonNodeEvaluator.allowSwimming) {
+			return !this.level.getBlockState(pPos.below()).isAir();
+		}
+
+		BlockPos blockpos = pPos.below();
+		return this.level.getBlockState(blockpos).isSolidRender(this.level, blockpos);
 	}
 }

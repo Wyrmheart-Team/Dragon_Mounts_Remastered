@@ -1,12 +1,16 @@
 package dmr.DragonMounts.registry;
 
+import dmr.DragonMounts.config.ServerConfig;
+import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
+import dmr.DragonMounts.util.BreedingUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import net.minecraft.server.level.ServerLevel;
 
 public class DragonBreedsRegistry {
 
@@ -67,5 +71,54 @@ public class DragonBreedsRegistry {
 
 	public static IDragonBreed getDefault() {
 		return hasDragonBreed("end") ? getDragonBreed("end") : getFirst();
+	}
+
+	public static ArrayList<IDragonBreed> getEggOutcomes(DMRDragonEntity dmrDragonEntity, ServerLevel level, DMRDragonEntity mate) {
+		var eggOutcomes = new ArrayList<IDragonBreed>();
+
+		eggOutcomes.addAll(getBreeds(dmrDragonEntity));
+		eggOutcomes.addAll(getBreeds(mate));
+
+		if (ServerConfig.HABITAT_OFFSPRING.get()) {
+			IDragonBreed highestBreed1 = BreedingUtils.getHabitatBreedOutcome(level, dmrDragonEntity.blockPosition());
+			IDragonBreed highestBreed2 = BreedingUtils.getHabitatBreedOutcome(level, mate.blockPosition());
+
+			if (highestBreed1 != null) {
+				if (!eggOutcomes.contains(highestBreed1)) eggOutcomes.add(highestBreed1);
+			}
+
+			if (highestBreed2 != null) {
+				if (!eggOutcomes.contains(highestBreed2)) eggOutcomes.add(highestBreed2);
+			}
+		}
+
+		if (ServerConfig.ALLOW_HYBRIDIZATION.get()) {
+			var newList = new ArrayList<IDragonBreed>();
+
+			for (IDragonBreed breed1 : eggOutcomes) {
+				for (IDragonBreed breed2 : eggOutcomes) {
+					if (breed1 != breed2) {
+						var hybrid = getHybridBreed(breed1, breed2);
+						if (hybrid != null) {
+							newList.add(hybrid);
+						}
+					}
+				}
+			}
+			eggOutcomes.addAll(newList);
+		}
+
+		return eggOutcomes;
+	}
+
+	public static List<IDragonBreed> getBreeds(DMRDragonEntity dmrDragonEntity) {
+		List<IDragonBreed> breeds = new ArrayList<>();
+		if (dmrDragonEntity.getBreed() instanceof DragonHybridBreed hybridBreed) {
+			breeds.add(hybridBreed.parent1);
+			breeds.add(hybridBreed.parent2);
+			return breeds;
+		}
+		breeds.add(dmrDragonEntity.getBreed());
+		return breeds;
 	}
 }

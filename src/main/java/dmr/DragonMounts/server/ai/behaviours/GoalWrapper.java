@@ -1,6 +1,5 @@
 package dmr.DragonMounts.server.ai.behaviours;
 
-import dmr.DragonMounts.registry.ModMemoryModuleTypes;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import java.util.function.Function;
 import net.minecraft.server.level.ServerLevel;
@@ -8,14 +7,13 @@ import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.Behavior.Status;
 import net.minecraft.world.entity.ai.behavior.BehaviorControl;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.level.gameevent.GameEvent;
 
 public class GoalWrapper implements BehaviorControl<DMRDragonEntity> {
 
 	private Behavior.Status status = Behavior.Status.STOPPED;
 	private Goal goal;
-	private Function<DMRDragonEntity, Goal> goalSupplier;
-	private boolean clearSitting;
+	private final Function<DMRDragonEntity, Goal> goalSupplier;
+	private final boolean clearSitting;
 
 	public GoalWrapper(Function<DMRDragonEntity, Goal> goalSupplier) {
 		this(goalSupplier, false);
@@ -41,12 +39,7 @@ public class GoalWrapper implements BehaviorControl<DMRDragonEntity> {
 			status = Status.RUNNING;
 
 			if (clearSitting) {
-				entity.setInSittingPose(false);
-				entity.setOrderedToSit(false);
-
-				entity.gameEvent(GameEvent.ENTITY_ACTION);
-				entity.resetLastPoseChangeTickToFullStand(entity.level().getGameTime());
-				entity.getBrain().eraseMemory(ModMemoryModuleTypes.IS_SITTING.get());
+				entity.stopSitting();
 			}
 
 			goal.start();

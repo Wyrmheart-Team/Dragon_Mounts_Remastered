@@ -49,8 +49,14 @@ public class DragonMoveController extends MoveControl {
 			float yaw = (float) (Mth.atan2(zDif, xDif) * (double) (180F / (float) Math.PI)) - 90.0F;
 			float angleDifference = Math.abs(yaw - this.mob.getYRot());
 
-			if (angleDifference > 15.0F || (shouldFly || dragon.isFlying())) {
-				this.mob.setYRot(this.rotlerp(this.mob.getYRot(), yaw, shouldFly || dragon.isFlying() ? 20f : 10.0F));
+			float deadZone = 60.0F;
+			if (Math.abs(angleDifference) < deadZone) {
+				angleDifference = 0.0F;
+			}
+
+			if (angleDifference > 0.0F) {
+				var targetRot = this.rotlerp(this.mob.getYRot(), yaw, shouldFly || dragon.isFlying() ? 10f : 0.5F);
+				this.mob.setYRot(targetRot);
 			}
 
 			float speed;

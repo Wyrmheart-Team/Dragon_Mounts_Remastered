@@ -3,24 +3,19 @@ package dmr.DragonMounts.client.handlers;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.InputConstants.Type;
 import dmr.DragonMounts.DMR;
-import dmr.DragonMounts.common.capability.DragonOwnerCapability;
 import dmr.DragonMounts.config.ClientConfig;
 import dmr.DragonMounts.network.packets.DismountDragonPacket;
 import dmr.DragonMounts.network.packets.SummonDragonPacket;
-import dmr.DragonMounts.registry.ModCapabilities;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.client.event.InputEvent.Key;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -81,7 +76,8 @@ public class KeyInputHandler {
 	@EventBusSubscriber(modid = DMR.MOD_ID, value = Dist.CLIENT, bus = Bus.GAME)
 	public static class KeyClickHandler {
 
-		private static Long lastDismountClick = null;
+		private static Long lastUnshift = null;
+		private static boolean wasShiftDown = false;
 
 		@OnlyIn(Dist.CLIENT)
 		@SubscribeEvent
@@ -94,20 +90,25 @@ public class KeyInputHandler {
 
 			if (player.getControlledVehicle() instanceof DMRDragonEntity) {
 				if (Minecraft.getInstance().options.keyShift.consumeClick()) {
+					wasShiftDown = true;
+
 					if (ClientConfig.DOUBLE_PRESS_DISMOUNT.get()) {
 						if (
-							lastDismountClick != null &&
-							System.currentTimeMillis() < lastDismountClick + TimeUnit.MILLISECONDS.convert(1, TimeUnit.SECONDS)
+							lastUnshift != null &&
+							System.currentTimeMillis() > lastUnshift &&
+							System.currentTimeMillis() < lastUnshift + TimeUnit.MILLISECONDS.convert(2, TimeUnit.SECONDS)
 						) {
-							lastDismountClick = null;
 							PacketDistributor.sendToServer(new DismountDragonPacket(player.getId(), true));
-						} else {
-							lastDismountClick = System.currentTimeMillis();
+							lastUnshift = null;
+							wasShiftDown = false;
 						}
 					} else {
 						PacketDistributor.sendToServer(new DismountDragonPacket(player.getId(), true));
 					}
 					return;
+				} else if (wasShiftDown && !Minecraft.getInstance().options.keyShift.isDown()) {
+					lastUnshift = System.currentTimeMillis();
+					wasShiftDown = false;
 				}
 
 				if (DISMOUNT_KEY.consumeClick()) {

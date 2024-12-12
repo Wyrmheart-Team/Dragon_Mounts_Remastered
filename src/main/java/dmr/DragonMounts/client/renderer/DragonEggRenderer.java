@@ -6,6 +6,7 @@ import dmr.DragonMounts.client.model.DragonEggModel;
 import dmr.DragonMounts.client.model.DragonEggModel.Baked;
 import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
 import dmr.DragonMounts.server.blocks.DMREggBlock;
+import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
 import java.util.Objects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -17,7 +18,7 @@ public class DragonEggRenderer implements BlockEntityRenderer<DMREggBlockEntity>
 
 	@Override
 	public void render(DMREggBlockEntity blockEntity, float v, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int i1) {
-		if (!blockEntity.getBlockState().getValue(DMREggBlock.HATCHING) || !blockEntity.isModelReady()) {
+		if (!blockEntity.getBlockState().getValue(DMREggBlock.HATCHING)) {
 			return;
 		}
 
@@ -42,6 +43,11 @@ public class DragonEggRenderer implements BlockEntityRenderer<DMREggBlockEntity>
 					.getFirst(),
 				true
 			);
+
+			if (blockEntity.getBreed() != null && blockEntity.getBreed() instanceof DragonHybridBreed hybridBreed) {
+				bakedModel = eggModel.models.getOrDefault(hybridBreed.parent1.getId(), Baked.FALLBACK.get());
+			}
+
 			Minecraft.getInstance()
 				.getBlockRenderer()
 				.getModelRenderer()

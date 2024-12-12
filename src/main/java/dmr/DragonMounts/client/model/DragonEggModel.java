@@ -139,7 +139,7 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
 
 		@Override
 		public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData) {
-			if (level.getBlockEntity(pos) instanceof DMREggBlockEntity e && e.isModelReady()) {
+			if (level.getBlockEntity(pos) instanceof DMREggBlockEntity e && e.getBreed() != null) {
 				var breed = e.getBreed() instanceof DragonHybridBreed hybridBreed ? hybridBreed.parent1 : e.getBreed();
 				return modelData.derive().with(Data.PROPERTY, new Data(breed.getId())).build();
 			}

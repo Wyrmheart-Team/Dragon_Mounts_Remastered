@@ -3,6 +3,8 @@ package dmr.DragonMounts.network.packets;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.network.IMessage;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import java.util.Optional;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -49,16 +51,16 @@ public record DragonStatePacket(int entityId, int state) implements IMessage<Dra
 		if (entity instanceof DMRDragonEntity dragon && dragon.getControllingPassenger() == null) {
 			switch (state) {
 				case 0 -> { //Sit
-					dragon.setOrderedToSit(true);
-					dragon.setWanderTarget(null);
+					dragon.setToldToSit(true);
+					dragon.setWanderTarget(Optional.empty());
 				}
 				case 1 -> { //Follow
-					dragon.setOrderedToSit(false);
-					dragon.setWanderTarget(null);
+					dragon.setToldToSit(false);
+					dragon.setWanderTarget(Optional.empty());
 				}
 				case 2 -> { //Wander
-					dragon.setOrderedToSit(false);
-					dragon.setWanderTarget(supplier.player().blockPosition());
+					dragon.setToldToSit(false);
+					dragon.setWanderTarget(Optional.of(GlobalPos.of(level.dimension(), player.blockPosition())));
 				}
 			}
 		}

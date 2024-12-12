@@ -8,7 +8,6 @@ import net.minecraft.advancements.AdvancementType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.advancements.AdvancementWidgetType;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.locale.Language;
@@ -21,14 +20,9 @@ import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
 
 public class DragonAbilityButton extends ExtendedButton {
 
-	private static final ResourceLocation EFFECT_BACKGROUND_LARGE_SPRITE = ResourceLocation.parse(
-		"container/inventory/effect_background_large"
-	);
 	private static final ResourceLocation TITLE_BOX_SPRITE = ResourceLocation.withDefaultNamespace("advancements/title_box");
 
 	private ResourceLocation ABILITY_ICON;
-
-	private final Ability ability;
 	private final Minecraft minecraft;
 
 	private final FormattedCharSequence title;
@@ -37,8 +31,6 @@ public class DragonAbilityButton extends ExtendedButton {
 
 	public DragonAbilityButton(int xPos, int yPos, Ability ability) {
 		super(xPos, yPos, 120, 32, Component.empty(), bt -> {});
-		this.ability = ability;
-		this.setTooltip(Tooltip.create(ability.getTranslatedDescription()));
 		ABILITY_ICON = DMR.id("textures/gui/ability_icons/" + ability.type() + ".png");
 		this.minecraft = Minecraft.getInstance();
 		this.title = Language.getInstance().getVisualOrder(minecraft.font.substrByWidth(ability.getTranslatedName(), 163));

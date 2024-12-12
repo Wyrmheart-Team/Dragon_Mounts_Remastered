@@ -64,7 +64,7 @@ public class DMREggBlockEntity extends BlockEntity {
 		if (getBreedId() != null) pTag.putString(NBTConstants.BREED, getBreedId());
 
 		pTag.putInt("hatchTime", getHatchTime());
-		pTag.putString("owner", getOwner());
+		pTag.putString("owner", getOwner() == null ? "" : getOwner());
 
 		if (getCustomName() != null) pTag.putString("name", Component.Serializer.toJson(customName, registries));
 	}
@@ -172,9 +172,5 @@ public class DMREggBlockEntity extends BlockEntity {
 		var tag = super.getUpdateTag(registries);
 		saveAdditional(tag, registries);
 		return tag;
-	}
-
-	public boolean isModelReady() {
-		return getLevel() != null && getBreedId() != null;
 	}
 }
