@@ -19,10 +19,6 @@ on:
         description: 'The changelog value'
         value: ${{ jobs.semantic-release.outputs.changelog }}
 
-concurrency:
-  group: ${{ github.workflow }}
-  cancel-in-progress: true
-
 jobs:
   semantic-release:
     name: Semantic Release

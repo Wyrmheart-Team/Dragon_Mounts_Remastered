@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   game-tests:
-    uses: ./.github/workflows/game_tests.yaml
+    uses: ./.github/workflows/game-tests.yaml
   
   semantic-release:
     needs: game-tests
