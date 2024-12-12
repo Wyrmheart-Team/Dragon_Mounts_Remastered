@@ -1,9 +1,16 @@
 name: Automatic Build Pipeline
 
 on:
-  repository_dispatch:
-    types: [gametests_passed]
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      changelog:
+        required: true
+        description: 'The changelog for the release'
+        type: string
+      new_release_version:
+        required: true
+        description: 'The new version of the release'
+        type: string
   
 permissions:
   contents: write
@@ -13,70 +20,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  semantic-release:
-    name: Semantic Release
-    runs-on: ubuntu-latest
-    outputs:
-      changelog: ${{ steps.release_description.outputs.description }}
-      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
-      new_tag: ${{ steps.semantic.outputs.new_release_git_tag }}
-      new_release_version: ${{ steps.semantic.outputs.new_release_version }}
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-           node-version: '18.x'
-           registry-url: 'https://npm.pkg.github.com'
-
-      - name: Cache npm dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@v4
-        id: semantic
-        with:
-            extra_plugins: |
-              @semantic-release/commit-analyzer
-              @semantic-release/release-notes-generator
-            dry_run: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-
-      - name: Generate changelog value
-        shell: bash
-        id: release_description
-        run: |
-          description="${{ steps.semantic.outputs.new_release_notes }}"
-          description="${description//'%'/'\n'}"
-          description="${description//$'\n'/'\n'}"
-          description="${description//$'\r'/'\n'}"
-          echo $description
-          echo "::set-output name=description::$description"
-
-      - name: Print Release Summary
-        run: |
-          if [[ "${{ steps.semantic.outputs.new_release_version }}" != "" ]]; then
-            echo "New version ${{ steps.semantic.outputs.new_release_version }} released." >> $GITHUB_STEP_SUMMARY
-          else
-            echo "No new version released." >> $GITHUB_STEP_SUMMARY
-          fi
-
   java-build-dev:
     name: Java Build Dev
-    needs: semantic-release
-    if: needs.semantic-release.outputs.new_release_published == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -105,7 +50,7 @@ jobs:
           cache: 'gradle'
 
       - name: Update gradle.properties
-        run: sed -i "s/mod_version=.*/mod_version=${{ needs.semantic-release.outputs.new_release_version }}-dev/g" gradle.properties
+        run: sed -i "s/mod_version=.*/mod_version=${{ inputs.new_release_version }}-dev/g" gradle.properties
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -135,7 +80,7 @@ jobs:
           message: "New version of ${{env.mod_name}}"
           embed: |
             {
-              "description": "*Built using the following versions*:\n\n*Minecraft*: **${{ env.minecraft_version }}**\n*NeoForge*: **${{ env.neo_version }}**\n*GeckoLib*: **${{ env.geckolib_version }}**\n\n${{ needs.semantic-release.outputs.changelog }}\n"
+              "description": "*Built using the following versions*:\n\n*Minecraft*: **${{ env.minecraft_version }}**\n*NeoForge*: **${{ env.neo_version }}**\n*GeckoLib*: **${{ env.geckolib_version }}**\n\n${{ inputs.changelog }}\n"
             }
 
       - name: Discord file publish
@@ -154,9 +99,7 @@ jobs:
 
   java-build-release:
     name: Java Build
-    needs: semantic-release
     environment: Release
-    if: needs.semantic-release.outputs.new_release_published == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -185,7 +128,7 @@ jobs:
           cache: 'gradle'
 
       - name: Update gradle.properties
-        run: sed -i "s/mod_version=.*/mod_version=${{ needs.semantic-release.outputs.new_release_version }}/g" gradle.properties
+        run: sed -i "s/mod_version=.*/mod_version=${{ inputs.new_release_version }}/g" gradle.properties
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -269,8 +212,8 @@ jobs:
           sed -i 's/\\${neoforge_version_id}/'"${{ steps.fetch_ids.outputs.neoforge }}"'/g' cf_upload.json
           sed -i 's/\\${mc_version_id}/'"${{ steps.fetch_ids.outputs.mc_version }}"'/g' cf_upload.json
           
-          sed -i 's|\\${version}|'"${{ needs.semantic-release.outputs.new_release_version }}"'|g' cf_upload.json
-          sed -i 's|\\${changelog}|'"${{ needs.semantic-release.outputs.changelog }}"'|g' cf_upload.json
+          sed -i 's|\\${version}|'"${{ inputs.new_release_version }}"'|g' cf_upload.json
+          sed -i 's|\\${changelog}|'"${{ inputs.changelog }}"'|g' cf_upload.json
 
       - name: Debug cf_upload.json
         run: cat cf_upload.json
@@ -316,8 +259,8 @@ jobs:
 
       - name: Replace placeholders in modrinth_upload.json
         run: |
-          sed -i 's|\\${version}|'"${{ needs.semantic-release.outputs.new_release_version }}"'|g' modrinth_upload.json
-          sed -i 's|\\${changelog}|'"${{ needs.semantic-release.outputs.changelog }}"'|g' modrinth_upload.json
+          sed -i 's|\\${version}|'"${{ inputs.new_release_version }}"'|g' modrinth_upload.json
+          sed -i 's|\\${changelog}|'"${{ inputs.changelog }}"'|g' modrinth_upload.json
           sed -i 's|\\${game_version}|'"${{ env.minecraft_version }}"'|g' modrinth_upload.json
 
       - name: Debug modrinth_upload.json
@@ -340,33 +283,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
         
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18.x'
-          registry-url: 'https://npm.pkg.github.com'
-        
-      - name: Cache npm dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      
-      - name: Install Dependencies
-        run: npm install
-      
-      - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@v4
-        id: semantic
-        with:
-          extra_plugins: |
-            @semantic-release/commit-analyzer
-            @semantic-release/release-notes-generator
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-
       - name: Read properties file and set as env
         run: |
           while IFS= read -r line || [[ -n "$line" ]]; do
@@ -387,8 +303,8 @@ jobs:
         with:
           webhook: ${{ secrets.DISCORD_ANNOUNCEMENT_WEBHOOK_URL }}
           last-commit-only: true
-          message: "Version ${{ steps.semantic.outputs.new_release_version }} of ${{env.mod_name}} has been released on Modrinth and CurseForge! "
+          message: "Version ${{inputs.new_release_version }} of ${{env.mod_name}} has been released on Modrinth and CurseForge! "
           embed: |
             {
-              "description": "Changelog:\n\n${{ needs.semantic-release.outputs.changelog }}\n"
+              "description": "Changelog:\n\n${{ inputs.changelog }}\n"
             }

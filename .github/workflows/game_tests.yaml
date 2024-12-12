@@ -1,8 +1,7 @@
 name: Run game tests
 
 on:
-  push:
-  pull_request:
+  workflow_call:
 
 concurrency:
   group: ${{ github.workflow }}
@@ -58,9 +57,3 @@ jobs:
       - name: Run game test server
         run: ./gradlew runGameTestServer
         
-      - name: Repository Dispatch
-        if: github.event_name == 'push' && success()
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-          event-type: gametests_passed

@@ -1,0 +1,70 @@
+name: Run semantic release
+
+on:
+  workflow_call:
+    inputs:
+      dry-run:
+        description: 'Run semantic release in dry-run mode'
+        required: false
+        default: false
+        type: boolean
+    outputs:
+      new_release_published: ${{ jobs.semantic-release.outputs.new_release_published }}
+      new_release_version: ${{ jobs.semantic-release.outputs.new_release_version }}
+      changelog: ${{ jobs.semantic-release.outputs.changelog }}
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  semantic-release:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    outputs:
+      changelog: ${{ steps.release_description.outputs.description }}
+      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
+      new_release_version: ${{ steps.semantic.outputs.new_release_version }}
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          registry-url: 'https://npm.pkg.github.com'
+      
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      
+      - name: Install Dependencies
+        run: npm install
+      
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v4
+        id: semantic
+        with:
+          extra_plugins: |
+            @semantic-release/commit-analyzer
+            @semantic-release/release-notes-generator
+          dry_run: ${{ inputs.dry-run }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      
+      - name: Generate changelog value
+        shell: bash
+        id: release_description
+        run: |
+          description="${{ steps.semantic.outputs.new_release_notes }}"
+          description="${description//'%'/'\n'}"
+          description="${description//$'\n'/'\n'}"
+          description="${description//$'\r'/'\n'}"
+          echo $description
+          echo "::set-output name=description::$description"
