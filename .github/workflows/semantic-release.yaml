@@ -9,9 +9,15 @@ on:
         default: false
         type: boolean
     outputs:
-      new_release_published: ${{ jobs.semantic-release.outputs.new_release_published }}
-      new_release_version: ${{ jobs.semantic-release.outputs.new_release_version }}
-      changelog: ${{ jobs.semantic-release.outputs.changelog }}
+      new_release_published:
+        description: 'Whether a new release was published'
+        value: ${{ jobs.semantic-release.outputs.new_release_published}}
+      new_release_version:
+        description: 'The new release version'
+        value: ${{ jobs.semantic-release.outputs.new_release_version}}
+      changelog:
+        description: 'The changelog value'
+        value: ${{ jobs.semantic-release.outputs.changelog }}
 
 concurrency:
   group: ${{ github.workflow }}
