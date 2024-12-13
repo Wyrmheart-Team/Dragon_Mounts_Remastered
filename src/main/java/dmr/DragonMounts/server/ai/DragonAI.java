@@ -10,7 +10,6 @@ import dmr.DragonMounts.server.ai.behaviours.BehaviorWrapper;
 import dmr.DragonMounts.server.ai.behaviours.DragonBreathAttack;
 import dmr.DragonMounts.server.ai.behaviours.DragonBreedBehaviour;
 import dmr.DragonMounts.server.ai.behaviours.RandomSitting;
-import dmr.DragonMounts.server.entity.AbstractDMRDragonEntity;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import java.util.Collection;
 import java.util.List;
@@ -87,13 +86,7 @@ public class DragonAI {
 		brain.addActivity(
 			Activity.IDLE,
 			ImmutableList.of(
-				Pair.of(
-					0,
-					new BehaviorWrapper<>(
-						AbstractDMRDragonEntity::canFallInLove,
-						new DragonBreedBehaviour(ModEntities.DRAGON_ENTITY.get(), 1F, 4)
-					)
-				),
+				Pair.of(0, new DragonBreedBehaviour(ModEntities.DRAGON_ENTITY.get(), 1F, 4)),
 				Pair.of(
 					0,
 					new BehaviorWrapper<>(
@@ -114,7 +107,7 @@ public class DragonAI {
 				Pair.of(
 					1,
 					new BehaviorWrapper<>(
-						e -> e.isTame() && !e.isToldToSit() && !e.hasWanderTarget(),
+						e -> e.isTame() && !e.isOrderedToSit() && !e.hasWanderTarget(),
 						StayCloseToTarget.create(DragonAI::getOwnerPosition, e -> true, 8, 32, 1F)
 					)
 				),

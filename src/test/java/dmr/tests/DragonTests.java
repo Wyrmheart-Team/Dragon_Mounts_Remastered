@@ -241,7 +241,7 @@ public class DragonTests {
 		dragon.setBreed(DragonBreedsRegistry.getDefault());
 
 		dragon.tamedFor(player, true);
-		dragon.setToldToSit(true);
+		dragon.setOrderedToSit(true);
 		var pos = dragon.blockPosition();
 
 		dragon

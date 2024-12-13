@@ -101,10 +101,8 @@ public class DragonBreedBehaviour extends Behavior<DMRDragonEntity> {
 	}
 
 	private Optional<DMRDragonEntity> findValidBreedPartner(DMRDragonEntity p_dragon) {
-		return p_dragon
-			.getBrain()
-			.getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES)
-			.get()
+		var entities = p_dragon.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES).get();
+		return entities
 			.findClosest(livingEntity -> livingEntity instanceof DMRDragonEntity dragon && p_dragon.canMate(dragon))
 			.map(DMRDragonEntity.class::cast);
 	}

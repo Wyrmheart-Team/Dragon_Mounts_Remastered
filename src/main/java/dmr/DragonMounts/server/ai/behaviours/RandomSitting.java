@@ -33,7 +33,7 @@ public class RandomSitting implements BehaviorControl<DMRDragonEntity> {
 			!entity.hasControllingPassenger() &&
 			entity.canChangePose() &&
 			entity.getTarget() == null &&
-			!entity.isToldToSit()
+			!entity.isOrderedToSit()
 		) {
 			this.status = Behavior.Status.RUNNING;
 			int i = this.minDuration + level.getRandom().nextInt(this.maxDuration + 1 - this.minDuration);
@@ -51,7 +51,7 @@ public class RandomSitting implements BehaviorControl<DMRDragonEntity> {
 		entity.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 		entity.getBrain().eraseMemory(MemoryModuleType.ANGRY_AT);
 
-		if (entity.isToldToSit() || entity.isInLove() || entity.isInWater() || entity.isLeashed() || entity.hasControllingPassenger()) {
+		if (entity.isOrderedToSit() || entity.isInLove() || entity.isInWater() || entity.isLeashed() || entity.hasControllingPassenger()) {
 			status = Behavior.Status.STOPPED;
 			return;
 		}

@@ -52,14 +52,14 @@ public record DragonStatePacket(int entityId, int state) implements IMessage<Dra
 			switch (state) {
 				case 0 -> { //Sit
 					dragon.setWanderTarget(Optional.empty());
-					dragon.setToldToSit(true);
+					dragon.setOrderedToSit(true);
 				}
 				case 1 -> { //Follow
-					dragon.setToldToSit(false);
+					dragon.setOrderedToSit(false);
 					dragon.setWanderTarget(Optional.empty());
 				}
 				case 2 -> { //Wander
-					dragon.setToldToSit(false);
+					dragon.setOrderedToSit(false);
 					dragon.setWanderTarget(Optional.of(GlobalPos.of(level.dimension(), player.blockPosition())));
 				}
 			}

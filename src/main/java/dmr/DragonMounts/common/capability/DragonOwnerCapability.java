@@ -75,14 +75,14 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 		var sit = dragon.isOrderedToSit();
 
 		dragon.setWanderTarget(Optional.empty());
-		dragon.setToldToSit(false);
+		dragon.setOrderedToSit(false);
 
 		//noinspection removal
 		var nbtData = dragon.serializeNBT(dragon.level.registryAccess());
 		dragonNBTs.put(index, nbtData);
 
 		dragon.setWanderTarget(wanderPos);
-		dragon.setToldToSit(sit);
+		dragon.setOrderedToSit(sit);
 	}
 
 	public boolean isSelectedDragon(DMRDragonEntity dragon) {

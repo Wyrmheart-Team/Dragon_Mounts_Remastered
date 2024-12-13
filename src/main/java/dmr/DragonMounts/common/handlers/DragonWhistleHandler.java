@@ -113,7 +113,7 @@ public class DragonWhistleHandler {
 
 					if (dragon.position().distanceTo(player.position()) <= DMRDragonEntity.BASE_FOLLOW_RANGE * 2) {
 						//Walk to player
-						dragon.setToldToSit(false);
+						dragon.setOrderedToSit(false);
 						dragon.setWanderTarget(Optional.empty());
 
 						if (!player.level.isClientSide) {
@@ -121,7 +121,7 @@ public class DragonWhistleHandler {
 						}
 					} else {
 						//Teleport to player
-						dragon.setToldToSit(false);
+						dragon.setOrderedToSit(false);
 						dragon.setWanderTarget(Optional.empty());
 
 						if (!player.level.isClientSide) {

@@ -82,10 +82,6 @@ public abstract class AbstractDMRDragonEntity
 		AbstractDMRDragonEntity.class,
 		EntityDataSerializers.BOOLEAN
 	);
-	private static final EntityDataAccessor<Boolean> DATA_TOLD_TO_SIT = SynchedEntityData.defineId(
-		AbstractDMRDragonEntity.class,
-		EntityDataSerializers.BOOLEAN
-	);
 	private static final EntityDataAccessor<String> DATA_UUID = SynchedEntityData.defineId(
 		AbstractDMRDragonEntity.class,
 		EntityDataSerializers.STRING
@@ -163,7 +159,7 @@ public abstract class AbstractDMRDragonEntity
 	}
 
 	public boolean canReproduce() {
-		return isTame() && !getBreed().isHybrid(); //reproCount < ServerConfig.REPRO_LIMIT.get()
+		return isTame() && !getBreed().isHybrid() && reproCount < ServerConfig.REPRO_LIMIT.get();
 	}
 
 	public boolean hasChest() {
@@ -196,25 +192,17 @@ public abstract class AbstractDMRDragonEntity
 	}
 
 	public boolean isSitting() {
-		return isInSittingPose() || isToldToSit() || isOrderedToSit();
+		return isInSittingPose();
 	}
 
 	public boolean isRandomlySitting() {
-		return isSitting() && !isToldToSit();
+		return isSitting() && !isOrderedToSit();
 	}
 
 	public void setRandomlySitting(boolean sit) {
-		if (!isToldToSit()) { //Randomly sitting is only possible if the dragon is not told to sit
+		if (!isOrderedToSit()) { //Randomly sitting is only possible if the dragon is not told to sit
 			setInSittingPose(sit);
 		}
-	}
-
-	public boolean isToldToSit() {
-		return getEntityData().get(DATA_TOLD_TO_SIT);
-	}
-
-	public void setToldToSit(boolean sit) {
-		getEntityData().set(DATA_TOLD_TO_SIT, sit);
 	}
 
 	@Override
@@ -228,7 +216,6 @@ public abstract class AbstractDMRDragonEntity
 
 	public void stopSitting() {
 		setOrderedToSit(false);
-		setToldToSit(false);
 		setInSittingPose(false);
 		setPose(Pose.STANDING);
 	}
@@ -387,7 +374,6 @@ public abstract class AbstractDMRDragonEntity
 		builder.define(DATA_WANDERING_POS, Optional.empty());
 		builder.define(DATA_ID_CHEST, false);
 		builder.define(LAST_POSE_CHANGE_TICK, 0L);
-		builder.define(DATA_TOLD_TO_SIT, false);
 	}
 
 	@Override
@@ -418,7 +404,6 @@ public abstract class AbstractDMRDragonEntity
 		compound.putBoolean(NBTConstants.CHEST, hasChest());
 		compound.putInt(NBTConstants.REPRO_COUNT, reproCount);
 		compound.putString(NBTConstants.DRAGON_UUID, getDragonUUID().toString());
-		compound.putBoolean("sit", isToldToSit());
 
 		getWanderTarget()
 			.flatMap(p_337878_ -> GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, p_337878_).resultOrPartial(System.err::println))
@@ -452,7 +437,6 @@ public abstract class AbstractDMRDragonEntity
 		setChest(compound.getBoolean(NBTConstants.CHEST));
 		this.reproCount = compound.getInt(NBTConstants.REPRO_COUNT);
 		setDragonUUID(UUID.fromString(compound.getString(NBTConstants.DRAGON_UUID)));
-		setToldToSit(compound.getBoolean("sit"));
 
 		Optional<GlobalPos> wanderTarget = GlobalPos.CODEC.parse(NbtOps.INSTANCE, compound.get(NBTConstants.WANDERING_POS)).resultOrPartial(
 			System.err::println
@@ -587,14 +571,10 @@ public abstract class AbstractDMRDragonEntity
 	}
 
 	@Override
-	public boolean canFallInLove() {
-		return super.canFallInLove() && canReproduce() && reproCount < ServerConfig.REPRO_LIMIT.get();
-	}
-
-	@Override
 	public void setInLove(@Nullable Player player) {
 		super.setInLove(player);
 		stopSitting();
+		setWanderTarget(Optional.of(GlobalPos.of(level.dimension(), blockPosition())));
 	}
 
 	protected boolean isAboveGround() {

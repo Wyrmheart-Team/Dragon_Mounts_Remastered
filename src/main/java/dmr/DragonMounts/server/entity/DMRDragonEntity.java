@@ -306,7 +306,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 				return state.setAndContinue(BITE);
 			} else if (isRandomlySitting()) {
 				return state.setAndContinue(SIT);
-			} else if (isToldToSit()) {
+			} else if (isOrderedToSit()) {
 				var lookAtContext = TargetingConditions.forNonCombat()
 					.range(10)
 					.selector(p_25531_ -> EntitySelector.notRiding(this).test(p_25531_));
@@ -1096,7 +1096,6 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 		navigation.stop();
 		setTarget(null);
 		setInSittingPose(pOrderedToSit);
-		setToldToSit(pOrderedToSit);
 	}
 
 	@Override
