@@ -130,7 +130,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [replace-placeholders, java-build]
     environment: Release
-    steps: []
+    steps:
+      - name: Confirm Upload
+        run: echo "All files processed successfully"
 
   upload-curseforge:
     name: Upload to CurseForge
