@@ -191,14 +191,36 @@ public class DragonBreed implements IDragonBreed {
 		return animationLocation;
 	}
 
+	@SerializedName("variants")
+	private Variant[] variants;
+
+	@Override
+	public List<Variant> getVariants() {
+		return variants != null ? List.of(variants) : List.of();
+	}
+
 	public static IDragonBreed getDragonType(ItemStack stack) {
 		var breedId = stack.get(ModComponents.DRAGON_BREED);
 		return DragonBreedsRegistry.getDragonBreed(breedId);
 	}
 
+	public static Variant getDragonTypeVariant(ItemStack stack) {
+		var breed = getDragonType(stack);
+		var variantId = stack.get(ModComponents.DRAGON_VARIANT);
+		if (breed != null) {
+			return breed.getVariants().stream().filter(variant -> variant.id().equals(variantId)).findFirst().orElse(null);
+		}
+		return null;
+	}
+
 	public static void setDragonType(ItemStack stack, IDragonBreed type) {
 		if (type == null) return;
 		stack.set(ModComponents.DRAGON_BREED, type.getId());
+	}
+
+	public static void setDragonTypeVariant(ItemStack stack, IDragonBreed type, Variant variant) {
+		setDragonType(stack, type);
+		stack.set(ModComponents.DRAGON_VARIANT, variant.id());
 	}
 
 	@Override

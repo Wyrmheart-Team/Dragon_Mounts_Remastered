@@ -1,11 +1,14 @@
 package dmr.DragonMounts.server.entity;
 
+import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.ModConstants.NBTConstants;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
+import dmr.DragonMounts.registry.ModMemoryModuleTypes;
 import dmr.DragonMounts.server.ai.DragonBodyController;
 import dmr.DragonMounts.server.ai.navigation.DragonPathNavigation;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
+import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.Variant;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.Getter;
@@ -82,6 +85,10 @@ public abstract class AbstractDMRDragonEntity
 		AbstractDMRDragonEntity.class,
 		EntityDataSerializers.BOOLEAN
 	);
+	private static final EntityDataAccessor<Boolean> DATA_ORDERED_TO_SIT = SynchedEntityData.defineId(
+		AbstractDMRDragonEntity.class,
+		EntityDataSerializers.BOOLEAN
+	);
 	private static final EntityDataAccessor<String> DATA_UUID = SynchedEntityData.defineId(
 		AbstractDMRDragonEntity.class,
 		EntityDataSerializers.STRING
@@ -101,6 +108,11 @@ public abstract class AbstractDMRDragonEntity
 	public static final EntityDataAccessor<Long> LAST_POSE_CHANGE_TICK = SynchedEntityData.defineId(
 		AbstractDMRDragonEntity.class,
 		EntityDataSerializers.LONG
+	);
+
+	public static final EntityDataAccessor<String> DATA_VARIANT = SynchedEntityData.defineId(
+		AbstractDMRDragonEntity.class,
+		EntityDataSerializers.STRING
 	);
 
 	@Override
@@ -182,13 +194,30 @@ public abstract class AbstractDMRDragonEntity
 		return entityData.get(DATA_SADDLED);
 	}
 
+	@Override
+	public boolean isOrderedToSit() {
+		return entityData.get(DATA_ORDERED_TO_SIT);
+	}
+
+	@Override
+	public void setOrderedToSit(boolean orderedToSit) {
+		super.setOrderedToSit(orderedToSit);
+		entityData.set(DATA_ORDERED_TO_SIT, orderedToSit);
+	}
+
 	public Optional<GlobalPos> getWanderTarget() {
 		return getEntityData().get(DATA_WANDERING_POS);
 	}
 
 	public void setWanderTarget(Optional<GlobalPos> pos) {
 		getEntityData().set(DATA_WANDERING_POS, pos);
-		stopSitting();
+
+		if (pos.isEmpty() && getBrain().hasMemoryValue(ModMemoryModuleTypes.SHOULD_WANDER.get())) {
+			getBrain().eraseMemory(ModMemoryModuleTypes.SHOULD_WANDER.get());
+		} else if (pos.isPresent()) {
+			getBrain().setMemory(ModMemoryModuleTypes.SHOULD_WANDER.get(), true);
+			stopSitting();
+		}
 	}
 
 	public boolean isSitting() {
@@ -211,6 +240,9 @@ public abstract class AbstractDMRDragonEntity
 
 		if (!sitting) {
 			resetLastPoseChangeTickToFullStand(level().getGameTime());
+			getBrain().eraseMemory(ModMemoryModuleTypes.SHOULD_SIT.get());
+		} else {
+			getBrain().setMemory(ModMemoryModuleTypes.SHOULD_SIT.get(), true);
 		}
 	}
 
@@ -243,9 +275,30 @@ public abstract class AbstractDMRDragonEntity
 		return getEntityData().get(DATA_BREED);
 	}
 
+	public void setVariant(String variant) {
+		getEntityData().set(DATA_VARIANT, variant);
+	}
+
+	public String getVariantId() {
+		return getEntityData().get(DATA_VARIANT);
+	}
+
+	public boolean hasVariant() {
+		return (!getVariantId().isBlank() && getBreed().getVariants().stream().anyMatch(v -> v.id().equals(getVariantId())));
+	}
+
+	public Variant getVariant() {
+		var id = getVariantId();
+		return getBreed().getVariants().stream().filter(v -> v.id().equals(id)).findFirst().orElse(null);
+	}
+
 	public void setBreed(IDragonBreed dragonBreed) {
 		if (breed != dragonBreed) { // prevent loops, unnecessary work, etc.
 			if (dragonBreed == null || dragonBreed.getId() == null || dragonBreed.getId().isBlank()) {
+				return;
+			}
+
+			if (dragonBreed == DragonBreedsRegistry.getDefault() && breed != dragonBreed) {
 				return;
 			}
 
@@ -374,6 +427,8 @@ public abstract class AbstractDMRDragonEntity
 		builder.define(DATA_WANDERING_POS, Optional.empty());
 		builder.define(DATA_ID_CHEST, false);
 		builder.define(LAST_POSE_CHANGE_TICK, 0L);
+		builder.define(DATA_VARIANT, "");
+		builder.define(DATA_ORDERED_TO_SIT, false);
 	}
 
 	@Override
@@ -385,7 +440,10 @@ public abstract class AbstractDMRDragonEntity
 	@Override
 	public void onSyncedDataUpdated(EntityDataAccessor<?> data) {
 		if (DATA_BREED.equals(data)) {
-			setBreed(DragonBreedsRegistry.getDragonBreed(entityData.get(DATA_BREED)));
+			var breedId = entityData.get(DATA_BREED);
+			var dragonBreed = DragonBreedsRegistry.getDragonBreed(breedId);
+
+			setBreed(dragonBreed);
 			updateAgeProperties();
 		} else if (DATA_FLAGS_ID.equals(data)) {
 			refreshDimensions();
@@ -404,6 +462,8 @@ public abstract class AbstractDMRDragonEntity
 		compound.putBoolean(NBTConstants.CHEST, hasChest());
 		compound.putInt(NBTConstants.REPRO_COUNT, reproCount);
 		compound.putString(NBTConstants.DRAGON_UUID, getDragonUUID().toString());
+		compound.putString(NBTConstants.VARIANT, entityData.get(DATA_VARIANT));
+		compound.putBoolean("OrderedToSit", entityData.get(DATA_ORDERED_TO_SIT));
 
 		getWanderTarget()
 			.flatMap(p_337878_ -> GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, p_337878_).resultOrPartial(System.err::println))
@@ -424,6 +484,8 @@ public abstract class AbstractDMRDragonEntity
 		compound.put("Items", listtag);
 	}
 
+	public boolean isBeingSummoned = false;
+
 	@Override
 	public void readAdditionalSaveData(CompoundTag compound) {
 		entityData.set(DATA_ORIG_BREED, compound.getString("orig_" + NBTConstants.BREED));
@@ -437,12 +499,15 @@ public abstract class AbstractDMRDragonEntity
 		setChest(compound.getBoolean(NBTConstants.CHEST));
 		this.reproCount = compound.getInt(NBTConstants.REPRO_COUNT);
 		setDragonUUID(UUID.fromString(compound.getString(NBTConstants.DRAGON_UUID)));
+		entityData.set(DATA_VARIANT, compound.getString(NBTConstants.VARIANT));
+		entityData.set(DATA_ORDERED_TO_SIT, compound.getBoolean("OrderedToSit"));
 
 		Optional<GlobalPos> wanderTarget = GlobalPos.CODEC.parse(NbtOps.INSTANCE, compound.get(NBTConstants.WANDERING_POS)).resultOrPartial(
 			System.err::println
 		);
 		setWanderTarget(wanderTarget);
 
+		isBeingSummoned = true; //Prevent inventory loading from triggering updateOwnerData
 		ListTag listtag = compound.getList("Items", 10);
 
 		for (int i = 0; i < listtag.size(); i++) {
@@ -454,6 +519,7 @@ public abstract class AbstractDMRDragonEntity
 		}
 
 		this.updateContainerEquipment();
+		isBeingSummoned = false;
 	}
 
 	protected int getInventorySize() {
@@ -646,6 +712,10 @@ public abstract class AbstractDMRDragonEntity
 
 	@Override
 	protected Component getTypeName() {
+		if (hasVariant()) {
+			return Component.translatable(DMR.MOD_ID + ".dragon_breed." + getBreed().getId() + "%" + getVariantId());
+		}
+
 		return getBreed().getName();
 	}
 }

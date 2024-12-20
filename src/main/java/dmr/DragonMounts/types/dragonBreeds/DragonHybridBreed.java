@@ -204,4 +204,9 @@ public class DragonHybridBreed implements IDragonBreed {
 	public String toString() {
 		return "DragonHybridBreed{" + "parent1=" + parent1 + ", parent2=" + parent2 + '}';
 	}
+
+	@Override
+	public List<Variant> getVariants() {
+		return List.of();
+	}
 }

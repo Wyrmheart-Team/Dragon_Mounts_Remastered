@@ -6,7 +6,6 @@ import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.types.habitats.Habitat;
 import java.util.List;
 import java.util.Map;
-import lombok.Getter;
 import net.minecraft.core.Holder.Direct;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -22,14 +21,17 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.pathfinder.PathType;
 
 public interface IDragonBreed {
-	@Getter
-	class LootTableEntry {
-
-		private ResourceLocation table;
-		private float chance;
-		private int minAmount;
-		private int maxAmount;
-	}
+	record LootTableEntry(ResourceLocation table, float chance, int minAmount, int maxAmount) {}
+	record Variant(
+		String id,
+		ResourceLocation skinTexture,
+		ResourceLocation saddleTexture,
+		ResourceLocation glowTexture,
+		ResourceLocation eggTexture,
+		int primaryColor,
+		int secondaryColor,
+		float sizeModifier
+	) {}
 
 	default boolean isHybrid() {
 		return this instanceof DragonHybridBreed;
@@ -134,4 +136,6 @@ public interface IDragonBreed {
 	List<String> getAccessories();
 
 	List<LootTableEntry> getLootTable();
+
+	List<Variant> getVariants();
 }

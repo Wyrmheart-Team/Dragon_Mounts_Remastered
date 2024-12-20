@@ -23,6 +23,9 @@ public class DragonModel extends GeoModel<DMRDragonEntity> {
 	public ResourceLocation getTextureResource(DMRDragonEntity object) {
 		var breed = object.getBreed();
 		var breedResourceLocation = breed.getResourceLocation();
+		if (object.hasVariant()) {
+			return object.getVariant().skinTexture();
+		}
 		return DMR.id("textures/entity/dragon/" + breedResourceLocation.getPath() + "/body.png");
 	}
 

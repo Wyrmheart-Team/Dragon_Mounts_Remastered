@@ -47,9 +47,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       
-      - name: Setup mdk
-        run: ./gradlew init --overwrite
-      
       - name: Run game test server
         run: ./gradlew runGameTestServer
         

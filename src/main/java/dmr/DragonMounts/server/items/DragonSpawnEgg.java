@@ -7,6 +7,7 @@ import dmr.DragonMounts.registry.ModEntities;
 import dmr.DragonMounts.registry.ModItems;
 import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
+import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.Variant;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -26,24 +27,44 @@ public class DragonSpawnEgg extends DeferredSpawnEggItem {
 	public static final String DATA_SEC_COLOR = "SecondaryColor";
 
 	public static ItemStack create(IDragonBreed breed) {
+		return create(breed, null);
+	}
+
+	public static ItemStack create(IDragonBreed breed, Variant variant) {
 		var id = breed.getId();
 
 		ItemStack stack = new ItemStack(ModItems.DRAGON_SPAWN_EGG.get());
 
 		CompoundTag entityTag = new CompoundTag();
+
+		if (variant != null) {
+			entityTag.putString(NBTConstants.VARIANT, variant.id());
+		}
+
 		entityTag.putString(NBTConstants.BREED, id);
+
 		entityTag.putString("id", "dmr:dragon");
 
 		var itemDataTag = new CompoundTag();
-		itemDataTag.putString(DATA_ITEM_NAME, String.join(".", ModItems.DRAGON_SPAWN_EGG.get().getDescriptionId(), id));
 
-		itemDataTag.putInt(DATA_PRIM_COLOR, breed.getPrimaryColor());
-		itemDataTag.putInt(DATA_SEC_COLOR, breed.getSecondaryColor());
+		if (variant != null) {
+			itemDataTag.putString(
+				DATA_ITEM_NAME,
+				String.join(".", ModItems.DRAGON_SPAWN_EGG.get().getDescriptionId(), id + "%" + variant.id())
+			);
+			itemDataTag.putInt(DATA_PRIM_COLOR, variant.primaryColor());
+			itemDataTag.putInt(DATA_SEC_COLOR, variant.secondaryColor());
+		} else {
+			itemDataTag.putString(DATA_ITEM_NAME, String.join(".", ModItems.DRAGON_SPAWN_EGG.get().getDescriptionId(), id));
+			itemDataTag.putInt(DATA_PRIM_COLOR, breed.getPrimaryColor());
+			itemDataTag.putInt(DATA_SEC_COLOR, breed.getSecondaryColor());
+		}
 
 		stack.set(DataComponents.CUSTOM_DATA, CustomData.of(itemDataTag));
 		stack.set(DataComponents.ENTITY_DATA, CustomData.of(entityTag));
 
 		stack.set(ModComponents.DRAGON_BREED, id);
+		stack.set(ModComponents.DRAGON_VARIANT, variant != null ? variant.id() : null);
 
 		return stack;
 	}

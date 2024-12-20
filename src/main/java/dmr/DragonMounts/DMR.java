@@ -3,7 +3,6 @@ package dmr.DragonMounts;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.mojang.datafixers.types.Func;
 import dmr.DragonMounts.config.ClientConfig;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.network.NetworkHandler;
@@ -14,9 +13,7 @@ import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.types.habitats.Habitat;
 import dmr.DragonMounts.util.type_adapters.*;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.logging.Logger;
 import lombok.Getter;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceLocation;
@@ -36,6 +33,7 @@ import net.neoforged.neoforge.common.NeoForge;
 public class DMR {
 
 	public static final String MOD_ID = "dmr";
+	public static final Logger LOGGER = Logger.getLogger(MOD_ID);
 
 	@Getter
 	private static Gson Gson;
@@ -79,6 +77,7 @@ public class DMR {
 		ModMemoryModuleTypes.MEMORY_MODULE_TYPE.register(bus);
 		ModComponents.COMPONENTS.register(bus);
 		ModCriterionTriggers.CRITERION_TRIGGERS.register(bus);
+		ModActivityTypes.ACTIVITIES.register(bus);
 
 		bus.addListener(NetworkHandler::registerEvent);
 		bus.addListener(DataPackHandler::newDataPack);

@@ -7,6 +7,7 @@ import dmr.DragonMounts.registry.ModItems;
 import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.LootTableEntry;
+import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.Variant;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.LevelAccessor;
@@ -29,11 +30,23 @@ public class LootTableInject {
 				if (breed.isHybrid()) continue;
 
 				for (LootTableEntry entry : breed.getLootTable()) {
-					var newTableKey = ResourceKey.create(Registries.LOOT_TABLE, entry.getTable());
+					var newTableKey = ResourceKey.create(Registries.LOOT_TABLE, entry.table());
 					var table = server.reloadableRegistries().getLootTable(newTableKey);
 					if (table == LootTable.EMPTY) continue;
 
-					LootPool lootPool = injectEggLoot(breed, entry);
+					LootPool lootPool = injectEggLoot(breed, entry, null);
+
+					breed
+						.getVariants()
+						.forEach(variant -> {
+							LootPool variantLootPool = injectEggLoot(breed, entry, variant);
+
+							if (table.getPool(variantLootPool.getName()) != null) {
+								table.removePool(variantLootPool.getName());
+							}
+
+							table.addPool(variantLootPool);
+						});
 
 					if (table.getPool(lootPool.getName()) != null) {
 						table.removePool(lootPool.getName());
@@ -53,7 +66,7 @@ public class LootTableInject {
 		if (server != null) {
 			for (DragonArmor armor : DragonArmorRegistry.getDragonArmors()) {
 				for (LootTableEntry entry : armor.getLootTable()) {
-					var newTableKey = ResourceKey.create(Registries.LOOT_TABLE, entry.getTable());
+					var newTableKey = ResourceKey.create(Registries.LOOT_TABLE, entry.table());
 					var table = server.reloadableRegistries().getLootTable(newTableKey);
 					if (table == LootTable.EMPTY) continue;
 
@@ -69,12 +82,15 @@ public class LootTableInject {
 		}
 	}
 
-	public static LootPool injectEggLoot(IDragonBreed breed, LootTableEntry entry) {
+	public static LootPool injectEggLoot(IDragonBreed breed, LootTableEntry entry, Variant variant) {
 		var lootItemBuilder = LootItem.lootTableItem(ModItems.DRAGON_EGG_BLOCK_ITEM.get()).apply(
 			SetComponentsFunction.setComponent(ModComponents.DRAGON_BREED.get(), breed.getId())
 		);
+		if (variant != null) {
+			lootItemBuilder.apply(SetComponentsFunction.setComponent(ModComponents.DRAGON_VARIANT.get(), variant.id()));
+		}
 		var lootPoolBuilder = LootPool.lootPool()
-			.when(LootItemRandomChanceCondition.randomChance(entry.getChance()))
+			.when(LootItemRandomChanceCondition.randomChance(entry.chance()))
 			.add(lootItemBuilder)
 			.name(breed.getId() + "-egg");
 
@@ -86,7 +102,7 @@ public class LootTableInject {
 			SetComponentsFunction.setComponent(ModComponents.ARMOR_TYPE.get(), armor.getId())
 		);
 		var lootPoolBuilder = LootPool.lootPool()
-			.when(LootItemRandomChanceCondition.randomChance(entry.getChance()))
+			.when(LootItemRandomChanceCondition.randomChance(entry.chance()))
 			.add(lootItemBuilder)
 			.name(armor.getId() + "-armor");
 		return lootPoolBuilder.build();
@@ -99,8 +115,24 @@ public class LootTableInject {
 
 			for (LootTableEntry entry : breed.getLootTable()) {
 				if (evt != null) {
-					if (evt.getName().equals(entry.getTable())) {
-						evt.getTable().addPool(injectEggLoot(breed, entry));
+					if (evt.getName().equals(entry.table())) {
+						var pool = injectEggLoot(breed, entry, null);
+
+						if (evt.getTable().getPool(pool.getName()) != null) {
+							evt.getTable().removePool(pool.getName());
+						}
+
+						evt.getTable().addPool(pool);
+
+						for (Variant variant : breed.getVariants()) {
+							var vPool = injectEggLoot(breed, entry, variant);
+
+							if (evt.getTable().getPool(vPool.getName()) != null) {
+								evt.getTable().removePool(vPool.getName());
+							}
+
+							evt.getTable().addPool(vPool);
+						}
 					}
 				}
 			}
@@ -109,8 +141,14 @@ public class LootTableInject {
 		for (DragonArmor armor : DragonArmorRegistry.getDragonArmors()) {
 			for (LootTableEntry entry : armor.getLootTable()) {
 				if (evt != null) {
-					if (evt.getName().equals(entry.getTable())) {
-						evt.getTable().addPool(injectArmorLoot(armor, entry));
+					if (evt.getName().equals(entry.table())) {
+						var armorPool = injectArmorLoot(armor, entry);
+
+						if (evt.getTable().getPool(armorPool.getName()) != null) {
+							evt.getTable().removePool(armorPool.getName());
+						}
+
+						evt.getTable().addPool(armorPool);
 					}
 				}
 			}

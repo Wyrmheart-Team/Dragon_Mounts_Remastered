@@ -12,5 +12,6 @@ public class ModConstants {
 		public static final String DRAGON_UUID = "dragonUUID";
 		public static final String WANDERING_POS = "wanderingPosition";
 		public static final String CHEST = "chest";
+		public static final String VARIANT = "variant";
 	}
 }

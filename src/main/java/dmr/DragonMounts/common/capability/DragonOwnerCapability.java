@@ -43,6 +43,8 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 			if (type.isPresent()) {
 				Entity entity = type.get().create(world);
 				if (entity instanceof DMRDragonEntity dragon) {
+					dragon.isBeingSummoned = true;
+
 					dragon.load(nbt);
 					dragon.setUUID(UUID.randomUUID());
 					dragon.clearFire();

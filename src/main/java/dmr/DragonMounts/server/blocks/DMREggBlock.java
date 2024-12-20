@@ -10,6 +10,7 @@ import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
 import dmr.DragonMounts.server.items.DragonEggItemBlock;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
+import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.Variant;
 import java.util.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -68,7 +69,13 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
 		if (pLevel.getBlockEntity(pPos) instanceof DMREggBlockEntity e) {
 			var breedId = pStack.get(ModComponents.DRAGON_BREED);
 			var hatchTime = pStack.getOrDefault(ModComponents.EGG_HATCH_TIME, ServerConfig.HATCH_TIME_CONFIG.get());
+			var variantId = pStack.get(ModComponents.DRAGON_VARIANT);
+
 			e.setOwner(pPlacer.getUUID().toString());
+
+			if (variantId != null) {
+				e.setVariantId(variantId);
+			}
 
 			if (breedId != null) {
 				e.setBreedId(breedId);
@@ -101,8 +108,11 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
 	@Override
 	public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
 		var breedId = level.getBlockEntity(pos) instanceof DMREggBlockEntity e ? e.getBreedId() : null;
+		var variantId = level.getBlockEntity(pos) instanceof DMREggBlockEntity e ? e.getVariantId() : null;
+
 		IDragonBreed breed = DragonBreedsRegistry.getDragonBreed(breedId);
-		return DragonEggItemBlock.getDragonEggStack(breed);
+		var breedVariant = breed.getVariants().stream().filter(variant -> variant.id().equals(variantId)).findFirst().orElse(null);
+		return DragonEggItemBlock.getDragonEggStack(breed, breedVariant);
 	}
 
 	@Override
@@ -174,7 +184,7 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
 		}
 	}
 
-	public static DMREggBlockEntity place(ServerLevel level, BlockPos pos, BlockState state, IDragonBreed breed) {
+	public static DMREggBlockEntity place(ServerLevel level, BlockPos pos, BlockState state, IDragonBreed breed, Variant variant) {
 		level.setBlock(pos, state, Block.UPDATE_ALL);
 		var data = (DMREggBlockEntity) level.getBlockEntity(pos);
 
@@ -183,6 +193,7 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
 		}
 
 		data.setBreed(breed);
+		data.setVariantId(variant != null ? variant.id() : null);
 		data.setHatchTime(breed.getHatchTime());
 		return data;
 	}

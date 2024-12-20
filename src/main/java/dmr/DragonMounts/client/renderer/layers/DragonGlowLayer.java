@@ -62,6 +62,10 @@ public class DragonGlowLayer extends GeoRenderLayer<DMRDragonEntity> {
 		var breedResourceLocation = breed.getResourceLocation();
 		ResourceLocation glowTexture = DMR.id("textures/entity/dragon/" + breedResourceLocation.getPath() + "/glow.png");
 
+		if (entityLivingBaseIn.hasVariant() && entityLivingBaseIn.getVariant().glowTexture() != null) {
+			glowTexture = entityLivingBaseIn.getVariant().glowTexture();
+		}
+
 		Optional<Resource> resourceOptional = Minecraft.getInstance().getResourceManager().getResource(glowTexture);
 		if (resourceOptional.isEmpty()) return;
 

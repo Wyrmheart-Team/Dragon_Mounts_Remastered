@@ -102,7 +102,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 	public static final int BREATH_COUNT = 5;
 	// other constants
 	public static final ResourceLocation SCALE_MODIFIER = ResourceLocation.fromNamespaceAndPath(DMR.MOD_ID, "scale_attribute"); // just a random uuid I took online
-	public static final int GROUND_CLEARENCE_THRESHOLD = 2;
+	public static final int GROUND_CLEARENCE_THRESHOLD = 1;
 	public static final RawAnimation NECK_TURN = RawAnimation.begin().thenLoop("neck_turn");
 	public static final RawAnimation NECK_TURN_FLIGHT = RawAnimation.begin().thenLoop("neck_turn_flight");
 	public static final RawAnimation GLIDE = RawAnimation.begin().thenLoop("glide");
@@ -597,11 +597,11 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 	public boolean shouldFly() {
 		if (!canFly()) return false;
 		if (isFlying()) return !onGround(); // more natural landings
-		return canFly() && !isInWater() && !isNearGround();
+		return canFly() && !isInWater() && !isNearGround() && !jumping;
 	}
 
 	public boolean isTamingItem(ItemStack stack) {
-		var list = breed.getTamingItems();
+		var list = getBreed().getTamingItems();
 		return !stack.isEmpty() && (list != null && !list.isEmpty() ? list.contains(stack.getItem()) : stack.is(ItemTags.FISHES));
 	}
 
@@ -1027,7 +1027,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 	@Override
 	public void containerChanged(Container pContainer) {
 		// Update the saved dragon so that summoning the dragon doesnt wipe the inventory
-		updateOwnerData();
+		if (!isBeingSummoned) updateOwnerData();
 		setArmor();
 	}
 
@@ -1059,7 +1059,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 
 	@Override
 	public boolean isFood(ItemStack stack) {
-		var list = breed.getBreedingItems();
+		var list = getBreed().getBreedingItems();
 		return !stack.isEmpty() && (list != null && list.size() > 0 ? list.contains(stack.getItem()) : stack.is(ItemTags.FISHES));
 	}
 
@@ -1133,7 +1133,10 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 
 		// Pick a random breed from the list to use as the offspring
 		var offSpringBreed = eggOutcomes.get(getRandom().nextInt(eggOutcomes.size()));
-		var egg = DMREggBlock.place(level, blockPosition(), state, offSpringBreed);
+		var variant = !offSpringBreed.getVariants().isEmpty()
+			? offSpringBreed.getVariants().get(getRandom().nextInt(offSpringBreed.getVariants().size()))
+			: null;
+		var egg = DMREggBlock.place(level, blockPosition(), state, offSpringBreed, variant);
 
 		// mix the custom names in case both parents have one
 		if (hasCustomName() && animal.hasCustomName()) {

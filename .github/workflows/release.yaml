@@ -11,296 +11,157 @@ on:
         required: true
         description: 'The new version of the release'
         type: string
-  
+
 permissions:
   contents: write
 
 jobs:
-  java-build-dev:
-    name: Java Build Dev
+  common-setup:
     runs-on: ubuntu-latest
+    outputs:
+      java_version: ${{ steps.read_props.outputs.java_version }}
+      minecraft_version: ${{ steps.read_props.outputs.minecraft_version }}
+      neo_version: ${{ steps.read_props.outputs.neo_version }}
+      geckolib_version: ${{ steps.read_props.outputs.geckolib_version }}
+      mod_name: ${{ steps.read_props.outputs.mod_name }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
-      - name: Read properties file and set as env
+      
+      - name: Read gradle.properties and set outputs
+        id: read_props
         run: |
-          while IFS= read -r line || [[ -n "$line" ]]; do
-            if [[ $line == \#* ]] || [[ -z $line ]]; then
-              continue # Skip comments and empty lines
-            fi
-            IFS='=' read -r key value <<< "$line"
-            key=$(echo $key | xargs) # Trim key
-            value=$(echo $value | xargs) # Trim value
-            if [ ! -z "$key" ]; then
-              echo "Setting $key=$value"
-              echo "$key=$value" >> $GITHUB_ENV
-            fi
-          done < ./gradle.properties
-
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: ${{ env.java_version }}
-          distribution: 'temurin'
-          cache: 'gradle'
-
-      - name: Update gradle.properties
-        run: sed -i "s/mod_version=.*/mod_version=${{ inputs.new_release_version }}-dev/g" gradle.properties
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Cache Gradle packages
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            ./build/fg_cache
-          key: ${{ runner.os }}-gradle-${{ hashFiles('gradle.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Setup mdk
-        run: ./gradlew init --overwrite
-
-      - name: Build with Gradle
-        run: ./gradlew build
-
-      - name: Notify Discord
-        uses: Sniddl/discord-commits@v1.6
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          last-commit-only: true
-          message: "New version of ${{env.mod_name}}"
-          embed: |
-            {
-              "description": "*Built using the following versions*:\n\n*Minecraft*: **${{ env.minecraft_version }}**\n*NeoForge*: **${{ env.neo_version }}**\n*GeckoLib*: **${{ env.geckolib_version }}**\n\n${{ inputs.changelog }}\n"
-            }
-
-      - name: Discord file publish
-        uses: sinshutu/upload-to-discord@master
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-        with:
-          args: build/libs/*.jar
-
-      - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-          repository: Wyrmheart-Team/Workflows
-          event-type: update-server
-
-  java-build-release:
+          while IFS='=' read -r key value; do
+            key=$(echo "$key" | xargs)
+            value=$(echo "$value" | xargs)
+            [[ -z "$key" || "$key" == \#* ]] && continue
+            echo "$key=$value" >> $GITHUB_ENV
+            echo "::set-output name=$key::$value"
+          done < gradle.properties
+  
+  java-build:
     name: Java Build
-    environment: Release
     runs-on: ubuntu-latest
+    needs: common-setup
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
-      - name: Read properties file and set as env
-        run: |
-          while IFS= read -r line || [[ -n "$line" ]]; do
-            if [[ $line == \#* ]] || [[ -z $line ]]; then
-              continue # Skip comments and empty lines
-            fi
-            IFS='=' read -r key value <<< "$line"
-            key=$(echo $key | xargs) # Trim key
-            value=$(echo $value | xargs) # Trim value
-            if [ ! -z "$key" ]; then
-              echo "Setting $key=$value"
-              echo "$key=$value" >> $GITHUB_ENV
-            fi
-          done < ./gradle.properties
-
+      
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: ${{ env.java_version }}
+          java-version: ${{ needs.common-setup.outputs.java_version }}
           distribution: 'temurin'
           cache: 'gradle'
-
+      
       - name: Update gradle.properties
         run: sed -i "s/mod_version=.*/mod_version=${{ inputs.new_release_version }}/g" gradle.properties
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Cache Gradle packages
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            ./build/fg_cache
-          key: ${{ runner.os }}-gradle-${{ hashFiles('gradle.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Setup forge mdk
-        run: ./gradlew init --overwrite
-
+      
       - name: Build with Gradle
         run: ./gradlew build
-        
+      
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v3
         with:
           name: dragon-mounts-jar
           path: build/libs/*.jar
-
- 
-  upload-to-curseforge:
+  
+  replace-placeholders:
+    name: Replace Placeholders
     runs-on: ubuntu-latest
-    needs: [java-build-release]
-
+    needs: common-setup
+    strategy:
+      matrix:
+        file: [cf_upload.json, modrinth_upload.json]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-        
+      
+      - name: Replace Placeholders in ${{ matrix.file }}
+        run: |
+          for key in $(env | cut -d= -f1); do
+            value=${!key}
+            sed -i "s|\\\${$key}|$value|g" ./.github/workflows/${{ matrix.file }}
+          done
+        env:
+          changelog: ${{ inputs.changelog }}
+          new_release_version: ${{ inputs.new_release_version }}
+      
+      - name: Upload Processed File
+        uses: actions/upload-artifact@v3
+        with:
+          name: processed-${{ matrix.file }}
+          path: ./.github/workflows/${{ matrix.file }}
+  
+  upload-curseforge:
+    name: Upload to CurseForge
+    runs-on: ubuntu-latest
+    needs: [java-build, replace-placeholders]
+    steps:
+      - name: Download Processed cf_upload.json
+        uses: actions/download-artifact@v3
+        with:
+          name: processed-cf_upload.json
+          path: ./
+      
       - name: Download JAR artifact
         uses: actions/download-artifact@v3
         with:
           name: dragon-mounts-jar
           path: build/libs/
-        
-      - name: Find JAR file
-        id: find_jar
-        run: |
-          JAR_FILE=$(find build/libs -name '*.jar' | head -n 1)
-          if [ -z "$JAR_FILE" ]; then
-            echo "Error: No JAR file found in build/libs"
-            exit 1
-          fi
-          echo "jar_path=$JAR_FILE" >> $GITHUB_OUTPUT
-
-      - name: Fetch game version IDs
-        id: fetch_ids
-        env:
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-          MC_VERSION: ${{ env.minecraft_version }}
-        run: |
-          # Fetch game versions from CurseForge API
-          GAME_VERSIONS=$(curl -s "https://minecraft.curseforge.com/api/game/versions" -H "X-Api-Token: $CF_API_KEY")
-
-          # Extract specific IDs
-          JAVA=$(echo "$GAME_VERSIONS" | jq '.[] | select(.name == "Java 17") | .id')
-          CLIENT=$(echo "$GAME_VERSIONS" | jq '.[] | select(.name | contains("client")) | .id')
-          SERVER=$(echo "$GAME_VERSIONS" | jq '.[] | select(.name | contains("server")) | .id')
-          NEOFORGE=$(echo "$GAME_VERSIONS" | jq '.[] | select(.name | contains("neoforge")) | .id')
-          MC_VERSION_ID=$(echo "$GAME_VERSIONS" | jq --arg mc_ver "$MC_VERSION" '.[] | select(.name == $mc_ver) | .id')
-
-          # Write outputs to GITHUB_OUTPUT
-          echo "java=$JAVA" >> $GITHUB_OUTPUT
-          echo "client=$CLIENT" >> $GITHUB_OUTPUT
-          echo "server=$SERVER" >> $GITHUB_OUTPUT
-          echo "neoforge=$NEOFORGE" >> $GITHUB_OUTPUT
-          echo "mc_version=$MC_VERSION" >> $GITHUB_OUTPUT
-
-      - name: Replace placeholders in cf_upload.json
-        run: |
-          sed -i 's/\\${java_version_id}/'"${{ steps.fetch_ids.outputs.java }}"'/g' cf_upload.json
-          sed -i 's/\\${client_version_id}/'"${{ steps.fetch_ids.outputs.client }}"'/g' cf_upload.json
-          sed -i 's/\\${server_version_id}/'"${{ steps.fetch_ids.outputs.server }}"'/g' cf_upload.json
-          sed -i 's/\\${neoforge_version_id}/'"${{ steps.fetch_ids.outputs.neoforge }}"'/g' cf_upload.json
-          sed -i 's/\\${mc_version_id}/'"${{ steps.fetch_ids.outputs.mc_version }}"'/g' cf_upload.json
-          
-          sed -i 's|\\${version}|'"${{ inputs.new_release_version }}"'|g' cf_upload.json
-          sed -i 's|\\${changelog}|'"${{ inputs.changelog }}"'|g' cf_upload.json
-
-      - name: Debug cf_upload.json
-        run: cat cf_upload.json
-
+      
       - name: Upload to CurseForge
         env:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
           CF_PROJECT_ID: ${{ secrets.CF_PROJECT_ID }}
         run: |
-          # Upload file to CurseForge
+          FILE_PATH=$(find build/libs -name "*.jar" | head -n 1)
           curl -X POST "https://minecraft.curseforge.com/api/projects/$CF_PROJECT_ID/upload-file" \
             -H "x-api-token: $CF_API_KEY" \
-            -F "metadata=@cf_upload.json" \
-            -F "file=@${{ steps.find_jar.outputs.jar_path }}"
-
-      - name: Notify Success
-        if: success()
-        run: echo "File successfully uploaded to CurseForge."
-
-  upload-to-modrinth:
+            -F "metadata=@processed-cf_upload.json" \
+            -F "file=@$FILE_PATH"
+  
+  upload-modrinth:
+    name: Upload to Modrinth
     runs-on: ubuntu-latest
-    needs: [java-build-release]
-
+    needs: [java-build, replace-placeholders]
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-        
+      - name: Download Processed modrinth_upload.json
+        uses: actions/download-artifact@v3
+        with:
+          name: processed-modrinth_upload.json
+          path: ./
+      
       - name: Download JAR artifact
         uses: actions/download-artifact@v3
         with:
           name: dragon-mounts-jar
           path: build/libs/
-        
-      - name: Find JAR file
-        id: find_jar
-        run: |
-          JAR_FILE=$(find build/libs -name '*.jar' | head -n 1)
-          if [ -z "$JAR_FILE" ]; then
-            echo "Error: No JAR file found in build/libs"
-            exit 1
-          fi
-          echo "jar_path=$JAR_FILE" >> $GITHUB_OUTPUT
-
-      - name: Replace placeholders in modrinth_upload.json
-        run: |
-          sed -i 's|\\${version}|'"${{ inputs.new_release_version }}"'|g' modrinth_upload.json
-          sed -i 's|\\${changelog}|'"${{ inputs.changelog }}"'|g' modrinth_upload.json
-          sed -i 's|\\${game_version}|'"${{ env.minecraft_version }}"'|g' modrinth_upload.json
-
-      - name: Debug modrinth_upload.json
-        run: cat modrinth_upload.json
-
+      
       - name: Upload to Modrinth
         env:
           MODRINTH_API_KEY: ${{ secrets.MODRINTH_API_KEY }}
         run: |
-          # Upload to Modrinth
+          FILE_PATH=$(find build/libs -name "*.jar" | head -n 1)
           curl -X POST "https://api.modrinth.com/v2/version" \
             -H "Authorization: Bearer $MODRINTH_API_KEY" \
-            -F "data=@modrinth_upload.json" \
-            -F "jar=@${{ steps.find_jar.outputs.jar_path }}"
-
+            -F "data=@processed-modrinth_upload.json" \
+            -F "file=@$FILE_PATH"
+  
   after-release:
-      needs:  [upload-to-modrinth, upload-to-curseforge]
-      runs-on: ubuntu-latest
-      steps:
+    name: Post-Release Notification
+    runs-on: ubuntu-latest
+    needs: [upload-curseforge, upload-modrinth]
+    steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-        
-      - name: Read properties file and set as env
-        run: |
-          while IFS= read -r line || [[ -n "$line" ]]; do
-            if [[ $line == \#* ]] || [[ -z $line ]]; then
-              continue # Skip comments and empty lines
-            fi
-            IFS='=' read -r key value <<< "$line"
-            key=$(echo $key | xargs) # Trim key
-            value=$(echo $value | xargs) # Trim value
-            if [ ! -z "$key" ]; then
-              echo "Setting $key=$value"
-              echo "$key=$value" >> $GITHUB_ENV
-            fi
-          done < ./gradle.properties
-
+      
       - name: Notify Discord
         uses: Sniddl/discord-commits@v1.6
         with:
           webhook: ${{ secrets.DISCORD_ANNOUNCEMENT_WEBHOOK_URL }}
-          last-commit-only: true
-          message: "Version ${{inputs.new_release_version }} of ${{env.mod_name}} has been released on Modrinth and CurseForge! "
+          message: "Version ${{ inputs.new_release_version }} of ${{ needs.common-setup.outputs.mod_name }} has been released!"
           embed: |
             {
-              "description": "Changelog:\n\n${{ inputs.changelog }}\n"
+              "description": "Changelog:\n${{ inputs.changelog }}"
             }

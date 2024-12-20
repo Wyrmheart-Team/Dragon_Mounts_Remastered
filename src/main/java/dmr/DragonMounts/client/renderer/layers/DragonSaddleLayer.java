@@ -42,6 +42,10 @@ public class DragonSaddleLayer extends GeoRenderLayer<DMRDragonEntity> {
 			var breedResourceLocation = breed.getResourceLocation();
 			ResourceLocation saddleTexture = DMR.id("textures/entity/dragon/" + breedResourceLocation.getPath() + "/saddle.png");
 
+			if (entityLivingBaseIn.hasVariant() && entityLivingBaseIn.getVariant().saddleTexture() != null) {
+				saddleTexture = entityLivingBaseIn.getVariant().saddleTexture();
+			}
+
 			Optional<Resource> resourceOptional = Minecraft.getInstance().getResourceManager().getResource(saddleTexture);
 			if (resourceOptional.isEmpty()) return;
 

@@ -11,7 +11,6 @@ import java.util.Objects;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
@@ -229,7 +228,7 @@ public class DragonTests {
 		});
 	}
 	
-	 */
+
 
 	@EmptyTemplate(floor = true, value = "9x9x9") //Larger area to ensure dragon can move
 	@GameTest
@@ -283,6 +282,7 @@ public class DragonTests {
 			}
 		});
 	}
+	 */
 
 	@EmptyTemplate(floor = true)
 	@GameTest

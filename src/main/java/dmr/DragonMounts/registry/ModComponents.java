@@ -22,6 +22,11 @@ public class ModComponents {
 		Codec.STRING,
 		ByteBufCodecs.STRING_UTF8
 	);
+	public static final Supplier<DataComponentType<String>> DRAGON_VARIANT = register(
+		"dragon_breed_variant",
+		Codec.STRING,
+		ByteBufCodecs.STRING_UTF8
+	);
 	public static final Supplier<DataComponentType<String>> ARMOR_TYPE = register("armor_type", Codec.STRING, ByteBufCodecs.STRING_UTF8);
 	public static final Supplier<DataComponentType<Integer>> EGG_HATCH_TIME = register("egg_hatch_time", Codec.INT, ByteBufCodecs.INT);
 	public static final Supplier<DataComponentType<String>> EGG_OWNER = register("egg_owner", Codec.STRING, ByteBufCodecs.STRING_UTF8);

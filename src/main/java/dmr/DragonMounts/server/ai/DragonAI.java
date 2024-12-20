@@ -4,7 +4,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
+import dmr.DragonMounts.registry.ModActivityTypes;
 import dmr.DragonMounts.registry.ModEntities;
+import dmr.DragonMounts.registry.ModMemoryModuleTypes;
 import dmr.DragonMounts.registry.ModSensors;
 import dmr.DragonMounts.server.ai.behaviours.BehaviorWrapper;
 import dmr.DragonMounts.server.ai.behaviours.DragonBreathAttack;
@@ -28,6 +30,7 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
+import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.schedule.Activity;
 
 public class DragonAI {
@@ -47,7 +50,9 @@ public class DragonAI {
 		MemoryModuleType.PATH,
 		MemoryModuleType.ATTACK_TARGET,
 		MemoryModuleType.ATTACK_COOLING_DOWN,
-		MemoryModuleType.NEAREST_VISIBLE_ADULT
+		MemoryModuleType.NEAREST_VISIBLE_ADULT,
+		ModMemoryModuleTypes.SHOULD_SIT.get(),
+		ModMemoryModuleTypes.SHOULD_WANDER.get()
 	);
 	private static final Collection<? extends SensorType<? extends Sensor<? super LivingEntity>>> SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES,
@@ -64,6 +69,8 @@ public class DragonAI {
 		initCoreActivity(brain);
 		initIdleActivity(brain);
 		initFightActivity(brain);
+		initSitActivity(brain);
+		initWanderActivity(brain);
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.IDLE);
 		brain.useDefaultActivity();
@@ -76,7 +83,15 @@ public class DragonAI {
 			0,
 			ImmutableList.of(
 				new Swim(0.8F),
-				new LookAtTargetSink(45, 90),
+				new BehaviorWrapper<>(
+					ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryStatus.VALUE_PRESENT),
+					new LookAtTargetSink(45, 90)
+				),
+				new BehaviorWrapper<>(
+					ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryStatus.VALUE_ABSENT),
+					SetEntityLookTargetSometimes.create(EntityType.PLAYER, 6.0F, UniformInt.of(400, 800)),
+					new RandomLookAround(UniformInt.of(150, 250), 30.0F, 0.0F, 0.0F)
+				),
 				new BehaviorWrapper<>(e -> !e.isSitting(), new MoveToTargetSink())
 			)
 		);
@@ -86,14 +101,7 @@ public class DragonAI {
 		brain.addActivity(
 			Activity.IDLE,
 			ImmutableList.of(
-				Pair.of(0, new DragonBreedBehaviour(ModEntities.DRAGON_ENTITY.get(), 1F, 4)),
-				Pair.of(
-					0,
-					new BehaviorWrapper<>(
-						SetEntityLookTargetSometimes.create(EntityType.PLAYER, 6.0F, UniformInt.of(30, 60)),
-						new RandomLookAround(UniformInt.of(150, 250), 30.0F, 0.0F, 0.0F)
-					)
-				),
+				Pair.of(0, new BehaviorWrapper<>(Animal::isInLove, new DragonBreedBehaviour(ModEntities.DRAGON_ENTITY.get(), 1F, 4))),
 				Pair.of(
 					0,
 					new BehaviorWrapper<>(
@@ -103,35 +111,21 @@ public class DragonAI {
 						HurtByTargetGoal::new
 					)
 				),
-				Pair.of(1, StartAttacking.create(DragonAI::findNearestValidAttackTarget)),
+				Pair.of(1, new BehaviorWrapper<>(e -> !e.isSitting(), StartAttacking.create(DragonAI::findNearestValidAttackTarget))),
 				Pair.of(
-					1,
+					0,
 					new BehaviorWrapper<>(
 						e -> e.isTame() && !e.isOrderedToSit() && !e.hasWanderTarget(),
-						StayCloseToTarget.create(DragonAI::getOwnerPosition, e -> true, 8, 32, 1F)
+						StayCloseToTarget.create(DragonAI::getOwnerPosition, e -> true, 4, 8, 1F)
 					)
 				),
 				Pair.of(
 					4,
 					new BehaviorWrapper<>(
-						e -> e.hasWanderTarget() && !e.isSitting(),
-						StayCloseToTarget.create(DragonAI::getWanderTarget, e -> true, 2, 32, 1F),
-						new BehaviorWrapper<>(
-							ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT),
-							RandomStroll.stroll(1f, 32, 4),
-							new RandomSitting(100, 200),
-							new DoNothing(10, 200)
-						)
-					)
-				),
-				Pair.of(
-					4,
-					new BehaviorWrapper<>(
-						e -> !e.isSitting() && !e.hasWanderTarget(),
+						e -> !e.isTame() && !e.isSitting(),
 						ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT),
 						RandomStroll.stroll(1f),
 						RandomStroll.swim(1f),
-						RandomStroll.fly(1f),
 						new RandomSitting(100, 200),
 						new DoNothing(10, 200)
 					)
@@ -148,10 +142,44 @@ public class DragonAI {
 				SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(1f),
 				DragonBreathAttack.create(200),
 				MeleeAttack.create(10),
-				StopAttackingIfTargetInvalid.create(e -> true),
+				StopAttackingIfTargetInvalid.create(),
 				EraseMemoryIf.<Mob>create(BehaviorUtils::isBreeding, MemoryModuleType.ATTACK_TARGET)
 			),
 			MemoryModuleType.ATTACK_TARGET
+		);
+	}
+
+	public static void initSitActivity(Brain<DMRDragonEntity> brain) {
+		brain.addActivityWithConditions(
+			ModActivityTypes.SIT.get(),
+			ImmutableList.of(Pair.of(0, new RandomSitting(100, 200))),
+			ImmutableSet.of(Pair.of(ModMemoryModuleTypes.SHOULD_SIT.get(), MemoryStatus.VALUE_PRESENT))
+		);
+	}
+
+	public static void initWanderActivity(Brain<DMRDragonEntity> brain) {
+		brain.addActivityWithConditions(
+			ModActivityTypes.WANDER.get(),
+			ImmutableList.of(
+				Pair.of(
+					0,
+					new BehaviorWrapper<>(
+						e -> e.hasWanderTarget() && !e.isSitting(),
+						StayCloseToTarget.create(DragonAI::getWanderTarget, e -> true, 2, 32, 1F),
+						new BehaviorWrapper<>(
+							ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT),
+							RandomStroll.stroll(1f, 32, 1),
+							new RandomSitting(100, 200),
+							new DoNothing(10, 200)
+						)
+					)
+				)
+			),
+			ImmutableSet.of(
+				Pair.of(ModMemoryModuleTypes.SHOULD_SIT.get(), MemoryStatus.VALUE_ABSENT),
+				Pair.of(ModMemoryModuleTypes.SHOULD_WANDER.get(), MemoryStatus.VALUE_PRESENT),
+				Pair.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT)
+			)
 		);
 	}
 
@@ -181,7 +209,9 @@ public class DragonAI {
 
 	public static void updateActivity(DMRDragonEntity dragon) {
 		Brain<DMRDragonEntity> brain = dragon.getBrain();
-		brain.setActiveActivityToFirstValid(ImmutableList.of(Activity.FIGHT, Activity.IDLE));
+		brain.setActiveActivityToFirstValid(
+			ImmutableList.of(Activity.FIGHT, ModActivityTypes.WANDER.get(), ModActivityTypes.SIT.get(), Activity.IDLE)
+		);
 	}
 
 	public static void wasHurtBy(DMRDragonEntity dragon, LivingEntity livingEntity) {

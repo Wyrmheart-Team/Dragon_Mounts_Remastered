@@ -11,10 +11,10 @@ on:
     outputs:
       new_release_published:
         description: 'Whether a new release was published'
-        value: ${{ jobs.semantic-release.outputs.new_release_published}}
+        value: ${{ jobs.semantic-release.outputs.new_release_published }}
       new_release_version:
         description: 'The new release version'
-        value: ${{ jobs.semantic-release.outputs.new_release_version}}
+        value: ${{ jobs.semantic-release.outputs.new_release_version }}
       changelog:
         description: 'The changelog value'
         value: ${{ jobs.semantic-release.outputs.changelog }}
@@ -49,9 +49,9 @@ jobs:
       - name: Install Dependencies
         run: npm install
       
-      - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@v4
+      - name: Run Semantic Release
         id: semantic
+        uses: cycjimmy/semantic-release-action@v4
         with:
           extra_plugins: |
             @semantic-release/commit-analyzer
@@ -60,13 +60,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       
-      - name: Generate changelog value
-        shell: bash
+      - name: Generate Changelog Value
         id: release_description
+        shell: bash
         run: |
+          # Safely normalize newlines and escape special characters
           description="${{ steps.semantic.outputs.new_release_notes }}"
-          description="${description//'%'/'\n'}"
-          description="${description//$'\n'/'\n'}"
-          description="${description//$'\r'/'\n'}"
-          echo "$description"
+          description="${description//'%'/'%25'}"  # Escape %
+          description="${description//$'\n'/'%0A'}" # Normalize \n
+          description="${description//$'\r'/'%0D'}" # Normalize \r
+          
           echo "description=$description" >> $GITHUB_OUTPUT

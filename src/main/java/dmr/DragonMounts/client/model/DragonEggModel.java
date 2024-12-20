@@ -64,7 +64,7 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
 		return new Baked(baked.build(), overrides);
 	}
 
-	private record Data(String breedId) {
+	private record Data(String breedId, String variantId) {
 		private static final ModelProperty<Data> PROPERTY = new ModelProperty<>();
 	}
 
@@ -85,8 +85,16 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
 		@Override
 		public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand, ModelData extraData, RenderType renderType) {
 			var data = extraData.get(Data.PROPERTY);
-			if (data != null && models.containsKey(data.breedId)) {
-				return models.get(data.breedId()).getQuads(state, side, rand, extraData, renderType);
+
+			if (data != null) {
+				var breedId = data.breedId();
+				var variantId = data.variantId();
+
+				if (models.containsKey(breedId + "%" + variantId)) {
+					return models.get(breedId + "%" + variantId).getQuads(state, side, rand, extraData, renderType);
+				} else if (models.containsKey(breedId)) {
+					return models.get(breedId).getQuads(state, side, rand, extraData, renderType);
+				}
 			}
 
 			return FALLBACK.get().getQuads(state, side, rand, extraData, renderType);
@@ -120,8 +128,15 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
 		@Override
 		public TextureAtlasSprite getParticleIcon(ModelData modelData) {
 			var data = modelData.get(Data.PROPERTY);
-			if (data != null && models.containsKey(data.breedId)) {
-				return models.get(data.breedId()).getParticleIcon(modelData);
+			if (data != null) {
+				var breedId = data.breedId();
+				var variantId = data.variantId();
+
+				if (models.containsKey(breedId + "%" + variantId)) {
+					return models.get(breedId + "%" + variantId).getParticleIcon(modelData);
+				} else if (models.containsKey(breedId)) {
+					return models.get(breedId).getParticleIcon(modelData);
+				}
 			}
 
 			return getParticleIcon();
@@ -141,7 +156,7 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
 		public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData) {
 			if (level.getBlockEntity(pos) instanceof DMREggBlockEntity e && e.getBreed() != null) {
 				var breed = e.getBreed() instanceof DragonHybridBreed hybridBreed ? hybridBreed.parent1 : e.getBreed();
-				return modelData.derive().with(Data.PROPERTY, new Data(breed.getId())).build();
+				return modelData.derive().with(Data.PROPERTY, new Data(breed.getId(), e.getVariantId())).build();
 			}
 			return modelData;
 		}
@@ -163,6 +178,7 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
 			if (override != original) return override;
 
 			var breed = stack.getOrDefault(ModComponents.DRAGON_BREED, DragonBreedsRegistry.getDefault().getId());
+			var variantId = stack.get(ModComponents.DRAGON_VARIANT);
 
 			if (breed.startsWith("hybrid_")) {
 				var breedObject = DragonBreedsRegistry.getDragonBreed(breed);
@@ -172,7 +188,7 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
 				}
 			}
 
-			var model = owner.models.get(breed);
+			var model = variantId != null ? owner.models.get(String.join("%", breed, variantId)) : owner.models.get(breed);
 			if (model != null) return model;
 
 			return original;

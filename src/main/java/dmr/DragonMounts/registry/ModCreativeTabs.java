@@ -31,10 +31,22 @@ public class ModCreativeTabs {
 			.displayItems((enabledFeatures, entries) -> {
 				var breeds = DragonBreedsRegistry.getDragonBreeds();
 				for (IDragonBreed type : breeds) {
-					if (!type.isHybrid()) entries.accept(DragonEggItemBlock.getDragonEggStack(type));
+					if (!type.isHybrid()) {
+						entries.accept(DragonEggItemBlock.getDragonEggStack(type));
+
+						for (IDragonBreed.Variant variant : type.getVariants()) {
+							entries.accept(DragonEggItemBlock.getDragonEggStack(type, variant));
+						}
+					}
 				}
 				for (IDragonBreed type : breeds) {
-					if (!type.isHybrid()) entries.accept(DragonSpawnEgg.create(type));
+					if (!type.isHybrid()) {
+						entries.accept(DragonSpawnEgg.create(type));
+
+						for (IDragonBreed.Variant variant : type.getVariants()) {
+							entries.accept(DragonSpawnEgg.create(type, variant));
+						}
+					}
 				}
 				var armors = new ArrayList<>(DragonArmorRegistry.getDragonArmors());
 				armors.sort(Comparator.comparing(DragonArmor::getProtection));

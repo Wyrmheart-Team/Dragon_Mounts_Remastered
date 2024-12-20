@@ -23,7 +23,7 @@ public class DragonEggEvent {
 					e.getEntity().swing(InteractionHand.MAIN_HAND);
 				} else {
 					var state = ModBlocks.DRAGON_EGG_BLOCK.get().defaultBlockState().setValue(DMREggBlock.HATCHING, true);
-					DMREggBlock.place((ServerLevel) e.getLevel(), e.getPos(), state, DragonBreedsRegistry.getDragonBreed("end"));
+					DMREggBlock.place((ServerLevel) e.getLevel(), e.getPos(), state, DragonBreedsRegistry.getDragonBreed("end"), null);
 				}
 				e.setCanceled(true);
 			}

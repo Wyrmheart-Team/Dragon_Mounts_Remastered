@@ -35,6 +35,10 @@ public class DMREggBlockEntity extends BlockEntity {
 
 	@Getter
 	@Setter
+	private String variantId;
+
+	@Getter
+	@Setter
 	private int hatchTime = ServerConfig.HATCH_TIME_CONFIG.get();
 
 	@Getter
@@ -137,6 +141,8 @@ public class DMREggBlockEntity extends BlockEntity {
 		level.removeBlock(pos, false); // remove block AFTER data is cached
 
 		baby.setBreed(data.getBreed());
+		baby.setVariant(data.getVariantId());
+
 		baby.setBaby(true);
 		baby.setPos(pos.getX(), pos.getY(), pos.getZ());
 

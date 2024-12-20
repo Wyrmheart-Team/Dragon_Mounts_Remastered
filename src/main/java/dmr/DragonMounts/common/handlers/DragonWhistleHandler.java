@@ -140,6 +140,7 @@ public class DragonWhistleHandler {
 			DMRDragonEntity newDragon = cap.createDragonEntity(player, player.level, summonItemIndex);
 			newDragon.setPos(player.getX(), player.getY(), player.getZ());
 			player.level.addFreshEntity(newDragon);
+			newDragon.isBeingSummoned = false;
 
 			if (!player.level.isClientSide) {
 				PacketDistributor.sendToPlayersTrackingEntity(newDragon, new DragonStatePacket(newDragon.getId(), 1));
