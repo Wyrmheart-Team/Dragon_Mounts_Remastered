@@ -20,10 +20,10 @@ jobs:
       dry-run: true
   
   deploy:
-    needs: semantic-release
+    needs: [semantic-release, game-tests]
+    if: needs.semantic-release.outputs.new_release_published == 'true' && github.ref == 'refs/heads/main' && github.event_name == 'push' && success()
     uses: ./.github/workflows/release.yaml
     secrets: inherit
-    if: ${{ needs.semantic-release.outputs.new_release_published }} == 'true' && github.ref == 'refs/heads/main' && github.event_name == 'push' && success()
     with:
       new_release_version: ${{ needs.semantic-release.outputs.new_release_version }}
       changelog: ${{ needs.semantic-release.outputs.changelog }}

@@ -15,60 +15,17 @@
   "devDependencies": {
     "@semantic-release/commit-analyzer": "^13.0.0",
     "@semantic-release/release-notes-generator": "^14.0.1",
+    "@types/semantic-release": "^20.0.6",
     "husky": "^9.1.7",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
     "prettier-plugin-java": "^2.6.5",
-    "semantic-release": "^24.1.0"
+    "semantic-release": "^24.2.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2",
+    "conventional-changelog": "^6.0.0"
   },
   "files": [
     "build/libs/*.jar"
-  ],
-  "release": {
-    "branches": [
-      {
-        "name": "1.21"
-      },
-      {
-        "name": "1.20.4",
-        "range": "1.1.x"
-      }
-    ],
-    "plugins": [
-      [
-        "@semantic-release/commit-analyzer",
-        {
-          "preset": "angular",
-          "releaseRules": [
-            {
-              "type": "feat",
-              "release": "minor"
-            },
-            {
-              "type": "minor",
-              "release": "patch"
-            },
-            {
-              "type": "fix",
-              "release": "patch"
-            },
-            {
-              "type": "perf",
-              "release": "patch"
-            },
-            {
-              "type": "breaking",
-              "release": "major"
-            }
-          ]
-        }
-      ],
-      [
-        "@semantic-release/release-notes-generator",
-        {
-          "linkCompare": false
-        }
-      ]
-    ]
-  }
+  ]
 }
