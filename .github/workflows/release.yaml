@@ -158,9 +158,9 @@ jobs:
           CF_PROJECT_ID: ${{ secrets.CF_PROJECT_ID }}
         run: |
           FILE_PATH=$(find build/libs -name "*.jar" | head -n 1)
-          curl --fail-with-body -X POST "https://minecraft.curseforge.com/api/projects/${{ env.CF_PROJECT_ID}}/upload-file" \
+          curl --fail-with-body "https://minecraft.curseforge.com/api/projects/${{ env.CF_PROJECT_ID}}/upload-file" \
             -H "X-Api-Token: ${{ env.CF_API_KEY}}" \
-            -F "metadata=@cf_upload.json" \
+            -F "metadata=$(cat cf_upload.json)" \
             -F "file=@$FILE_PATH"
 
   upload-modrinth:
