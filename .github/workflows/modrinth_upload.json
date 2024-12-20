@@ -9,7 +9,7 @@
   "loaders": [
     "neoforge"
   ],
-  "name": "${mod_version}-neoforge",
+  "name": "${mod_name} ${mod_version}",
   "featured": false,
   "game_versions": [
     "${minecraft_version}"

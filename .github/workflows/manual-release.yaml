@@ -19,10 +19,12 @@ concurrency:
 jobs:
   game-tests:
     uses: ./.github/workflows/game-tests.yaml
+    secrets: inherit
   
   deploy:
     needs: game-tests
     uses: ./.github/workflows/release.yaml
+    secrets: inherit
     with:
       new_release_version: ${{ github.event.inputs.new_release_version }}
       changelog: ${{ github.event.inputs.changelog }}

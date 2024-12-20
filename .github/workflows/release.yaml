@@ -91,26 +91,27 @@ jobs:
         run: |
           # Fetch game versions from CurseForge API and extract IDs
           GAME_VERSIONS=$(curl -s "https://minecraft.curseforge.com/api/game/versions" -H "X-Api-Token: ${{ env.CF_API_KEY}}")
-          echo "JAVA_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "Java 17") | .id')" >> $GITHUB_ENV
-          echo "CLIENT_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "Client") | .id')" >> $GITHUB_ENV
-          echo "SERVER_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "Server") | .id')" >> $GITHUB_ENV
-          echo "NEOFORGE_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "NeoForge") | .id')" >> $GITHUB_ENV
-          echo "MC_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r --arg mc_ver "$MC_VERSION" '.[] | select(.name == $mc_ver) | .id')" >> $GITHUB_ENV
+          echo "JAVA_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "Java 17") | .id | tonumber')" >> $GITHUB_ENV
+          echo "CLIENT_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "Client") | .id | tonumber')" >> $GITHUB_ENV
+          echo "SERVER_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "Server") | .id | tonumber')" >> $GITHUB_ENV
+          echo "NEOFORGE_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "NeoForge") | .id | tonumber')" >> $GITHUB_ENV
+          echo "MC_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r --arg mc_ver "$MC_VERSION" '.[] | select(.name == $mc_ver) | .id | tonumber')" >> $GITHUB_ENV
 
       - name: Replace Placeholders in ${{ matrix.file }}
         run: envsubst < ./.github/workflows/${{ matrix.file }} > temp && mv temp ./.github/workflows/${{ matrix.file }}
         env:
           changelog: ${{ inputs.changelog }}
+          mod_name: ${{ needs.common-setup.outputs.mod_name }}
           new_release_version: ${{ inputs.new_release_version }}
           minecraft_version: ${{ needs.common-setup.outputs.minecraft_version }}
           neo_version: ${{ needs.common-setup.outputs.neo_version }}
           geckolib_version: ${{ needs.common-setup.outputs.geckolib_version }}
           mod_version: ${{ inputs.new_release_version }}
-          java_version_id: ${{ env.JAVA_VERSION_ID || '8326' }}
-          client_version_id: ${{ env.CLIENT_VERSION_ID || '9638' }}
-          server_version_id: ${{ env.SERVER_VERSION_ID || '9639' }}
-          neoforge_version_id: ${{ env.NEOFORGE_VERSION_ID || '10150' }}
-          mc_version_id: ${{ env.MC_VERSION_ID || '11779' }}
+          java_version_id: ${{ env.JAVA_VERSION_ID }}
+          client_version_id: ${{ env.CLIENT_VERSION_ID }}
+          server_version_id: ${{ env.SERVER_VERSION_ID }}
+          neoforge_version_id: ${{ env.NEOFORGE_VERSION_ID }}
+          mc_version_id: ${{ env.MC_VERSION_ID }}
 
       - name: Verify Placeholders Replaced
         run: |

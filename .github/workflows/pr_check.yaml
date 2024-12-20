@@ -6,3 +6,4 @@ on:
 jobs:
   game-tests:
     uses: ./.github/workflows/game-tests.yaml
+    secrets: inherit
