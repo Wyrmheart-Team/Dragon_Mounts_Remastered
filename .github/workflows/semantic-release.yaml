@@ -55,7 +55,13 @@ jobs:
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-      
+          
+      - name: Compile TypeScript Configuration
+        run: npx tsc release.config.ts
+        
+      - name: Ensure TypeScript is Installed
+        run: npx typescript --version
+    
       - name: Run Semantic Release
         id: semantic
         uses: cycjimmy/semantic-release-action@v4
