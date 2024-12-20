@@ -1,6 +1,4 @@
-import { Options } from "semantic-release";
-
-const config: Options = {
+module.exports = {
     branches: [
         {
             name: "1.21",
@@ -40,15 +38,12 @@ const config: Options = {
                     headerPartial: "## 🚀 Release {{version}} - {{formatDate date}}\n\n",
                     transform: (commit, context) => {
                         if (!commit.message) return [];
-
                         const regex = /(\w+):\s(.*?)(?=(\w+:)|$)/gs;
-                        const parsedCommits: any[] = [];
+                        const parsedCommits = [];
                         let match;
-
                         while ((match = regex.exec(commit.message)) !== null) {
                             const type = match[1];
                             const message = match[2];
-
                             const section = context.typeMap[type];
                             if (section) {
                                 parsedCommits.push({
@@ -58,13 +53,12 @@ const config: Options = {
                                 });
                             }
                         }
-
                         return parsedCommits;
                     },
                     getExtraContext: (context) => {
-                        const typeMap: Record<string, string> = {};
-                        context.commitGroups.forEach((group: any) => {
-                            group.commits.forEach((commit: any) => {
+                        const typeMap = {};
+                        context.commitGroups.forEach((group) => {
+                            group.commits.forEach((commit) => {
                                 typeMap[commit.type] = group.title;
                             });
                         });
@@ -72,7 +66,7 @@ const config: Options = {
                     },
                     // Helpers for custom formatting
                     helpers: {
-                        formatDate: (isoDate: string) => {
+                        formatDate: (isoDate) => {
                             const date = new Date(isoDate);
                             const formatter = new Intl.DateTimeFormat("en-US", {
                                 year: "numeric",
@@ -100,5 +94,3 @@ const config: Options = {
         ],
     ],
 };
-
-export default config;
