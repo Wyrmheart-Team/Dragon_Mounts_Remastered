@@ -85,7 +85,21 @@ jobs:
           MC_VERSION: ${{ needs.common-setup.outputs.minecraft_version }}
         run: |
           # Fetch game versions from CurseForge API
-          GAME_VERSIONS=$(curl -s "https://minecraft.curseforge.com/api/game/versions" -H "X-Api-Token: $CF_API_KEY")
+          GAME_VERSIONS=$(curl -s --fail "https://minecraft.curseforge.com/api/game/versions" -H "X-Api-Token: $CF_API_KEY")
+          
+          # Validate JSON response
+          if [[ -z "$GAME_VERSIONS" ]]; then
+           echo "Error: Empty response from CurseForge API" >&2
+          exit 1
+          fi
+          
+          if ! echo "$GAME_VERSIONS" | jq . >/dev/null 2>&1; then
+            echo "Error: Invalid JSON response from CurseForge API" >&2
+          exit 1
+          fi
+        
+          # Debug API response
+          echo "API Response: $GAME_VERSIONS"
           
           # Write IDs directly to GITHUB_ENV
           echo "JAVA_VERSION_ID=$(echo "$GAME_VERSIONS" | jq '.[] | select(.name == "Java 17") | .id')" >> $GITHUB_ENV
@@ -105,7 +119,7 @@ jobs:
           minecraft_version: ${{ needs.common-setup.outputs.minecraft_version }}
           neo_version: ${{ needs.common-setup.outputs.neo_version }}
           geckolib_version: ${{ needs.common-setup.outputs.geckolib_version }}
-          mod_name: ${{ needs.common-setup.outputs.mod_name }}
+          mod_version: ${{ inputs.new_release_version }}
           java_version_id: ${{ env.JAVA_VERSION_ID }}
           client_version_id: ${{ env.CLIENT_VERSION_ID }}
           server_version_id: ${{ env.SERVER_VERSION_ID }}
