@@ -194,15 +194,18 @@ jobs:
     name: Post-Release Notification
     runs-on: ubuntu-latest
     needs: [upload-curseforge, upload-modrinth]
+    continue-on-error: true
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Notify Discord
         uses: Sniddl/discord-commits@v1.6
+        env:
+          mod_name: ${{ needs.common-setup.outputs.mod_name }}
         with:
           webhook: ${{ secrets.DISCORD_ANNOUNCEMENT_WEBHOOK_URL }}
-          message: "Version ${{ inputs.new_release_version }} of ${{ needs.common-setup.outputs.mod_name }} has been released!"
+          message: "Version ${{ inputs.new_release_version }} of ${{ env.mod_name }} has been released on Modrinth and CurseForge!"
           embed: |
             {
               "description": "Changelog:\n${{ inputs.changelog }}"

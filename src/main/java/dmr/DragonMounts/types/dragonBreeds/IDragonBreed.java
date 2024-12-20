@@ -1,5 +1,6 @@
 package dmr.DragonMounts.types.dragonBreeds;
 
+import com.google.gson.annotations.SerializedName;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.types.abilities.types.Ability;
@@ -21,16 +22,21 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.pathfinder.PathType;
 
 public interface IDragonBreed {
-	record LootTableEntry(ResourceLocation table, float chance, int minAmount, int maxAmount) {}
+	record LootTableEntry(
+		@SerializedName("table") ResourceLocation table,
+		@SerializedName("chance") float chance,
+		@SerializedName("min") int minAmount,
+		@SerializedName("max") int maxAmount
+	) {}
 	record Variant(
-		String id,
-		ResourceLocation skinTexture,
-		ResourceLocation saddleTexture,
-		ResourceLocation glowTexture,
-		ResourceLocation eggTexture,
-		int primaryColor,
-		int secondaryColor,
-		float sizeModifier
+		@SerializedName("id") String id,
+		@SerializedName("texture") ResourceLocation skinTexture,
+		@SerializedName("saddle_texture") ResourceLocation saddleTexture,
+		@SerializedName("glow_texture") ResourceLocation glowTexture,
+		@SerializedName("egg_texture") ResourceLocation eggTexture,
+		@SerializedName("primary_color") int primaryColor,
+		@SerializedName("secondary_color") int secondaryColor,
+		@SerializedName("size_modifier") float sizeModifier
 	) {}
 
 	default boolean isHybrid() {
