@@ -37,7 +37,7 @@ jobs:
             [[ -z "$key" || "$key" == \#* ]] && continue
             echo "$key=$value" >> $GITHUB_ENV
             echo "$key=$value" >> $GITHUB_OUTPUT
-            echo "$key=$value
+            echo "$key=$value"
           done < gradle.properties
   
   java-build:
