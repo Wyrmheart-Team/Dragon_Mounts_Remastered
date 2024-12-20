@@ -10,16 +10,19 @@ concurrency:
 jobs:
   game-tests:
     uses: ./.github/workflows/game-tests.yaml
+    secrets: inherit
   
   semantic-release:
     needs: game-tests
     uses: ./.github/workflows/semantic-release.yaml
+    secrets: inherit
     with:
       dry-run: true
   
   deploy:
     needs: semantic-release
     uses: ./.github/workflows/release.yaml
+    secrets: inherit
     if: ${{ needs.semantic-release.outputs.new_release_published }} == 'true' && github.ref == 'refs/heads/main' && github.event_name == 'push' && success()
     with:
       new_release_version: ${{ needs.semantic-release.outputs.new_release_version }}
@@ -28,5 +31,6 @@ jobs:
   set-version-tags:
     needs: deploy
     uses: ./.github/workflows/semantic-release.yaml
+    secrets: inherit
     with:
       dry-run: false
