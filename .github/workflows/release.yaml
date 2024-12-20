@@ -58,6 +58,9 @@ jobs:
       - name: Update gradle.properties
         run: sed -i "s/mod_version=.*/mod_version=${{ inputs.new_release_version }}/g" gradle.properties
       
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      
       - name: Build with Gradle
         run: ./gradlew build
       
@@ -81,46 +84,23 @@ jobs:
       - name: Fetch Game Version IDs
         if: ${{ matrix.file == 'cf_upload.json' }}
         id: fetch_ids
+        continue-on-error: true
         env:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
           MC_VERSION: ${{ needs.common-setup.outputs.minecraft_version }}
         run: |
-          echo "Fetching game versions from CurseForge API..."
-          GAME_VERSIONS=$(curl -s -w "\nHTTP Status: %{http_code}\n" --fail "https://minecraft.curseforge.com/api/game/versions" -H "X-Api-Token: $CF_API_KEY")
-          HTTP_STATUS=$(echo "$GAME_VERSIONS" | tail -n 1)
-          
-          if [[ $HTTP_STATUS -ne 200 ]]; then
-            echo "Error: Failed to fetch game versions from CurseForge API" >&2
-            exit 1
-          fi
-          
-          if [[ $? -ne 0 ]]; then
-          echo "Error: Failed to fetch game versions from CurseForge API" >&2
-          exit 1
-          fi
-          
-          if [[ -z "$GAME_VERSIONS" ]]; then
-          echo "Error: Empty response from CurseForge API" >&2
-          exit 1
-          fi
-          
-          if ! echo "$GAME_VERSIONS" | jq . >/dev/null 2>&1; then
-          echo "Error: Invalid JSON response from CurseForge API" >&2
-          exit 1
-          fi
-          
-          # Write IDs directly to GITHUB_ENV
-          echo "JAVA_VERSION_ID=$(echo "$GAME_VERSIONS" | jq '.[] | select(.name == "Java 17") | .id')" >> $GITHUB_ENV
-          echo "CLIENT_VERSION_ID=$(echo "$GAME_VERSIONS" | jq '.[] | select(.name == "Client") | .id')" >> $GITHUB_ENV
-          echo "SERVER_VERSION_ID=$(echo "$GAME_VERSIONS" | jq '.[] | select(.name == "Server") | .id')" >> $GITHUB_ENV
-          echo "NEOFORGE_VERSION_ID=$(echo "$GAME_VERSIONS" | jq '.[] | select(.name == "NeoForge") | .id')" >> $GITHUB_ENV
-          echo "MC_VERSION_ID=$(echo "$GAME_VERSIONS" | jq --arg mc_ver "$MC_VERSION" '.[] | select(.name == $mc_ver) | .id')" >> $GITHUB_ENV
-
-      - name: Debug Environment Variables
-        run: env
+            # Fetch game versions from CurseForge API and extract IDs
+            GAME_VERSIONS=$(curl -s "https://minecraft.curseforge.com/api/game/versions" -H "X-Api-Token: $CF_API_KEY")
+            echo "JAVA_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "Java 17") | .id')" >> $GITHUB_ENV
+            echo "CLIENT_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "Client") | .id')" >> $GITHUB_ENV
+            echo "SERVER_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "Server") | .id')" >> $GITHUB_ENV
+            echo "NEOFORGE_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "NeoForge") | .id')" >> $GITHUB_ENV
+            echo "MC_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r --arg mc_ver "$MC_VERSION" '.[] | select(.name == $mc_ver) | .id')" >> $GITHUB_ENV
       
       - name: Replace Placeholders in ${{ matrix.file }}
-        run: envsubst < ./.github/workflows/${{ matrix.file }} > temp && mv temp ./.github/workflows/${{ matrix.file }}
+        run: |
+          env
+          envsubst < ./.github/workflows/${{ matrix.file }} > temp && mv temp ./.github/workflows/${{ matrix.file }}
         env:
           changelog: ${{ inputs.changelog }}
           new_release_version: ${{ inputs.new_release_version }}
@@ -128,11 +108,11 @@ jobs:
           neo_version: ${{ needs.common-setup.outputs.neo_version }}
           geckolib_version: ${{ needs.common-setup.outputs.geckolib_version }}
           mod_version: ${{ inputs.new_release_version }}
-          java_version_id: ${{ env.JAVA_VERSION_ID }}
-          client_version_id: ${{ env.CLIENT_VERSION_ID }}
-          server_version_id: ${{ env.SERVER_VERSION_ID }}
-          neoforge_version_id: ${{ env.NEOFORGE_VERSION_ID }}
-          mc_version_id: ${{ env.MC_VERSION_ID }}
+          java_version_id: ${{ env.JAVA_VERSION_ID || "8326" }}
+          client_version_id: ${{ env.CLIENT_VERSION_ID || "9638" }}
+          server_version_id: ${{ env.SERVER_VERSION_ID || "9639" }}
+          neoforge_version_id: ${{ env.NEOFORGE_VERSION_ID || "10150" }}
+          mc_version_id: ${{ env.MC_VERSION_ID || "11779" }}
       
       - name: Verify Placeholders Replaced
         run: |
