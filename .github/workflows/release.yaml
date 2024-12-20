@@ -108,11 +108,11 @@ jobs:
           neo_version: ${{ needs.common-setup.outputs.neo_version }}
           geckolib_version: ${{ needs.common-setup.outputs.geckolib_version }}
           mod_version: ${{ inputs.new_release_version }}
-          java_version_id: ${{ env.JAVA_VERSION_ID || "8326" }}
-          client_version_id: ${{ env.CLIENT_VERSION_ID || "9638" }}
-          server_version_id: ${{ env.SERVER_VERSION_ID || "9639" }}
-          neoforge_version_id: ${{ env.NEOFORGE_VERSION_ID || "10150" }}
-          mc_version_id: ${{ env.MC_VERSION_ID || "11779" }}
+          java_version_id: ${{ env.JAVA_VERSION_ID || '8326' }}
+          client_version_id: ${{ env.CLIENT_VERSION_ID || '9638' }}
+          server_version_id: ${{ env.SERVER_VERSION_ID || '9639' }}
+          neoforge_version_id: ${{ env.NEOFORGE_VERSION_ID || '10150' }}
+          mc_version_id: ${{ env.MC_VERSION_ID || '11779' }}
       
       - name: Verify Placeholders Replaced
         run: |
