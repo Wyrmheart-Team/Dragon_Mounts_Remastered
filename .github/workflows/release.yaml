@@ -91,11 +91,11 @@ jobs:
         run: |
           # Fetch game versions from CurseForge API and extract IDs
           GAME_VERSIONS=$(curl -s "https://minecraft.curseforge.com/api/game/versions" -H "X-Api-Token: ${{ env.CF_API_KEY}}")
-          echo "JAVA_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "Java 17") | .id | tonumber')" >> $GITHUB_ENV
-          echo "CLIENT_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "Client") | .id | tonumber')" >> $GITHUB_ENV
-          echo "SERVER_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "Server") | .id | tonumber')" >> $GITHUB_ENV
-          echo "NEOFORGE_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "NeoForge") | .id | tonumber')" >> $GITHUB_ENV
-          echo "MC_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r --arg mc_ver "$MC_VERSION" '.[] | select(.name == $mc_ver) | .id | tonumber')" >> $GITHUB_ENV
+          echo "JAVA_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "Java 17") | .id')" >> $GITHUB_ENV
+          echo "CLIENT_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "Client") | .id')" >> $GITHUB_ENV
+          echo "SERVER_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "Server") | .id')" >> $GITHUB_ENV
+          echo "NEOFORGE_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "NeoForge") | .id')" >> $GITHUB_ENV
+          echo "MC_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r --arg mc_ver "$MC_VERSION" '.[] | select(.name == $mc_ver) | .id')" >> $GITHUB_ENV
 
       - name: Replace Placeholders in ${{ matrix.file }}
         run: envsubst < ./.github/workflows/${{ matrix.file }} > temp && mv temp ./.github/workflows/${{ matrix.file }}
