@@ -66,8 +66,8 @@ jobs:
         run: |
           # Safely normalize newlines and escape special characters
           description="${{ steps.semantic.outputs.new_release_notes }}"
-          description="${description//'%'/'%25'}"  # Escape %
-          description="${description//$'\n'/'%0A'}" # Normalize \n
-          description="${description//$'\r'/'%0D'}" # Normalize \r
+          description="${description//'%'/'\n'}"
+          description="${description//$'\n'/'\n'}"
+          description="${description//$'\r'/'\n'}"
           
           echo "description=$description" >> $GITHUB_OUTPUT

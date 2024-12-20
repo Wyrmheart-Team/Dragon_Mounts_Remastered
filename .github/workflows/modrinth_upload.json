@@ -9,13 +9,13 @@
   "loaders": [
     "neoforge"
   ],
-  "name": "${version}-neoforge",
+  "name": "${mod_version}-neoforge",
   "featured": false,
   "game_versions": [
-    "${game_version}"
+    "${minecraft_version}"
   ],
   "changelog": "${changelog}",
-  "version_number": "${version}",
+  "version_number": "${mod_version}",
   "project_id": "DUx05jFK",
   "file_parts": [
     "jar"

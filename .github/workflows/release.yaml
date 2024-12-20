@@ -36,7 +36,7 @@ jobs:
             value=$(echo "$value" | xargs)
             [[ -z "$key" || "$key" == \#* ]] && continue
             echo "$key=$value" >> $GITHUB_ENV
-            echo "::set-output name=$key::$value"
+            echo "$key=$value" >> $GITHUB_OUTPUT
           done < gradle.properties
   
   java-build:
@@ -77,18 +77,50 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
       
-      - name: Replace Placeholders in ${{ matrix.file }}
+      - name: Fetch Game Version IDs
+        if: ${{ matrix.file == 'cf_upload.json' }}
+        id: fetch_ids
+        env:
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          MC_VERSION: ${{ needs.common-setup.outputs.minecraft_version }}
         run: |
-          for key in $(env | cut -d= -f1); do
-            value=${!key}
-            sed -i "s|\\\${$key}|$value|g" ./.github/workflows/${{ matrix.file }}
-          done
+          # Fetch game versions from CurseForge API
+          GAME_VERSIONS=$(curl -s "https://minecraft.curseforge.com/api/game/versions" -H "X-Api-Token: $CF_API_KEY")
+          
+          # Write IDs directly to GITHUB_ENV
+          echo "JAVA_VERSION_ID=$(echo "$GAME_VERSIONS" | jq '.[] | select(.name == "Java 17") | .id')" >> $GITHUB_ENV
+          echo "CLIENT_VERSION_ID=$(echo "$GAME_VERSIONS" | jq '.[] | select(.name == "Client") | .id')" >> $GITHUB_ENV
+          echo "SERVER_VERSION_ID=$(echo "$GAME_VERSIONS" | jq '.[] | select(.name == "Server") | .id')" >> $GITHUB_ENV
+          echo "NEOFORGE_VERSION_ID=$(echo "$GAME_VERSIONS" | jq '.[] | select(.name == "NeoForge") | .id')" >> $GITHUB_ENV
+          echo "MC_VERSION_ID=$(echo "$GAME_VERSIONS" | jq --arg mc_ver "$MC_VERSION" '.[] | select(.name == $mc_ver) | .id')" >> $GITHUB_ENV
+
+      - name: Debug Environment Variables
+        run: env
+      
+      - name: Replace Placeholders in ${{ matrix.file }}
+        run: envsubst < ./.github/workflows/${{ matrix.file }} > temp && mv temp ./.github/workflows/${{ matrix.file }}
         env:
           changelog: ${{ inputs.changelog }}
           new_release_version: ${{ inputs.new_release_version }}
+          minecraft_version: ${{ needs.common-setup.outputs.minecraft_version }}
+          neo_version: ${{ needs.common-setup.outputs.neo_version }}
+          geckolib_version: ${{ needs.common-setup.outputs.geckolib_version }}
+          mod_name: ${{ needs.common-setup.outputs.mod_name }}
+          java_version_id: ${{ env.JAVA_VERSION_ID }}
+          client_version_id: ${{ env.CLIENT_VERSION_ID }}
+          server_version_id: ${{ env.SERVER_VERSION_ID }}
+          neoforge_version_id: ${{ env.NEOFORGE_VERSION_ID }}
+          mc_version_id: ${{ env.MC_VERSION_ID }}
+      
+      - name: Verify Placeholders Replaced
+        run: |
+          if grep -q '\${' ./.github/workflows/${{ matrix.file }}; then
+            echo "Error: Unresolved placeholders in ${{ matrix.file }}" >&2
+            exit 1
+          fi
       
       - name: Upload Processed File
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: processed-${{ matrix.file }}
           path: ./.github/workflows/${{ matrix.file }}
@@ -99,13 +131,13 @@ jobs:
     needs: [java-build, replace-placeholders]
     steps:
       - name: Download Processed cf_upload.json
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: processed-cf_upload.json
           path: ./
       
       - name: Download JAR artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: dragon-mounts-jar
           path: build/libs/
@@ -127,13 +159,13 @@ jobs:
     needs: [java-build, replace-placeholders]
     steps:
       - name: Download Processed modrinth_upload.json
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: processed-modrinth_upload.json
           path: ./
       
       - name: Download JAR artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: dragon-mounts-jar
           path: build/libs/
