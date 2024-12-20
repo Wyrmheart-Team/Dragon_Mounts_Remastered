@@ -85,22 +85,29 @@ jobs:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
           MC_VERSION: ${{ needs.common-setup.outputs.minecraft_version }}
         run: |
-          # Fetch game versions from CurseForge API
-          GAME_VERSIONS=$(curl -s --fail "https://minecraft.curseforge.com/api/game/versions" -H "X-Api-Token: $CF_API_KEY")
+          echo "Fetching game versions from CurseForge API..."
+          GAME_VERSIONS=$(curl -s -w "\nHTTP Status: %{http_code}\n" --fail "https://minecraft.curseforge.com/api/game/versions" -H "X-Api-Token: $CF_API_KEY")
+          HTTP_STATUS=$(echo "$GAME_VERSIONS" | tail -n 1)
           
-          # Validate JSON response
+          if [[ $HTTP_STATUS -ne 200 ]]; then
+            echo "Error: Failed to fetch game versions from CurseForge API" >&2
+            exit 1
+          fi
+          
+          if [[ $? -ne 0 ]]; then
+          echo "Error: Failed to fetch game versions from CurseForge API" >&2
+          exit 1
+          fi
+          
           if [[ -z "$GAME_VERSIONS" ]]; then
-           echo "Error: Empty response from CurseForge API" >&2
+          echo "Error: Empty response from CurseForge API" >&2
           exit 1
           fi
           
           if ! echo "$GAME_VERSIONS" | jq . >/dev/null 2>&1; then
-            echo "Error: Invalid JSON response from CurseForge API" >&2
+          echo "Error: Invalid JSON response from CurseForge API" >&2
           exit 1
           fi
-        
-          # Debug API response
-          echo "API Response: $GAME_VERSIONS"
           
           # Write IDs directly to GITHUB_ENV
           echo "JAVA_VERSION_ID=$(echo "$GAME_VERSIONS" | jq '.[] | select(.name == "Java 17") | .id')" >> $GITHUB_ENV
