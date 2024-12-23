@@ -12,8 +12,8 @@ public class PlayerStateUtils {
 		}
 
 		var handler = player.getData(ModCapabilities.PLAYER_CAPABILITY);
-		if (handler.getPlayer() == null) {
-			handler.setPlayer(player);
+		if (handler.getPlayerInstance() == null) {
+			handler.setPlayerInstance(player);
 		}
 		return handler;
 	}

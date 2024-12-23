@@ -32,7 +32,7 @@ public class ModCapabilities {
 	@SubscribeEvent
 	public static void onLoggedIn(PlayerEvent.PlayerLoggedInEvent loggedInEvent) {
 		Player player = loggedInEvent.getEntity();
-		player.getData(PLAYER_CAPABILITY).setPlayer(player);
+		player.getData(PLAYER_CAPABILITY).setPlayerInstance(player);
 		syncCapability(player);
 	}
 
@@ -44,14 +44,14 @@ public class ModCapabilities {
 	@SubscribeEvent
 	public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent playerRespawnEvent) {
 		Player player = playerRespawnEvent.getEntity();
-		player.getData(PLAYER_CAPABILITY).setPlayer(player);
+		player.getData(PLAYER_CAPABILITY).setPlayerInstance(player);
 		syncCapability(player);
 	}
 
 	@SubscribeEvent
 	public static void onDimensionChange(PlayerEvent.PlayerChangedDimensionEvent event) {
 		Player player = event.getEntity();
-		player.getData(PLAYER_CAPABILITY).setPlayer(player);
+		player.getData(PLAYER_CAPABILITY).setPlayerInstance(player);
 		syncCapability(player);
 	}
 

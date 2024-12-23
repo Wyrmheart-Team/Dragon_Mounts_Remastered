@@ -33,7 +33,7 @@ public class CapabilityTests {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
 		var handler = PlayerStateUtils.getHandler(player);
 
-		if (handler.getPlayer() == null) {
+		if (handler.getPlayerInstance() == null) {
 			throw new GameTestAssertException("Player has not been set");
 		}
 
@@ -46,7 +46,7 @@ public class CapabilityTests {
 	public static void setPlayer(ExtendedGameTestHelper helper) {
 		var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
 		var handler = player.getData(ModCapabilities.PLAYER_CAPABILITY);
-		handler.setPlayer(player);
+		handler.setPlayerInstance(player);
 		helper.succeed();
 	}
 
@@ -61,7 +61,7 @@ public class CapabilityTests {
 		dragon.setPos(0, 2, 0);
 		helper.getLevel().addFreshEntity(dragon);
 		dragon.tamedFor(player, true);
-		handler.setDragon(dragon, 1);
+		handler.setDragonToWhistle(dragon, 1);
 		helper.succeed();
 	}
 
@@ -77,7 +77,7 @@ public class CapabilityTests {
 		helper.getLevel().addFreshEntity(dragon);
 		dragon.tamedFor(player, true);
 
-		handler.setDragon(dragon, 1);
+		handler.setDragonToWhistle(dragon, 1);
 
 		if (List.of(handler.dragonNBTs.keys()).size() != 1) {
 			throw new GameTestAssertException("Expected 1 key, got " + List.of(handler.dragonNBTs.keys()).size());
@@ -102,7 +102,7 @@ public class CapabilityTests {
 		helper.getLevel().addFreshEntity(dragon);
 		dragon.tamedFor(player, true);
 
-		handler.setDragon(dragon, 1);
+		handler.setDragonToWhistle(dragon, 1);
 
 		var newDragon = handler.createDragonEntity(player, helper.getLevel(), 1);
 

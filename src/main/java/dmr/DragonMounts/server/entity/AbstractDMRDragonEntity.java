@@ -240,9 +240,6 @@ public abstract class AbstractDMRDragonEntity
 
 		if (!sitting) {
 			resetLastPoseChangeTickToFullStand(level().getGameTime());
-			getBrain().eraseMemory(ModMemoryModuleTypes.SHOULD_SIT.get());
-		} else {
-			getBrain().setMemory(ModMemoryModuleTypes.SHOULD_SIT.get(), true);
 		}
 	}
 
@@ -488,27 +485,56 @@ public abstract class AbstractDMRDragonEntity
 
 	@Override
 	public void readAdditionalSaveData(CompoundTag compound) {
-		entityData.set(DATA_ORIG_BREED, compound.getString("orig_" + NBTConstants.BREED));
-		var breedKey = compound.getString(NBTConstants.BREED);
-		var breed = DragonBreedsRegistry.getDragonBreed(breedKey);
+		if (compound.contains("orig_" + NBTConstants.BREED)) {
+			entityData.set(DATA_ORIG_BREED, compound.getString("orig_" + NBTConstants.BREED));
+		}
 
-		setBreed(breed); // high priority...
+		if (compound.contains(NBTConstants.BREED)) {
+			var breedKey = compound.getString(NBTConstants.BREED);
+			var breed = DragonBreedsRegistry.getDragonBreed(breedKey);
+
+			setBreed(breed);
+		}
 
 		super.readAdditionalSaveData(compound);
-		setSaddled(compound.getBoolean(NBTConstants.SADDLED));
-		setChest(compound.getBoolean(NBTConstants.CHEST));
-		this.reproCount = compound.getInt(NBTConstants.REPRO_COUNT);
-		setDragonUUID(UUID.fromString(compound.getString(NBTConstants.DRAGON_UUID)));
-		entityData.set(DATA_VARIANT, compound.getString(NBTConstants.VARIANT));
-		entityData.set(DATA_ORDERED_TO_SIT, compound.getBoolean("OrderedToSit"));
 
-		Optional<GlobalPos> wanderTarget = GlobalPos.CODEC.parse(NbtOps.INSTANCE, compound.get(NBTConstants.WANDERING_POS)).resultOrPartial(
-			System.err::println
-		);
-		setWanderTarget(wanderTarget);
+		if (compound.contains(NBTConstants.SADDLED)) {
+			setSaddled(compound.getBoolean(NBTConstants.SADDLED));
+		}
+
+		if (compound.contains(NBTConstants.CHEST)) {
+			setChest(compound.getBoolean(NBTConstants.CHEST));
+		}
+
+		if (compound.contains(NBTConstants.REPRO_COUNT)) {
+			this.reproCount = compound.getInt(NBTConstants.REPRO_COUNT);
+		}
+
+		if (compound.contains(NBTConstants.DRAGON_UUID)) {
+			setDragonUUID(UUID.fromString(compound.getString(NBTConstants.DRAGON_UUID)));
+		}
+
+		if (compound.contains(NBTConstants.VARIANT)) {
+			entityData.set(DATA_VARIANT, compound.getString(NBTConstants.VARIANT));
+		}
+
+		if (compound.contains("OrderedToSit")) {
+			entityData.set(DATA_ORDERED_TO_SIT, compound.getBoolean("OrderedToSit"));
+		}
+
+		Optional<GlobalPos> wanderTarget = Optional.empty();
+		if (compound.contains(NBTConstants.WANDERING_POS)) {
+			wanderTarget = GlobalPos.CODEC.parse(NbtOps.INSTANCE, compound.get(NBTConstants.WANDERING_POS)).resultOrPartial(
+				System.err::println
+			);
+			setWanderTarget(wanderTarget);
+		}
 
 		isBeingSummoned = true; //Prevent inventory loading from triggering updateOwnerData
-		ListTag listtag = compound.getList("Items", 10);
+		ListTag listtag = new ListTag();
+		if (compound.contains("Items")) {
+			listtag = compound.getList("Items", 10);
+		}
 
 		for (int i = 0; i < listtag.size(); i++) {
 			CompoundTag compoundtag = listtag.getCompound(i);

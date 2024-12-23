@@ -26,7 +26,6 @@ public class DragonPathNavigation extends FlyingPathNavigation {
 	protected PathFinder createPathFinder(int pMaxVisitedNodes) {
 		this.dragonNodeEvaluator = new DragonNodeEvaluator(mob);
 		this.nodeEvaluator = dragonNodeEvaluator;
-		this.nodeEvaluator.setCanPassDoors(true);
 		return new PathFinder(this.nodeEvaluator, pMaxVisitedNodes);
 	}
 
@@ -50,6 +49,8 @@ public class DragonPathNavigation extends FlyingPathNavigation {
 		dragonNodeEvaluator.allowSwimming = false;
 		dragonNodeEvaluator.allowFlying = false;
 
+		setMaxVisitedNodesMultiplier(5f);
+
 		if (mob instanceof DMRDragonEntity dragon) {
 			dragonNodeEvaluator.allowSwimming =
 				dragon.getBreed() != null &&
@@ -69,6 +70,8 @@ public class DragonPathNavigation extends FlyingPathNavigation {
 			}
 		}
 
+		resetMaxVisitedNodesMultiplier();
+
 		return path;
 	}
 
@@ -76,6 +79,8 @@ public class DragonPathNavigation extends FlyingPathNavigation {
 	public Path createPath(Entity entity, int accuracy) {
 		dragonNodeEvaluator.allowSwimming = false;
 		dragonNodeEvaluator.allowFlying = false;
+
+		setMaxVisitedNodesMultiplier(5f);
 
 		if (mob instanceof DMRDragonEntity dragon) {
 			dragonNodeEvaluator.allowSwimming =
@@ -93,6 +98,8 @@ public class DragonPathNavigation extends FlyingPathNavigation {
 				path = super.createPath(entity, accuracy);
 			}
 		}
+
+		resetMaxVisitedNodesMultiplier();
 
 		return path;
 	}

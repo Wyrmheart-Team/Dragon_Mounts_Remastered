@@ -19,21 +19,25 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 
 	@Setter
 	@Getter
-	private Player player;
+	private Player playerInstance;
 
 	public Long lastCall;
 
 	public int dragonsHatched;
 
 	public ConcurrentHashMap<Integer, Integer> respawnDelays = new ConcurrentHashMap<>();
-	public ConcurrentHashMap<Integer, UUID> dragonUUIDs = new ConcurrentHashMap<>();
+	public ConcurrentHashMap<Integer, UUID> whistleSlots = new ConcurrentHashMap<>();
 	public ConcurrentHashMap<Integer, UUID> summonInstances = new ConcurrentHashMap<>();
 	public ConcurrentHashMap<Integer, CompoundTag> dragonNBTs = new ConcurrentHashMap<>();
 
 	public boolean shouldDismount;
 
+	//Client side synced configs
+	public boolean cameraFlight = true;
+	public boolean alternateDismount = true;
+
 	public DMRDragonEntity createDragonEntity(Player player, Level world, int index) {
-		setPlayer(player);
+		setPlayerInstance(player);
 
 		var nbt = dragonNBTs.get(index);
 
@@ -53,7 +57,7 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 					dragon.stopSitting();
 					dragon.setWanderTarget(Optional.empty());
 
-					setDragon(dragon, index);
+					setDragonToWhistle(dragon, index);
 					dragon.setHealth(Math.max(1, dragon.getHealth()));
 
 					return dragon;
@@ -63,15 +67,15 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 		return null;
 	}
 
-	public void setDragon(DMRDragonEntity dragon, int index) {
+	public void setDragonToWhistle(DMRDragonEntity dragon, int index) {
 		dragon.setTame(true, true);
-		dragon.setOwnerUUID(player.getGameProfile().getId());
+		dragon.setOwnerUUID(playerInstance.getGameProfile().getId());
 
 		var summonInstance = UUID.randomUUID();
 		summonInstances.put(index, summonInstance);
 		dragon.setSummonInstance(summonInstance);
 
-		dragonUUIDs.put(index, dragon.getDragonUUID());
+		whistleSlots.put(index, dragon.getDragonUUID());
 
 		var wanderPos = dragon.getWanderTarget();
 		var sit = dragon.isOrderedToSit();
@@ -87,9 +91,9 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 		dragon.setOrderedToSit(sit);
 	}
 
-	public boolean isSelectedDragon(DMRDragonEntity dragon) {
+	public boolean isBoundToWhistle(DMRDragonEntity dragon) {
 		if (dragon.getDragonUUID() != null) {
-			for (var uuid : dragonUUIDs.values()) {
+			for (var uuid : whistleSlots.values()) {
 				if (dragon.getDragonUUID().equals(uuid)) {
 					return true;
 				}
@@ -106,13 +110,16 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 		tag.putBoolean("shouldDismount", shouldDismount);
 		tag.putInt("dragonsHatched", dragonsHatched);
 
+		tag.putBoolean("cameraFlight", cameraFlight);
+		tag.putBoolean("alternateDismount", alternateDismount);
+
 		for (DyeColor color : DyeColor.values()) {
 			if (respawnDelays.containsKey(color.getId())) {
 				tag.putInt("respawnDelay_" + color.getId(), respawnDelays.get(color.getId()));
 			}
 
-			if (dragonUUIDs.containsKey(color.getId())) {
-				tag.putUUID("dragonUUID_" + color.getId(), dragonUUIDs.get(color.getId()));
+			if (whistleSlots.containsKey(color.getId())) {
+				tag.putUUID("dragonUUID_" + color.getId(), whistleSlots.get(color.getId()));
 			}
 
 			if (summonInstances.containsKey(color.getId())) {
@@ -136,9 +143,17 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 		dragonsHatched = base.getInt("dragonsHatched");
 
 		respawnDelays.clear();
-		dragonUUIDs.clear();
+		whistleSlots.clear();
 		summonInstances.clear();
 		dragonNBTs.clear();
+
+		if (base.contains("cameraFlight")) {
+			cameraFlight = base.getBoolean("cameraFlight");
+		}
+
+		if (base.contains("alternateDismount")) {
+			alternateDismount = base.getBoolean("alternateDismount");
+		}
 
 		for (DyeColor color : DyeColor.values()) {
 			if (base.contains("respawnDelay_" + color.getId())) {
@@ -146,7 +161,7 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 			}
 
 			if (base.contains("dragonUUID_" + color.getId())) {
-				dragonUUIDs.put(color.getId(), base.getUUID("dragonUUID_" + color.getId()));
+				whistleSlots.put(color.getId(), base.getUUID("dragonUUID_" + color.getId()));
 			}
 
 			if (base.contains("summonInstance_" + color.getId())) {

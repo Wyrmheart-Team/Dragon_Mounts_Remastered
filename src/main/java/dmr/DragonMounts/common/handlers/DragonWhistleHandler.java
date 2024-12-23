@@ -30,7 +30,7 @@ public class DragonWhistleHandler {
 			return false;
 		}
 
-		if (!handler.dragonUUIDs.containsKey(index) || handler.dragonUUIDs.get(index) == null) {
+		if (!handler.whistleSlots.containsKey(index) || handler.whistleSlots.get(index) == null) {
 			player.displayClientMessage(Component.translatable("dmr.dragon_call.nodragon").withStyle(ChatFormatting.RED), true);
 			return false;
 		}
@@ -105,7 +105,7 @@ public class DragonWhistleHandler {
 				(float) (1.4 + rand.nextGaussian() / 3)
 			);
 
-			DMRDragonEntity dragon = findDragon(player, cap.dragonUUIDs.get(summonItemIndex));
+			DMRDragonEntity dragon = findDragon(player, cap.whistleSlots.get(summonItemIndex));
 
 			if (dragon != null) {
 				if (dragon.level.dimensionType() == player.level.dimensionType()) {
@@ -187,7 +187,7 @@ public class DragonWhistleHandler {
 	public static int getDragonSummonIndex(Player player, UUID dragonUUID) {
 		var handler = PlayerStateUtils.getHandler(player);
 
-		for (var entry : handler.dragonUUIDs.entrySet()) {
+		for (var entry : handler.whistleSlots.entrySet()) {
 			if (entry.getValue().equals(dragonUUID)) {
 				return entry.getKey();
 			}
@@ -197,8 +197,8 @@ public class DragonWhistleHandler {
 	}
 
 	public static void setDragon(Player player, DMRDragonEntity dragon, int index) {
-		player.getData(ModCapabilities.PLAYER_CAPABILITY).setPlayer(player);
-		player.getData(ModCapabilities.PLAYER_CAPABILITY).setDragon(dragon, index);
+		player.getData(ModCapabilities.PLAYER_CAPABILITY).setPlayerInstance(player);
+		player.getData(ModCapabilities.PLAYER_CAPABILITY).setDragonToWhistle(dragon, index);
 	}
 
 	public static DMRDragonEntity findDragon(Player player, UUID dragonId) {

@@ -17,6 +17,7 @@ public class ModMemoryModuleTypes {
 	public static final Supplier<MemoryModuleType<Boolean>> SHOULD_SIT = register("should_sit", Codec.BOOL);
 	public static final Supplier<MemoryModuleType<Boolean>> SHOULD_WANDER = register("should_wander", Codec.BOOL);
 	public static final Supplier<MemoryModuleType<Boolean>> HAS_BREATH_COOLDOWN = register("has_breath_cooldown", Codec.BOOL);
+	public static final Supplier<MemoryModuleType<Integer>> IDLE_TICKS = register("idle_ticks", Codec.INT);
 
 	private static <U> Supplier<MemoryModuleType<U>> register(String key, Codec<U> codec) {
 		return MEMORY_MODULE_TYPE.register(key, () -> new MemoryModuleType<>(Optional.of(codec)));

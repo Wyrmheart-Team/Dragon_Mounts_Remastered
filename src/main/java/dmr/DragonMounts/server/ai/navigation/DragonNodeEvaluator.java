@@ -1,10 +1,12 @@
 package dmr.DragonMounts.server.ai.navigation;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.PathNavigationRegion;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.*;
+import org.jetbrains.annotations.Nullable;
 
 public class DragonNodeEvaluator extends FlyNodeEvaluator {
 
@@ -39,6 +41,19 @@ public class DragonNodeEvaluator extends FlyNodeEvaluator {
 	}
 
 	@Override
+	public Target getTarget(double x, double y, double z) {
+		if (allowFlying) {
+			return super.getTarget(x, y, z);
+		}
+
+		if (this.allowSwimming) {
+			return swimNodeEvaluator.getTarget(x, y, z);
+		}
+
+		return walkNodeEvaluator.getTarget(x, y, z);
+	}
+
+	@Override
 	public boolean canStartAt(BlockPos pos) {
 		if (allowFlying) {
 			return super.canStartAt(pos);
@@ -68,6 +83,28 @@ public class DragonNodeEvaluator extends FlyNodeEvaluator {
 		}
 
 		return walkNodeEvaluator.getNeighbors(outputArray, p_node);
+	}
+
+	@Override
+	protected @Nullable Node findAcceptedNode(int x, int y, int z) {
+		if (this.allowSwimming) {
+			return swimNodeEvaluator.findAcceptedNode(x, y, z);
+		}
+
+		return super.findAcceptedNode(x, y, z);
+	}
+
+	@Override
+	public @Nullable Node findAcceptedNode(
+		int x,
+		int y,
+		int z,
+		int verticalDeltaLimit,
+		double nodeFloorLevel,
+		Direction direction,
+		PathType pathType
+	) {
+		return walkNodeEvaluator.findAcceptedNode(x, y, z, verticalDeltaLimit, nodeFloorLevel, direction, pathType);
 	}
 
 	@Override

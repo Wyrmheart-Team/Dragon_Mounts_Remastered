@@ -1,10 +1,12 @@
 package dmr.DragonMounts.server.worlddata;
 
 import dmr.DragonMounts.DMR;
+import dmr.DragonMounts.config.ServerConfig;
 import java.util.*;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.Level;
@@ -18,6 +20,14 @@ public class DragonWorldData extends SavedData {
 	public Map<UUID, Integer> deathDelay = new HashMap<>();
 	public Map<UUID, String> deathMessages = new HashMap<>();
 	public List<UUID> deadDragons = new ArrayList<>();
+	public Map<UUID, DragonHistory> dragonHistory = new LinkedHashMap<>() {
+		@Override
+		public boolean removeEldestEntry(Map.Entry<UUID, DragonHistory> eldest) {
+			return size() > ServerConfig.DRAGON_HISTORY_SIZE.get();
+		}
+	};
+
+	public record DragonHistory(UUID id, Long time, String playerName, Component dragonName, CompoundTag compoundTag) {}
 
 	public DragonWorldData() {}
 
@@ -42,6 +52,17 @@ public class DragonWorldData extends SavedData {
 			data.deathMessages.put(uuid, message);
 		}
 
+		var dragonHistory = nbt.getCompound("dragonHistory");
+		for (String key : dragonHistory.getAllKeys()) {
+			CompoundTag historyTag = dragonHistory.getCompound(key);
+			UUID uuid = UUID.fromString(key);
+			long time = historyTag.getLong("time");
+			String playerName = historyTag.getString("playerName");
+			Component dragonName = Component.Serializer.fromJson(historyTag.getString("dragonName"), provider);
+			CompoundTag compoundTag = historyTag.getCompound("compoundTag");
+			data.dragonHistory.put(uuid, new DragonHistory(uuid, time, playerName, dragonName, compoundTag));
+		}
+
 		return data;
 	}
 
@@ -61,6 +82,19 @@ public class DragonWorldData extends SavedData {
 			listtag.add(compoundtag);
 		}
 		tag.put("deadDragons", listtag);
+
+		CompoundTag dragonHistoryTag = new CompoundTag();
+		for (Map.Entry<UUID, DragonHistory> entry : dragonHistory.entrySet()) {
+			UUID uuid = entry.getKey();
+			DragonHistory history = entry.getValue();
+			CompoundTag historyTag = new CompoundTag();
+			historyTag.putLong("time", history.time());
+			historyTag.putString("playerName", history.playerName());
+			historyTag.putString("dragonName", Component.Serializer.toJson(history.dragonName(), provider));
+			historyTag.put("compoundTag", history.compoundTag());
+			dragonHistoryTag.put(uuid.toString(), historyTag);
+		}
+		tag.put("dragonHistory", dragonHistoryTag);
 
 		return tag;
 	}

@@ -34,7 +34,7 @@ public class DragonWhistleEvent {
 		if (owner instanceof Player player) {
 			var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
 
-			for (Map.Entry<Integer, UUID> ent : state.dragonUUIDs.entrySet()) {
+			for (Map.Entry<Integer, UUID> ent : state.whistleSlots.entrySet()) {
 				var index = ent.getKey();
 				var id = ent.getValue();
 				if (id.equals(dragon.getDragonUUID())) {
@@ -76,8 +76,8 @@ public class DragonWhistleEvent {
 			} else if (event.getEntity() instanceof Player player) {
 				var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
 
-				if (!state.dragonUUIDs.values().isEmpty()) {
-					for (Map.Entry<Integer, UUID> ent : state.dragonUUIDs.entrySet()) {
+				if (!state.whistleSlots.values().isEmpty()) {
+					for (Map.Entry<Integer, UUID> ent : state.whistleSlots.entrySet()) {
 						var index = ent.getKey();
 						var id = ent.getValue();
 
@@ -95,7 +95,7 @@ public class DragonWhistleEvent {
 							if (ServerConfig.ALLOW_RESPAWN.get()) {
 								state.respawnDelays.put(index, dragonRespawnDelay);
 							} else {
-								state.dragonUUIDs.remove(index);
+								state.whistleSlots.remove(index);
 								state.dragonNBTs.remove(index);
 								state.summonInstances.remove(index);
 								state.respawnDelays.remove(index);
@@ -118,7 +118,7 @@ public class DragonWhistleEvent {
 				}
 			} else if (event.getEntity() instanceof Player player) {
 				var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
-				for (Map.Entry<Integer, UUID> ent : state.dragonUUIDs.entrySet()) {
+				for (Map.Entry<Integer, UUID> ent : state.whistleSlots.entrySet()) {
 					var index = ent.getKey();
 					var id = ent.getValue();
 
@@ -153,7 +153,7 @@ public class DragonWhistleEvent {
 					if (!ServerConfig.ALLOW_RESPAWN.get()) {
 						var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
 
-						state.dragonUUIDs.remove(index);
+						state.whistleSlots.remove(index);
 						state.dragonNBTs.remove(index);
 						state.summonInstances.remove(index);
 						state.respawnDelays.remove(index);

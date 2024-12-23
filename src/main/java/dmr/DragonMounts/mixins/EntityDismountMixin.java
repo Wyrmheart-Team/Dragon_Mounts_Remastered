@@ -23,6 +23,7 @@ public class EntityDismountMixin {
 			if (player.getControlledVehicle() instanceof DMRDragonEntity dragon) {
 				DragonOwnerCapability cap = player.getData(ModCapabilities.PLAYER_CAPABILITY);
 				cap.shouldDismount = false;
+				dragon.updateOwnerData();
 				dragon.getBrain().setMemoryWithExpiry(ModMemoryModuleTypes.SHOULD_SIT.get(), true, 40L);
 
 				if (player.level.isClientSide()) {

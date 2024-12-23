@@ -2,7 +2,9 @@ package dmr.DragonMounts.server.worlddata;
 
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import dmr.DragonMounts.server.worlddata.DragonWorldData.DragonHistory;
 import java.util.UUID;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 
 public class DragonWorldDataManager {
@@ -41,5 +43,25 @@ public class DragonWorldDataManager {
 		data.deathDelay.put(dragon.getDragonUUID(), ServerConfig.RESPAWN_TIME.get() * 20);
 		data.deathMessages.put(dragon.getDragonUUID(), message);
 		data.setDirty();
+	}
+
+	public static void addDragonHistory(DMRDragonEntity dragon) {
+		var level = dragon.level;
+		DragonWorldData data = DragonWorldData.getInstance(level);
+		var compound = new CompoundTag();
+		dragon.save(compound);
+		var owner = dragon.getOwner();
+		var playerName = owner != null ? owner.getName().getString() : "Unknown";
+		var name = dragon.getName();
+		data.dragonHistory.put(
+			dragon.getDragonUUID(),
+			new DragonWorldData.DragonHistory(dragon.getDragonUUID(), System.currentTimeMillis(), playerName, name, compound)
+		);
+		data.setDirty();
+	}
+
+	public static DragonHistory getDragonHistory(Level level, UUID uuid) {
+		DragonWorldData data = DragonWorldData.getInstance(level);
+		return data.dragonHistory.get(uuid);
 	}
 }

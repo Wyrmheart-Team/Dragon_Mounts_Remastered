@@ -46,18 +46,8 @@ public class DragonMoveController extends MoveControl {
 			dragon.setNoGravity(shouldFly || (isAmphibious && dragon.isInWater()));
 			dragon.setFlying(shouldFly);
 
-			float yaw = (float) (Mth.atan2(zDif, xDif) * (double) (180F / (float) Math.PI)) - 90.0F;
-			float angleDifference = Math.abs(yaw - this.mob.getYRot());
-
-			float deadZone = 60.0F;
-			if (Math.abs(angleDifference) < deadZone) {
-				angleDifference = 0.0F;
-			}
-
-			if (angleDifference > 0.0F) {
-				var targetRot = this.rotlerp(this.mob.getYRot(), yaw, shouldFly || dragon.isFlying() ? 10f : 0.5F);
-				this.mob.setYRot(targetRot);
-			}
+			float f9 = (float) ((Mth.atan2(zDif, xDif) * 180.0F) / (float) Math.PI) - 90.0F;
+			this.mob.setYRot(this.rotlerp(this.mob.getYRot(), f9, 10f));
 
 			float speed;
 

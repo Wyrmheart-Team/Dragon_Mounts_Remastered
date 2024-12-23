@@ -76,8 +76,8 @@ public class DragonWhistleItem extends Item {
 	public void clientSideTooltip(ItemStack pStack, List<Component> pTooltipComponents) {
 		var player = Minecraft.getInstance().player;
 		var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
-		if (state.dragonUUIDs.containsKey(color.getId())) {
-			var id = state.dragonUUIDs.get(color.getId());
+		if (state.whistleSlots.containsKey(color.getId())) {
+			var id = state.whistleSlots.get(color.getId());
 			var dragon = DragonWhistleHandler.findDragon(player, id);
 			var nbt = state.dragonNBTs.get(color.getId());
 
@@ -151,12 +151,12 @@ public class DragonWhistleItem extends Item {
 		if (pInteractionTarget instanceof DMRDragonEntity dragon) {
 			if (dragon.isTame() && dragon.isAdult() && dragon.isOwnedBy(pPlayer)) {
 				DragonOwnerCapability cap = pPlayer.getData(ModCapabilities.PLAYER_CAPABILITY);
-				if (cap.dragonUUIDs.containsKey(color.getId())) {
-					if (!cap.dragonUUIDs.get(color.getId()).equals(dragon.getDragonUUID())) {
+				if (cap.whistleSlots.containsKey(color.getId())) {
+					if (!cap.whistleSlots.get(color.getId()).equals(dragon.getDragonUUID())) {
 						pPlayer.displayClientMessage(Component.translatable("dmr.dragon_call.unlink_first"), true);
 						return InteractionResult.SUCCESS;
 					} else {
-						cap.dragonUUIDs.remove(color.getId());
+						cap.whistleSlots.remove(color.getId());
 						cap.summonInstances.remove(color.getId());
 						cap.dragonNBTs.remove(color.getId());
 						cap.respawnDelays.remove(color.getId());

@@ -359,7 +359,7 @@ public class DragonTests {
 
 		dragon.setChest(true);
 		dragon.inventory.setItem(0, new ItemStack(Items.DIAMOND, 64));
-		PlayerStateUtils.getHandler(player).setDragon(dragon, 1);
+		PlayerStateUtils.getHandler(player).setDragonToWhistle(dragon, 1);
 
 		dragon.kill();
 

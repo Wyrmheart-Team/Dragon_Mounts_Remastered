@@ -8,10 +8,7 @@ import dmr.DragonMounts.registry.ModActivityTypes;
 import dmr.DragonMounts.registry.ModEntities;
 import dmr.DragonMounts.registry.ModMemoryModuleTypes;
 import dmr.DragonMounts.registry.ModSensors;
-import dmr.DragonMounts.server.ai.behaviours.BehaviorWrapper;
-import dmr.DragonMounts.server.ai.behaviours.DragonBreathAttack;
-import dmr.DragonMounts.server.ai.behaviours.DragonBreedBehaviour;
-import dmr.DragonMounts.server.ai.behaviours.RandomSitting;
+import dmr.DragonMounts.server.ai.behaviours.*;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import java.util.Collection;
 import java.util.List;
@@ -23,6 +20,8 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.*;
+import net.minecraft.world.entity.ai.behavior.GateBehavior.OrderPolicy;
+import net.minecraft.world.entity.ai.behavior.GateBehavior.RunningPolicy;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
@@ -52,7 +51,8 @@ public class DragonAI {
 		MemoryModuleType.ATTACK_COOLING_DOWN,
 		MemoryModuleType.NEAREST_VISIBLE_ADULT,
 		ModMemoryModuleTypes.SHOULD_SIT.get(),
-		ModMemoryModuleTypes.SHOULD_WANDER.get()
+		ModMemoryModuleTypes.SHOULD_WANDER.get(),
+		ModMemoryModuleTypes.IDLE_TICKS.get()
 	);
 	private static final Collection<? extends SensorType<? extends Sensor<? super LivingEntity>>> SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES,
@@ -92,7 +92,11 @@ public class DragonAI {
 					SetEntityLookTargetSometimes.create(EntityType.PLAYER, 6.0F, UniformInt.of(400, 800)),
 					new RandomLookAround(UniformInt.of(150, 250), 30.0F, 0.0F, 0.0F)
 				),
-				new BehaviorWrapper<>(e -> !e.isSitting(), new MoveToTargetSink())
+				new BehaviorWrapper<>(
+					e -> !e.isSitting(),
+					ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_PRESENT),
+					new MoveToTargetSink()
+				)
 			)
 		);
 	}
@@ -116,20 +120,23 @@ public class DragonAI {
 					0,
 					new BehaviorWrapper<>(
 						e -> e.isTame() && !e.isOrderedToSit() && !e.hasWanderTarget(),
-						StayCloseToTarget.create(DragonAI::getOwnerPosition, e -> true, 4, 8, 1F)
+						StayCloseToTarget.create(DragonAI::getOwnerPosition, e -> true, 4, 8, 1.2F)
 					)
 				),
 				Pair.of(
 					4,
 					new BehaviorWrapper<>(
-						e -> !e.isTame() && !e.isSitting(),
+						e ->
+							(!e.isTame() || e.getBrain().getMemory(ModMemoryModuleTypes.IDLE_TICKS.get()).orElse(0) >= 200) &&
+							!e.isSitting(),
 						ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT),
 						RandomStroll.stroll(1f),
 						RandomStroll.swim(1f),
 						new RandomSitting(100, 200),
 						new DoNothing(10, 200)
 					)
-				)
+				),
+				Pair.of(10, new ChangeIdleTimer(ChangeIdleTimer.ChangeType.INCREASE, 1))
 			)
 		);
 	}
@@ -152,7 +159,18 @@ public class DragonAI {
 	public static void initSitActivity(Brain<DMRDragonEntity> brain) {
 		brain.addActivityWithConditions(
 			ModActivityTypes.SIT.get(),
-			ImmutableList.of(Pair.of(0, new RandomSitting(100, 200))),
+			ImmutableList.of(
+				Pair.of(
+					0,
+					new BehaviorWrapper<>(
+						e -> true,
+						OrderPolicy.ORDERED,
+						RunningPolicy.TRY_ALL,
+						new ChangeIdleTimer(ChangeIdleTimer.ChangeType.SET, 0),
+						new ForceSitting()
+					)
+				)
+			),
 			ImmutableSet.of(Pair.of(ModMemoryModuleTypes.SHOULD_SIT.get(), MemoryStatus.VALUE_PRESENT))
 		);
 	}

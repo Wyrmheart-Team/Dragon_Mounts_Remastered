@@ -27,6 +27,7 @@ public class ServerConfig {
 	public static final ModConfigSpec.DoubleValue BASE_DAMAGE;
 	public static final ModConfigSpec.BooleanValue ALLOW_RESPAWN;
 	public static final ModConfigSpec.IntValue RESPAWN_TIME;
+	public static final ModConfigSpec.IntValue DRAGON_HISTORY_SIZE;
 
 	private static final Long WHISTLE_COOLDOWN = TimeUnit.MILLISECONDS.convert(5, TimeUnit.SECONDS); // 5 minutes
 
@@ -87,6 +88,12 @@ public class ServerConfig {
 		RESPAWN_TIME = configurator
 			.comment("Time in seconds for a dragon to respawn.")
 			.defineInRange("respawn_time", 60, 0, Integer.MAX_VALUE);
+
+		DRAGON_HISTORY_SIZE = configurator
+			.comment(
+				"The maximum number of dragons to keep track of in the dragon history. This for being able to recall missing dragons through commands. Bigger numbers could increase world save size."
+			)
+			.defineInRange("dragon_history_size", 20, 1, Integer.MAX_VALUE);
 
 		ENABLE_DRAGON_BREATH = configurator
 			.comment(

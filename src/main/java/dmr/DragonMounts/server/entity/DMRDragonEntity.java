@@ -9,7 +9,6 @@ import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.client.handlers.KeyInputHandler;
 import dmr.DragonMounts.common.capability.DragonOwnerCapability;
 import dmr.DragonMounts.common.handlers.DragonWhistleHandler;
-import dmr.DragonMounts.config.ClientConfig;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.network.packets.DragonAgeSyncPacket;
 import dmr.DragonMounts.registry.*;
@@ -19,6 +18,7 @@ import dmr.DragonMounts.server.blocks.DMREggBlock;
 import dmr.DragonMounts.server.container.DragonContainerMenu;
 import dmr.DragonMounts.server.items.DragonArmorItem;
 import dmr.DragonMounts.server.items.DragonSpawnEgg;
+import dmr.DragonMounts.server.worlddata.DragonWorldDataManager;
 import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.util.BreedingUtils;
 import dmr.DragonMounts.util.PlayerStateUtils;
@@ -78,6 +78,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector3d;
@@ -271,7 +272,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 
 		animationController = new AnimationController<>(this, "controller", 5, state -> {
 			Vec3 motio = new Vec3(getX() - xo, getY() - yo, getZ() - zo);
-			boolean isMovingHorizontal = Math.sqrt(Math.pow(motio.x, 2) + Math.pow(motio.z, 2)) > 0.1;
+			boolean isMovingHorizontal = Math.sqrt(Math.pow(motio.x, 2) + Math.pow(motio.z, 2)) > 0.05;
 			state.setControllerSpeed(1);
 
 			if (isSwimming()) {
@@ -321,7 +322,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 				if (isSprinting()) {
 					return state.setAndContinue(SPRINT);
 				} else {
-					state.setControllerSpeed(1f + (isShiftKeyDown() ? 2f : getSpeed()));
+					state.setControllerSpeed(1.1f + (isShiftKeyDown() ? 2f : getSpeed()));
 					return state.setAndContinue(isShiftKeyDown() ? SNEAK_WALK : WALK);
 				}
 			}
@@ -482,13 +483,16 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 
 	@Override
 	public float getPathfindingMalus(PathType pathType) {
-		if (pathType == PathType.WATER && getBreed() != null && getBreed().getImmunities().contains("drown")) {
-			return 0;
+		var originalMalus = super.getPathfindingMalus(pathType);
+		if (pathType == PathType.WATER) {
+			return canDrownInFluidType(NeoForgeMod.WATER_TYPE.getDelegate().value()) ? originalMalus : originalMalus * 8f;
 		}
-		if (pathType == PathType.LAVA && getBreed() != null && getBreed().getImmunities().contains("lava")) {
-			return 0;
+
+		if (pathType == PathType.OPEN) {
+			return originalMalus * 16.0F;
 		}
-		return super.getPathfindingMalus(pathType);
+
+		return originalMalus;
 	}
 
 	@Override
@@ -496,27 +500,24 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 		double moveSideways = move.x;
 		double moveY = 0;
 		double moveForward = Math.min(Math.abs(driver.zza) + Math.abs(driver.xxa), 1);
+		var handler = PlayerStateUtils.getHandler(driver);
 
 		if (isFlying()) {
 			moveForward = moveForward > 0 ? moveForward : 0;
-			if (level.isClientSide) {
-				if (moveForward > 0 && ClientConfig.CAMERA_FLIGHT.get()) moveY = -(driver.getXRot() * (Math.PI / 180) * 0.5f);
-			}
+			if (moveForward > 0 && handler.cameraFlight) moveY = -(driver.getXRot() * (Math.PI / 180) * 0.5f);
 
 			if (driver.jumping) moveY += 0.5;
 			if (driver.isShiftKeyDown()) moveY += -0.5;
 			else if (level.isClientSide()) {
 				if (KeyInputHandler.DESCEND_KEY.isDown()) {
-					moveY += -0.5;
+					moveY -= 0.5;
 				}
 			}
 		} else if (isInFluidType()) {
 			moveForward = moveForward > 0 ? moveForward : 0;
 
-			if (level.isClientSide) {
-				if (moveForward > 0 && ClientConfig.CAMERA_FLIGHT.get()) {
-					moveY = (-driver.getXRot() * (Math.PI / 180)) * 2;
-				}
+			if (moveForward > 0 && handler.cameraFlight) {
+				moveY = (-driver.getXRot() * (Math.PI / 180)) * 2;
 			}
 
 			if (driver.jumping) moveY += 2;
@@ -843,6 +844,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 			setWanderTarget(Optional.empty());
 			stopSitting();
 			getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+			updateOwnerData();
 			return InteractionResult.sidedSuccess(level.isClientSide);
 		}
 
@@ -885,7 +887,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 		if (getOwner() instanceof Player player) {
 			DragonOwnerCapability capability = PlayerStateUtils.getHandler(player);
 
-			if (capability.isSelectedDragon(this)) {
+			if (capability.isBoundToWhistle(this)) {
 				return;
 			}
 		}
@@ -931,6 +933,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 	protected void onChangedBlock(ServerLevel level, BlockPos pos) {
 		super.onChangedBlock(level, pos);
 		getBreed().onMove(this);
+		getBrain().eraseMemory(ModMemoryModuleTypes.IDLE_TICKS.get());
 	}
 
 	@Override
@@ -1035,9 +1038,11 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 		if (getOwner() instanceof Player player && !player.level.isClientSide) {
 			var handler = player.getData(ModCapabilities.PLAYER_CAPABILITY);
 
-			if (handler.isSelectedDragon(this)) {
-				handler.setPlayer(player);
-				handler.setDragon(this, DragonWhistleHandler.getDragonSummonIndex(player, getDragonUUID()));
+			if (handler.isBoundToWhistle(this)) {
+				handler.setPlayerInstance(player);
+				handler.setDragonToWhistle(this, DragonWhistleHandler.getDragonSummonIndex(player, getDragonUUID()));
+			} else {
+				DragonWorldDataManager.addDragonHistory(this);
 			}
 		}
 	}
@@ -1075,6 +1080,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 			setTarget(null);
 			setOwnerUUID(player.getUUID());
 			level.broadcastEntityEvent(this, (byte) 7);
+			updateOwnerData();
 		} else {
 			level.broadcastEntityEvent(this, (byte) 6);
 		}
@@ -1147,6 +1153,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 		// increase reproduction counter
 		addReproCount();
 		mate.addReproCount();
+		updateOwnerData();
 	}
 
 	@Override
