@@ -70,8 +70,10 @@ jobs:
       - name: Generate Changelog Value
         id: release_description
         shell: bash
+        env:
+          RELEASE_NOTES: ${{ steps.semantic.outputs.new_release_notes }}
         run: |
-          # Safely normalize newlines and escape special characters directly
-          printf 'description=%s\n' "$({{ steps.semantic.outputs.new_release_notes }}" \
-          | sed 's/%/\\n/g; s/\r/\\n/g; s/\n/\\n/g; s/"/\\"/g' \
-          >> $GITHUB_OUTPUT
+            printf 'description=%s\n' "$RELEASE_NOTES" \
+            | sed 's/%/\\n/g; s/\r/\\n/g; s/\n/\\n/g; s/"/\\"/g' \
+            >> $GITHUB_OUTPUT
+
