@@ -71,8 +71,9 @@ jobs:
         id: release_description
         shell: bash
         run: |
-          echo "${{ steps.semantic.outputs.new_release_notes }}" > release_notes.txt
-          sed -i 's/%/\\n/g; s/\r/\\n/g; s/\n/\\n/g; s/"/\\"/g' release_notes.txt
-          description=$(<release_notes.txt)
+          cat <<EOF > release_notes.txt
+          ${{ steps.semantic.outputs.new_release_notes }}
+          EOF
+          description=$(sed ':a;N;$!ba; s/\r//g; s/\n/\\n/g; s/"/\\"/g; s/%/\\n/g' release_notes.txt)
           echo "description=$description" >> $GITHUB_OUTPUT
           rm release_notes.txt
