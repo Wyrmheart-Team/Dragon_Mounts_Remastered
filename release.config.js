@@ -1,13 +1,19 @@
+const Handlebars = require("handlebars");
+
+const types = [
+    { type: "feat", section: ":sparkles: Features", hidden: false },
+    { type: "fix", section: ":bug: Bug Fixes", hidden: false },
+    { type: "docs", section: ":memo: Documentation", hidden: false },
+    { type: "style", section: ":art: Code Styling", hidden: false },
+    { type: "refactor", section: ":recycle: Refactoring", hidden: false },
+    { type: "perf", section: ":zap: Performance", hidden: false },
+    { type: "test", section: ":white_check_mark: Testing", hidden: false },
+    { type: "ci", hidden: true },
+    { type: "chore", hidden: true },
+];
+
 module.exports = {
-    branches: [
-        {
-            name: "1.21",
-        },
-        {
-            name: "1.20.4",
-            range: "1.1.x",
-        },
-    ],
+    branches: [{ name: "1.21" }, { name: "1.20.4", range: "1.1.x" }],
     plugins: [
         [
             "@semantic-release/commit-analyzer",
@@ -15,7 +21,6 @@ module.exports = {
                 preset: "angular",
                 releaseRules: [
                     { type: "feat", release: "minor" },
-                    { type: "minor", release: "patch" },
                     { type: "fix", release: "patch" },
                     { type: "refactor", release: "patch" },
                     { type: "docs", release: "patch" },
@@ -34,63 +39,64 @@ module.exports = {
                 linkCompare: false,
                 linkReferences: false,
                 writerOpts: {
-                    commitsSort: ["subject", "scope"],
+                    commitsSort: ["scope", "subject"],
                     headerPartial: "## 🚀 Release {{version}} - {{formatDate date}}\n\n",
                     transform: (commit, context) => {
-                        if (!commit.message) return [];
+                        if (!commit.message) return null;
+
+                        // Parse the message into individual type sections
                         const regex = /(\w+):\s(.*?)(?=(\w+:)|$)/gs;
-                        const parsedCommits = [];
                         let match;
+                        const parsed = [];
+
                         while ((match = regex.exec(commit.message)) !== null) {
-                            const type = match[1];
-                            const message = match[2];
-                            const section = context.typeMap[type];
+                            const [_, type, message] = match;
+                            const section = types.find((t) => t.type === type)?.section;
+
                             if (section) {
-                                parsedCommits.push({
-                                    ...commit,
+                                parsed.push({
                                     type: section,
                                     subject: message.trim(),
+                                    section,
                                 });
                             }
                         }
-                        return parsedCommits;
-                    },
-                    getExtraContext: (context) => {
-                        const typeMap = {};
-                        context.commitGroups.forEach((group) => {
-                            group.commits.forEach((commit) => {
-                                typeMap[commit.type] = group.title;
-                            });
-                        });
-                        return { ...context, typeMap };
-                    },
-                    // Helpers for custom formatting
-                    helpers: {
-                        formatDate: (isoDate) => {
-                            const date = new Date(isoDate);
-                            const formatter = new Intl.DateTimeFormat("en-US", {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                            });
-                            return formatter.format(date); // Example: "December 20, 2024"
-                        },
+
+                        // Keep only the first type and annotate others in notes
+                        if (parsed.length > 0) {
+                            const mainCommit = parsed.reverse()[0];
+                            mainCommit.notes = parsed.slice(1).map((p) => ({
+                                title: p.type,
+                                text: p.subject,
+                            }));
+                            return mainCommit;
+                        }
+
+                        return null;
                     },
                 },
                 presetConfig: {
-                    types: [
-                        { type: "feat", section: ":sparkles: Features", hidden: false },
-                        { type: "fix", section: ":bug: Bug Fixes", hidden: false },
-                        { type: "docs", section: ":memo: Documentation", hidden: false },
-                        { type: "style", section: ":art: Code Styling", hidden: false },
-                        { type: "refactor", section: ":recycle: Refactoring", hidden: false },
-                        { type: "perf", section: ":zap: Performance", hidden: false },
-                        { type: "test", section: ":white_check_mark: Testing", hidden: false },
-                        { type: "ci", section: ":repeat: Continuous Integration", hidden: true },
-                        { type: "chore", hidden: true },
-                    ],
+                    types,
                 },
             },
         ],
     ],
 };
+
+Handlebars.registerHelper("formatDate", (isoDate) => {
+    if (!isoDate) {
+        return "Unknown Date";
+    }
+    try {
+        const date = isoDate instanceof Date ? isoDate : new Date(isoDate);
+        const formatter = new Intl.DateTimeFormat("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        });
+        return formatter.format(date);
+    } catch (error) {
+        console.error("Error formatting date:", error);
+        return "Invalid Date";
+    }
+});
