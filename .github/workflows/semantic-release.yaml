@@ -73,8 +73,9 @@ jobs:
         run: |
           # Safely normalize newlines and escape special characters
           description="${{ steps.semantic.outputs.new_release_notes }}"
-          description="${description//'%'/'\n'}"
-          description="${description//$'\n'/'\n'}"
-          description="${description//$'\r'/'\n'}"
           
+          # Normalize newlines and replace unsupported characters with \n
+          description=$(printf '%s' "$description" | sed 's/%/\\n/g; s/\r/\\n/g; s/\n/\\n/g; s/"/\\"/g')
+          
+          # Output the sanitized and normalized description
           echo "description=$description" >> $GITHUB_OUTPUT

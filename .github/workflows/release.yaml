@@ -98,7 +98,7 @@ jobs:
           echo "MC_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r --arg mc_ver "$MC_VERSION" '.[] | select(.name == $mc_ver) | .id')" >> $GITHUB_ENV
 
       - name: Replace Placeholders in ${{ matrix.file }}
-        run: envsubst < ./.github/workflows/${{ matrix.file }} > temp && mv temp ./.github/workflows/${{ matrix.file }}
+        run: envsubst < ./.github/templates/${{ matrix.file }} > temp && mv temp ./.github/templates/${{ matrix.file }}
         env:
           changelog: ${{ inputs.changelog }}
           mod_name: ${{ needs.common-setup.outputs.mod_name }}
@@ -115,7 +115,7 @@ jobs:
 
       - name: Verify Placeholders Replaced
         run: |
-          if grep -q '\${' ./.github/workflows/${{ matrix.file }}; then
+          if grep -q '\${' ./.github/templates/${{ matrix.file }}; then
             echo "Error: Unresolved placeholders in ${{ matrix.file }}" >&2
             exit 1
           fi
@@ -124,7 +124,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.file }}
-          path: ./.github/workflows/${{ matrix.file }}
+          path: ./.github/templates/${{ matrix.file }}
 
   confirm-upload:
     name: Confirm Upload
@@ -207,7 +207,7 @@ jobs:
               @{ Name = "CurseForge"; Url = "https://www.curseforge.com/minecraft/mc-mods/dmr" },
               @{ Name = "Modrinth"; Url = "https://modrinth.com/mod/dmr" }
           )
-          pwsh ./.github/workflows/announce_release.ps1 `
+          pwsh ./.github/scripts/announce_release.ps1 `
             -WebhookUrl ${{ secrets.DISCORD_ANNOUNCEMENT_WEBHOOK_URL }} `
             -ModName "${{ needs.common-setup.outputs.mod_name }}" `
             -NewReleaseVersion "${{ inputs.new_release_version }}" `
