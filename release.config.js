@@ -12,6 +12,24 @@ const types = [
     { type: "chore", hidden: true },
 ];
 
+Handlebars.registerHelper("formatDate", (isoDate) => {
+    if (!isoDate) {
+        return "Unknown Date";
+    }
+    try {
+        const date = isoDate instanceof Date ? isoDate : new Date(isoDate);
+        const formatter = new Intl.DateTimeFormat("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        });
+        return formatter.format(date);
+    } catch (error) {
+        console.error("Error formatting date:", error);
+        return "Invalid Date";
+    }
+});
+
 module.exports = {
     branches: [{ name: "1.21" }, { name: "1.20.4", range: "1.1.x" }],
     plugins: [
@@ -82,21 +100,3 @@ module.exports = {
         ],
     ],
 };
-
-Handlebars.registerHelper("formatDate", (isoDate) => {
-    if (!isoDate) {
-        return "Unknown Date";
-    }
-    try {
-        const date = isoDate instanceof Date ? isoDate : new Date(isoDate);
-        const formatter = new Intl.DateTimeFormat("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-        });
-        return formatter.format(date);
-    } catch (error) {
-        console.error("Error formatting date:", error);
-        return "Invalid Date";
-    }
-});
