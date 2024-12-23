@@ -200,18 +200,17 @@ jobs:
         uses: actions/checkout@v3
   
       - name: Notify Discord
+        shell: pwsh {0}
         run: |
-          $GitAuthor = git log -1 --pretty=format:'%an'
-          $AuthorAvatar = "https://avatars.githubusercontent.com/$GITHUB_ACTOR"
           $Buttons = @(
-              @{ Name = "CurseForge"; Url = "https://www.curseforge.com/minecraft/mc-mods/dmr" },
-              @{ Name = "Modrinth"; Url = "https://modrinth.com/mod/dmr" }
-          )
+            @{ Name = "CurseForge"; Url = "https://www.curseforge.com/minecraft/mc-mods/dmr" },
+            @{ Name = "Modrinth"; Url = "https://modrinth.com/mod/dmr" }
+          ) | ConvertTo-Json -Depth 10
           pwsh ./.github/scripts/announce_release.ps1 `
             -WebhookUrl ${{ secrets.DISCORD_ANNOUNCEMENT_WEBHOOK_URL }} `
             -ModName "${{ needs.common-setup.outputs.mod_name }}" `
             -NewReleaseVersion "${{ inputs.new_release_version }}" `
-            -Changelog "${{ inputs.changelog }}" `
-            -GitAuthor "$GitAuthor" `
-            -AuthorAvatar "$AuthorAvatar" `
-            -Buttons $Buttons
+            -Changelog '${{ inputs.changelog }}' `
+            -GitAuthor "$GITHUB_TRIGGERING_ACTOR" `
+            -AuthorAvatar "https://avatars.githubusercontent.com/$GITHUB_TRIGGERING_ACTOR" `
+            -ButtonsJson "$Buttons"

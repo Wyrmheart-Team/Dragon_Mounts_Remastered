@@ -5,29 +5,30 @@ param (
     [string]$Changelog,         # Changelog content
     [string]$GitAuthor,         # Git commit author
     [string]$AuthorAvatar,      # Author avatar URL
-    [hashtable[]]$Buttons       # List of buttons as name -> url pairs
+    [string]$ButtonsJson
 )
 
+$links = ""
+
 # Generate the components section from the Buttons parameter
-$buttonComponents = @()
-foreach ($button in $Buttons) {
-    $buttonComponents += @{
-        type = 2
-        style = 5
-        label = $button.Name
-        url = $button.Url
-    }
+foreach ($button in $($ButtonsJson | ConvertFrom-Json)) {
+    $links += "[[$($button.Name)]($($button.Url))] "
 }
+
+Write-Host "Sending Discord notification..."
 
 # Get the current timestamp in ISO 8601 format
 $timestamp = (Get-Date).ToString("o")
+
+$description = $Changelog -replace '\\n', "`n"
 
 # Define the payload for the Discord webhook
 $payload = @{
     content = "Version $NewReleaseVersion of $ModName has been released on Modrinth and CurseForge!"
     embeds = @(
         @{
-            description = "**Changelog**: `n========= `n$Changelog"
+            title = "Release $NewReleaseVersion"
+            description = $description + "`n" + $links
             color = 3447003
             author = @{
                 name = $GitAuthor
@@ -37,12 +38,6 @@ $payload = @{
             footer = @{
                 text = "Released at"
             }
-        }
-    )
-    components = @(
-        @{
-            type = 1
-            components = $buttonComponents
         }
     )
 } | ConvertTo-Json -Depth 10 -Compress

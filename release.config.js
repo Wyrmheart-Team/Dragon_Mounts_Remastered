@@ -41,7 +41,7 @@ module.exports = {
                 linkReferences: false,
                 writerOpts: {
                     commitsSort: ["scope", "subject"],
-                    headerPartial: "## 🚀 Release {{version}}\n\n",
+                    headerPartial: "",
                     transform: (commit, context) => {
                         if (!commit.message) return null;
 
