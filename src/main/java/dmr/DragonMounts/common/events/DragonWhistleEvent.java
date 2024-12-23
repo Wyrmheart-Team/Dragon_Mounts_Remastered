@@ -37,7 +37,7 @@ public class DragonWhistleEvent {
 			for (Map.Entry<Integer, UUID> ent : state.whistleSlots.entrySet()) {
 				var index = ent.getKey();
 				var id = ent.getValue();
-				if (id.equals(dragon.getDragonUUID())) {
+				if (id.equals(dragon.getDragonUUID()) && dragon.getSummonInstance() != null) {
 					if (state.summonInstances.containsKey(index)) {
 						return !state.summonInstances.get(index).equals(dragon.getSummonInstance());
 					}

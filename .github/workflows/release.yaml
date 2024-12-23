@@ -207,7 +207,7 @@ jobs:
               @{ Name = "CurseForge"; Url = "https://www.curseforge.com/minecraft/mc-mods/dmr" },
               @{ Name = "Modrinth"; Url = "https://modrinth.com/mod/dmr" }
           )
-          pwsh .github/scripts/NotifyDiscord.ps1 `
+          pwsh ./.github/workflows/announce_release.ps1 `
             -WebhookUrl ${{ secrets.DISCORD_ANNOUNCEMENT_WEBHOOK_URL }} `
             -ModName "${{ needs.common-setup.outputs.mod_name }}" `
             -NewReleaseVersion "${{ inputs.new_release_version }}" `
