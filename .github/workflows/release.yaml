@@ -76,13 +76,13 @@ jobs:
     needs: common-setup
     strategy:
       matrix:
-        file: [cf_upload.json, modrinth_upload.json]
+        file: [curseforge_upload.json, modrinth_upload.json]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Fetch Game Version IDs
-        if: ${{ matrix.file == 'cf_upload.json' }}
+        if: ${{ matrix.file == 'curseforge_upload.json' }}
         id: fetch_ids
         continue-on-error: true
         env:
