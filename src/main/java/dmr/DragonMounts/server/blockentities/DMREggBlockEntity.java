@@ -35,7 +35,7 @@ public class DMREggBlockEntity extends BlockEntity {
 
 	@Getter
 	@Setter
-	private String variantId;
+	private String variantId = "";
 
 	@Getter
 	@Setter

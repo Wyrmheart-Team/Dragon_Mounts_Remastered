@@ -273,7 +273,7 @@ public abstract class AbstractDMRDragonEntity
 	}
 
 	public void setVariant(String variant) {
-		getEntityData().set(DATA_VARIANT, variant);
+		getEntityData().set(DATA_VARIANT, variant != null ? variant : "");
 	}
 
 	public String getVariantId() {

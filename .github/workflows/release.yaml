@@ -126,24 +126,19 @@ jobs:
           name: ${{ matrix.file }}
           path: ./.github/templates/${{ matrix.file }}
 
-  confirm-upload:
-    name: Confirm Upload
+  upload:
+    name: Upload to Platforms
     runs-on: ubuntu-latest
-    needs: [replace-placeholders, java-build]
     environment: Release
+    needs: [java-build, replace-placeholders]
+    strategy:
+      matrix:
+        platform: [curseforge, modrinth]
     steps:
-      - name: Confirm Upload
-        run: echo "All files processed successfully"
-
-  upload-curseforge:
-    name: Upload to CurseForge
-    runs-on: ubuntu-latest
-    needs: [confirm-upload]
-    steps:
-      - name: Download Processed cf_upload.json
+      - name: Download Processed Metadata
         uses: actions/download-artifact@v4
         with:
-          name: cf_upload.json
+          name: ${{ matrix.platform }}_upload.json
           path: ./
 
       - name: Download JAR artifact
@@ -153,52 +148,37 @@ jobs:
           path: build/libs/
 
       - name: Upload to CurseForge
+        if: matrix.platform == 'curseforge'
         env:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
           CF_PROJECT_ID: ${{ secrets.CF_PROJECT_ID }}
         run: |
           FILE_PATH=$(find build/libs -name "*.jar" | head -n 1)
-          curl --fail-with-body "https://minecraft.curseforge.com/api/projects/${{ env.CF_PROJECT_ID}}/upload-file" \
-            -H "X-Api-Token: ${{ env.CF_API_KEY}}" \
-            -F "metadata=$(cat cf_upload.json)" \
+          curl --fail-with-body "https://minecraft.curseforge.com/api/projects/${{ env.CF_PROJECT_ID }}/upload-file" \
+            -H "X-Api-Token: ${{ env.CF_API_KEY }}" \
+            -F "metadata=$(cat curseforge_upload.json)" \
             -F "file=@$FILE_PATH"
 
-  upload-modrinth:
-    name: Upload to Modrinth
-    runs-on: ubuntu-latest
-    needs: [confirm-upload]
-    steps:
-      - name: Download Processed modrinth_upload.json
-        uses: actions/download-artifact@v4
-        with:
-          name: modrinth_upload.json
-          path: ./
-
-      - name: Download JAR artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dragon-mounts-jar
-          path: build/libs/
-
       - name: Upload to Modrinth
+        if: matrix.platform == 'modrinth'
         env:
           MODRINTH_API_KEY: ${{ secrets.MODRINTH_API_KEY }}
         run: |
           FILE_PATH=$(find build/libs -name "*.jar" | head -n 1)
           curl --fail-with-body -X POST "https://api.modrinth.com/v2/version" \
-            -H "Authorization: ${{ env.MODRINTH_API_KEY}}" \
+            -H "Authorization: ${{ env.MODRINTH_API_KEY }}" \
             -F "data=@modrinth_upload.json" \
             -F "file=@$FILE_PATH"
 
   after-release:
-    name: Post-Release Notification
+    name: Announce Release
     runs-on: ubuntu-latest
-    needs: [upload-curseforge, upload-modrinth, common-setup]
+    needs: [upload, common-setup]
     continue-on-error: true
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-  
+
       - name: Notify Discord
         shell: pwsh {0}
         run: |
