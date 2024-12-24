@@ -453,14 +453,24 @@ public abstract class AbstractDMRDragonEntity
 	public void addAdditionalSaveData(CompoundTag compound) {
 		super.addAdditionalSaveData(compound);
 
-		compound.putString(NBTConstants.BREED, getBreed().getId());
-		compound.putString("orig_" + NBTConstants.BREED, entityData.get(DATA_ORIG_BREED));
+		if (getBreed() != null && getBreed().getId() != null) {
+			compound.putString(NBTConstants.BREED, getBreed().getId());
+		}
+		if (entityData.get(DATA_ORIG_BREED) != null) {
+			compound.putString("orig_" + NBTConstants.BREED, entityData.get(DATA_ORIG_BREED));
+		}
 		compound.putBoolean(NBTConstants.SADDLED, isSaddled());
 		compound.putBoolean(NBTConstants.CHEST, hasChest());
 		compound.putInt(NBTConstants.REPRO_COUNT, reproCount);
-		compound.putString(NBTConstants.DRAGON_UUID, getDragonUUID().toString());
-		compound.putString(NBTConstants.VARIANT, entityData.get(DATA_VARIANT));
-		compound.putBoolean("OrderedToSit", entityData.get(DATA_ORDERED_TO_SIT));
+		if (getDragonUUID() != null) {
+			compound.putString(NBTConstants.DRAGON_UUID, getDragonUUID().toString());
+		}
+		if (entityData.get(DATA_VARIANT) != null) {
+			compound.putString(NBTConstants.VARIANT, entityData.get(DATA_VARIANT));
+		}
+		if (entityData.get(DATA_ORDERED_TO_SIT) != null) {
+			compound.putBoolean("OrderedToSit", entityData.get(DATA_ORDERED_TO_SIT));
+		}
 
 		getWanderTarget()
 			.flatMap(p_337878_ -> GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, p_337878_).resultOrPartial(System.err::println))

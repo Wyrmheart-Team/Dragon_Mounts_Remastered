@@ -36,7 +36,7 @@ $payload = @{
             }
             timestamp = $timestamp
             footer = @{
-                text = "Released at"
+                text = "Released"
             }
         }
     )
