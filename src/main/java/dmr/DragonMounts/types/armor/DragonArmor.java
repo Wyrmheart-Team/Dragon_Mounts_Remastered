@@ -12,14 +12,13 @@ import lombok.Setter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
+@Getter
 public class DragonArmor {
 
-	@Getter
 	@Setter
 	private String id;
 
 	@SerializedName("protection")
-	@Getter
 	private int protection = 0;
 
 	public Component getName() {
@@ -27,7 +26,6 @@ public class DragonArmor {
 	}
 
 	@SerializedName("loot_tables")
-	@Getter
 	private List<LootTableEntry> lootTable = new ArrayList<>();
 
 	public static DragonArmor getArmorType(ItemStack stack) {

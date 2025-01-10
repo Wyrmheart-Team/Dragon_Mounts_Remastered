@@ -1,7 +1,5 @@
 {
-  "hatch_particles": {
-    "type": "minecraft:end_rod"
-  },
+  "hatch_particles": "minecraft:end_rod",
   "accessories": [
     "middle_tail_scales"
   ],
@@ -12,12 +10,8 @@
     }
   ],
   "abilities": [
-    {
-      "type": "gem_guard"
-    },
-    {
-      "type": "crystal_harmony"
-    }
+    "gem_guard",
+    "crystal_harmony"
   ],
   "primary_color": "A779F1",
   "secondary_color": "FECCE7",

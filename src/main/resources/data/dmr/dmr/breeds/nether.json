@@ -3,12 +3,8 @@
     "minecraft:generic.armor": 8.0
   },
   "abilities": [
-    {
-      "type": "infernal_pact"
-    },
-    {
-      "type": "fire_proof"
-    }
+    "infernal_pact",
+    "fire_proof"
   ],
   "habitats": [
     {
@@ -21,9 +17,7 @@
       "points": 3
     }
   ],
-  "hatch_particles": {
-    "type": "minecraft:soul_fire_flame"
-  },
+  "hatch_particles": "minecraft:soul_fire_flame",
   "immunities": [
     "inFire",
     "onFire",

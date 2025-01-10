@@ -22,19 +22,13 @@
       "biome_tag": "minecraft:is_beach"
     }
   ],
-  "hatch_particles": {
-    "type": "minecraft:dripping_water"
-  },
+  "hatch_particles": "minecraft:dripping_water",
   "immunities": [
     "drown"
   ],
   "abilities": [
-    {
-      "type": "aquatic_grace"
-    },
-    {
-      "type": "swift_swim"
-    }
+    "aquatic_grace",
+    "swift_swim"
   ],
   "primary_color": "62ff",
   "secondary_color": "5999ff",

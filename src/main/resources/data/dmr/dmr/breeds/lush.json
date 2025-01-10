@@ -1,11 +1,7 @@
 {
   "abilities": [
-    {
-      "type": "floral_trail"
-    },
-    {
-      "type": "nature_blessing"
-    }
+    "floral_trail",
+    "nature_blessing"
   ],
   "habitats": [
     {
@@ -17,9 +13,7 @@
       "biome_tag": "minecraft:is_jungle"
     }
   ],
-  "hatch_particles": {
-    "type": "minecraft:spore_blossom_air"
-  },
+  "hatch_particles": "minecraft:spore_blossom_air",
   "primary_color": "83A93D",
   "secondary_color": "F569BA",
   "ambient_sound": "dmr:entity.dragon.breathe",

@@ -1,5 +1,6 @@
 {
   "ambient_sound": "dmr:entity.dragon.ambient.ghost",
+  "hatch_particles": "minecraft:entity_effect",
   "habitats": [
     {
       "type": "picky",
@@ -55,8 +56,6 @@
     "thin_legs"
   ],
   "abilities": [
-    {
-      "type": "ethereal_harmony"
-    }
+    "ethereal_harmony"
   ]
 }

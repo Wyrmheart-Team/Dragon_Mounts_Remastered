@@ -1,11 +1,7 @@
 {
   "abilities": [
-    {
-      "type": "nature_blessing"
-    },
-    {
-      "type": "camouflage"
-    }
+    "nature_blessing",
+    "camouflage"
   ],
   "habitats": [
     {
@@ -21,9 +17,7 @@
       "biome_tag": "minecraft:is_forest"
     }
   ],
-  "hatch_particles": {
-    "type": "minecraft:happy_villager"
-  },
+  "hatch_particles": "minecraft:happy_villager",
   "primary_color": "54a00",
   "secondary_color": "a9600",
   "loot_tables": [

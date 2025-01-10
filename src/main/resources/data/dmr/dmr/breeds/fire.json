@@ -1,11 +1,7 @@
 {
   "abilities": [
-    {
-      "type": "ember_aura"
-    },
-    {
-      "type": "fire_proof"
-    }
+    "ember_aura",
+    "fire_proof"
   ],
   "habitats": [
     {
@@ -23,9 +19,7 @@
       "below": true
     }
   ],
-  "hatch_particles": {
-    "type": "minecraft:flame"
-  },
+  "hatch_particles": "minecraft:flame",
   "immunities": [
     "onFire",
     "inFire",

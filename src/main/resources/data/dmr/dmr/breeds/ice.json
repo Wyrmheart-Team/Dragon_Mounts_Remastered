@@ -1,11 +1,7 @@
 {
   "abilities": [
-    {
-      "type": "frost_walker"
-    },
-    {
-      "type": "frost_aura"
-    }
+    "frost_walker",
+    "frost_aura"
   ],
   "habitats": [
     {
@@ -17,9 +13,7 @@
       "biome_tag": "forge:is_cold/overworld"
     }
   ],
-  "hatch_particles": {
-    "type": "minecraft:snowflake"
-  },
+  "hatch_particles": "minecraft:snowflake",
   "immunities": [
     "drown",
     "freeze"

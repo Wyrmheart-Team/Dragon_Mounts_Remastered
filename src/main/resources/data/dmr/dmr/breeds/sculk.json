@@ -1,7 +1,5 @@
 {
-  "hatch_particles": {
-    "type": "minecraft:sculk_charge_pop"
-  },
+  "hatch_particles": "minecraft:sculk_charge_pop",
   "accessories": [
     "tail_horns"
   ],
@@ -12,9 +10,7 @@
     }
   ],
   "abilities": [
-    {
-      "type": "echo_sense"
-    }
+    "echo_sense"
   ],
   "primary_color": "D1216",
   "secondary_color": "19295",

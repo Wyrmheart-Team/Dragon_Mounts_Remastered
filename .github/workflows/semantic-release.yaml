@@ -76,5 +76,5 @@ jobs:
           EOF
           description=$(sed ':a;N;$!ba; s/\r//g; s/\n/\\n/g; s/"/\\"/g; s/%/\\n/g' release_notes.txt)
           echo "description=$description" >> $GITHUB_OUTPUT
-          echo $description >> $GITHUB_STEP_SUMMARY
+          echo ${{ steps.semantic.outputs.new_release_notes }} >> $GITHUB_STEP_SUMMARY
           rm release_notes.txt

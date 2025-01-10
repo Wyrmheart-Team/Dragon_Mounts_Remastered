@@ -12,16 +12,10 @@
     }
   ],
   "abilities": [
-    {
-      "type": "ender_cloak"
-    },
-    {
-      "type": "void_walker"
-    }
+    "ender_cloak",
+    "void_walker"
   ],
-  "hatch_particles": {
-    "type": "minecraft:portal"
-  },
+  "hatch_particles": "minecraft:portal",
   "immunities": [
     "dragonBreath"
   ],

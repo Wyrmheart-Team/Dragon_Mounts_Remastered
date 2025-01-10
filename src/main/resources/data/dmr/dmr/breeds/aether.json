@@ -3,10 +3,9 @@
     "minecraft:generic.flying_speed": 0.25
   },
   "abilities": [
-    {
-      "type": "quick_flight"
-    }
+    "quick_flight"
   ],
+  "hatch_particles": "minecraft:cloud",
   "habitats": [
     {
       "type": "world_height",
