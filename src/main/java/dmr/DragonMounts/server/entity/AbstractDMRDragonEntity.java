@@ -462,14 +462,21 @@ public abstract class AbstractDMRDragonEntity
 		compound.putBoolean(NBTConstants.SADDLED, isSaddled());
 		compound.putBoolean(NBTConstants.CHEST, hasChest());
 		compound.putInt(NBTConstants.REPRO_COUNT, reproCount);
+
 		if (getDragonUUID() != null) {
 			compound.putString(NBTConstants.DRAGON_UUID, getDragonUUID().toString());
 		}
+
+		if (getEntityData().get(DATA_SUMMON_INSTANCE) != null) {
+			compound.putString(NBTConstants.DRAGON_SUMMON_INSTANCE, getEntityData().get(DATA_SUMMON_INSTANCE));
+		}
+
 		if (entityData.get(DATA_VARIANT) != null) {
 			compound.putString(NBTConstants.VARIANT, entityData.get(DATA_VARIANT));
 		}
+
 		if (entityData.get(DATA_ORDERED_TO_SIT) != null) {
-			compound.putBoolean("OrderedToSit", entityData.get(DATA_ORDERED_TO_SIT));
+			compound.putBoolean(NBTConstants.ORDERED_TO_SIT, entityData.get(DATA_ORDERED_TO_SIT));
 		}
 
 		getWanderTarget()
@@ -492,6 +499,7 @@ public abstract class AbstractDMRDragonEntity
 	}
 
 	public boolean isBeingSummoned = false;
+	public boolean isLoadedFromNBT = false;
 
 	@Override
 	public void readAdditionalSaveData(CompoundTag compound) {
@@ -524,15 +532,23 @@ public abstract class AbstractDMRDragonEntity
 			setDragonUUID(UUID.fromString(compound.getString(NBTConstants.DRAGON_UUID)));
 		}
 
+		if (compound.contains(NBTConstants.DRAGON_SUMMON_INSTANCE)) {
+			var instance = compound.getString(NBTConstants.DRAGON_SUMMON_INSTANCE);
+
+			if (instance != null && !instance.isEmpty()) {
+				setSummonInstance(UUID.fromString(instance));
+			}
+		}
+
 		if (compound.contains(NBTConstants.VARIANT)) {
 			entityData.set(DATA_VARIANT, compound.getString(NBTConstants.VARIANT));
 		}
 
-		if (compound.contains("OrderedToSit")) {
-			entityData.set(DATA_ORDERED_TO_SIT, compound.getBoolean("OrderedToSit"));
+		if (compound.contains(NBTConstants.ORDERED_TO_SIT)) {
+			entityData.set(DATA_ORDERED_TO_SIT, compound.getBoolean(NBTConstants.ORDERED_TO_SIT));
 		}
 
-		Optional<GlobalPos> wanderTarget = Optional.empty();
+		Optional<GlobalPos> wanderTarget;
 		if (compound.contains(NBTConstants.WANDERING_POS)) {
 			wanderTarget = GlobalPos.CODEC.parse(NbtOps.INSTANCE, compound.get(NBTConstants.WANDERING_POS)).resultOrPartial(
 				System.err::println
@@ -556,6 +572,7 @@ public abstract class AbstractDMRDragonEntity
 
 		this.updateContainerEquipment();
 		isBeingSummoned = false;
+		isLoadedFromNBT = true;
 	}
 
 	protected int getInventorySize() {

@@ -1,15 +1,12 @@
 package dmr.DragonMounts.util.type_adapters;
 
 import com.google.gson.*;
-import com.mojang.serialization.JsonOps;
 import dmr.DragonMounts.DMR;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.core.Holder;
-import net.minecraft.core.Holder.Direct;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.RegistryCodecs;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 
 public class ItemListAdapter implements JsonDeserializer<List<Item>>, JsonSerializer<List<Item>> {
@@ -17,10 +14,19 @@ public class ItemListAdapter implements JsonDeserializer<List<Item>>, JsonSerial
 	@Override
 	public List<Item> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 		try {
-			var list = RegistryCodecs.homogeneousList(Registries.ITEM).decode(JsonOps.INSTANCE, json);
-			var listGet = list.getOrThrow();
-			var first = listGet.getFirst().unwrap().right();
-			return first.map(holders -> holders.stream().map(Holder::value).toList()).orElseGet(List::of);
+			var array = json.getAsJsonArray();
+			var list = new ArrayList<Item>();
+
+			if (array.isEmpty()) {
+				return List.of();
+			}
+
+			for (var element : array) {
+				var item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(element.getAsString()));
+				list.add(item);
+			}
+
+			return list;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -35,10 +41,12 @@ public class ItemListAdapter implements JsonDeserializer<List<Item>>, JsonSerial
 		}
 
 		try {
-			var obj = RegistryCodecs.homogeneousList(Registries.ITEM);
-			var objIn = HolderSet.direct(src.stream().map(Direct::new).toList());
-			var obj1 = obj.encode(objIn, JsonOps.INSTANCE, null);
-			return obj1.getOrThrow();
+			var array = new JsonArray();
+			for (var item : src) {
+				array.add(new JsonPrimitive(BuiltInRegistries.ITEM.getKey(item).toString()));
+			}
+
+			return array;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

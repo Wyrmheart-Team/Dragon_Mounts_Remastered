@@ -105,7 +105,16 @@ public class DragonRenderer extends GeoEntityRenderer<DMRDragonEntity> {
 
 			Minecraft.getInstance().getProfiler().push("render");
 		}
-		super.render(entity, entityYaw, partialTicks, stack, bufferIn, packedLightIn);
+
+		try {
+			super.render(entity, entityYaw, partialTicks, stack, bufferIn, packedLightIn);
+		} catch (Exception e) {
+			if (!stack.clear()) {
+				stack.popPose();
+			}
+			DMR.LOGGER.warning("Error rendering dragon: " + e.getMessage());
+			return;
+		}
 
 		if (DMR.DEBUG) {
 			Minecraft.getInstance().getProfiler().pop();

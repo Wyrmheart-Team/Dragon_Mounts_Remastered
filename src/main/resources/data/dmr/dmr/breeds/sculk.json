@@ -16,8 +16,8 @@
       "type": "echo_sense"
     }
   ],
-  "primary_color": 856598,
-  "secondary_color": 103061,
+  "primary_color": "D1216",
+  "secondary_color": "19295",
   "ambient_sound": "dmr:entity.dragon.breathe",
   "growth_time": 72000,
   "hatch_time": 12000,

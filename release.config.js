@@ -31,6 +31,15 @@ module.exports = {
                     { type: "ci", release: false },
                     { type: "build", release: "patch" },
                 ],
+                parserOpts: {
+                    // Transform commit type to lowercase
+                    transform: (commit) => {
+                        if (commit.type) {
+                            commit.type = commit.type.toLowerCase();
+                        }
+                        return commit;
+                    },
+                },
             },
         ],
         [

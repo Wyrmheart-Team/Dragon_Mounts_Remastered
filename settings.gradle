@@ -12,8 +12,8 @@ pluginManagement {
     }
 
     plugins {
-        id 'net.neoforged.moddev' version '2.0.47-beta'
-        id 'net.neoforged.moddev.repositories' version '2.0.47-beta'
+        id 'net.neoforged.moddev' version '2.0.72'
+        id 'net.neoforged.moddev.repositories' version '2.0.72'
     }
 }
 

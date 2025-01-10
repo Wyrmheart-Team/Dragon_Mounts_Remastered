@@ -19,7 +19,7 @@ import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 public class DragonSpawnEgg extends DeferredSpawnEggItem {
 
 	public DragonSpawnEgg() {
-		super(ModEntities.DRAGON_ENTITY, 4996656, 4996656, new Item.Properties());
+		super(ModEntities.DRAGON_ENTITY, 0, 0, new Item.Properties());
 	}
 
 	public static final String DATA_ITEM_NAME = "ItemName";

@@ -20,8 +20,8 @@
   "hatch_particles": {
     "type": "minecraft:spore_blossom_air"
   },
-  "primary_color": 8628541,
-  "secondary_color": 16083386,
+  "primary_color": "83A93D",
+  "secondary_color": "F569BA",
   "ambient_sound": "dmr:entity.dragon.breathe",
   "growth_time": 72000,
   "hatch_time": 12000,

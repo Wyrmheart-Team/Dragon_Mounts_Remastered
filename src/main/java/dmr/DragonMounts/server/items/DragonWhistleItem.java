@@ -144,14 +144,15 @@ public class DragonWhistleItem extends Item {
 	) {
 		if (pPlayer.level.isClientSide) return InteractionResult.PASS;
 
-		if (!pPlayer.isShiftKeyDown()) {
-			return InteractionResult.PASS;
-		}
-
 		if (pInteractionTarget instanceof DMRDragonEntity dragon) {
 			if (dragon.isTame() && dragon.isAdult() && dragon.isOwnedBy(pPlayer)) {
 				DragonOwnerCapability cap = pPlayer.getData(ModCapabilities.PLAYER_CAPABILITY);
 				if (cap.whistleSlots.containsKey(color.getId())) {
+					//Only unlink if the player is sneaking
+					if (!pPlayer.isShiftKeyDown()) {
+						return InteractionResult.PASS;
+					}
+
 					if (!cap.whistleSlots.get(color.getId()).equals(dragon.getDragonUUID())) {
 						pPlayer.displayClientMessage(Component.translatable("dmr.dragon_call.unlink_first"), true);
 						return InteractionResult.SUCCESS;

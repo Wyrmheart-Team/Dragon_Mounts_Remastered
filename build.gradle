@@ -68,9 +68,7 @@ neoForge {
         }
         client {
             client()
-//            devLogin {
-//                enabled true
-//            }
+            devLogin = true
         }
         server {
             server()
@@ -82,7 +80,7 @@ neoForge {
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
             sourceSet = sourceSets.test
             // Include the test resources in the classpath for this specific run config.
-            mods {
+            mods  {
                 "${mod_id}" {
                     sourceSet(sourceSets.test)
                 }
@@ -105,7 +103,6 @@ neoForge {
         enable()
         testedMod = mods."${mod_id}"
     }
-
     additionalMinecraftArtifacts.put('vanillaDeobfuscated', project.file('build/vanilla.jar'))
 }
 
