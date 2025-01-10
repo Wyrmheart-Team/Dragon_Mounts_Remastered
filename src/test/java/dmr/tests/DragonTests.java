@@ -381,7 +381,7 @@ public class DragonTests {
 
 		dragon.kill();
 
-		helper.succeedWhen(() -> helper.assertItemEntityCountIsAtLeast(Items.DIAMOND, helper.relativePos(dragon.blockPosition()), 3, 64));
+		helper.succeedWhen(() -> helper.assertItemEntityCountIs(Items.DIAMOND, helper.relativePos(dragon.blockPosition()), 3, 64));
 	}
 
 	@EmptyTemplate(floor = true)
@@ -398,7 +398,7 @@ public class DragonTests {
 
 		dragon.kill();
 
-		helper.succeedWhen(() -> helper.assertItemEntityCountIsAtLeast(Items.SADDLE, helper.relativePos(dragon.blockPosition()), 3, 1));
+		helper.succeedWhen(() -> helper.assertItemEntityCountIs(Items.SADDLE, helper.relativePos(dragon.blockPosition()), 3, 1));
 	}
 
 	@EmptyTemplate(floor = true)
@@ -416,7 +416,7 @@ public class DragonTests {
 		dragon.kill();
 
 		helper.succeedWhen(() ->
-			helper.assertItemEntityCountIsAtLeast(ModItems.DRAGON_ARMOR.get(), helper.relativePos(dragon.blockPosition()), 3, 1)
+			helper.assertItemEntityCountIs(ModItems.DRAGON_ARMOR.get(), helper.relativePos(dragon.blockPosition()), 3, 1)
 		);
 	}
 

@@ -1,6 +1,6 @@
 {
   "ambient_sound": "dmr:entity.dragon.ambient.ghost",
-  "hatch_particles": "minecraft:entity_effect",
+  "hatch_particles": "minecraft:sculk_soul",
   "habitats": [
     {
       "type": "picky",

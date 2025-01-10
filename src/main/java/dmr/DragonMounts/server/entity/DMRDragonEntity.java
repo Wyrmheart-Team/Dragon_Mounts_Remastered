@@ -892,7 +892,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 			}
 		}
 
-		if (isSaddled()) spawnAtLocation(Items.SADDLE);
+		//		if (isSaddled()) spawnAtLocation(Items.SADDLE);
 
 		if (this.inventory != null) {
 			for (int i = 0; i < this.inventory.getContainerSize(); ++i) {
