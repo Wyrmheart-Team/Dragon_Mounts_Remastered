@@ -93,7 +93,7 @@ public class DragonAI {
 					new RandomLookAround(UniformInt.of(150, 250), 30.0F, 0.0F, 0.0F)
 				),
 				new BehaviorWrapper<>(
-					e -> !e.isSitting(),
+					e -> !e.isSitting() || (e.isInLove() && e.getBrain().hasMemoryValue(MemoryModuleType.BREED_TARGET)),
 					ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_PRESENT),
 					new MoveToTargetSink()
 				)
@@ -105,7 +105,8 @@ public class DragonAI {
 		brain.addActivity(
 			Activity.IDLE,
 			ImmutableList.of(
-				Pair.of(0, new BehaviorWrapper<>(Animal::isInLove, new DragonBreedBehaviour(ModEntities.DRAGON_ENTITY.get(), 1F, 4))),
+				//TODO Improve breed behaviour so that it actually path finds to the target
+				Pair.of(0, new BehaviorWrapper<>(Animal::isInLove, new DragonBreedBehaviour(ModEntities.DRAGON_ENTITY.get(), 1.2F, 6))),
 				Pair.of(
 					0,
 					new BehaviorWrapper<>(

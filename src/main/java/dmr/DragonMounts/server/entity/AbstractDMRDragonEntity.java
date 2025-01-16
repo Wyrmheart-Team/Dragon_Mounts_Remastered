@@ -2,7 +2,6 @@ package dmr.DragonMounts.server.entity;
 
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.ModConstants.NBTConstants;
-import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModMemoryModuleTypes;
 import dmr.DragonMounts.server.ai.DragonBodyController;
@@ -62,7 +61,6 @@ public abstract class AbstractDMRDragonEntity
 
 	// server/client delegates
 	protected IDragonBreed breed;
-	protected int reproCount;
 
 	@Setter
 	@Getter
@@ -166,12 +164,8 @@ public abstract class AbstractDMRDragonEntity
 		return !id.isBlank() ? UUID.fromString(id) : null;
 	}
 
-	public void addReproCount() {
-		reproCount++;
-	}
-
 	public boolean canReproduce() {
-		return isTame() && !getBreed().isHybrid() && reproCount < ServerConfig.REPRO_LIMIT.get();
+		return isTame();
 	}
 
 	public boolean hasChest() {
@@ -290,7 +284,7 @@ public abstract class AbstractDMRDragonEntity
 	}
 
 	public void setBreed(IDragonBreed dragonBreed) {
-		if (breed != dragonBreed) { // prevent loops, unnecessary work, etc.
+		if (breed != dragonBreed || !breedIsSet) { // prevent loops, unnecessary work, etc.
 			if (dragonBreed == null || dragonBreed.getId() == null || dragonBreed.getId().isBlank()) {
 				return;
 			}
@@ -298,6 +292,8 @@ public abstract class AbstractDMRDragonEntity
 			if (dragonBreed == DragonBreedsRegistry.getDefault() && breed != dragonBreed) {
 				return;
 			}
+
+			breedIsSet = true;
 
 			if (breed != null) breed.close((DMRDragonEntity) this);
 			this.breed = dragonBreed;
@@ -461,7 +457,6 @@ public abstract class AbstractDMRDragonEntity
 		}
 		compound.putBoolean(NBTConstants.SADDLED, isSaddled());
 		compound.putBoolean(NBTConstants.CHEST, hasChest());
-		compound.putInt(NBTConstants.REPRO_COUNT, reproCount);
 
 		if (getDragonUUID() != null) {
 			compound.putString(NBTConstants.DRAGON_UUID, getDragonUUID().toString());
@@ -485,6 +480,8 @@ public abstract class AbstractDMRDragonEntity
 
 		compound.putLong("LastPoseTick", this.entityData.get(LAST_POSE_CHANGE_TICK));
 
+		compound.putBoolean("breedIsSet", breedIsSet);
+
 		ListTag listtag = new ListTag();
 		for (int i = 0; i < this.inventory.getContainerSize(); i++) {
 			ItemStack itemstack = this.inventory.getItem(i);
@@ -500,6 +497,7 @@ public abstract class AbstractDMRDragonEntity
 
 	public boolean isBeingSummoned = false;
 	public boolean isLoadedFromNBT = false;
+	protected boolean breedIsSet = false;
 
 	@Override
 	public void readAdditionalSaveData(CompoundTag compound) {
@@ -522,10 +520,6 @@ public abstract class AbstractDMRDragonEntity
 
 		if (compound.contains(NBTConstants.CHEST)) {
 			setChest(compound.getBoolean(NBTConstants.CHEST));
-		}
-
-		if (compound.contains(NBTConstants.REPRO_COUNT)) {
-			this.reproCount = compound.getInt(NBTConstants.REPRO_COUNT);
 		}
 
 		if (compound.contains(NBTConstants.DRAGON_UUID)) {
@@ -554,6 +548,10 @@ public abstract class AbstractDMRDragonEntity
 				System.err::println
 			);
 			setWanderTarget(wanderTarget);
+		}
+
+		if (compound.contains("breedIsSet")) {
+			breedIsSet = compound.getBoolean("breedIsSet");
 		}
 
 		isBeingSummoned = true; //Prevent inventory loading from triggering updateOwnerData

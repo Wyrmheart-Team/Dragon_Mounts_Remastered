@@ -10,7 +10,6 @@ public class ServerConfig {
 
 	public static final int HATCH_TIME = (int) TimeUnit.SECONDS.convert(10, TimeUnit.MINUTES); // (10 minutes))
 	public static final int GROWTH_TIME = (int) TimeUnit.SECONDS.convert(10, TimeUnit.MINUTES); // (10 minutes))
-	public static final int BASE_REPRO_LIMIT = 3;
 	public static final float BASE_SIZE_MODIFIER = 1.0f;
 
 	public static final ModConfigSpec.BooleanValue ALLOW_EGG_OVERRIDE;
@@ -20,7 +19,6 @@ public class ServerConfig {
 	public static final ModConfigSpec.IntValue GROWTH_TIME_CONFIG;
 	public static final ModConfigSpec.DoubleValue SIZE_MODIFIER;
 	public static final ModConfigSpec.BooleanValue REPLENISH_EGGS;
-	public static final ModConfigSpec.IntValue REPRO_LIMIT;
 	public static final ModConfigSpec.BooleanValue ALLOW_HYBRIDIZATION;
 	public static final ModConfigSpec.BooleanValue HABITAT_OFFSPRING;
 	public static final ModConfigSpec.DoubleValue BASE_HEALTH;
@@ -46,10 +44,6 @@ public class ServerConfig {
 				"Useful for multiplayer scenarios."
 			)
 			.define("replenish_eggs", true);
-
-		REPRO_LIMIT = configurator
-			.comment("Number of times a dragon is able to breed.")
-			.defineInRange("breed_limit", BASE_REPRO_LIMIT, 0, Integer.MAX_VALUE);
 
 		HATCH_TIME_CONFIG = configurator
 			.comment("Time in seconds for a dragon egg to hatch.")

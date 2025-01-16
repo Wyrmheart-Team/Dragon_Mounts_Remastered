@@ -74,6 +74,8 @@ public class DragonBreedBehaviour extends Behavior<DMRDragonEntity> {
 				owner.getBrain().eraseMemory(MemoryModuleType.BREED_TARGET);
 				dragon.getBrain().eraseMemory(MemoryModuleType.BREED_TARGET);
 
+				owner.setAge(6000);
+				dragon.setAge(6000);
 				owner.resetLove();
 				dragon.resetLove();
 			}

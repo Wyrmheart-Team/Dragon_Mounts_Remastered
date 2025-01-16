@@ -546,6 +546,16 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 		if (isControlledByLocalInstance() && getControllingPassenger() != null) {
 			setSprinting(getControllingPassenger().isSprinting());
 		}
+
+		if (!breedIsSet && getBreed() != null && isLoadedFromNBT) {
+			if (breed != null) breed.close(this);
+			setBreed(getBreed());
+
+			if (getBreed() != null) {
+				getBreed().initialize(this);
+				breedIsSet = true;
+			}
+		}
 	}
 
 	@Override
@@ -794,7 +804,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 		}
 
 		// heal
-		if (getHealthRelative() < 1 && isFoodItem(stack)) {
+		if ((getHealthRelative() < 1 && getHealth() < (getMaxHealth() - 1)) && isFoodItem(stack)) {
 			//noinspection ConstantConditions
 			heal(stack.getItem().getFoodProperties(stack, this).nutrition());
 			playSound(getEatingSound(stack), 0.7f, 1);
@@ -1065,7 +1075,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 	@Override
 	public boolean isFood(ItemStack stack) {
 		var list = getBreed().getBreedingItems();
-		return !stack.isEmpty() && (list != null && list.size() > 0 ? list.contains(stack.getItem()) : stack.is(ItemTags.FISHES));
+		return !stack.isEmpty() && (list != null && !list.isEmpty() ? list.contains(stack.getItem()) : stack.is(ItemTags.FISHES));
 	}
 
 	public boolean isFoodItem(ItemStack stack) {
@@ -1150,9 +1160,6 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 			egg.setCustomName(Component.literal(babyName));
 		}
 
-		// increase reproduction counter
-		addReproCount();
-		mate.addReproCount();
 		updateOwnerData();
 	}
 

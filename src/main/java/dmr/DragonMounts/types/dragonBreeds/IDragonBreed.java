@@ -7,7 +7,8 @@ import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.types.habitats.Habitat;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.core.Holder.Direct;
+import java.util.Optional;
+import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -78,10 +79,12 @@ public interface IDragonBreed {
 
 		getAttributes()
 			.forEach((att, value) -> {
-				Attribute attr = BuiltInRegistries.ATTRIBUTE.get(att);
-				if (attr != null) {
-					AttributeInstance inst = dragon.getAttribute(new Direct<>(attr));
-					if (inst != null) inst.setBaseValue(value);
+				Optional<Reference<Attribute>> attr = BuiltInRegistries.ATTRIBUTE.getHolder(att);
+				if (attr.isPresent()) {
+					AttributeInstance inst = dragon.getAttribute(attr.get());
+					if (inst != null) {
+						inst.setBaseValue(value);
+					}
 				}
 			});
 
@@ -90,9 +93,9 @@ public interface IDragonBreed {
 				ability
 					.getAttributes()
 					.forEach((att, value) -> {
-						Attribute attr = BuiltInRegistries.ATTRIBUTE.get(att);
-						if (attr != null) {
-							AttributeInstance inst = dragon.getAttribute(new Direct<>(attr));
+						Optional<Reference<Attribute>> attr = BuiltInRegistries.ATTRIBUTE.getHolder(att);
+						if (attr.isPresent()) {
+							AttributeInstance inst = dragon.getAttribute(attr.get());
 							if (inst != null) {
 								inst.addPermanentModifier(
 									new AttributeModifier(
