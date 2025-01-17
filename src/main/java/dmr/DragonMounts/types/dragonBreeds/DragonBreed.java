@@ -191,6 +191,14 @@ public class DragonBreed implements IDragonBreed {
 		return animationLocation;
 	}
 
+	@SerializedName("armor_type")
+	private String armorTypeId = "default";
+
+	@Override
+	public String getArmorTypeId() {
+		return armorTypeId;
+	}
+
 	@SerializedName("variants")
 	private Variant[] variants;
 

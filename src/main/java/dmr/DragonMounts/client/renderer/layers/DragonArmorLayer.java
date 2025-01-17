@@ -43,7 +43,14 @@ public class DragonArmorLayer extends GeoRenderLayer<DMRDragonEntity> {
 		DragonArmor armorType = DragonArmor.getArmorType(armor);
 		if (armorType == null) return;
 
-		ResourceLocation armorTexture = DMR.id("textures/entity/armor/" + armorType.getId() + "_dragon_armor.png");
+		var breed = entityLivingBaseIn.getBreed();
+		var armorId = breed.getArmorTypeId();
+		if (armorId == null) return;
+
+		// Custom model but doesnt have armor type assigned, skip rendering armor
+		if (armorId.equals("default") && breed.getDragonModelLocation() != null) return;
+
+		ResourceLocation armorTexture = DMR.id("textures/entity/armor/" + armorId + "/" + armorType.getId() + "_dragon_armor.png");
 
 		Optional<Resource> resourceOptional = Minecraft.getInstance().getResourceManager().getResource(armorTexture);
 		if (resourceOptional.isEmpty()) return;

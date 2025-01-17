@@ -23,6 +23,7 @@ public class ClientConfig {
 	public static final ModConfigSpec.IntValue RIDING_CAMERA_OFFSET;
 	public static final ModConfigSpec.BooleanValue DOUBLE_PRESS_DISMOUNT;
 	public static final ModConfigSpec.BooleanValue USE_ALTERNATE_ATTACK_KEY;
+	public static final ModConfigSpec.BooleanValue RENDER_HATCHING_EGG;
 
 	@SubscribeEvent
 	public static void configReload(ModConfigEvent.Reloading event) {
@@ -62,6 +63,10 @@ public class ClientConfig {
 			.comment("The zoom offset for the riding camera.")
 			.comment("Higher values will zoom the camera out further.")
 			.defineInRange("riding_camera_offset", 10, 1, 100);
+
+		RENDER_HATCHING_EGG = configurator
+			.comment("Should the dragon egg render the hatching animation?")
+			.define("render_hatching_egg", true);
 
 		MOD_CONFIG_SPEC = configurator.build();
 	}

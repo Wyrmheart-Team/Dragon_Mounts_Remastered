@@ -31,7 +31,11 @@ class DragonSpawnEggInterpreter implements ISubtypeInterpreter<ItemStack> {
 
 	@Override
 	public Object getSubtypeData(ItemStack ingredient, UidContext context) {
-		return ingredient.getOrDefault(ModComponents.DRAGON_BREED, "NONE");
+		return (
+			ingredient.getOrDefault(ModComponents.DRAGON_BREED, "NONE") +
+			":" +
+			ingredient.getOrDefault(ModComponents.DRAGON_VARIANT, "NONE")
+		);
 	}
 
 	@Override
@@ -44,7 +48,11 @@ class DragonEggInterpreter implements ISubtypeInterpreter<ItemStack> {
 
 	@Override
 	public Object getSubtypeData(ItemStack ingredient, UidContext context) {
-		return ingredient.getOrDefault(ModComponents.DRAGON_BREED, "NONE");
+		return (
+			ingredient.getOrDefault(ModComponents.DRAGON_BREED, "NONE") +
+			":" +
+			ingredient.getOrDefault(ModComponents.DRAGON_VARIANT, "NONE")
+		);
 	}
 
 	@Override

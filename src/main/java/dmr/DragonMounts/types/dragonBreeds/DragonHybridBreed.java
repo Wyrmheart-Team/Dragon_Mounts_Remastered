@@ -47,6 +47,11 @@ public class DragonHybridBreed implements IDragonBreed {
 	}
 
 	@Override
+	public String getArmorTypeId() {
+		return parent1.getArmorTypeId() != null ? parent1.getArmorTypeId() : parent2.getArmorTypeId();
+	}
+
+	@Override
 	public int getPrimaryColor() {
 		return parent1.getPrimaryColor();
 	}

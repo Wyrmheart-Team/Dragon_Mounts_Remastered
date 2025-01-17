@@ -3,6 +3,7 @@ package dmr.DragonMounts.server.blocks;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
 import dmr.DragonMounts.ModConstants.NBTConstants;
+import dmr.DragonMounts.config.ClientConfig;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModBlockEntities;
@@ -117,7 +118,7 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
 
 	@Override
 	public RenderShape getRenderShape(BlockState pState) {
-		return pState.getValue(HATCHING) ? RenderShape.INVISIBLE : RenderShape.MODEL;
+		return pState.getValue(HATCHING) && ClientConfig.RENDER_HATCHING_EGG.get() ? RenderShape.INVISIBLE : RenderShape.MODEL;
 	}
 
 	@Override

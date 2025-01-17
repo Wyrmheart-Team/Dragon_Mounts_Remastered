@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import dmr.DragonMounts.client.model.DragonEggModel;
 import dmr.DragonMounts.client.model.DragonEggModel.Baked;
+import dmr.DragonMounts.config.ClientConfig;
 import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
 import dmr.DragonMounts.server.blocks.DMREggBlock;
 import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
@@ -18,6 +19,10 @@ public class DragonEggRenderer implements BlockEntityRenderer<DMREggBlockEntity>
 
 	@Override
 	public void render(DMREggBlockEntity blockEntity, float v, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int i1) {
+		if (!ClientConfig.RENDER_HATCHING_EGG.get()) {
+			return;
+		}
+
 		if (!blockEntity.getBlockState().getValue(DMREggBlock.HATCHING)) {
 			return;
 		}

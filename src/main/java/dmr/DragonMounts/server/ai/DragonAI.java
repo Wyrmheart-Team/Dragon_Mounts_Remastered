@@ -105,7 +105,6 @@ public class DragonAI {
 		brain.addActivity(
 			Activity.IDLE,
 			ImmutableList.of(
-				//TODO Improve breed behaviour so that it actually path finds to the target
 				Pair.of(0, new BehaviorWrapper<>(Animal::isInLove, new DragonBreedBehaviour(ModEntities.DRAGON_ENTITY.get(), 1.2F, 6))),
 				Pair.of(
 					0,

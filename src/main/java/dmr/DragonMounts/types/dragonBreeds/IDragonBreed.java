@@ -92,7 +92,6 @@ public interface IDragonBreed {
 				if (attr.isPresent()) {
 					AttributeInstance inst = dragon.getAttribute(attr.get());
 					if (inst != null) {
-						System.out.println("Setting attribute " + att + " to " + value);
 						inst.setBaseValue(value);
 					}
 				}
@@ -128,6 +127,8 @@ public interface IDragonBreed {
 
 	ResourceLocation getDragonModelLocation();
 	ResourceLocation getDragonAnimationLocation();
+
+	String getArmorTypeId();
 
 	int getPrimaryColor();
 	int getSecondaryColor();
