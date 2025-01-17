@@ -52,8 +52,8 @@ public class DragonSpawnEgg extends DeferredSpawnEggItem {
 				DATA_ITEM_NAME,
 				String.join(".", ModItems.DRAGON_SPAWN_EGG.get().getDescriptionId(), id + "%" + variant.id())
 			);
-			itemDataTag.putInt(DATA_PRIM_COLOR, variant.primaryColor());
-			itemDataTag.putInt(DATA_SEC_COLOR, variant.secondaryColor());
+			itemDataTag.putInt(DATA_PRIM_COLOR, variant.getPrimaryColor());
+			itemDataTag.putInt(DATA_SEC_COLOR, variant.getSecondaryColor());
 		} else {
 			itemDataTag.putString(DATA_ITEM_NAME, String.join(".", ModItems.DRAGON_SPAWN_EGG.get().getDescriptionId(), id));
 			itemDataTag.putInt(DATA_PRIM_COLOR, breed.getPrimaryColor());

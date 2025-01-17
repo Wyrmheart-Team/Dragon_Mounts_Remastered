@@ -29,16 +29,25 @@ public interface IDragonBreed {
 		@SerializedName("min") int minAmount,
 		@SerializedName("max") int maxAmount
 	) {}
+
 	record Variant(
 		@SerializedName("id") String id,
 		@SerializedName("texture") ResourceLocation skinTexture,
 		@SerializedName("saddle_texture") ResourceLocation saddleTexture,
 		@SerializedName("glow_texture") ResourceLocation glowTexture,
 		@SerializedName("egg_texture") ResourceLocation eggTexture,
-		@SerializedName("primary_color") int primaryColor,
-		@SerializedName("secondary_color") int secondaryColor,
+		@SerializedName("primary_color") String primaryColor,
+		@SerializedName("secondary_color") String secondaryColor,
 		@SerializedName("size_modifier") float sizeModifier
-	) {}
+	) {
+		public int getPrimaryColor() {
+			return primaryColor == null ? 0 : Integer.parseInt(primaryColor, 16);
+		}
+
+		public int getSecondaryColor() {
+			return secondaryColor == null ? 0 : Integer.parseInt(secondaryColor, 16);
+		}
+	}
 
 	default boolean isHybrid() {
 		return this instanceof DragonHybridBreed;
@@ -83,6 +92,7 @@ public interface IDragonBreed {
 				if (attr.isPresent()) {
 					AttributeInstance inst = dragon.getAttribute(attr.get());
 					if (inst != null) {
+						System.out.println("Setting attribute " + att + " to " + value);
 						inst.setBaseValue(value);
 					}
 				}
