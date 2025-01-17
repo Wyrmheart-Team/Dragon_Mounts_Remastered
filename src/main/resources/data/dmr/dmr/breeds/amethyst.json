@@ -16,8 +16,6 @@
   "primary_color": "A779F1",
   "secondary_color": "FECCE7",
   "ambient_sound": "dmr:entity.dragon.breathe",
-  "growth_time": 72000,
-  "hatch_time": 12000,
   "loot_tables": [
     {
       "table": "minecraft:chests/stronghold_library",
