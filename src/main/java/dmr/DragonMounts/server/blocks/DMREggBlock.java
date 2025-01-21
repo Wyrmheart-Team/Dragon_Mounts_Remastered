@@ -118,7 +118,9 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
 
 	@Override
 	public RenderShape getRenderShape(BlockState pState) {
-		return pState.getValue(HATCHING) && ClientConfig.RENDER_HATCHING_EGG.get() ? RenderShape.INVISIBLE : RenderShape.MODEL;
+		return pState.getValue(HATCHING) && ClientConfig.MOD_CONFIG_SPEC.isLoaded() && ClientConfig.RENDER_HATCHING_EGG.get()
+			? RenderShape.INVISIBLE
+			: RenderShape.MODEL;
 	}
 
 	@Override

@@ -622,7 +622,7 @@ public abstract class AbstractDMRDragonEntity
 
 	@Override
 	public boolean removeWhenFarAway(double distanceToClosestPlayer) {
-		return false;
+		return !isTame() && distanceToClosestPlayer > Mth.sqrt(32) && this.tickCount > 2400 && !this.hasCustomName();
 	}
 
 	@Override
