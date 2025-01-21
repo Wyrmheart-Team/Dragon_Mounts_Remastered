@@ -1,0 +1,7 @@
+{
+  "script": "dmr:scripts/abilities/grant_effect.lua",
+  "script_parameters": {
+    "effect": "minecraft:fire_resistance",
+    "duration": 40
+  }
+}

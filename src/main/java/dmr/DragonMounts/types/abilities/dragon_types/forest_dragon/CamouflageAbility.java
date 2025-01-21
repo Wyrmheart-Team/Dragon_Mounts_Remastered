@@ -1,8 +1,8 @@
 package dmr.DragonMounts.types.abilities.dragon_types.forest_dragon;
 
+import dmr.DragonMounts.abilities.Ability;
 import dmr.DragonMounts.registry.DragonAbilities;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import dmr.DragonMounts.types.abilities.types.Ability;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -21,14 +21,14 @@ public class CamouflageAbility implements Ability {
 	@SubscribeEvent
 	public static void onLivingChangeTarget(LivingChangeTargetEvent event) {
 		if (event.getNewAboutToBeSetTarget() instanceof DMRDragonEntity dragon) {
-			if (dragon.getBreed().getAbilities().contains(DragonAbilities.CAMOUFLAGE_ABILITY)) {
+			if (dragon.getBreed().getCodeAbilities().contains(DragonAbilities.CAMOUFLAGE_ABILITY)) {
 				if (event.getEntity().distanceTo(dragon) > range) {
 					event.setCanceled(true);
 				}
 			}
 		} else if (event.getNewAboutToBeSetTarget() instanceof Player player) {
 			if (player.getVehicle() instanceof DMRDragonEntity dragon) {
-				if (dragon.getBreed().getAbilities().contains(DragonAbilities.CAMOUFLAGE_ABILITY)) {
+				if (dragon.getBreed().getCodeAbilities().contains(DragonAbilities.CAMOUFLAGE_ABILITY)) {
 					if (event.getEntity().distanceTo(dragon) > range) {
 						event.setCanceled(true);
 					}

@@ -9,7 +9,7 @@
       "block_tag": "dmr:amethyst_dragon_habitat_blocks"
     }
   ],
-  "abilities": [
+  "code_abilities": [
     "gem_guard",
     "crystal_harmony"
   ],

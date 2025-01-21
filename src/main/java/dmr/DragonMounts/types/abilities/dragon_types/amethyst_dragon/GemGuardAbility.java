@@ -1,8 +1,8 @@
 package dmr.DragonMounts.types.abilities.dragon_types.amethyst_dragon;
 
+import dmr.DragonMounts.abilities.Ability;
 import dmr.DragonMounts.registry.DragonAbilities;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import dmr.DragonMounts.types.abilities.types.Ability;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult.Type;
@@ -28,14 +28,14 @@ public class GemGuardAbility implements Ability {
 			var target = result.getEntity();
 
 			if (target instanceof DMRDragonEntity dragon) {
-				if (dragon.getBreed().getAbilities().contains(DragonAbilities.GEM_GUARD)) {
+				if (dragon.getBreed().getCodeAbilities().contains(DragonAbilities.GEM_GUARD)) {
 					if (dragon.getRandom().nextDouble() < deflect_chance) {
 						event.setCanceled(true);
 					}
 				}
 			} else if (target instanceof Player player) {
 				if (player.getVehicle() instanceof DMRDragonEntity dragon) {
-					if (dragon.getBreed().getAbilities().contains(DragonAbilities.GEM_GUARD)) {
+					if (dragon.getBreed().getCodeAbilities().contains(DragonAbilities.GEM_GUARD)) {
 						if (dragon.getRandom().nextDouble() < deflect_chance) {
 							event.setCanceled(true);
 						}

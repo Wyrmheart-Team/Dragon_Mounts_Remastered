@@ -19,7 +19,7 @@ public class DragonEggRenderer implements BlockEntityRenderer<DMREggBlockEntity>
 
 	@Override
 	public void render(DMREggBlockEntity blockEntity, float v, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int i1) {
-		if (!ClientConfig.RENDER_HATCHING_EGG.get()) {
+		if (ClientConfig.MOD_CONFIG_SPEC.isLoaded() && !ClientConfig.RENDER_HATCHING_EGG.get()) {
 			return;
 		}
 

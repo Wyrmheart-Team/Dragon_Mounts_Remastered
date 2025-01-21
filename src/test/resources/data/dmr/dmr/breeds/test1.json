@@ -28,7 +28,7 @@
   "immunities": [
     "drown"
   ],
-  "abilities": [
+  "code_abilities": [
     {
       "type": "aquatic_grace"
     },

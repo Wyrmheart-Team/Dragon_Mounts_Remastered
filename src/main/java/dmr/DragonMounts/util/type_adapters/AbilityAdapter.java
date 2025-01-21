@@ -2,7 +2,7 @@ package dmr.DragonMounts.util.type_adapters;
 
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
-import dmr.DragonMounts.types.abilities.types.Ability;
+import dmr.DragonMounts.abilities.Ability;
 import java.lang.reflect.Type;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;

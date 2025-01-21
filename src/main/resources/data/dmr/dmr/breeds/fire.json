@@ -1,6 +1,8 @@
 {
+  "code_abilities": [
+    "ember_aura"
+  ],
   "abilities": [
-    "ember_aura",
     "fire_proof"
   ],
   "habitats": [

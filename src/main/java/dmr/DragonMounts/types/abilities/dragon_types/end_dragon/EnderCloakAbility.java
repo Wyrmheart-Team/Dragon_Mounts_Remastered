@@ -1,8 +1,8 @@
 package dmr.DragonMounts.types.abilities.dragon_types.end_dragon;
 
+import dmr.DragonMounts.abilities.Ability;
 import dmr.DragonMounts.registry.DragonAbilities;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import dmr.DragonMounts.types.abilities.types.Ability;
 import java.util.List;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -22,7 +22,7 @@ public class EnderCloakAbility implements Ability {
 		var level = player.level;
 
 		if (player.getVehicle() instanceof DMRDragonEntity dragon) {
-			if (dragon.getBreed().getAbilities().contains(DragonAbilities.ENDER_CLOAK)) {
+			if (dragon.getBreed().getCodeAbilities().contains(DragonAbilities.ENDER_CLOAK)) {
 				event.setCanceled(true);
 				return;
 			}
@@ -35,7 +35,7 @@ public class EnderCloakAbility implements Ability {
 		dragonEntities = dragonEntities.stream().filter(s -> s.getOwnerUUID() == player.getUUID()).toList();
 
 		for (DMRDragonEntity dragon : dragonEntities) {
-			if (dragon.getBreed().getAbilities().contains(DragonAbilities.ENDER_CLOAK)) {
+			if (dragon.getBreed().getCodeAbilities().contains(DragonAbilities.ENDER_CLOAK)) {
 				event.setCanceled(true);
 				return;
 			}

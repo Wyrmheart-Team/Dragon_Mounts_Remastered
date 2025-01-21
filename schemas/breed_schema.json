@@ -128,6 +128,15 @@
       },
       "description": "List of habitats"
     },
+    "code_abilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "Type of ability",
+        "pattern": "^[a-zA-Z0-9_]+$",
+      },
+      "description": "List of abilities"
+    },
     "abilities": {
       "type": "array",
       "items": {

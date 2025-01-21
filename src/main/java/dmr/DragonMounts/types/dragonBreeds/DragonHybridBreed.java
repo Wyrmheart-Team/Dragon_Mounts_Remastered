@@ -1,7 +1,7 @@
 package dmr.DragonMounts.types.dragonBreeds;
 
 import com.google.gson.annotations.SerializedName;
-import dmr.DragonMounts.types.abilities.types.Ability;
+import dmr.DragonMounts.abilities.Ability;
 import dmr.DragonMounts.types.habitats.Habitat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -128,8 +128,8 @@ public class DragonHybridBreed implements IDragonBreed {
 	}
 
 	@Override
-	public List<Ability> getAbilities() {
-		List<Ability> abilities = new ArrayList<>();
+	public List<String> getAbilities() {
+		List<String> abilities = new ArrayList<>();
 		if (parent1.getAbilities() != null) {
 			if (parent1.getAbilities().size() > 1) {
 				abilities.addAll(parent1.getAbilities().subList(0, parent1.getAbilities().size() / 2));
@@ -142,6 +142,28 @@ public class DragonHybridBreed implements IDragonBreed {
 				abilities.addAll(parent2.getAbilities().subList(parent2.getAbilities().size() / 2, parent2.getAbilities().size()));
 			} else {
 				abilities.addAll(parent2.getAbilities());
+			}
+		}
+		return abilities;
+	}
+
+	@Override
+	public List<Ability> getCodeAbilities() {
+		List<Ability> abilities = new ArrayList<>();
+		if (parent1.getCodeAbilities() != null) {
+			if (parent1.getCodeAbilities().size() > 1) {
+				abilities.addAll(parent1.getCodeAbilities().subList(0, parent1.getCodeAbilities().size() / 2));
+			} else {
+				abilities.addAll(parent1.getCodeAbilities());
+			}
+		}
+		if (parent2.getCodeAbilities() != null) {
+			if (parent2.getCodeAbilities().size() > 1) {
+				abilities.addAll(
+					parent2.getCodeAbilities().subList(parent2.getCodeAbilities().size() / 2, parent2.getCodeAbilities().size())
+				);
+			} else {
+				abilities.addAll(parent2.getCodeAbilities());
 			}
 		}
 		return abilities;

@@ -2,7 +2,8 @@ package dmr.DragonMounts.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dmr.DragonMounts.DMR;
-import dmr.DragonMounts.types.abilities.types.Ability;
+import dmr.DragonMounts.abilities.Ability;
+import dmr.DragonMounts.abilities.DragonAbility;
 import java.util.List;
 import net.minecraft.advancements.AdvancementType;
 import net.minecraft.client.Minecraft;
@@ -32,6 +33,21 @@ public class DragonAbilityButton extends ExtendedButton {
 	public DragonAbilityButton(int xPos, int yPos, Ability ability) {
 		super(xPos, yPos, 120, 32, Component.empty(), bt -> {});
 		ABILITY_ICON = DMR.id("textures/gui/ability_icons/" + ability.type() + ".png");
+		this.minecraft = Minecraft.getInstance();
+		this.title = Language.getInstance().getVisualOrder(minecraft.font.substrByWidth(ability.getTranslatedName(), 163));
+		int j = 29 + minecraft.font.width(this.title);
+		this.description = Language.getInstance().getVisualOrder(this.findOptimalLines(ability.getTranslatedDescription().copy(), 110));
+
+		for (FormattedCharSequence formattedcharsequence : this.description) {
+			j = Math.max(j, minecraft.font.width(formattedcharsequence));
+		}
+
+		this.width = Math.max(j + 3 + 5, 120);
+	}
+
+	public DragonAbilityButton(int xPos, int yPos, DragonAbility ability) {
+		super(xPos, yPos, 120, 32, Component.empty(), bt -> {});
+		ABILITY_ICON = DMR.id("textures/gui/ability_icons/" + ability.getId() + ".png");
 		this.minecraft = Minecraft.getInstance();
 		this.title = Language.getInstance().getVisualOrder(minecraft.font.substrByWidth(ability.getTranslatedName(), 163));
 		int j = 29 + minecraft.font.width(this.title);

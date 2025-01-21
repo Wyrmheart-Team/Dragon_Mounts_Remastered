@@ -11,7 +11,7 @@
       "biome_tag": "minecraft:is_end"
     }
   ],
-  "abilities": [
+  "code_abilities": [
     "ender_cloak",
     "void_walker"
   ],

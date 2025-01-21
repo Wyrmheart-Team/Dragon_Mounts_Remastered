@@ -1,0 +1,10 @@
+{
+  "script": "dmr:scripts/abilities/grant_effect.lua",
+  "script_parameters": {
+    "effect": "minecraft:dolphins_grace",
+    "duration": 40,
+    "amplifier": 1,
+    "range": 2,
+    "affects_dragon": true
+  }
+}

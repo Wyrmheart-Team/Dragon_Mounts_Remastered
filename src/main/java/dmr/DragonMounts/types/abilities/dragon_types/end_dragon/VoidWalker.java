@@ -1,7 +1,7 @@
 package dmr.DragonMounts.types.abilities.dragon_types.end_dragon;
 
+import dmr.DragonMounts.abilities.Ability;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import dmr.DragonMounts.types.abilities.types.Ability;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -29,7 +29,7 @@ public class VoidWalker implements Ability {
 
 			for (var dragon : dragons) {
 				if (dragon.getOwner() != player) continue;
-				var hasVoidWalker = dragon.getBreed().getAbilities().stream().anyMatch(ability -> ability.type().equals("void_walker"));
+				var hasVoidWalker = dragon.getBreed().getCodeAbilities().stream().anyMatch(ability -> ability.type().equals("void_walker"));
 
 				if (hasVoidWalker) {
 					event.setCanceled(true);

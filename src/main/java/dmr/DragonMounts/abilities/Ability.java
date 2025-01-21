@@ -1,11 +1,9 @@
-package dmr.DragonMounts.types.abilities.types;
+package dmr.DragonMounts.abilities;
 
 import com.mojang.serialization.Codec;
 import dmr.DragonMounts.registry.DragonAbilities;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import java.util.Map;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
 public interface Ability {
 	Codec<Ability> CODEC = Codec.STRING.dispatch(Ability::type, DragonAbilities.REGISTRY::get);
@@ -26,8 +24,4 @@ public interface Ability {
 	default void tick(DMRDragonEntity dragon) {}
 
 	default void onMove(DMRDragonEntity dragon) {}
-
-	default Map<ResourceLocation, Double> getAttributes() {
-		return null;
-	}
 }

@@ -4,6 +4,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.brigadier.CommandDispatcher;
+import dmr.DragonMounts.abilities.Ability;
 import dmr.DragonMounts.config.ClientConfig;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.network.NetworkHandler;
@@ -11,7 +12,6 @@ import dmr.DragonMounts.registry.*;
 import dmr.DragonMounts.server.commands.DMRCommand;
 import dmr.DragonMounts.server.events.LootTableInject;
 import dmr.DragonMounts.types.DataPackHandler;
-import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.types.habitats.Habitat;
 import dmr.DragonMounts.util.type_adapters.*;
 import java.util.List;
@@ -21,6 +21,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.item.Item;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -58,6 +59,7 @@ public class DMR {
 		gsonBuilder.registerTypeAdapter(SoundEvent.class, new SoundEventAdapter());
 		gsonBuilder.registerTypeAdapter(Ability.class, new AbilityAdapter());
 		gsonBuilder.registerTypeAdapter(Habitat.class, new HabitatAdapter());
+		gsonBuilder.registerTypeAdapter(Attribute.class, new AttributeAdapter());
 
 		if (FMLEnvironment.dist == Dist.CLIENT) {
 			container.registerConfig(Type.CLIENT, ClientConfig.MOD_CONFIG_SPEC);

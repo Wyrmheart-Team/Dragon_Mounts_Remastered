@@ -12,14 +12,14 @@ pluginManagement {
     }
 
     plugins {
-        id 'net.neoforged.moddev' version '2.0.72'
-        id 'net.neoforged.moddev.repositories' version '2.0.72'
+        id 'net.neoforged.moddev' version '2.0.75'
+        id 'net.neoforged.moddev.repositories' version '2.0.75'
     }
 }
 
 plugins {
     id 'net.neoforged.moddev.repositories'
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.9.0'
 }
 
 dependencyResolutionManagement {
@@ -27,11 +27,13 @@ dependencyResolutionManagement {
         mavenCentral()
         maven {
             name = 'GeckoLib'
-            url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+            url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
             content {
                 includeGroup("software.bernie.geckolib")
             }
         }
-        maven { url 'https://maven.blamejared.com/' }
+        maven { url = 'https://maven.blamejared.com/' }
+        maven { url = 'https://jitpack.io' }
+        maven { url = "https://maven.figuramc.org/releases" }
     }
 }

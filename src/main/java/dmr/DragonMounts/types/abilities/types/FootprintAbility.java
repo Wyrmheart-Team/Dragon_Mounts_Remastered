@@ -1,5 +1,6 @@
 package dmr.DragonMounts.types.abilities.types;
 
+import dmr.DragonMounts.abilities.Ability;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import net.minecraft.core.BlockPos;
 

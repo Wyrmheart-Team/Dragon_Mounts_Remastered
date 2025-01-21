@@ -14,7 +14,6 @@ base {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-
 sourceSets {
     test {
         java {
@@ -42,6 +41,8 @@ dependencies {
 
     testImplementation sourceSets.main.output
 
+    jarJar(implementation("com.github.FiguraMC.luaj:luaj-jse:$luaj-figura"))
+
     implementation "software.bernie.geckolib:geckolib-neoforge-$minecraft_version:$geckolib_version"
 
     compileOnly "mezz.jei:jei-$minecraft_version-common-api:$jei_version"
@@ -49,7 +50,6 @@ dependencies {
 
     runtimeOnly "mezz.jei:jei-$minecraft_version-neoforge:$jei_version"
 }
-
 
 neoForge {
     version = project.neo_version
@@ -61,6 +61,10 @@ neoForge {
     }
 
     validateAccessTransformers = true
+
+    dependencies {
+        additionalRuntimeClasspath("com.github.FiguraMC.luaj:luaj-jse:$luaj-figura")
+    }
 
     runs {
         configureEach {

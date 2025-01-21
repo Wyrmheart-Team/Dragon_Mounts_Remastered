@@ -2,11 +2,13 @@ package dmr.DragonMounts.types.dragonBreeds;
 
 import com.google.gson.annotations.SerializedName;
 import dmr.DragonMounts.DMR;
+import dmr.DragonMounts.abilities.Ability;
+import dmr.DragonMounts.registry.DragonAbilityRegistry;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.types.habitats.Habitat;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.particles.ParticleOptions;
@@ -55,8 +57,13 @@ public interface IDragonBreed {
 
 	default void initialize(DMRDragonEntity dragon) {
 		applyAttributes(dragon);
-		for (Ability a : getAbilities()) {
+
+		for (Ability a : getCodeAbilities()) {
 			a.initialize(dragon);
+		}
+
+		for (String ability : getAbilities()) {
+			DragonAbilityRegistry.callScript(ability, "init", dragon);
 		}
 
 		if (getImmunities().contains("drown")) {
@@ -66,20 +73,33 @@ public interface IDragonBreed {
 
 	default void close(DMRDragonEntity dragon) {
 		dragon.getAttributes().assignAllValues(new AttributeMap(DMRDragonEntity.createAttributes().build())); // restore default attributes
-		for (Ability a : getAbilities()) {
+
+		for (Ability a : getCodeAbilities()) {
 			a.close(dragon);
+		}
+
+		for (String ability : getAbilities()) {
+			DragonAbilityRegistry.callScript(ability, "close", dragon);
 		}
 	}
 
 	default void tick(DMRDragonEntity dragon) {
-		for (Ability a : getAbilities()) {
+		for (Ability a : getCodeAbilities()) {
 			a.tick(dragon);
+		}
+
+		for (String ability : getAbilities()) {
+			DragonAbilityRegistry.callScript(ability, "onTick", dragon);
 		}
 	}
 
 	default void onMove(DMRDragonEntity dragon) {
-		for (Ability a : getAbilities()) {
+		for (Ability a : getCodeAbilities()) {
 			a.onMove(dragon);
+		}
+
+		for (String ability : getAbilities()) {
+			DragonAbilityRegistry.callScript(ability, "onMove", dragon);
 		}
 	}
 
@@ -97,18 +117,20 @@ public interface IDragonBreed {
 				}
 			});
 
-		for (Ability ability : getAbilities()) {
-			if (ability.getAttributes() != null) {
-				ability
+		for (String ability : getAbilities()) {
+			if (DragonAbilityRegistry.hasDragonAbility(ability)) {
+				DragonAbilityRegistry.getDragonAbility(ability)
 					.getAttributes()
 					.forEach((att, value) -> {
-						Optional<Reference<Attribute>> attr = BuiltInRegistries.ATTRIBUTE.getHolder(att);
+						Optional<Reference<Attribute>> attr = BuiltInRegistries.ATTRIBUTE.getHolder(
+							Objects.requireNonNull(att.getBaseId())
+						);
 						if (attr.isPresent()) {
 							AttributeInstance inst = dragon.getAttribute(attr.get());
 							if (inst != null) {
 								inst.addPermanentModifier(
 									new AttributeModifier(
-										ResourceLocation.fromNamespaceAndPath(DMR.MOD_ID, ability.type()),
+										ResourceLocation.fromNamespaceAndPath(DMR.MOD_ID, ability),
 										value,
 										Operation.ADD_VALUE
 									)
@@ -146,7 +168,8 @@ public interface IDragonBreed {
 	List<String> getImmunities();
 	Map<ResourceLocation, Double> getAttributes();
 	List<Habitat> getHabitats();
-	List<Ability> getAbilities();
+	List<String> getAbilities();
+	List<Ability> getCodeAbilities();
 
 	List<Item> getTamingItems();
 	List<Item> getBreedingItems();

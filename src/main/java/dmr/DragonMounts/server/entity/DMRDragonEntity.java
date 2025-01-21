@@ -775,6 +775,10 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 		setYRot(yRotO);
 		setYHeadRot(yHeadRotO);
 
+		if (deathTime == 0) {
+			getBreed().close(this);
+		}
+
 		if (deathTime >= getMaxDeathTime()) remove(RemovalReason.KILLED); // actually delete entity after the time is up
 
 		deathTime++;

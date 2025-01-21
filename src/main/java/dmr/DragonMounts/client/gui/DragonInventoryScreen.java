@@ -1,10 +1,12 @@
 package dmr.DragonMounts.client.gui;
 
 import dmr.DragonMounts.DMR;
+import dmr.DragonMounts.abilities.Ability;
+import dmr.DragonMounts.abilities.DragonAbility;
 import dmr.DragonMounts.network.packets.DragonStatePacket;
+import dmr.DragonMounts.registry.DragonAbilityRegistry;
 import dmr.DragonMounts.server.container.DragonContainerMenu;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import dmr.DragonMounts.types.abilities.types.Ability;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -64,7 +66,14 @@ public class DragonInventoryScreen extends AbstractContainerScreen<DragonContain
 
 		int i = 0;
 		int offsetY = 0;
-		for (Ability ability : dragon.getBreed().getAbilities()) {
+		for (Ability ability : dragon.getBreed().getCodeAbilities()) {
+			var btn = new DragonAbilityButton(leftPos - 124, topPos + 5 + offsetY, ability);
+			addRenderableWidget(btn);
+			offsetY += 40 + btn.description.size() * 9;
+			i++;
+		}
+
+		for (DragonAbility ability : dragon.getBreed().getAbilities().stream().map(DragonAbilityRegistry::getDragonAbility).toList()) {
 			var btn = new DragonAbilityButton(leftPos - 124, topPos + 5 + offsetY, ability);
 			addRenderableWidget(btn);
 			offsetY += 40 + btn.description.size() * 9;
