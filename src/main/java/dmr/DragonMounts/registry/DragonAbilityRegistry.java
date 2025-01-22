@@ -4,31 +4,14 @@ import dmr.DragonMounts.abilities.DragonAbility;
 import dmr.DragonMounts.abilities.scripting.LuaFunctions;
 import dmr.DragonMounts.abilities.scripting.ScriptInstance;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import dmr.DragonMounts.types.DataPackHandler.ScriptFile;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 public class DragonAbilityRegistry {
 
-	private static final HashMap<String, DragonAbility> ABILITIES = new HashMap<>();
-	private static final HashMap<String, ScriptInstance> SCRIPTS = new HashMap<>();
-
-	public static void clear() {
-		//		ABILITIES.clear();
-		//		SCRIPTS.clear();
-	}
-
-	public static void register(ScriptFile script, DragonAbility ability) {
-		ABILITIES.put(ability.id, ability);
-		var scriptInstance = new ScriptInstance(
-			script.name(),
-			script.content(),
-			Arrays.stream(LuaFunctions.values()).map(LuaFunctions::getName).toArray(String[]::new)
-		);
-		SCRIPTS.put(ability.id, scriptInstance);
-	}
+	public static final HashMap<String, DragonAbility> ABILITIES = new HashMap<>();
+	public static final HashMap<String, ScriptInstance> SCRIPTS = new HashMap<>();
 
 	public static DragonAbility getDragonAbility(String name) {
 		return ABILITIES.getOrDefault(name, null);

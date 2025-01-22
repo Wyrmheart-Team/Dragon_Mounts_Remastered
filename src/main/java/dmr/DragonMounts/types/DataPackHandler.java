@@ -7,6 +7,8 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.abilities.DragonAbility;
+import dmr.DragonMounts.abilities.scripting.LuaFunctions;
+import dmr.DragonMounts.abilities.scripting.ScriptInstance;
 import dmr.DragonMounts.network.packets.SyncDataPackPacket;
 import dmr.DragonMounts.registry.DragonAbilityRegistry;
 import dmr.DragonMounts.registry.DragonArmorRegistry;
@@ -17,6 +19,7 @@ import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 import net.minecraft.core.Registry;
@@ -97,8 +100,6 @@ public class DataPackHandler {
 			.registry(ABILITIES_KEY)
 			.orElseGet(() -> RegistryAccess.EMPTY.registryOrThrow(ABILITIES_KEY));
 
-		DragonAbilityRegistry.clear();
-
 		List<DragonArmor> armorList = new ArrayList<>();
 		List<IDragonBreed> breedList = new ArrayList<>();
 
@@ -121,11 +122,13 @@ public class DataPackHandler {
 		for (Entry<ResourceKey<DragonAbility>, DragonAbility> ent : ability_reg.entrySet()) {
 			var key = ent.getKey();
 			var ability = ent.getValue();
-			ability.id = key.location().getPath();
+			ability.setId(key.location().getPath());
 
 			if (level instanceof ServerLevel serverLevel) {
 				var server = serverLevel.getServer();
 				var resourceManager = server.getResourceManager();
+
+				DragonAbilityRegistry.ABILITIES.put(ability.getId(), ability);
 
 				if (ability.getScript() != null) {
 					var script = ability.getScript();
@@ -142,8 +145,12 @@ public class DataPackHandler {
 
 					if (resource.isPresent()) {
 						try (var reader = resource.get().open()) {
-							var scriptFile = new ScriptFile(script.getPath(), new String(reader.readAllBytes()));
-							DragonAbilityRegistry.register(scriptFile, ability);
+							var scriptInstance = new ScriptInstance(
+								script.getPath(),
+								new String(reader.readAllBytes()),
+								Arrays.stream(LuaFunctions.values()).map(LuaFunctions::getName).toArray(String[]::new)
+							);
+							DragonAbilityRegistry.SCRIPTS.put(ability.getId(), scriptInstance);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}

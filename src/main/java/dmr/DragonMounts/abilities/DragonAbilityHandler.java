@@ -1,5 +1,6 @@
 package dmr.DragonMounts.abilities;
 
+import com.mojang.logging.LogUtils;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.abilities.scripting.LuaFunctions;
 import dmr.DragonMounts.registry.DragonAbilityRegistry;
@@ -24,8 +25,10 @@ public class DragonAbilityHandler {
 
 			if (DragonAbilityRegistry.hasScript(ability)) {
 				DragonAbilityRegistry.callScript(ability, LuaFunctions.init, dragon);
-			} else if (dragonAbility.getCodeAbility() != null) {
+			} else if (dragonAbility != null && dragonAbility.getCodeAbility() != null) {
 				dragonAbility.getCodeAbility().initialize(dragon);
+			} else if (dragonAbility == null) {
+				LogUtils.getLogger().error("Ability {} not found, Unable to init!", ability);
 			}
 		}
 	}
@@ -38,8 +41,10 @@ public class DragonAbilityHandler {
 
 			if (DragonAbilityRegistry.hasScript(ability)) {
 				DragonAbilityRegistry.callScript(ability, LuaFunctions.close, dragon);
-			} else if (dragonAbility.getCodeAbility() != null) {
+			} else if (dragonAbility != null && dragonAbility.getCodeAbility() != null) {
 				dragonAbility.getCodeAbility().close(dragon);
+			} else if (dragonAbility == null) {
+				LogUtils.getLogger().error("Ability {} not found, Unable to close!", ability);
 			}
 		}
 	}
@@ -52,8 +57,10 @@ public class DragonAbilityHandler {
 
 			if (DragonAbilityRegistry.hasScript(ability)) {
 				DragonAbilityRegistry.callScript(ability, LuaFunctions.init, dragon);
-			} else if (dragonAbility.getCodeAbility() != null) {
+			} else if (dragonAbility != null && dragonAbility.getCodeAbility() != null) {
 				dragonAbility.getCodeAbility().tick(dragon);
+			} else if (dragonAbility == null) {
+				LogUtils.getLogger().error("Ability {} not found, Unable to tick!", ability);
 			}
 		}
 	}
@@ -66,8 +73,10 @@ public class DragonAbilityHandler {
 
 			if (DragonAbilityRegistry.hasScript(ability)) {
 				DragonAbilityRegistry.callScript(ability, LuaFunctions.onMove, dragon);
-			} else if (dragonAbility.getCodeAbility() != null) {
+			} else if (dragonAbility != null && dragonAbility.getCodeAbility() != null) {
 				dragonAbility.getCodeAbility().onMove(dragon);
+			} else if (dragonAbility == null) {
+				LogUtils.getLogger().error("Ability {} not found, Unable to onMove!", ability);
 			}
 		}
 	}
