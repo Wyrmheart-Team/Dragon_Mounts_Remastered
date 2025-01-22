@@ -21,14 +21,14 @@ public class CrystalHarmonyAbility implements Ability {
 	@SubscribeEvent
 	public static void entityHurt(LivingDamageEvent.Pre event) {
 		if (event.getEntity() instanceof DMRDragonEntity dragon) {
-			if (dragon.getBreed().getAbilities().contains(DragonAbilities.CRYSTAL_HARMONY).type()) {
+			if (dragon.getBreed().getAbilities().contains(DragonAbilities.CRYSTAL_HARMONY.type())) {
 				if (dragon.getRandom().nextDouble() <= protection_chance) {
 					event.setNewDamage(0);
 				}
 			}
 		} else if (event.getEntity() instanceof Player player) {
 			if (player.getVehicle() instanceof DMRDragonEntity dragon) {
-				if (dragon.getBreed().getAbilities().contains(DragonAbilities.CRYSTAL_HARMONY).type()) {
+				if (dragon.getBreed().getAbilities().contains(DragonAbilities.CRYSTAL_HARMONY.type())) {
 					if (dragon.getRandom().nextDouble() <= protection_chance) {
 						event.setNewDamage(0);
 					}

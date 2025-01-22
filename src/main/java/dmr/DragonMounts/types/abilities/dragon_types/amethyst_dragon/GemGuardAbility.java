@@ -28,14 +28,14 @@ public class GemGuardAbility implements Ability {
 			var target = result.getEntity();
 
 			if (target instanceof DMRDragonEntity dragon) {
-				if (dragon.getBreed().getAbilities().contains(DragonAbilities.GEM_GUARD).type()) {
+				if (dragon.getBreed().getAbilities().contains(DragonAbilities.GEM_GUARD.type())) {
 					if (dragon.getRandom().nextDouble() < deflect_chance) {
 						event.setCanceled(true);
 					}
 				}
 			} else if (target instanceof Player player) {
 				if (player.getVehicle() instanceof DMRDragonEntity dragon) {
-					if (dragon.getBreed().getAbilities().contains(DragonAbilities.GEM_GUARD).type()) {
+					if (dragon.getBreed().getAbilities().contains(DragonAbilities.GEM_GUARD.type())) {
 						if (dragon.getRandom().nextDouble() < deflect_chance) {
 							event.setCanceled(true);
 						}
