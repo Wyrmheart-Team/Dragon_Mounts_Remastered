@@ -6,12 +6,13 @@ import dmr.DragonMounts.abilities.scripting.wrappers.LuaRandomWrapper;
 import dmr.DragonMounts.abilities.scripting.wrappers.PlayerLuaWrapper;
 import dmr.DragonMounts.abilities.scripting.wrappers.WorldLuaWrapper;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import java.util.HashMap;
-import java.util.Random;
 import net.minecraft.world.entity.player.Player;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
+
+import java.util.HashMap;
+import java.util.Random;
 
 public class ScriptInstance {
 

@@ -22,7 +22,7 @@ public class EnderCloakAbility implements Ability {
 		var level = player.level;
 
 		if (player.getVehicle() instanceof DMRDragonEntity dragon) {
-			if (dragon.getBreed().getCodeAbilities().contains(DragonAbilities.ENDER_CLOAK)) {
+			if (dragon.getBreed().getAbilities().contains(DragonAbilities.ENDER_CLOAK).type()) {
 				event.setCanceled(true);
 				return;
 			}
@@ -35,7 +35,7 @@ public class EnderCloakAbility implements Ability {
 		dragonEntities = dragonEntities.stream().filter(s -> s.getOwnerUUID() == player.getUUID()).toList();
 
 		for (DMRDragonEntity dragon : dragonEntities) {
-			if (dragon.getBreed().getCodeAbilities().contains(DragonAbilities.ENDER_CLOAK)) {
+			if (dragon.getBreed().getAbilities().contains(DragonAbilities.ENDER_CLOAK).type()) {
 				event.setCanceled(true);
 				return;
 			}

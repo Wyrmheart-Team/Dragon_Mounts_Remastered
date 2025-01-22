@@ -23,12 +23,12 @@ public class InfernalPactAbility implements Ability {
 	public static void onLivingChangeTarget(LivingChangeTargetEvent event) {
 		if (event.getEntity() instanceof AbstractPiglin || event.getEntity() instanceof Ghast || event.getEntity() instanceof MagmaCube) {
 			if (event.getNewAboutToBeSetTarget() instanceof DMRDragonEntity dragon) {
-				if (dragon.getBreed().getCodeAbilities().contains(DragonAbilities.INFERNAL_PACT_ABILITY)) {
+				if (dragon.getBreed().getAbilities().contains(DragonAbilities.INFERNAL_PACT_ABILITY).type()) {
 					event.setCanceled(true);
 				}
 			} else if (event.getNewAboutToBeSetTarget() instanceof Player player) {
 				if (player.getVehicle() instanceof DMRDragonEntity dragon) {
-					if (dragon.getBreed().getCodeAbilities().contains(DragonAbilities.INFERNAL_PACT_ABILITY)) {
+					if (dragon.getBreed().getAbilities().contains(DragonAbilities.INFERNAL_PACT_ABILITY).type()) {
 						event.setCanceled(true);
 					}
 				}

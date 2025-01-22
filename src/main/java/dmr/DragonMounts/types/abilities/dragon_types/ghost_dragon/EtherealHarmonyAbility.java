@@ -21,12 +21,12 @@ public class EtherealHarmonyAbility implements Ability {
 	public static void onLivingChangeTarget(LivingChangeTargetEvent event) {
 		if (event.getEntity().getType().is(EntityTypeTags.UNDEAD)) {
 			if (event.getNewAboutToBeSetTarget() instanceof DMRDragonEntity dragon) {
-				if (dragon.getBreed().getCodeAbilities().contains(DragonAbilities.ETHEREAL_HARMONY)) {
+				if (dragon.getBreed().getAbilities().contains(DragonAbilities.ETHEREAL_HARMONY.type())) {
 					event.setCanceled(true);
 				}
 			} else if (event.getNewAboutToBeSetTarget() instanceof Player player) {
 				if (player.getVehicle() instanceof DMRDragonEntity dragon) {
-					if (dragon.getBreed().getCodeAbilities().contains(DragonAbilities.ETHEREAL_HARMONY)) {
+					if (dragon.getBreed().getAbilities().contains(DragonAbilities.ETHEREAL_HARMONY.type())) {
 						event.setCanceled(true);
 					}
 				}

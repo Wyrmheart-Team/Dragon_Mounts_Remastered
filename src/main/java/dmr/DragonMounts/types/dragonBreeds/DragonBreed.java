@@ -2,7 +2,6 @@ package dmr.DragonMounts.types.dragonBreeds;
 
 import com.google.gson.annotations.SerializedName;
 import dmr.DragonMounts.DMR;
-import dmr.DragonMounts.abilities.Ability;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModComponents;
@@ -124,14 +123,6 @@ public class DragonBreed implements IDragonBreed {
 	@Override
 	public List<String> getAbilities() {
 		return abilities;
-	}
-
-	@SerializedName("code_abilities")
-	private List<Ability> code_abilities = new ArrayList<>();
-
-	@Override
-	public List<Ability> getCodeAbilities() {
-		return code_abilities;
 	}
 
 	@SerializedName("taming_items")

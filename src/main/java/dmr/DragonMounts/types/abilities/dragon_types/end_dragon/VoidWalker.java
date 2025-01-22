@@ -29,7 +29,7 @@ public class VoidWalker implements Ability {
 
 			for (var dragon : dragons) {
 				if (dragon.getOwner() != player) continue;
-				var hasVoidWalker = dragon.getBreed().getCodeAbilities().stream().anyMatch(ability -> ability.type().equals("void_walker"));
+				var hasVoidWalker = dragon.getBreed().getAbilities().contains("void_walker");
 
 				if (hasVoidWalker) {
 					event.setCanceled(true);

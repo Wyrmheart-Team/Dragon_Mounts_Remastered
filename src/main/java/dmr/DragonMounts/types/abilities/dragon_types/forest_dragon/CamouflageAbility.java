@@ -21,14 +21,14 @@ public class CamouflageAbility implements Ability {
 	@SubscribeEvent
 	public static void onLivingChangeTarget(LivingChangeTargetEvent event) {
 		if (event.getNewAboutToBeSetTarget() instanceof DMRDragonEntity dragon) {
-			if (dragon.getBreed().getCodeAbilities().contains(DragonAbilities.CAMOUFLAGE_ABILITY)) {
+			if (dragon.getBreed().getAbilities().contains(DragonAbilities.CAMOUFLAGE_ABILITY).type()) {
 				if (event.getEntity().distanceTo(dragon) > range) {
 					event.setCanceled(true);
 				}
 			}
 		} else if (event.getNewAboutToBeSetTarget() instanceof Player player) {
 			if (player.getVehicle() instanceof DMRDragonEntity dragon) {
-				if (dragon.getBreed().getCodeAbilities().contains(DragonAbilities.CAMOUFLAGE_ABILITY)) {
+				if (dragon.getBreed().getAbilities().contains(DragonAbilities.CAMOUFLAGE_ABILITY).type()) {
 					if (event.getEntity().distanceTo(dragon) > range) {
 						event.setCanceled(true);
 					}
