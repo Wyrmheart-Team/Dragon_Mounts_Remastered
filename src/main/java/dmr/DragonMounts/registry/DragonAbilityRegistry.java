@@ -32,6 +32,10 @@ public class DragonAbilityRegistry {
 		return ABILITIES.containsKey(name);
 	}
 
+	public static boolean hasScript(String name) {
+		return SCRIPTS.containsKey(name);
+	}
+
 	public static List<DragonAbility> getDragonAbilities() {
 		return new ArrayList<>(ABILITIES.values());
 	}

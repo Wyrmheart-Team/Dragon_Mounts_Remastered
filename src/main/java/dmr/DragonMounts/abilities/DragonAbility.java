@@ -13,14 +13,6 @@ public class DragonAbility {
 
 	public String id;
 
-	public Component getTranslatedName() {
-		return Component.translatable(String.format("dmr.ability.%s.name", id));
-	}
-
-	public Component getTranslatedDescription() {
-		return Component.translatable(String.format("dmr.ability.%s.description", id));
-	}
-
 	@SerializedName("script")
 	private ResourceLocation script;
 
@@ -29,4 +21,12 @@ public class DragonAbility {
 
 	@SerializedName("attributes")
 	private Map<Attribute, Double> attributes = new HashMap<>();
+
+	public Component getTranslatedName() {
+		return Component.translatable(String.format("dmr.ability.%s.name", id));
+	}
+
+	public Component getTranslatedDescription() {
+		return Component.translatable(String.format("dmr.ability.%s.description", id));
+	}
 }

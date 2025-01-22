@@ -129,6 +129,15 @@ public class DataPackHandler {
 
 				if (ability.getScript() != null) {
 					var script = ability.getScript();
+
+					if (!script.getPath().endsWith(".lua")) {
+						continue;
+					}
+
+					if (DragonAbilityRegistry.hasScript(script.getPath())) {
+						continue;
+					}
+
 					var resource = resourceManager.getResource(script);
 
 					if (resource.isPresent()) {

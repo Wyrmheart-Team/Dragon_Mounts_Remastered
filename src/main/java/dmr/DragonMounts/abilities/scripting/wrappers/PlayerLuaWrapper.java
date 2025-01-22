@@ -15,8 +15,4 @@ public class PlayerLuaWrapper extends EntityLuaWrapper<Player> {
 	public boolean isRiding() {
 		return entity.isPassenger();
 	}
-
-	public boolean isSneaking() {
-		return entity.isCrouching();
-	}
 }

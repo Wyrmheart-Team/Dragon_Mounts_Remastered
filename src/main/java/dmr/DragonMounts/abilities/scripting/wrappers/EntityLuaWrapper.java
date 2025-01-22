@@ -17,12 +17,12 @@ public class EntityLuaWrapper<T extends LivingEntity> {
 		return entity.getHealth();
 	}
 
-	public double getMaxHealth() {
-		return entity.getMaxHealth();
-	}
-
 	public void setHealth(double health) {
 		entity.setHealth((float) health);
+	}
+
+	public double getMaxHealth() {
+		return entity.getMaxHealth();
 	}
 
 	public boolean isAlive() {
@@ -37,7 +37,7 @@ public class EntityLuaWrapper<T extends LivingEntity> {
 		entity.setPos(x, y, z);
 	}
 
-	public double getDistance(EntityLuaWrapper other) {
+	public double getDistance(EntityLuaWrapper<?> other) {
 		return entity.distanceTo(other.entity);
 	}
 
@@ -80,16 +80,16 @@ public class EntityLuaWrapper<T extends LivingEntity> {
 		return entity.hurt(entity.level.damageSources().generic(), (float) amount);
 	}
 
+	public boolean addEffect(String effectId, int duration) {
+		return addEffect(effectId, duration, 0);
+	}
+
 	public boolean addEffect(String effectId, int duration, int amplifier) {
 		var level = entity.level;
 		var effectLoc = ResourceLocation.tryParse(effectId);
 		assert effectLoc != null;
 		var effect = level.registryAccess().registryOrThrow(Registries.MOB_EFFECT).getHolder(effectLoc).orElseThrow();
 		return entity.addEffect(new MobEffectInstance(effect, duration, amplifier, true, false, true));
-	}
-
-	public boolean addEffect(String effectId, int duration) {
-		return addEffect(effectId, duration, 0);
 	}
 
 	public void removeEffect(String effectId) {
@@ -104,10 +104,6 @@ public class EntityLuaWrapper<T extends LivingEntity> {
 		entity.removeAllEffects();
 	}
 
-	public void setOnFire(int duration) {
-		entity.setRemainingFireTicks(duration);
-	}
-
 	public void extinguish() {
 		entity.clearFire();
 	}
@@ -116,7 +112,47 @@ public class EntityLuaWrapper<T extends LivingEntity> {
 		return entity.isOnFire();
 	}
 
+	public void setOnFire(int duration) {
+		entity.setRemainingFireTicks(duration);
+	}
+
+	public boolean isFireImmune() {
+		return entity.fireImmune();
+	}
+
 	public boolean isInWater() {
 		return entity.isInWater();
+	}
+
+	public boolean isInWaterOrRain() {
+		return entity.isInWaterOrRain();
+	}
+
+	public boolean isInLava() {
+		return entity.isInLava();
+	}
+
+	public boolean isSneaking() {
+		return entity.isCrouching();
+	}
+
+	public boolean isSprinting() {
+		return entity.isSprinting();
+	}
+
+	public boolean isSwimming() {
+		return entity.isSwimming();
+	}
+
+	public boolean isFriendly(EntityLuaWrapper<?> other) {
+		return entity.isAlliedTo(other.entity);
+	}
+
+	public boolean isInvisible() {
+		return entity.isInvisible();
+	}
+
+	public boolean hasLineOfSight(EntityLuaWrapper<?> other) {
+		return entity.hasLineOfSight(other.entity);
 	}
 }

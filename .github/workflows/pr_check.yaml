@@ -3,6 +3,10 @@ name: Full Deployment
 on:
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   game-tests:
     uses: ./.github/workflows/game-tests.yaml

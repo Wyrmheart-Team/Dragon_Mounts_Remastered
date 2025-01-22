@@ -23,8 +23,10 @@ import org.luaj.vm2.lib.jse.JsePlatform;
 
 public class ScriptInstance {
 
+	private final HashMap<String, LuaValue> func = new HashMap<>();
+	private final String path;
 	public static Globals globals = JsePlatform.standardGlobals();
-	private LuaValue environment;
+	private final LuaValue environment;
 
 	static {
 		// read only string metatable
@@ -65,19 +67,6 @@ public class ScriptInstance {
 		fetchResource("math.lua", "math");
 	}
 
-	private static void fetchResource(String s, String name) {
-		var path = String.format("/data/%s/scripts/%s", DMR.MOD_ID, s);
-		try (InputStream inputStream = DMR.class.getResourceAsStream(path)) {
-			if (inputStream == null) throw new IOException("Unable to get resource " + path);
-			globals.load(new String(inputStream.readAllBytes()), name).call();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private final HashMap<String, LuaValue> func = new HashMap<>();
-	private final String path;
-
 	public ScriptInstance(String scriptPath, String scriptContent, String... function) {
 		String wrappedScript = "local _ENV = {};\n" + scriptContent + "\nreturn _ENV;";
 
@@ -108,41 +97,6 @@ public class ScriptInstance {
 		}
 	}
 
-	private static LuaValue sanitizeValue(Object input) {
-		return switch (input) {
-			case String s -> LuaValue.valueOf(escapeLuaString(s));
-			case Integer i -> LuaValue.valueOf(i);
-			case Double v -> LuaValue.valueOf(v);
-			case Boolean b -> LuaValue.valueOf(b);
-			case null -> LuaValue.NIL;
-			default -> throw new IllegalArgumentException("Unsupported value type: " + input.getClass().getSimpleName());
-		};
-	}
-
-	private static String escapeLuaString(String input) {
-		return input
-			.replace("\\", "\\\\")
-			.replace("\"", "\\\"")
-			.replace("'", "\\'")
-			.replace("\n", "\\n")
-			.replace("\r", "\\r")
-			.replace("\0", "\\0");
-	}
-
-	private static List<String> getKeys(LuaValue globals) {
-		List<String> keys = new ArrayList<>();
-		LuaValue key = LuaValue.NIL;
-
-		while (true) {
-			Varargs n = globals.next(key);
-			key = n.arg1();
-			if (key.isnil()) break;
-			keys.add(key.tojstring());
-		}
-
-		return keys;
-	}
-
 	private static void copyAllGlobals(Globals globals, LuaTable environment) {
 		LuaValue key = LuaValue.NIL;
 		while (true) {
@@ -152,6 +106,16 @@ public class ScriptInstance {
 
 			LuaValue value = n.arg(2);
 			environment.set(key, value);
+		}
+	}
+
+	private static void fetchResource(String s, String name) {
+		var path = String.format("/data/%s/scripts/%s", DMR.MOD_ID, s);
+		try (InputStream inputStream = DMR.class.getResourceAsStream(path)) {
+			if (inputStream == null) throw new IOException("Unable to get resource " + path);
+			globals.load(new String(inputStream.readAllBytes()), name).call();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -196,6 +160,31 @@ public class ScriptInstance {
 		return val;
 	}
 
+	private static LuaValue sanitizeValue(Object input) {
+		return switch (input) {
+			case String s -> LuaValue.valueOf(escapeLuaString(s));
+			case Integer i -> LuaValue.valueOf(i);
+			case Double v -> LuaValue.valueOf(v);
+			case Boolean b -> LuaValue.valueOf(b);
+			case null -> LuaValue.NIL;
+			default -> throw new IllegalArgumentException("Unsupported value type: " + input.getClass().getSimpleName());
+		};
+	}
+
+	private static List<String> getKeys(LuaValue globals) {
+		List<String> keys = new ArrayList<>();
+		LuaValue key = LuaValue.NIL;
+
+		while (true) {
+			Varargs n = globals.next(key);
+			key = n.arg1();
+			if (key.isnil()) break;
+			keys.add(key.tojstring());
+		}
+
+		return keys;
+	}
+
 	private Varargs doExecute(String function, Object... args) {
 		var func = this.func.get(function);
 
@@ -227,5 +216,15 @@ public class ScriptInstance {
 		globals.set("function_name", LuaValue.NIL);
 
 		return LuaValue.NIL;
+	}
+
+	private static String escapeLuaString(String input) {
+		return input
+			.replace("\\", "\\\\")
+			.replace("\"", "\\\"")
+			.replace("'", "\\'")
+			.replace("\n", "\\n")
+			.replace("\r", "\\r")
+			.replace("\0", "\\0");
 	}
 }

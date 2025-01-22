@@ -9,7 +9,7 @@
       "biome_tag": "minecraft:deep_dark"
     }
   ],
-  "code_abilities": [
+  "abilities": [
     "echo_sense"
   ],
   "primary_color": "D1216",
