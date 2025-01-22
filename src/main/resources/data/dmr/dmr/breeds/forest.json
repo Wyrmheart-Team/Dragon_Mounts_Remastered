@@ -1,9 +1,7 @@
 {
-  "code_abilities": [
-    "camouflage"
-  ],
   "abilities": [
-      "nature_blessing"
+    "nature_blessing",
+    "camouflage"
   ],
   "habitats": [
     {

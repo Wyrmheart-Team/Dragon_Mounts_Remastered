@@ -1,8 +1,6 @@
 {
-  "code_abilities": [
-    "floral_trail",
-  ],
   "abilities": [
+    "floral_trail",
     "nature_blessing"
   ],
   "habitats": [

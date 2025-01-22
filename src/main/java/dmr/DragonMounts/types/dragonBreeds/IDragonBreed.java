@@ -1,14 +1,11 @@
 package dmr.DragonMounts.types.dragonBreeds;
 
 import com.google.gson.annotations.SerializedName;
-import dmr.DragonMounts.DMR;
-import dmr.DragonMounts.abilities.Ability;
-import dmr.DragonMounts.registry.DragonAbilityRegistry;
+import dmr.DragonMounts.abilities.DragonAbilityHandler;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.types.habitats.Habitat;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.particles.ParticleOptions;
@@ -19,8 +16,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.pathfinder.PathType;
 
@@ -58,13 +53,7 @@ public interface IDragonBreed {
 	default void initialize(DMRDragonEntity dragon) {
 		applyAttributes(dragon);
 
-		for (Ability a : getCodeAbilities()) {
-			a.initialize(dragon);
-		}
-
-		for (String ability : getAbilities()) {
-			DragonAbilityRegistry.callScript(ability, "init", dragon);
-		}
+		DragonAbilityHandler.initAbilities(dragon);
 
 		if (getImmunities().contains("drown")) {
 			dragon.setPathfindingMalus(PathType.WATER, 0.0F);
@@ -74,33 +63,15 @@ public interface IDragonBreed {
 	default void close(DMRDragonEntity dragon) {
 		dragon.getAttributes().assignAllValues(new AttributeMap(DMRDragonEntity.createAttributes().build())); // restore default attributes
 
-		for (Ability a : getCodeAbilities()) {
-			a.close(dragon);
-		}
-
-		for (String ability : getAbilities()) {
-			DragonAbilityRegistry.callScript(ability, "close", dragon);
-		}
+		DragonAbilityHandler.closeAbilities(dragon);
 	}
 
 	default void tick(DMRDragonEntity dragon) {
-		for (Ability a : getCodeAbilities()) {
-			a.tick(dragon);
-		}
-
-		for (String ability : getAbilities()) {
-			DragonAbilityRegistry.callScript(ability, "onTick", dragon);
-		}
+		DragonAbilityHandler.tickAbilities(dragon);
 	}
 
 	default void onMove(DMRDragonEntity dragon) {
-		for (Ability a : getCodeAbilities()) {
-			a.onMove(dragon);
-		}
-
-		for (String ability : getAbilities()) {
-			DragonAbilityRegistry.callScript(ability, "onMove", dragon);
-		}
+		DragonAbilityHandler.onMove(dragon);
 	}
 
 	default void applyAttributes(DMRDragonEntity dragon) {
@@ -117,29 +88,7 @@ public interface IDragonBreed {
 				}
 			});
 
-		for (String ability : getAbilities()) {
-			if (DragonAbilityRegistry.hasDragonAbility(ability)) {
-				DragonAbilityRegistry.getDragonAbility(ability)
-					.getAttributes()
-					.forEach((att, value) -> {
-						Optional<Reference<Attribute>> attr = BuiltInRegistries.ATTRIBUTE.getHolder(
-							Objects.requireNonNull(att.getBaseId())
-						);
-						if (attr.isPresent()) {
-							AttributeInstance inst = dragon.getAttribute(attr.get());
-							if (inst != null) {
-								inst.addPermanentModifier(
-									new AttributeModifier(
-										ResourceLocation.fromNamespaceAndPath(DMR.MOD_ID, ability),
-										value,
-										Operation.ADD_VALUE
-									)
-								);
-							}
-						}
-					});
-			}
-		}
+		DragonAbilityHandler.applyAttributes(dragon);
 
 		dragon.setHealth(dragon.getMaxHealth() * healthPercentile); // in case we have less than max health
 	}
@@ -169,7 +118,6 @@ public interface IDragonBreed {
 	Map<ResourceLocation, Double> getAttributes();
 	List<Habitat> getHabitats();
 	List<String> getAbilities();
-	List<Ability> getCodeAbilities();
 
 	List<Item> getTamingItems();
 	List<Item> getBreedingItems();

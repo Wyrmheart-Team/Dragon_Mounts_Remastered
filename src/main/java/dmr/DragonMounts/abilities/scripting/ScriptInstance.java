@@ -1,84 +1,36 @@
 package dmr.DragonMounts.abilities.scripting;
 
-import com.mojang.logging.LogUtils;
-import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.abilities.DragonAbility;
-import dmr.DragonMounts.abilities.scripting.lua.ReadOnlyLuaTable;
 import dmr.DragonMounts.abilities.scripting.wrappers.DragonLuaWrapper;
 import dmr.DragonMounts.abilities.scripting.wrappers.LuaRandomWrapper;
 import dmr.DragonMounts.abilities.scripting.wrappers.PlayerLuaWrapper;
 import dmr.DragonMounts.abilities.scripting.wrappers.WorldLuaWrapper;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 import net.minecraft.world.entity.player.Player;
-import org.luaj.vm2.*;
-import org.luaj.vm2.lib.VarArgFunction;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-import org.luaj.vm2.lib.jse.JsePlatform;
 
 public class ScriptInstance {
 
 	private final HashMap<String, LuaValue> func = new HashMap<>();
 	private final String path;
-	public static Globals globals = JsePlatform.standardGlobals();
 	private final LuaValue environment;
-
-	static {
-		// read only string metatable
-		LuaString.s_metatable = new ReadOnlyLuaTable(LuaString.s_metatable);
-
-		// Add a custom print function
-		globals.set(
-			"print",
-			new VarArgFunction() {
-				@Override
-				public Varargs invoke(Varargs args) {
-					var scriptName = globals.get("script_name").tojstring();
-					var functionName = globals.get("function_name").tojstring();
-
-					StringBuilder output = new StringBuilder("[" + scriptName + ":" + functionName + "] ");
-					for (int i = 1; i <= args.narg(); i++) {
-						output.append(args.arg(i).isnil() ? "nil" : args.arg(i).tojstring());
-						if (i < args.narg()) {
-							output.append("\t");
-						}
-					}
-					if (DMR.DEBUG) {
-						String message = output.toString();
-						if (message.contains("ERROR")) {
-							LogUtils.getLogger().error(message);
-						} else {
-							LogUtils.getLogger().info(message);
-						}
-					}
-
-					return NONE;
-				}
-			}
-		);
-
-		globals.load("params = params or {}", "setup").call();
-		fetchResource("sandbox.lua", "sandbox");
-		fetchResource("math.lua", "math");
-	}
 
 	public ScriptInstance(String scriptPath, String scriptContent, String... function) {
 		String wrappedScript = "local _ENV = {};\n" + scriptContent + "\nreturn _ENV;";
 
-		globals.set("random", CoerceJavaToLua.coerce(new LuaRandomWrapper(new Random())));
-		var scriptChunk = globals.load(wrappedScript, "script");
+		LuaGlobals.globals.set("random", CoerceJavaToLua.coerce(new LuaRandomWrapper(new Random())));
+		var scriptChunk = LuaGlobals.globals.load(wrappedScript, "script");
 
 		if (scriptChunk.isnil()) {
 			throw new RuntimeException("Script file " + scriptPath + " not found");
 		}
 
 		environment = scriptChunk.call();
-		copyAllGlobals(globals, environment.checktable());
+		LuaUtils.copyAllGlobals(LuaGlobals.globals, environment.checktable());
 
 		this.path = scriptPath;
 
@@ -97,40 +49,18 @@ public class ScriptInstance {
 		}
 	}
 
-	private static void copyAllGlobals(Globals globals, LuaTable environment) {
-		LuaValue key = LuaValue.NIL;
-		while (true) {
-			Varargs n = globals.next(key);
-			key = n.arg1();
-			if (key.isnil()) break;
-
-			LuaValue value = n.arg(2);
-			environment.set(key, value);
-		}
-	}
-
-	private static void fetchResource(String s, String name) {
-		var path = String.format("/data/%s/scripts/%s", DMR.MOD_ID, s);
-		try (InputStream inputStream = DMR.class.getResourceAsStream(path)) {
-			if (inputStream == null) throw new IOException("Unable to get resource " + path);
-			globals.load(new String(inputStream.readAllBytes()), name).call();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public Varargs execute(DragonAbility ability, DMRDragonEntity dragon, String function, Object... args) {
+	public void execute(DragonAbility ability, DMRDragonEntity dragon, String function, Object... args) {
 		if (!this.func.containsKey(function)) {
-			return LuaValue.NIL;
+			return;
 		}
 
 		LuaValue paramTable = LuaValue.tableOf();
 
 		for (var entry : ability.getScriptParameters().entrySet()) {
-			paramTable.set(LuaValue.valueOf(entry.getKey()), sanitizeValue(entry.getValue()));
+			paramTable.set(LuaValue.valueOf(entry.getKey()), LuaUtils.sanitizeValue(entry.getValue()));
 		}
 
-		var preKeys = getKeys(environment);
+		var preKeys = LuaUtils.getGlobalsKeys(environment);
 
 		environment.set("params", paramTable);
 
@@ -148,83 +78,43 @@ public class ScriptInstance {
 			}
 		}
 
-		var val = doExecute(function, args);
+		Runnable clearFunc = () -> {
+			var postKeys = LuaUtils.getGlobalsKeys(environment);
+			postKeys.removeAll(preKeys);
 
-		var postKeys = getKeys(environment);
-		postKeys.removeAll(preKeys);
-
-		for (String key : postKeys) {
-			environment.set(key, LuaValue.NIL);
-		}
-
-		return val;
-	}
-
-	private static LuaValue sanitizeValue(Object input) {
-		return switch (input) {
-			case String s -> LuaValue.valueOf(escapeLuaString(s));
-			case Integer i -> LuaValue.valueOf(i);
-			case Double v -> LuaValue.valueOf(v);
-			case Boolean b -> LuaValue.valueOf(b);
-			case null -> LuaValue.NIL;
-			default -> throw new IllegalArgumentException("Unsupported value type: " + input.getClass().getSimpleName());
+			for (String key : postKeys) {
+				environment.set(key, LuaValue.NIL);
+			}
 		};
-	}
 
-	private static List<String> getKeys(LuaValue globals) {
-		List<String> keys = new ArrayList<>();
-		LuaValue key = LuaValue.NIL;
+		var func1 = this.func.get(function);
 
-		while (true) {
-			Varargs n = globals.next(key);
-			key = n.arg1();
-			if (key.isnil()) break;
-			keys.add(key.tojstring());
-		}
-
-		return keys;
-	}
-
-	private Varargs doExecute(String function, Object... args) {
-		var func = this.func.get(function);
-
-		if (func == null || func.isnil()) {
+		if (func1 == null || func1.isnil()) {
 			System.err.println("Function " + function + " is nil");
-			return LuaValue.NIL;
+			clearFunc.run();
+			return;
 		}
+
+		LuaGlobals.globals.set("script_name", LuaValue.valueOf(this.path));
+		LuaGlobals.globals.set("function_name", LuaValue.valueOf(function));
 
 		try {
-			globals.set("script_name", LuaValue.valueOf(this.path));
-			globals.set("function_name", LuaValue.valueOf(function));
-
 			if (args.length == 0) {
-				return func.call();
+				func1.call();
+			} else {
+				LuaValue[] luaArgs = new LuaValue[args.length];
+				for (int i = 0; i < args.length; i++) {
+					luaArgs[i] = CoerceJavaToLua.coerce(args[i]);
+				}
+				func1.invoke(LuaValue.varargsOf(luaArgs));
 			}
-
-			LuaValue[] luaArgs = new LuaValue[args.length];
-			for (int i = 0; i < args.length; i++) {
-				luaArgs[i] = CoerceJavaToLua.coerce(args[i]);
-			}
-
-			return func.invoke(LuaValue.varargsOf(luaArgs));
 		} catch (LuaError e) {
 			System.err.printf("Lua error executing function %s: %s%n", function, e.getMessage());
-			System.err.println(e.getMessageObject());
 		}
 
-		globals.set("script_name", LuaValue.NIL);
-		globals.set("function_name", LuaValue.NIL);
+		LuaGlobals.globals.set("script_name", LuaValue.NIL);
+		LuaGlobals.globals.set("function_name", LuaValue.NIL);
 
-		return LuaValue.NIL;
-	}
-
-	private static String escapeLuaString(String input) {
-		return input
-			.replace("\\", "\\\\")
-			.replace("\"", "\\\"")
-			.replace("'", "\\'")
-			.replace("\n", "\\n")
-			.replace("\r", "\\r")
-			.replace("\0", "\\0");
+		clearFunc.run();
 	}
 }

@@ -1,10 +1,12 @@
 package dmr.DragonMounts.registry;
 
 import dmr.DragonMounts.abilities.DragonAbility;
+import dmr.DragonMounts.abilities.scripting.LuaFunctions;
 import dmr.DragonMounts.abilities.scripting.ScriptInstance;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.types.DataPackHandler.ScriptFile;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -20,7 +22,11 @@ public class DragonAbilityRegistry {
 
 	public static void register(ScriptFile script, DragonAbility ability) {
 		ABILITIES.put(ability.id, ability);
-		var scriptInstance = new ScriptInstance(script.name(), script.content(), "init", "close", "onTick", "onMove");
+		var scriptInstance = new ScriptInstance(
+			script.name(),
+			script.content(),
+			Arrays.stream(LuaFunctions.values()).map(LuaFunctions::getName).toArray(String[]::new)
+		);
 		SCRIPTS.put(ability.id, scriptInstance);
 	}
 
@@ -40,13 +46,13 @@ public class DragonAbilityRegistry {
 		return new ArrayList<>(ABILITIES.values());
 	}
 
-	public static void callScript(String name, String function, DMRDragonEntity dragon, Object... args) {
+	public static void callScript(String name, LuaFunctions function, DMRDragonEntity dragon, Object... args) {
 		var script = SCRIPTS.get(name);
 		var ability = ABILITIES.get(name);
 
 		if (script == null || ability == null) {
 			return;
 		}
-		script.execute(ability, dragon, function, args);
+		script.execute(ability, dragon, function.getName(), args);
 	}
 }

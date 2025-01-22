@@ -1,0 +1,102 @@
+package dmr.DragonMounts.abilities;
+
+import dmr.DragonMounts.DMR;
+import dmr.DragonMounts.abilities.scripting.LuaFunctions;
+import dmr.DragonMounts.registry.DragonAbilityRegistry;
+import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import java.util.Objects;
+import java.util.Optional;
+import net.minecraft.core.Holder.Reference;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
+
+public class DragonAbilityHandler {
+
+	public static void initAbilities(DMRDragonEntity dragon) {
+		var breed = dragon.getBreed();
+
+		for (String ability : breed.getAbilities()) {
+			DragonAbility dragonAbility = DragonAbilityRegistry.getDragonAbility(ability);
+
+			if (DragonAbilityRegistry.hasScript(ability)) {
+				DragonAbilityRegistry.callScript(ability, LuaFunctions.init, dragon);
+			} else if (dragonAbility.getCodeAbility() != null) {
+				dragonAbility.getCodeAbility().initialize(dragon);
+			}
+		}
+	}
+
+	public static void closeAbilities(DMRDragonEntity dragon) {
+		var breed = dragon.getBreed();
+
+		for (String ability : breed.getAbilities()) {
+			DragonAbility dragonAbility = DragonAbilityRegistry.getDragonAbility(ability);
+
+			if (DragonAbilityRegistry.hasScript(ability)) {
+				DragonAbilityRegistry.callScript(ability, LuaFunctions.close, dragon);
+			} else if (dragonAbility.getCodeAbility() != null) {
+				dragonAbility.getCodeAbility().close(dragon);
+			}
+		}
+	}
+
+	public static void tickAbilities(DMRDragonEntity dragon) {
+		var breed = dragon.getBreed();
+
+		for (String ability : breed.getAbilities()) {
+			DragonAbility dragonAbility = DragonAbilityRegistry.getDragonAbility(ability);
+
+			if (DragonAbilityRegistry.hasScript(ability)) {
+				DragonAbilityRegistry.callScript(ability, LuaFunctions.init, dragon);
+			} else if (dragonAbility.getCodeAbility() != null) {
+				dragonAbility.getCodeAbility().tick(dragon);
+			}
+		}
+	}
+
+	public static void onMove(DMRDragonEntity dragon) {
+		var breed = dragon.getBreed();
+
+		for (String ability : breed.getAbilities()) {
+			DragonAbility dragonAbility = DragonAbilityRegistry.getDragonAbility(ability);
+
+			if (DragonAbilityRegistry.hasScript(ability)) {
+				DragonAbilityRegistry.callScript(ability, LuaFunctions.onMove, dragon);
+			} else if (dragonAbility.getCodeAbility() != null) {
+				dragonAbility.getCodeAbility().onMove(dragon);
+			}
+		}
+	}
+
+	public static void applyAttributes(DMRDragonEntity dragon) {
+		var breed = dragon.getBreed();
+
+		for (String ability : breed.getAbilities()) {
+			if (DragonAbilityRegistry.hasDragonAbility(ability)) {
+				DragonAbilityRegistry.getDragonAbility(ability)
+					.getAttributes()
+					.forEach((att, value) -> {
+						Optional<Reference<Attribute>> attr = BuiltInRegistries.ATTRIBUTE.getHolder(
+							Objects.requireNonNull(att.getBaseId())
+						);
+						if (attr.isPresent()) {
+							AttributeInstance inst = dragon.getAttribute(attr.get());
+							if (inst != null) {
+								inst.addPermanentModifier(
+									new AttributeModifier(
+										ResourceLocation.fromNamespaceAndPath(DMR.MOD_ID, ability),
+										value,
+										Operation.ADD_VALUE
+									)
+								);
+							}
+						}
+					});
+			}
+		}
+	}
+}

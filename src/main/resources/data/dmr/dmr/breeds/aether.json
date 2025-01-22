@@ -1,7 +1,4 @@
 {
-  "attributes": {
-    "minecraft:generic.flying_speed": 0.25
-  },
   "abilities": [
     "quick_flight"
   ],

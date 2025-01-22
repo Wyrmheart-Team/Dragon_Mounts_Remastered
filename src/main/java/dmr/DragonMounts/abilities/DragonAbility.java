@@ -16,6 +16,9 @@ public class DragonAbility {
 	@SerializedName("script")
 	private ResourceLocation script;
 
+	@SerializedName("code_ability")
+	private Ability codeAbility;
+
 	@SerializedName("script_parameters")
 	private Map<String, Object> scriptParameters = new HashMap<>();
 

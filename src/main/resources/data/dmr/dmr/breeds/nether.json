@@ -2,7 +2,7 @@
   "attributes": {
     "minecraft:generic.armor": 8.0
   },
-  "code_abilities": [
+  "abilities": [
     "infernal_pact",
     "fire_proof"
   ],

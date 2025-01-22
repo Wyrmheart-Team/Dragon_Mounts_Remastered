@@ -1,8 +1,6 @@
 {
-  "code_abilities": [
-    "frost_walker",
-  ],
   "abilities": [
+    "frost_walker",
     "frost_aura"
   ],
   "habitats": [
