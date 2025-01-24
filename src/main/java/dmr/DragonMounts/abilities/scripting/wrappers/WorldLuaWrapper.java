@@ -1,12 +1,13 @@
 package dmr.DragonMounts.abilities.scripting.wrappers;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.AABB;
@@ -52,30 +53,36 @@ public class WorldLuaWrapper {
 		return world.isNight();
 	}
 
-	public PlayerLuaWrapper[] getPlayers() {
-		return world.players().stream().map(PlayerLuaWrapper::new).toArray(PlayerLuaWrapper[]::new);
+	public List<EntityLuaWrapper> getPlayers() {
+		return world.players().stream().map(EntityLuaWrapper::new).toList();
 	}
 
-	public EntityLuaWrapper<?>[] getEntitiesInRadius(int x, int y, int z, double radius) {
+	public List<EntityLuaWrapper> getEntities(int x, int y, int z, double radius) {
 		return world
 			.getEntitiesOfClass(LivingEntity.class, new AABB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius))
 			.stream()
 			.map(EntityLuaWrapper::new)
-			.toArray(EntityLuaWrapper[]::new);
+			.toList();
 	}
 
-	public EntityLuaWrapper<?>[] getHostilesInRadius(EntityLuaWrapper<?> hostileTo, int x, int y, int z, double radius) {
-		return world
-			.getNearbyEntities(
-				Monster.class,
-				conditions,
-				hostileTo.entity,
-				new AABB(x - (radius / 2), y - (radius / 2), z - (radius / 2), x + (radius / 2), y + (radius / 2), z + (radius / 2))
-			)
+	public List<EntityLuaWrapper> getHostiles(EntityLuaWrapper dragon, int x, int y, int z, double radius) {
+		var list = new ArrayList<EntityLuaWrapper>();
+		var entities = getEntities(x, y, z, radius)
 			.stream()
-			.filter(entity -> !entity.isAlliedTo(hostileTo.entity))
-			.map(EntityLuaWrapper::new)
-			.toArray(EntityLuaWrapper[]::new);
+			.filter(entity -> entity != dragon && (dragon.getOwner() == null || entity != dragon.getOwner()))
+			.toList();
+
+		for (var entity : entities) {
+			if (entity.isHostile(dragon)) {
+				list.add(entity);
+			}
+
+			if (dragon.getOwner() != null && entity.isHostile(dragon.getOwner())) {
+				list.add(entity);
+			}
+		}
+
+		return list;
 	}
 
 	public String getBlock(int x, int y, int z) {

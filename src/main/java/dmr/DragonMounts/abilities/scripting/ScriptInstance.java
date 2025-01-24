@@ -1,18 +1,17 @@
 package dmr.DragonMounts.abilities.scripting;
 
 import dmr.DragonMounts.abilities.DragonAbility;
-import dmr.DragonMounts.abilities.scripting.wrappers.DragonLuaWrapper;
+import dmr.DragonMounts.abilities.scripting.wrappers.EntityLuaWrapper;
+import dmr.DragonMounts.abilities.scripting.wrappers.LuaProxy;
 import dmr.DragonMounts.abilities.scripting.wrappers.LuaRandomWrapper;
-import dmr.DragonMounts.abilities.scripting.wrappers.PlayerLuaWrapper;
 import dmr.DragonMounts.abilities.scripting.wrappers.WorldLuaWrapper;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import net.minecraft.world.entity.player.Player;
+import java.util.HashMap;
+import java.util.Random;
+import java.util.function.Function;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-
-import java.util.HashMap;
-import java.util.Random;
 
 public class ScriptInstance {
 
@@ -61,6 +60,8 @@ public class ScriptInstance {
 			paramTable.set(LuaValue.valueOf(entry.getKey()), LuaUtils.sanitizeValue(entry.getValue()));
 		}
 
+		Function<Object, LuaValue> coerce = o -> CoerceJavaToLua.coerce(LuaProxy.wrap(o));
+
 		var preKeys = LuaUtils.getGlobalsKeys(environment);
 
 		environment.set("params", paramTable);
@@ -70,11 +71,11 @@ public class ScriptInstance {
 			environment.set("hasOwner", LuaValue.valueOf(dragon.getOwner() != null));
 			environment.set("tickCount", LuaValue.valueOf(dragon.tickCount % 1000));
 
-			environment.set("dragon", CoerceJavaToLua.coerce(new DragonLuaWrapper(dragon)));
-			environment.set("world", CoerceJavaToLua.coerce(new WorldLuaWrapper(dragon.level)));
+			environment.set("dragon", coerce.apply(new EntityLuaWrapper(dragon)));
+			environment.set("world", coerce.apply(new WorldLuaWrapper(dragon.level)));
 
 			if (dragon.getOwner() != null) {
-				environment.set("player", CoerceJavaToLua.coerce(new PlayerLuaWrapper((Player) dragon.getOwner())));
+				environment.set("player", coerce.apply(new EntityLuaWrapper(dragon.getOwner())));
 				environment.set("owner", environment.get("player"));
 			}
 		}
@@ -110,7 +111,7 @@ public class ScriptInstance {
 				func1.invoke(LuaValue.varargsOf(luaArgs));
 			}
 		} catch (LuaError e) {
-			System.err.printf("Lua error executing function %s: %s%n", function, e.getMessage());
+			System.err.printf("Lua error executing function %s in %s: %s%n", function, this.path, e.getMessage());
 		}
 
 		LuaGlobals.globals.set("script_name", LuaValue.NIL);

@@ -56,6 +56,8 @@ public class DragonPathNavigation extends FlyingPathNavigation {
 				dragon.getBreed() != null &&
 				dragon.getBreed().getImmunities().contains("drown") &&
 				dragon.level.getFluidState(pos).is(Fluids.WATER);
+
+			dragonNodeEvaluator.allowFlying = !dragon.isTame() && dragon.canFly();
 		}
 
 		Path path = super.createPath(pos, accuracy);

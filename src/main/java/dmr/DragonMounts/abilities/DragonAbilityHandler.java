@@ -5,7 +5,6 @@ import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.abilities.scripting.LuaFunctions;
 import dmr.DragonMounts.registry.DragonAbilityRegistry;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -56,7 +55,7 @@ public class DragonAbilityHandler {
 			DragonAbility dragonAbility = DragonAbilityRegistry.getDragonAbility(ability);
 
 			if (DragonAbilityRegistry.hasScript(ability)) {
-				DragonAbilityRegistry.callScript(ability, LuaFunctions.init, dragon);
+				DragonAbilityRegistry.callScript(ability, LuaFunctions.onTick, dragon);
 			} else if (dragonAbility != null && dragonAbility.getCodeAbility() != null) {
 				dragonAbility.getCodeAbility().tick(dragon);
 			} else if (dragonAbility == null) {
@@ -89,9 +88,8 @@ public class DragonAbilityHandler {
 				DragonAbilityRegistry.getDragonAbility(ability)
 					.getAttributes()
 					.forEach((att, value) -> {
-						Optional<Reference<Attribute>> attr = BuiltInRegistries.ATTRIBUTE.getHolder(
-							Objects.requireNonNull(att.getBaseId())
-						);
+						var key = BuiltInRegistries.ATTRIBUTE.getKey(att);
+						Optional<Reference<Attribute>> attr = BuiltInRegistries.ATTRIBUTE.getHolder(key);
 						if (attr.isPresent()) {
 							AttributeInstance inst = dragon.getAttribute(attr.get());
 							if (inst != null) {

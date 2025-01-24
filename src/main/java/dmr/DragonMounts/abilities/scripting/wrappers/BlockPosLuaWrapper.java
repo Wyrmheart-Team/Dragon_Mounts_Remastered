@@ -5,24 +5,20 @@ import net.minecraft.core.BlockPos;
 public class BlockPosLuaWrapper {
 
 	private final BlockPos pos;
-	public int x, y, z;
 
 	public BlockPosLuaWrapper(BlockPos pos) {
 		this.pos = pos;
-		this.x = pos.getX();
-		this.y = pos.getY();
-		this.z = pos.getZ();
 	}
 
-	public int getX() {
+	public double x() {
 		return pos.getX();
 	}
 
-	public int getY() {
+	public double y() {
 		return pos.getY();
 	}
 
-	public int getZ() {
+	public double z() {
 		return pos.getZ();
 	}
 }

@@ -35,13 +35,11 @@ public class LuaGlobals {
 							output.append("\t");
 						}
 					}
-					if (DMR.DEBUG) {
-						String message = output.toString();
-						if (message.contains("ERROR")) {
-							LogUtils.getLogger().error(message);
-						} else {
-							LogUtils.getLogger().info(message);
-						}
+					String message = output.toString();
+					if (message.contains("ERROR")) {
+						LogUtils.getLogger().error(message);
+					} else {
+						LogUtils.getLogger().info(message);
 					}
 
 					return NONE;

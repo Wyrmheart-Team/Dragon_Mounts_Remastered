@@ -1,15 +1,19 @@
 package dmr.DragonMounts.abilities.scripting.wrappers;
 
+import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Targeting;
+import net.minecraft.world.entity.monster.Enemy;
+import org.luaj.vm2.LuaError;
 
-public class EntityLuaWrapper<T extends LivingEntity> {
+public class EntityLuaWrapper {
 
-	protected final T entity;
+	protected final LivingEntity entity;
 
-	public EntityLuaWrapper(T entity) {
+	public EntityLuaWrapper(LivingEntity entity) {
 		this.entity = entity;
 	}
 
@@ -33,11 +37,27 @@ public class EntityLuaWrapper<T extends LivingEntity> {
 		return new BlockPosLuaWrapper(entity.blockPosition());
 	}
 
+	public boolean isHostile(EntityLuaWrapper other) {
+		if (other.entity instanceof Enemy || entity instanceof Enemy) {
+			return true;
+		}
+
+		if (entity.isAlliedTo(other.entity)) {
+			return false;
+		}
+
+		if (entity instanceof Targeting target) {
+			return target.getTarget() == other.entity;
+		}
+
+		return entity.getLastHurtByMob() == other.entity || entity.getLastHurtMob() == other.entity;
+	}
+
 	public void setPosition(int x, int y, int z) {
 		entity.setPos(x, y, z);
 	}
 
-	public double getDistance(EntityLuaWrapper<?> other) {
+	public double getDistance(EntityLuaWrapper other) {
 		return entity.distanceTo(other.entity);
 	}
 
@@ -144,7 +164,7 @@ public class EntityLuaWrapper<T extends LivingEntity> {
 		return entity.isSwimming();
 	}
 
-	public boolean isFriendly(EntityLuaWrapper<?> other) {
+	public boolean isFriendly(EntityLuaWrapper other) {
 		return entity.isAlliedTo(other.entity);
 	}
 
@@ -152,7 +172,56 @@ public class EntityLuaWrapper<T extends LivingEntity> {
 		return entity.isInvisible();
 	}
 
-	public boolean hasLineOfSight(EntityLuaWrapper<?> other) {
+	public boolean hasLineOfSight(EntityLuaWrapper other) {
 		return entity.hasLineOfSight(other.entity);
+	}
+
+	public String getName() {
+		return entity.getName().getString();
+	}
+
+	public boolean isRiding() {
+		return entity.isPassenger();
+	}
+
+	/****************************************************************************************
+ Dragon Functions
+ ****************************************************************************************/
+
+	public boolean isFlying() {
+		if (!(entity instanceof DMRDragonEntity dragon)) {
+			throw new LuaError("Entity is not a dragon");
+		}
+
+		return dragon.isFlying();
+	}
+
+	public boolean isSitting() {
+		if (!(entity instanceof DMRDragonEntity dragon)) {
+			throw new LuaError("Entity is not a dragon");
+		}
+
+		return dragon.isSitting();
+	}
+
+	public boolean hasPassenger(EntityLuaWrapper passenger) {
+		return entity.hasPassenger(passenger.entity);
+	}
+
+	public EntityLuaWrapper getTarget() {
+		if (!(entity instanceof Targeting targeting)) {
+			throw new LuaError("Entity is unable to target");
+		}
+		var target = targeting.getTarget();
+		return target == null ? null : new EntityLuaWrapper(target);
+	}
+
+	public EntityLuaWrapper getOwner() {
+		if (!(entity instanceof DMRDragonEntity dragon)) {
+			throw new LuaError("Entity is not a dragon");
+		}
+
+		var owner = dragon.getOwner();
+		return owner == null ? null : new EntityLuaWrapper(owner);
 	}
 }
