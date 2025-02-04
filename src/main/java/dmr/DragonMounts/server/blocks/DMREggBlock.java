@@ -44,6 +44,8 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Vector3f;
 
 public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWaterloggedBlock {
@@ -116,6 +118,7 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
 		return DragonEggItemBlock.getDragonEggStack(breed, breedVariant);
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public RenderShape getRenderShape(BlockState pState) {
 		return pState.getValue(HATCHING) && ClientConfig.MOD_CONFIG_SPEC.isLoaded() && ClientConfig.RENDER_HATCHING_EGG.get()

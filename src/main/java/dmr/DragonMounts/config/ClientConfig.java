@@ -31,7 +31,11 @@ public class ClientConfig {
 		tag.putBoolean("camera_flight", CAMERA_FLIGHT.get());
 		tag.putBoolean("alternate_dismount", DOUBLE_PRESS_DISMOUNT.get());
 
-		PacketDistributor.sendToServer(new ClientConfigSync(Minecraft.getInstance().player.getId(), tag));
+		//TODO This is unlikely to work properly, find a better way to sync the config
+		var client = Minecraft.getInstance();
+		if (client.player != null) {
+			PacketDistributor.sendToServer(new ClientConfigSync(client.player.getId(), tag));
+		}
 	}
 
 	@EventBusSubscriber(modid = DMR.MOD_ID, value = Dist.CLIENT)
