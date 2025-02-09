@@ -3,6 +3,7 @@ package dmr.DragonMounts.client.model;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
+import dmr.DragonMounts.ModConstants;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
@@ -90,8 +91,10 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
 				var breedId = data.breedId();
 				var variantId = data.variantId();
 
-				if (models.containsKey(breedId + "%" + variantId)) {
-					return models.get(breedId + "%" + variantId).getQuads(state, side, rand, extraData, renderType);
+				if (models.containsKey(breedId + ModConstants.VARIANT_DIVIDER + variantId)) {
+					return models
+						.get(breedId + ModConstants.VARIANT_DIVIDER + variantId)
+						.getQuads(state, side, rand, extraData, renderType);
 				} else if (models.containsKey(breedId)) {
 					return models.get(breedId).getQuads(state, side, rand, extraData, renderType);
 				}
@@ -132,8 +135,8 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
 				var breedId = data.breedId();
 				var variantId = data.variantId();
 
-				if (models.containsKey(breedId + "%" + variantId)) {
-					return models.get(breedId + "%" + variantId).getParticleIcon(modelData);
+				if (models.containsKey(breedId + ModConstants.VARIANT_DIVIDER + variantId)) {
+					return models.get(breedId + ModConstants.VARIANT_DIVIDER + variantId).getParticleIcon(modelData);
 				} else if (models.containsKey(breedId)) {
 					return models.get(breedId).getParticleIcon(modelData);
 				}
@@ -188,7 +191,9 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
 				}
 			}
 
-			var model = variantId != null ? owner.models.get(String.join("%", breed, variantId)) : owner.models.get(breed);
+			var model = variantId != null
+				? owner.models.get(String.join(ModConstants.VARIANT_DIVIDER, breed, variantId))
+				: owner.models.get(breed);
 			if (model != null) return model;
 
 			return original;

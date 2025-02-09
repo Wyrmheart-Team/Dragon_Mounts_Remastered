@@ -1,6 +1,7 @@
 package dmr.DragonMounts.server.entity;
 
 import dmr.DragonMounts.DMR;
+import dmr.DragonMounts.ModConstants;
 import dmr.DragonMounts.ModConstants.NBTConstants;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModMemoryModuleTypes;
@@ -764,7 +765,9 @@ public abstract class AbstractDMRDragonEntity
 	@Override
 	protected Component getTypeName() {
 		if (hasVariant()) {
-			return Component.translatable(DMR.MOD_ID + ".dragon_breed." + getBreed().getId() + "%" + getVariantId());
+			return Component.translatable(
+				DMR.MOD_ID + ".dragon_breed." + getBreed().getId() + ModConstants.VARIANT_DIVIDER + getVariantId()
+			);
 		}
 
 		return getBreed().getName();

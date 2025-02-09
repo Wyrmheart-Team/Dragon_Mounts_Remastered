@@ -1,5 +1,6 @@
 package dmr.DragonMounts.server.items;
 
+import dmr.DragonMounts.ModConstants;
 import dmr.DragonMounts.ModConstants.NBTConstants;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModComponents;
@@ -50,7 +51,7 @@ public class DragonSpawnEgg extends DeferredSpawnEggItem {
 		if (variant != null) {
 			itemDataTag.putString(
 				DATA_ITEM_NAME,
-				String.join(".", ModItems.DRAGON_SPAWN_EGG.get().getDescriptionId(), id + "%" + variant.id())
+				String.join(".", ModItems.DRAGON_SPAWN_EGG.get().getDescriptionId(), id + ModConstants.VARIANT_DIVIDER + variant.id())
 			);
 			itemDataTag.putInt(DATA_PRIM_COLOR, variant.getPrimaryColor());
 			itemDataTag.putInt(DATA_SEC_COLOR, variant.getSecondaryColor());

@@ -1,5 +1,6 @@
 package dmr.DragonMounts.server.items;
 
+import dmr.DragonMounts.ModConstants;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModBlocks;
 import dmr.DragonMounts.registry.ModComponents;
@@ -47,7 +48,11 @@ public class DragonEggItemBlock extends BlockItem {
 
 		if (breed == null) return "item.dmr.dragon_egg.deprecated";
 
-		return String.join(".", ModBlocks.DRAGON_EGG_BLOCK.get().getDescriptionId(), breed + (variant != null ? "%" + variant : ""));
+		return String.join(
+			".",
+			ModBlocks.DRAGON_EGG_BLOCK.get().getDescriptionId(),
+			breed + (variant != null ? ModConstants.VARIANT_DIVIDER + variant : "")
+		);
 	}
 
 	@Override
