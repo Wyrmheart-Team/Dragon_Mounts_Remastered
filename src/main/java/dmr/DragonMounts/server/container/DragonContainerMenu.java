@@ -144,7 +144,7 @@ public class DragonContainerMenu extends AbstractContainerMenu {
 		if (slot != null && slot.hasItem()) {
 			ItemStack itemstack1 = slot.getItem();
 			itemstack = itemstack1.copy();
-			int i = this.dragonContainer.getContainerSize();
+			int i = this.dragon.hasChest() ? this.dragonContainer.getContainerSize() : 3;
 			if (pIndex < i) {
 				if (!this.moveItemStackTo(itemstack1, i, this.slots.size(), true)) {
 					return ItemStack.EMPTY;
