@@ -125,7 +125,7 @@
   "dmr.ability.swift_swim.description": "ドラゴンとその所有者にはイルカの好意が与えられます",
   "dmr.configuration.allow_egg_override": "卵の上書を許可",
   "dmr.configuration.camera_flight": "Camera Flight",
-  "dmr.configuration.dragon_histroy_size": "ドラゴンのヒストリーサイズ",
+  "dmr.configuration.dragon_history_size": "ドラゴンのヒストリーサイズ",
   "dmr.configuration.enable_dragon_breath": "ドラゴンブレスの有効",
   "dmr.configuration.riding_camera_offset": "騎竜中のカメラオフセット",
   "dmr.configuration.render_hatching_egg": "卵のアニメーション描画",
