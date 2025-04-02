@@ -1,6 +1,7 @@
 package dmr.DragonMounts.client.handlers;
 
 import dmr.DragonMounts.client.model.DragonModel;
+import dmr.DragonMounts.client.renderer.BlankEggRenderer;
 import dmr.DragonMounts.client.renderer.DragonEggRenderer;
 import dmr.DragonMounts.client.renderer.DragonRenderer;
 import dmr.DragonMounts.registry.ModBlockEntities;
@@ -22,5 +23,6 @@ public class ClientModHandler {
 	public static void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
 		event.registerEntityRenderer(ModEntities.DRAGON_ENTITY.get(), manager -> new DragonRenderer(manager, MODEL_INSTANCE));
 		event.registerBlockEntityRenderer(ModBlockEntities.DRAGON_EGG_BLOCK_ENTITY.get(), manager -> new DragonEggRenderer());
+		event.registerBlockEntityRenderer(ModBlockEntities.BLANK_EGG_BLOCK_ENTITY.get(), manager -> new BlankEggRenderer());
 	}
 }

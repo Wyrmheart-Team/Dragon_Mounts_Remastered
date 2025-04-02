@@ -73,6 +73,8 @@
   "item.dmr.dragon_whistle.red": "Red Dragon Whistle",
   "item.dmr.dragon_whistle.black": "Black Dragon Whistle",
   "item.dmr.dragon_egg.deprecated": "Deprecated Dragon Egg",
+  "block.dmr.blank_egg": "Blank Dragon Egg",
+  "item.dmr.blank_egg.tooltip": "This blank egg can be placed down anywhere and will adapt to current environment.",
   "item.dmr.dragon_egg.deprecated.tooltip": "Place down the egg to get the correct new version.",
   "block.dmr.dragon_egg": "Dragon Egg",
   "block.dmr.dragon_egg.aether": "Aether Dragon Egg",

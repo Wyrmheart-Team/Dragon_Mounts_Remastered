@@ -29,6 +29,8 @@ public class ModCreativeTabs {
 			.icon(() -> new ItemStack(ModItems.DRAGON_EGG_BLOCK_ITEM.get()))
 			.title(Component.translatable("itemGroup.dragon_mounts"))
 			.displayItems((enabledFeatures, entries) -> {
+				entries.accept(ModItems.BLANK_EGG_BLOCK_ITEM.get().getDefaultInstance());
+
 				var breeds = DragonBreedsRegistry.getDragonBreeds();
 				for (IDragonBreed type : breeds) {
 					if (!type.isHybrid()) {

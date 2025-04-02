@@ -24,7 +24,8 @@ public class NetworkHandler {
 		new DragonAttackPacket(-1),
 		new DragonBreathPacket(-1),
 		new DragonRespawnDelayPacket(-1, -1),
-		new ClientConfigSync(-1, null)
+		new ClientConfigSync(-1, null),
+		new BlankEggSyncPacket(null, null, -1)
 	);
 
 	public static void registerEvent(RegisterPayloadHandlersEvent event) {

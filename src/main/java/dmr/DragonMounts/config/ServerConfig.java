@@ -27,6 +27,8 @@ public class ServerConfig {
 	public static final ModConfigSpec.IntValue RESPAWN_TIME;
 	public static final ModConfigSpec.IntValue DRAGON_HISTORY_SIZE;
 
+	public static final ModConfigSpec.BooleanValue ENABLE_BLANK_EGG;
+
 	private static final Long WHISTLE_COOLDOWN = TimeUnit.MILLISECONDS.convert(5, TimeUnit.SECONDS); // 5 minutes
 
 	public static final ModConfigSpec.BooleanValue ENABLE_DRAGON_BREATH;
@@ -44,6 +46,10 @@ public class ServerConfig {
 				"Useful for multiplayer scenarios."
 			)
 			.define("replenish_eggs", true);
+
+		ENABLE_BLANK_EGG = configurator
+			.comment("Enable blank dragon eggs which changes based on the environment.")
+			.define("enable_blank_egg", false);
 
 		HATCH_TIME_CONFIG = configurator
 			.comment("Time in seconds for a dragon egg to hatch.")

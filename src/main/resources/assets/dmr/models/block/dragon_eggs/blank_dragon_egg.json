@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/dragon_egg",
+  "textures": {
+    "particle": "dmr:block/blank_dragon_egg",
+    "all": "dmr:block/blank_dragon_egg"
+  }
+}

@@ -7,6 +7,8 @@ import dmr.DragonMounts.ModConstants;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
+import dmr.DragonMounts.server.blocks.BlankEggBlock;
+import dmr.DragonMounts.server.items.BlankDragonEggItemBlock;
 import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
 import java.util.List;
 import java.util.function.Function;
@@ -85,6 +87,10 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
 
 		@Override
 		public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand, ModelData extraData, RenderType renderType) {
+			if (state.getBlock() instanceof BlankEggBlock) {
+				return models.get("blank").getQuads(state, side, rand, extraData, renderType);
+			}
+
 			var data = extraData.get(Data.PROPERTY);
 
 			if (data != null) {
@@ -157,6 +163,10 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
 
 		@Override
 		public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData) {
+			if (level.getBlockState(pos).getBlock() instanceof BlankEggBlock) {
+				return modelData.derive().with(Data.PROPERTY, new Data("blank", null)).build();
+			}
+
 			if (level.getBlockEntity(pos) instanceof DMREggBlockEntity e && e.getBreed() != null) {
 				var breed = e.getBreed() instanceof DragonHybridBreed hybridBreed ? hybridBreed.parent1 : e.getBreed();
 				return modelData.derive().with(Data.PROPERTY, new Data(breed.getId(), e.getVariantId())).build();
@@ -177,6 +187,10 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
 
 		@Override
 		public BakedModel resolve(BakedModel original, ItemStack stack, ClientLevel level, LivingEntity entity, int pSeed) {
+			if (stack.getItem() instanceof BlankDragonEggItemBlock) {
+				return owner.models.get("blank");
+			}
+
 			var override = nested.resolve(original, stack, level, entity, pSeed);
 			if (override != original) return override;
 

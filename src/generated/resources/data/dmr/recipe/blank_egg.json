@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "dragon",
+  "ingredients": [
+    {
+      "item": "dmr:dragon_egg"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "dmr:blank_egg"
+  }
+}

@@ -6,6 +6,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import dmr.DragonMounts.DMR;
+import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.network.packets.SyncDataPackPacket;
 import dmr.DragonMounts.registry.DragonArmorRegistry;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
@@ -102,6 +103,16 @@ public class DataPackHandler {
 
 		if (level instanceof ServerLevel serverLevel) {
 			ModAdvancements.init(serverLevel);
+		}
+
+		if (!ServerConfig.ENABLE_BLANK_EGG.get()) {
+			var server = level.getServer();
+			if (server == null) return;
+			server
+				.getRecipeManager()
+				.replaceRecipes(
+					server.getRecipeManager().getRecipes().stream().filter(recipe -> !recipe.id().equals(DMR.id("blank_egg"))).toList()
+				);
 		}
 	}
 

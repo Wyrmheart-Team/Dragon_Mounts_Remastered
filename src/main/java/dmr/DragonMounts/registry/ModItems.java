@@ -1,10 +1,7 @@
 package dmr.DragonMounts.registry;
 
 import dmr.DragonMounts.DMR;
-import dmr.DragonMounts.server.items.DragonArmorItem;
-import dmr.DragonMounts.server.items.DragonEggItemBlock;
-import dmr.DragonMounts.server.items.DragonSpawnEgg;
-import dmr.DragonMounts.server.items.DragonWhistleItem;
+import dmr.DragonMounts.server.items.*;
 import dmr.DragonMounts.server.items.dev.HabitatOutcomeCheck;
 import dmr.DragonMounts.server.items.dev.InstantHatchItem;
 import java.util.HashMap;
@@ -21,6 +18,9 @@ public class ModItems {
 	public static final Supplier<Item> DRAGON_SPAWN_EGG = ITEMS.register("dragon_spawn_egg", DragonSpawnEgg::new);
 	public static final Supplier<Item> DRAGON_EGG_BLOCK_ITEM = ITEMS.register("dragon_egg", () ->
 		new DragonEggItemBlock(new Item.Properties())
+	);
+	public static final Supplier<Item> BLANK_EGG_BLOCK_ITEM = ITEMS.register("blank_egg", () ->
+		new BlankDragonEggItemBlock(new Item.Properties())
 	);
 	public static final Supplier<Item> DRAGON_ARMOR = ITEMS.register("dragon_armor", () ->
 		new DragonArmorItem(new Item.Properties().stacksTo(1))
