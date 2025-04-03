@@ -154,3 +154,4 @@ node_modules/
 package-lock.json
 /runs/
 .secrets
+.env

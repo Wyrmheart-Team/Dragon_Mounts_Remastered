@@ -47,6 +47,19 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+        
+      - name: Install Crowdin CLI
+        run: npm i -g @crowdin/cli
+      
+      - name: Crowding upload source files
+        run: crowdin upload sources -b ${{ github.ref_name }}
+        env:
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+      
+      - name: Crowdin download translations
+        run: crowdin download translations -b ${{ github.ref_name }}
+        env:
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
 
       - name: Set up JDK
         uses: actions/setup-java@v3
