@@ -2,9 +2,11 @@ package dmr.DragonMounts.data;
 
 import com.google.common.collect.ImmutableMap;
 import dmr.DragonMounts.DMR;
+import dmr.DragonMounts.registry.DragonArmorRegistry;
 import dmr.DragonMounts.registry.ModBlocks;
 import dmr.DragonMounts.registry.ModItems;
 import dmr.DragonMounts.server.items.DragonWhistleItem;
+import dmr.DragonMounts.types.armor.DragonArmor;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -64,5 +66,20 @@ public class DMRRecipeProvider extends RecipeProvider {
 		);
 
 		pRecipeOutput.accept(DMR.id("blank_egg"), shapelessrecipe, null);
+
+		ItemStack netheriteArmor = new ItemStack(ModItems.DRAGON_ARMOR.get());
+		ItemStack diamondArmor = new ItemStack(ModItems.DRAGON_ARMOR.get());
+
+		DragonArmor.setArmorType(netheriteArmor, DragonArmorRegistry.getDragonArmor("netherite"));
+		DragonArmor.setArmorType(diamondArmor, DragonArmorRegistry.getDragonArmor("diamond"));
+
+		ShapelessRecipe netheriteAmorRecipe = new ShapelessRecipe(
+			"dragon",
+			RecipeBuilder.determineBookCategory(RecipeCategory.MISC),
+			netheriteArmor,
+			NonNullList.of(Ingredient.EMPTY, Ingredient.of(diamondArmor), Ingredient.of(Items.NETHERITE_INGOT))
+		);
+
+		pRecipeOutput.accept(DMR.id("dragon_armor_netherite"), netheriteAmorRecipe, null);
 	}
 }
