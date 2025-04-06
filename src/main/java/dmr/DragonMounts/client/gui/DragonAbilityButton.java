@@ -35,7 +35,8 @@ public class DragonAbilityButton extends ExtendedButton {
 		this.minecraft = Minecraft.getInstance();
 		this.title = Language.getInstance().getVisualOrder(minecraft.font.substrByWidth(ability.getTranslatedName(), 163));
 		int j = 29 + minecraft.font.width(this.title);
-		this.description = Language.getInstance().getVisualOrder(this.findOptimalLines(ability.getTranslatedDescription().copy(), 110));
+		this.description = Language.getInstance()
+			.getVisualOrder(this.findOptimalLines(this.minecraft, ability.getTranslatedDescription().copy(), 105));
 
 		for (FormattedCharSequence formattedcharsequence : this.description) {
 			j = Math.max(j, minecraft.font.width(formattedcharsequence));
@@ -87,8 +88,8 @@ public class DragonAbilityButton extends ExtendedButton {
 		return (float) text.stream().mapToDouble(manager::stringWidth).max().orElse(0.0);
 	}
 
-	private List<FormattedText> findOptimalLines(Component component, int maxWidth) {
-		StringSplitter stringsplitter = this.minecraft.font.getSplitter();
+	public static List<FormattedText> findOptimalLines(Minecraft minecraft, Component component, int maxWidth) {
+		StringSplitter stringsplitter = minecraft.font.getSplitter();
 		List<FormattedText> list = null;
 		float f = Float.MAX_VALUE;
 

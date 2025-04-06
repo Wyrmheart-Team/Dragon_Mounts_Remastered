@@ -14,7 +14,7 @@ public interface NearbyAbility extends Ability {
 	}
 
 	default int getRange() {
-		return 5;
+		return 10;
 	}
 
 	void tick(DMRDragonEntity dragon, Player owner);

@@ -2,6 +2,7 @@ package dmr.DragonMounts.types.abilities.dragon_types.forest_dragon;
 
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.types.abilities.types.NearbyAbility;
+import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -19,9 +20,12 @@ public class NatureBlessingAbility implements NearbyAbility {
 	public void tick(DMRDragonEntity dragon, Player owner) {
 		if (!dragon.level.isClientSide) {
 			var level = dragon.level;
-			var block = level.getBlockState(dragon.blockPosition());
+			var basePos = dragon.blockPosition();
+			var blocks = BlockPos.betweenClosedStream(basePos.offset(2, 2, 2), basePos.offset(-2, -2, -2))
+				.map(level::getBlockState)
+				.filter(state -> state.is(Blocks.GRASS_BLOCK) || state.is(BlockTags.FLOWERS) || state.is(BlockTags.SAPLINGS));
 
-			if (block.is(Blocks.GRASS_BLOCK) || block.is(BlockTags.FLOWERS) || block.is(BlockTags.SAPLINGS)) {
+			if (blocks.findAny().isPresent()) {
 				dragon.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 40, 0, true, false, true));
 				owner.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 40, 0, true, false, true));
 			}
