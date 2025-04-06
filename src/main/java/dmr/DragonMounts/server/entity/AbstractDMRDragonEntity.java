@@ -7,6 +7,8 @@ import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModMemoryModuleTypes;
 import dmr.DragonMounts.server.ai.DragonBodyController;
 import dmr.DragonMounts.server.ai.navigation.DragonPathNavigation;
+import dmr.DragonMounts.server.inventory.DragonInventoryHandler;
+import dmr.DragonMounts.server.inventory.DragonInventoryHandler.DragonInventory;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.Variant;
 import java.util.Optional;
@@ -49,16 +51,27 @@ public abstract class AbstractDMRDragonEntity
 
 	protected AbstractDMRDragonEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
 		super(pEntityType, pLevel);
-		createInventory();
+		if (!pLevel.isClientSide) {
+			getInventory().addListener(this);
+		}
 	}
 
-	public static final int SADDLE_SLOT = 0;
-	public static final int ARMOR_SLOT = 1;
-	public static final int CHEST_SLOT = 2;
+	@Override
+	public void remove(RemovalReason reason) {
+		super.remove(reason);
 
-	private static final int INVENTORY_SIZE = 9 * 3;
+		if (!level.isClientSide) {
+			getInventory().removeListener(this);
+		}
+	}
 
-	public SimpleContainer inventory;
+	public DragonInventory getDragonInventory() {
+		return DragonInventoryHandler.getOrCreateInventory(level, getDragonUUID());
+	}
+
+	public SimpleContainer getInventory() {
+		return getDragonInventory().inventory;
+	}
 
 	// server/client delegates
 	protected IDragonBreed breed;
@@ -89,10 +102,6 @@ public abstract class AbstractDMRDragonEntity
 		EntityDataSerializers.BOOLEAN
 	);
 	private static final EntityDataAccessor<String> DATA_UUID = SynchedEntityData.defineId(
-		AbstractDMRDragonEntity.class,
-		EntityDataSerializers.STRING
-	);
-	private static final EntityDataAccessor<String> DATA_SUMMON_INSTANCE = SynchedEntityData.defineId(
 		AbstractDMRDragonEntity.class,
 		EntityDataSerializers.STRING
 	);
@@ -154,15 +163,6 @@ public abstract class AbstractDMRDragonEntity
 
 	public void setDragonUUID(UUID uuid) {
 		getEntityData().set(DATA_UUID, uuid.toString());
-	}
-
-	public void setSummonInstance(UUID uuid) {
-		getEntityData().set(DATA_SUMMON_INSTANCE, uuid.toString());
-	}
-
-	public UUID getSummonInstance() {
-		var id = getEntityData().get(DATA_SUMMON_INSTANCE);
-		return !id.isBlank() ? UUID.fromString(id) : null;
 	}
 
 	public boolean canReproduce() {
@@ -396,12 +396,12 @@ public abstract class AbstractDMRDragonEntity
 
 	@Override
 	public ItemStack getBodyArmorItem() {
-		return inventory.getItem(ARMOR_SLOT);
+		return getInventory().getItem(DragonInventory.ARMOR_SLOT);
 	}
 
 	@Override
 	public void setBodyArmorItem(ItemStack stack) {
-		inventory.setItem(ARMOR_SLOT, stack);
+		getInventory().setItem(DragonInventory.ARMOR_SLOT, stack);
 	}
 
 	@Override
@@ -417,7 +417,6 @@ public abstract class AbstractDMRDragonEntity
 		builder.define(DATA_ORIG_BREED, "");
 		builder.define(DATA_SADDLED, false);
 		builder.define(DATA_UUID, "");
-		builder.define(DATA_SUMMON_INSTANCE, "");
 		builder.define(DATA_WANDERING_POS, Optional.empty());
 		builder.define(DATA_ID_CHEST, false);
 		builder.define(LAST_POSE_CHANGE_TICK, 0L);
@@ -463,10 +462,6 @@ public abstract class AbstractDMRDragonEntity
 			compound.putString(NBTConstants.DRAGON_UUID, getDragonUUID().toString());
 		}
 
-		if (getEntityData().get(DATA_SUMMON_INSTANCE) != null) {
-			compound.putString(NBTConstants.DRAGON_SUMMON_INSTANCE, getEntityData().get(DATA_SUMMON_INSTANCE));
-		}
-
 		if (entityData.get(DATA_VARIANT) != null) {
 			compound.putString(NBTConstants.VARIANT, entityData.get(DATA_VARIANT));
 		}
@@ -482,18 +477,6 @@ public abstract class AbstractDMRDragonEntity
 		compound.putLong("LastPoseTick", this.entityData.get(LAST_POSE_CHANGE_TICK));
 
 		compound.putBoolean("breedIsSet", breedIsSet);
-
-		ListTag listtag = new ListTag();
-		for (int i = 0; i < this.inventory.getContainerSize(); i++) {
-			ItemStack itemstack = this.inventory.getItem(i);
-			if (!itemstack.isEmpty()) {
-				CompoundTag compoundtag = new CompoundTag();
-				compoundtag.putByte("Slot", (byte) (i));
-				listtag.add(itemstack.save(this.registryAccess(), compoundtag));
-			}
-		}
-
-		compound.put("Items", listtag);
 	}
 
 	public boolean isBeingSummoned = false;
@@ -527,14 +510,6 @@ public abstract class AbstractDMRDragonEntity
 			setDragonUUID(UUID.fromString(compound.getString(NBTConstants.DRAGON_UUID)));
 		}
 
-		if (compound.contains(NBTConstants.DRAGON_SUMMON_INSTANCE)) {
-			var instance = compound.getString(NBTConstants.DRAGON_SUMMON_INSTANCE);
-
-			if (instance != null && !instance.isEmpty()) {
-				setSummonInstance(UUID.fromString(instance));
-			}
-		}
-
 		if (compound.contains(NBTConstants.VARIANT)) {
 			entityData.set(DATA_VARIANT, compound.getString(NBTConstants.VARIANT));
 		}
@@ -555,65 +530,43 @@ public abstract class AbstractDMRDragonEntity
 			breedIsSet = compound.getBoolean("breedIsSet");
 		}
 
-		isBeingSummoned = true; //Prevent inventory loading from triggering updateOwnerData
-		ListTag listtag = new ListTag();
+		// Legacy support for old dragon inventories
 		if (compound.contains("Items")) {
-			listtag = compound.getList("Items", 10);
-		}
+			ListTag listtag = compound.getList("Items", 10);
 
-		for (int i = 0; i < listtag.size(); i++) {
-			CompoundTag compoundtag = listtag.getCompound(i);
-			int j = compoundtag.getByte("Slot") & 255;
-			if (j < this.inventory.getContainerSize()) {
-				this.inventory.setItem(j, ItemStack.parse(this.registryAccess(), compoundtag).orElse(ItemStack.EMPTY));
-			}
-		}
-
-		this.updateContainerEquipment();
-		isBeingSummoned = false;
-		isLoadedFromNBT = true;
-	}
-
-	protected int getInventorySize() {
-		return 3 + INVENTORY_SIZE;
-	}
-
-	public boolean hasInventoryChanged(Container pInventory) {
-		return this.inventory != pInventory;
-	}
-
-	public void updateContainerEquipment() {
-		if (!this.level().isClientSide) {
-			setSaddled(!this.inventory.getItem(SADDLE_SLOT).isEmpty() && this.inventory.getItem(SADDLE_SLOT).is(Items.SADDLE));
-			setChest(
-				!this.inventory.getItem(CHEST_SLOT).isEmpty() &&
-				(this.inventory.getItem(CHEST_SLOT).is(Items.CHEST) || this.inventory.getItem(CHEST_SLOT).is(Items.ENDER_CHEST))
-			);
-		}
-	}
-
-	protected void createInventory() {
-		SimpleContainer simplecontainer = this.inventory;
-		this.inventory = new SimpleContainer(getInventorySize());
-		if (simplecontainer != null) {
-			simplecontainer.removeListener(this);
-			int i = Math.min(simplecontainer.getContainerSize(), this.inventory.getContainerSize());
-
-			for (int j = 0; j < i; ++j) {
-				ItemStack itemstack = simplecontainer.getItem(j);
-				if (!itemstack.isEmpty()) {
-					this.inventory.setItem(j, itemstack.copy());
+			for (int i = 0; i < listtag.size(); i++) {
+				CompoundTag compoundtag = listtag.getCompound(i);
+				int j = compoundtag.getByte("Slot") & 255;
+				if (j < this.getInventory().getContainerSize()) {
+					this.getInventory().setItem(j, ItemStack.parse(this.registryAccess(), compoundtag).orElse(ItemStack.EMPTY));
 				}
 			}
 		}
 
-		this.inventory.addListener(this);
-		this.updateContainerEquipment();
+		isLoadedFromNBT = true;
+	}
+
+	public boolean hasInventoryChanged(Container pInventory) {
+		return this.getInventory() != pInventory;
+	}
+
+	public void updateContainerEquipment() {
+		if (!this.level().isClientSide) {
+			setSaddled(
+				!this.getInventory().getItem(DragonInventory.SADDLE_SLOT).isEmpty() &&
+				this.getInventory().getItem(DragonInventory.SADDLE_SLOT).is(Items.SADDLE)
+			);
+			setChest(
+				!this.getInventory().getItem(DragonInventory.CHEST_SLOT).isEmpty() &&
+				(this.getInventory().getItem(DragonInventory.CHEST_SLOT).is(Items.CHEST) ||
+					this.getInventory().getItem(DragonInventory.CHEST_SLOT).is(Items.ENDER_CHEST))
+			);
+		}
 	}
 
 	public boolean inventoryEmpty() {
-		for (int i = 3; i < this.inventory.getContainerSize(); ++i) {
-			if (!this.inventory.getItem(i).isEmpty()) {
+		for (int i = 3; i < this.getInventory().getContainerSize(); ++i) {
+			if (!this.getInventory().getItem(i).isEmpty()) {
 				return false;
 			}
 		}

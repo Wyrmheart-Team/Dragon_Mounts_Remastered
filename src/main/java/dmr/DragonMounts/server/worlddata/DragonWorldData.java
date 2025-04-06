@@ -2,6 +2,7 @@ package dmr.DragonMounts.server.worlddata;
 
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.config.ServerConfig;
+import dmr.DragonMounts.server.inventory.DragonInventoryHandler.DragonInventory;
 import java.util.*;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
@@ -9,6 +10,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.datafix.DataFixTypes;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
@@ -20,6 +22,9 @@ public class DragonWorldData extends SavedData {
 	public Map<UUID, Integer> deathDelay = new HashMap<>();
 	public Map<UUID, String> deathMessages = new HashMap<>();
 	public List<UUID> deadDragons = new ArrayList<>();
+
+	public Map<UUID, DragonInventory> dragonInventories = new HashMap<>();
+
 	public Map<UUID, DragonHistory> dragonHistory = new LinkedHashMap<>() {
 		@Override
 		public boolean removeEldestEntry(Map.Entry<UUID, DragonHistory> eldest) {
@@ -30,6 +35,24 @@ public class DragonWorldData extends SavedData {
 	public record DragonHistory(UUID id, Long time, String playerName, Component dragonName, CompoundTag compoundTag) {}
 
 	public DragonWorldData() {}
+
+	@Override
+	public void setDirty(boolean dirty) {
+		super.setDirty(dirty);
+
+		if (!dirty) {
+			dragonInventories.forEach((uuid, inventory) -> {
+				if (inventory != null) {
+					inventory.setDirty(false);
+				}
+			});
+		}
+	}
+
+	@Override
+	public boolean isDirty() {
+		return super.isDirty() || dragonInventories.values().stream().anyMatch(DragonInventory::isDirty);
+	}
 
 	public static DragonWorldData load(CompoundTag nbt, Provider provider) {
 		DragonWorldData data = new DragonWorldData();
@@ -61,6 +84,16 @@ public class DragonWorldData extends SavedData {
 			Component dragonName = Component.Serializer.fromJson(historyTag.getString("dragonName"), provider);
 			CompoundTag compoundTag = historyTag.getCompound("compoundTag");
 			data.dragonHistory.put(uuid, new DragonHistory(uuid, time, playerName, dragonName, compoundTag));
+		}
+
+		// Load dragon inventories
+		var inventories = nbt.getCompound("dragonInventories");
+		for (String key : inventories.getAllKeys()) {
+			CompoundTag inventoryTag = inventories.getCompound(key);
+			UUID uuid = UUID.fromString(key);
+			DragonInventory inventory = new DragonInventory(provider);
+			inventory.readNBT(inventoryTag);
+			data.dragonInventories.put(uuid, inventory);
 		}
 
 		return data;
@@ -95,6 +128,17 @@ public class DragonWorldData extends SavedData {
 			dragonHistoryTag.put(uuid.toString(), historyTag);
 		}
 		tag.put("dragonHistory", dragonHistoryTag);
+
+		// Save dragon inventories
+		CompoundTag inventoriesTag = new CompoundTag();
+		for (Map.Entry<UUID, DragonInventory> entry : dragonInventories.entrySet().stream().filter(e -> e.getKey() != null).toList()) {
+			UUID uuid = entry.getKey();
+			DragonInventory inventory = entry.getValue();
+			if (inventory == null || inventory.inventory.getItems().stream().allMatch(ItemStack::isEmpty)) continue;
+			inventoriesTag.put(uuid.toString(), inventory.writeNBT());
+		}
+
+		tag.put("dragonInventories", inventoriesTag);
 
 		return tag;
 	}

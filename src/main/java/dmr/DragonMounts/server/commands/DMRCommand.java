@@ -202,13 +202,11 @@ public class DMRCommand {
 			if (type.isPresent()) {
 				Entity entity = type.get().create(level);
 				if (entity instanceof DMRDragonEntity dragon) {
-					dragon.isBeingSummoned = true;
 					dragon.load(nbt);
 					dragon.setUUID(id);
 					dragon.setPos(position.x, position.y, position.z);
 					dragon.setHealth(Math.max(1, dragon.getHealth()));
 					level.addFreshEntity(dragon);
-					dragon.isBeingSummoned = false;
 				}
 			}
 

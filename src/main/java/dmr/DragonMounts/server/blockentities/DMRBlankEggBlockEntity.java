@@ -14,7 +14,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.joml.Vector3f;
 
 public class DMRBlankEggBlockEntity extends BlockEntity {
 
@@ -95,11 +94,7 @@ public class DMRBlankEggBlockEntity extends BlockEntity {
 				pos.getY(),
 				pos.getZ(),
 				64,
-				new BlankEggSyncPacket(
-					new Vector3f(pos.getX(), pos.getY(), pos.getZ()),
-					targetBreedId == null ? "" : targetBreedId,
-					getChangeTime()
-				)
+				new BlankEggSyncPacket(pos, targetBreedId == null ? "" : targetBreedId, getChangeTime())
 			);
 
 			if (targetBreedId != null && !targetBreedId.isEmpty()) {

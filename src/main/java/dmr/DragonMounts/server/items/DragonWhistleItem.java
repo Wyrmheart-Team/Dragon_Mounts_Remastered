@@ -7,6 +7,7 @@ import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModCapabilities;
 import dmr.DragonMounts.registry.ModItems;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import dmr.DragonMounts.util.PlayerStateUtils;
 import java.util.List;
 import lombok.Getter;
 import net.minecraft.ChatFormatting;
@@ -26,12 +27,11 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+@Getter
 public class DragonWhistleItem extends Item {
 
-	@Getter
 	private final DyeColor color;
 
 	public DragonWhistleItem(Properties pProperties, DyeColor color) {
@@ -61,61 +61,38 @@ public class DragonWhistleItem extends Item {
 		}
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
 		super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
 
-		if (context.level() != null && context.level().isClientSide) {
-			if (FMLLoader.getDist() == Dist.CLIENT) {
-				clientSideTooltip(stack, tooltipComponents);
-			}
-		}
-	}
-
-	@OnlyIn(Dist.CLIENT)
-	public void clientSideTooltip(ItemStack pStack, List<Component> pTooltipComponents) {
+		//TODO This doesnt quite sync up with the server
 		var player = Minecraft.getInstance().player;
-		var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
-		if (state.whistleSlots.containsKey(color.getId())) {
-			var id = state.whistleSlots.get(color.getId());
-			var dragon = DragonWhistleHandler.findDragon(player, id);
+		assert player != null;
+		var state = PlayerStateUtils.getHandler(player);
+		if (state.dragonInstances.containsKey(color.getId())) {
 			var nbt = state.dragonNBTs.get(color.getId());
 
 			if (nbt != null) {
 				var breed = nbt.getString("breed");
 				var dragonBreed = DragonBreedsRegistry.getDragonBreed(breed);
 
-				if (dragon != null) {
-					var breedName = Component.translatable("dmr.dragon_breed." + breed).getString();
-					var name = dragon.getDisplayName().getString();
+				if (dragonBreed != null) {
+					var name = Component.translatable("dmr.dragon_breed." + breed).getString();
 
-					if (!name.equals(breedName)) {
-						name = name + " (" + breedName + ")";
+					if (nbt.contains("CustomName")) {
+						name = nbt.getString("CustomName").replace("\"", "") + " (" + name + ")";
 					}
 
-					pTooltipComponents.add(
+					tooltipComponents.add(
 						Component.translatable("dmr.dragon_summon.tooltip.1", name)
 							.withStyle(ChatFormatting.GRAY)
 							.withStyle(ChatFormatting.ITALIC)
 					);
-				} else {
-					if (dragonBreed != null) {
-						var name = Component.translatable("dmr.dragon_breed." + breed).getString();
-
-						if (nbt.contains("CustomName")) {
-							name = nbt.getString("CustomName").replace("\"", "") + " (" + name + ")";
-						}
-
-						pTooltipComponents.add(
-							Component.translatable("dmr.dragon_summon.tooltip.1", name)
-								.withStyle(ChatFormatting.GRAY)
-								.withStyle(ChatFormatting.ITALIC)
-						);
-					}
 				}
 
 				if (state.respawnDelays.containsKey(color.getId()) && state.respawnDelays.get(color.getId()) > 0) {
-					pTooltipComponents.add(
+					tooltipComponents.add(
 						Component.translatable("dmr.dragon_summon.tooltip.2", state.respawnDelays.get(color.getId()) / 20)
 							.withStyle(ChatFormatting.ITALIC)
 							.withStyle(ChatFormatting.RED)
@@ -147,24 +124,23 @@ public class DragonWhistleItem extends Item {
 		if (pInteractionTarget instanceof DMRDragonEntity dragon) {
 			if (dragon.isTame() && dragon.isAdult() && dragon.isOwnedBy(pPlayer)) {
 				DragonOwnerCapability cap = pPlayer.getData(ModCapabilities.PLAYER_CAPABILITY);
-				if (cap.whistleSlots.containsKey(color.getId())) {
+				if (cap.dragonInstances.containsKey(color.getId())) {
+					var dragonInstance = cap.dragonInstances.get(color.getId());
 					//Only unlink if the player is sneaking
 					if (!pPlayer.isShiftKeyDown()) {
 						return InteractionResult.PASS;
 					}
 
-					if (!cap.whistleSlots.get(color.getId()).equals(dragon.getDragonUUID())) {
+					if (!dragonInstance.getUUID().equals(dragon.getDragonUUID())) {
 						pPlayer.displayClientMessage(Component.translatable("dmr.dragon_call.unlink_first"), true);
-						return InteractionResult.SUCCESS;
 					} else {
-						cap.whistleSlots.remove(color.getId());
-						cap.summonInstances.remove(color.getId());
+						cap.dragonInstances.remove(color.getId());
 						cap.dragonNBTs.remove(color.getId());
 						cap.respawnDelays.remove(color.getId());
 						pPlayer.displayClientMessage(Component.translatable("dmr.dragon_call.unlink_success"), true);
 						PacketDistributor.sendToPlayer((ServerPlayer) pPlayer, new CompleteDataSync(pPlayer));
-						return InteractionResult.SUCCESS;
 					}
+					return InteractionResult.SUCCESS;
 				} else {
 					DragonWhistleHandler.setDragon(pPlayer, dragon, color.getId());
 					PacketDistributor.sendToPlayer((ServerPlayer) pPlayer, new CompleteDataSync(pPlayer));

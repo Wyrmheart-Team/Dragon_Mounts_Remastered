@@ -8,9 +8,6 @@ import dmr.DragonMounts.server.blockentities.DMRBlankEggBlockEntity;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -25,10 +22,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Vector3f;
 
 public class BlankEggBlock extends DragonEggBlock implements EntityBlock, SimpleWaterloggedBlock {
 
@@ -118,28 +113,7 @@ public class BlankEggBlock extends DragonEggBlock implements EntityBlock, Simple
 		double oy = 0;
 		double oz = 0;
 
-		var particle = getHatchingParticles(breed, random);
-		if (particle.getType() == ParticleTypes.DUST) {
-			py = pos.getY() + (random.nextDouble() - 0.5) + 1;
-		} else if (particle.getType() == ParticleTypes.PORTAL) {
-			ox = (random.nextDouble() - 0.5) * 2;
-			oy = (random.nextDouble() - 0.5) * 2;
-			oz = (random.nextDouble() - 0.5) * 2;
-		}
-
-		level.addParticle(particle, px, py, pz, ox, oy, oz);
-	}
-
-	public static ParticleOptions getHatchingParticles(IDragonBreed breed, RandomSource random) {
-		if (breed.getHatchParticles() != null) {
-			return breed.getHatchParticles();
-		}
-
-		return dustParticleFor(breed, random);
-	}
-
-	public static DustParticleOptions dustParticleFor(IDragonBreed breed, RandomSource random) {
-		var vec = Vec3.fromRGB24(random.nextDouble() < 0.75 ? breed.getPrimaryColor() : breed.getSecondaryColor());
-		return new DustParticleOptions(new Vector3f((float) vec.x, (float) vec.y, (float) vec.z), 1);
+		var particle = DMREggBlock.getHatchingParticles(breed, random);
+		DMREggBlock.spawnHatchingParticle(level, pos, random, px, py, pz, ox, oy, oz, particle);
 	}
 }

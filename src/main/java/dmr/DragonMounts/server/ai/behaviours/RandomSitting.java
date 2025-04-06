@@ -52,7 +52,7 @@ public class RandomSitting implements BehaviorControl<DMRDragonEntity> {
 		entity.getBrain().eraseMemory(MemoryModuleType.ANGRY_AT);
 
 		if (entity.isOrderedToSit() || entity.isInLove() || entity.isInWater() || entity.isLeashed() || entity.hasControllingPassenger()) {
-			status = Behavior.Status.STOPPED;
+			this.doStop(level, entity, gameTime);
 			return;
 		}
 

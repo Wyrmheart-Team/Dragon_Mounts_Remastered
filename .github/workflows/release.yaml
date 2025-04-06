@@ -82,7 +82,7 @@ jobs:
         with:
           name: dragon-mounts-jar
           path: build/libs/*.jar
-
+          retention-days: 1
   replace-placeholders:
     name: Replace Placeholders
     runs-on: ubuntu-latest
@@ -138,7 +138,7 @@ jobs:
         with:
           name: ${{ matrix.file }}
           path: ./.github/templates/${{ matrix.file }}
-
+          retention-days: 1
   upload:
     name: Upload to Platforms
     runs-on: ubuntu-latest

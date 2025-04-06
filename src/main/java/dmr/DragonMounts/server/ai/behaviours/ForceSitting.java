@@ -34,7 +34,7 @@ public class ForceSitting implements BehaviorControl<DMRDragonEntity> {
 		entity.getBrain().eraseMemory(ModMemoryModuleTypes.IDLE_TICKS.get());
 
 		if (entity.isInLove() || entity.isInWater() || entity.isLeashed() || entity.hasControllingPassenger()) {
-			status = Behavior.Status.STOPPED;
+			this.doStop(level, entity, gameTime);
 			return;
 		}
 

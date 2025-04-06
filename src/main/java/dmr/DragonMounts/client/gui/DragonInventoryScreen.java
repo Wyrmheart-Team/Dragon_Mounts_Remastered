@@ -4,6 +4,7 @@ import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.network.packets.DragonStatePacket;
 import dmr.DragonMounts.server.container.DragonContainerMenu;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import dmr.DragonMounts.server.inventory.DragonInventoryHandler.DragonInventory;
 import dmr.DragonMounts.types.abilities.types.Ability;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -84,7 +85,7 @@ public class DragonInventoryScreen extends AbstractContainerScreen<DragonContain
 		pGuiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
 
 		if (dragon.hasChest()) {
-			if (dragon.inventory.getItem(DMRDragonEntity.CHEST_SLOT).is(Items.ENDER_CHEST)) {
+			if (dragon.getInventory().getItem(DragonInventory.CHEST_SLOT).is(Items.ENDER_CHEST)) {
 				pGuiGraphics.drawString(
 					this.font,
 					Component.translatable("container.enderchest"),

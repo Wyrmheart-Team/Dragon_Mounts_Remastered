@@ -11,11 +11,13 @@ import dmr.DragonMounts.common.capability.DragonOwnerCapability;
 import dmr.DragonMounts.common.handlers.DragonWhistleHandler;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.network.packets.DragonAgeSyncPacket;
+import dmr.DragonMounts.network.packets.RequestDragonInventoryPacket;
 import dmr.DragonMounts.registry.*;
 import dmr.DragonMounts.server.ai.DragonAI;
 import dmr.DragonMounts.server.ai.DragonMoveController;
 import dmr.DragonMounts.server.blocks.DMREggBlock;
 import dmr.DragonMounts.server.container.DragonContainerMenu;
+import dmr.DragonMounts.server.inventory.DragonInventoryHandler.DragonInventory;
 import dmr.DragonMounts.server.items.DragonArmorItem;
 import dmr.DragonMounts.server.items.DragonSpawnEgg;
 import dmr.DragonMounts.server.worlddata.DragonWorldDataManager;
@@ -201,7 +203,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 	public void equipSaddle(ItemStack stack, SoundSource source) {
 		setSaddled(true);
 		level.playSound(null, getX(), getY(), getZ(), SoundEvents.HORSE_SADDLE, getSoundSource(), 1, 1);
-		inventory.setItem(SADDLE_SLOT, stack);
+		getInventory().setItem(DragonInventory.SADDLE_SLOT, stack);
 	}
 
 	@Override
@@ -544,6 +546,10 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 		}
 
 		if (isControlledByLocalInstance() && getControllingPassenger() != null) {
+			if (isRandomlySitting()) {
+				setRandomlySitting(false);
+			}
+
 			setSprinting(getControllingPassenger().isSprinting());
 		}
 
@@ -830,7 +836,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 		}
 
 		if (isTamedFor(player) && !hasChest() && stack.is(Items.CHEST)) {
-			this.inventory.setItem(CHEST_SLOT, stack.copyWithCount(1));
+			this.getInventory().setItem(DragonInventory.CHEST_SLOT, stack.copyWithCount(1));
 			if (!player.getAbilities().instabuild) {
 				stack.shrink(1);
 			}
@@ -904,12 +910,10 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 
 		//		if (isSaddled()) spawnAtLocation(Items.SADDLE);
 
-		if (this.inventory != null) {
-			for (int i = 0; i < this.inventory.getContainerSize(); ++i) {
-				ItemStack itemstack = this.inventory.getItem(i);
-				if (!itemstack.isEmpty() && !EnchantmentHelper.has(itemstack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)) {
-					this.spawnAtLocation(itemstack);
-				}
+		for (int i = 0; i < this.getInventory().getContainerSize(); ++i) {
+			ItemStack itemstack = this.getInventory().getItem(i);
+			if (!itemstack.isEmpty() && !EnchantmentHelper.has(itemstack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)) {
+				this.spawnAtLocation(itemstack);
 			}
 		}
 	}
@@ -1039,9 +1043,14 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 
 	@Override
 	public void containerChanged(Container pContainer) {
-		// Update the saved dragon so that summoning the dragon doesnt wipe the inventory
-		if (!isBeingSummoned) updateOwnerData();
 		setArmor();
+
+		if (!level.isClientSide) {
+			PacketDistributor.sendToPlayersTrackingEntity(
+				this,
+				new RequestDragonInventoryPacket(getDragonUUID(), getDragonInventory().writeNBT())
+			);
+		}
 	}
 
 	public void updateOwnerData() {

@@ -1,6 +1,8 @@
 package dmr.DragonMounts.common.capability;
 
+import dmr.DragonMounts.common.handlers.DragonWhistleHandler.DragonInstance;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,9 +28,8 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 	public int dragonsHatched;
 
 	public ConcurrentHashMap<Integer, Integer> respawnDelays = new ConcurrentHashMap<>();
-	public ConcurrentHashMap<Integer, UUID> whistleSlots = new ConcurrentHashMap<>();
-	public ConcurrentHashMap<Integer, UUID> summonInstances = new ConcurrentHashMap<>();
 	public ConcurrentHashMap<Integer, CompoundTag> dragonNBTs = new ConcurrentHashMap<>();
+	public ConcurrentHashMap<Integer, DragonInstance> dragonInstances = new ConcurrentHashMap<>();
 
 	public boolean shouldDismount;
 
@@ -39,7 +40,9 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 	public DMRDragonEntity createDragonEntity(Player player, Level world, int index) {
 		setPlayerInstance(player);
 
+		var instance = getDragonInstance(index);
 		var nbt = dragonNBTs.get(index);
+		var uuid = instance.getUUID();
 
 		if (nbt != null) {
 			Optional<EntityType<?>> type = EntityType.by(nbt);
@@ -47,10 +50,9 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 			if (type.isPresent()) {
 				Entity entity = type.get().create(world);
 				if (entity instanceof DMRDragonEntity dragon) {
-					dragon.isBeingSummoned = true;
-
 					dragon.load(nbt);
 					dragon.setUUID(UUID.randomUUID());
+					dragon.setDragonUUID(uuid);
 					dragon.clearFire();
 					dragon.hurtTime = 0;
 
@@ -67,15 +69,17 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 		return null;
 	}
 
+	public DragonInstance getDragonInstance(int index) {
+		return dragonInstances.get(index);
+	}
+
+	public void setDragonInstance(int index, DragonInstance instance) {
+		dragonInstances.put(index, instance);
+	}
+
 	public void setDragonToWhistle(DMRDragonEntity dragon, int index) {
 		dragon.setTame(true, true);
 		dragon.setOwnerUUID(playerInstance.getGameProfile().getId());
-
-		var summonInstance = UUID.randomUUID();
-		summonInstances.put(index, summonInstance);
-		dragon.setSummonInstance(summonInstance);
-
-		whistleSlots.put(index, dragon.getDragonUUID());
 
 		var wanderPos = dragon.getWanderTarget();
 		var sit = dragon.isOrderedToSit();
@@ -87,17 +91,16 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 		var nbtData = dragon.serializeNBT(dragon.level.registryAccess());
 		dragonNBTs.put(index, nbtData);
 
+		var instance = new DragonInstance(dragon);
+		dragonInstances.put(index, instance);
+
 		dragon.setWanderTarget(wanderPos);
 		dragon.setOrderedToSit(sit);
 	}
 
 	public boolean isBoundToWhistle(DMRDragonEntity dragon) {
 		if (dragon.getDragonUUID() != null) {
-			for (var uuid : whistleSlots.values()) {
-				if (dragon.getDragonUUID().equals(uuid)) {
-					return true;
-				}
-			}
+			return dragonInstances.values().stream().anyMatch(instance -> instance.getUUID().equals(dragon.getDragonUUID()));
 		}
 
 		return false;
@@ -118,18 +121,22 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 				tag.putInt("respawnDelay_" + color.getId(), respawnDelays.get(color.getId()));
 			}
 
-			if (whistleSlots.containsKey(color.getId())) {
-				tag.putUUID("dragonUUID_" + color.getId(), whistleSlots.get(color.getId()));
-			}
-
-			if (summonInstances.containsKey(color.getId())) {
-				tag.putUUID("summonInstance_" + color.getId(), summonInstances.get(color.getId()));
-			}
-
 			if (dragonNBTs.containsKey(color.getId())) {
 				tag.put("dragonNBT_" + color.getId(), dragonNBTs.get(color.getId()));
 			}
 		}
+
+		// Save dragon instances
+		CompoundTag instancesTag = new CompoundTag();
+		for (Entry<Integer, DragonInstance> entry : dragonInstances
+			.entrySet()
+			.stream()
+			.filter(e -> e.getKey() != null && e.getValue() != null)
+			.toList()) {
+			DragonInstance instance = entry.getValue();
+			instancesTag.put(entry.getKey().toString(), instance.writeNBT());
+		}
+		tag.put("dragonInstances", instancesTag);
 
 		return tag;
 	}
@@ -143,8 +150,6 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 		dragonsHatched = base.getInt("dragonsHatched");
 
 		respawnDelays.clear();
-		whistleSlots.clear();
-		summonInstances.clear();
 		dragonNBTs.clear();
 
 		if (base.contains("cameraFlight")) {
@@ -160,17 +165,29 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 				respawnDelays.put(color.getId(), base.getInt("respawnDelay_" + color.getId()));
 			}
 
-			if (base.contains("dragonUUID_" + color.getId())) {
-				whistleSlots.put(color.getId(), base.getUUID("dragonUUID_" + color.getId()));
-			}
-
-			if (base.contains("summonInstance_" + color.getId())) {
-				summonInstances.put(color.getId(), base.getUUID("summonInstance_" + color.getId()));
-			}
-
 			if (base.contains("dragonNBT_" + color.getId())) {
 				dragonNBTs.put(color.getId(), base.getCompound("dragonNBT_" + color.getId()));
 			}
+
+			// Legacy support for dragonUUID, remove in future versions
+			if (base.contains("dragonUUID_" + color.getId())) {
+				var id = base.getUUID("dragonUUID_" + color.getId());
+				var instance = new DragonInstance(
+					getPlayerInstance() != null ? getPlayerInstance().level.dimension().toString() : "minecraft:overworld",
+					UUID.randomUUID(),
+					id
+				);
+				dragonInstances.put(color.getId(), instance);
+			}
+		}
+
+		// Load dragon instances
+		var instances = base.getCompound("dragonInstances");
+		for (String jsKey : instances.getAllKeys()) {
+			var key = Integer.parseInt(jsKey);
+			var instance = new DragonInstance();
+			instance.readNBT(instances.getCompound(jsKey));
+			dragonInstances.put(key, instance);
 		}
 	}
 }

@@ -171,10 +171,9 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
 
 	@Override
 	public BlockState getStateForPlacement(BlockPlaceContext p_196258_1_) {
-		return super.getStateForPlacement(p_196258_1_).setValue(
-			WATERLOGGED,
-			p_196258_1_.getLevel().getFluidState(p_196258_1_.getClickedPos()).getType() == Fluids.WATER
-		);
+		return super
+			.getStateForPlacement(p_196258_1_)
+			.setValue(WATERLOGGED, p_196258_1_.getLevel().getFluidState(p_196258_1_.getClickedPos()).getType() == Fluids.WATER);
 	}
 
 	@Override
@@ -222,15 +221,7 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
 		double oz = 0;
 
 		var particle = getHatchingParticles(breed, random);
-		if (particle.getType() == ParticleTypes.DUST) {
-			py = pos.getY() + (random.nextDouble() - 0.5) + 1;
-		} else if (particle.getType() == ParticleTypes.PORTAL) {
-			ox = (random.nextDouble() - 0.5) * 2;
-			oy = (random.nextDouble() - 0.5) * 2;
-			oz = (random.nextDouble() - 0.5) * 2;
-		}
-
-		level.addParticle(particle, px, py, pz, ox, oy, oz);
+		spawnHatchingParticle(level, pos, random, px, py, pz, ox, oy, oz, particle);
 	}
 
 	public static ParticleOptions getHatchingParticles(IDragonBreed breed, RandomSource random) {
@@ -244,5 +235,28 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
 	public static DustParticleOptions dustParticleFor(IDragonBreed breed, RandomSource random) {
 		var vec = Vec3.fromRGB24(random.nextDouble() < 0.75 ? breed.getPrimaryColor() : breed.getSecondaryColor());
 		return new DustParticleOptions(new Vector3f((float) vec.x, (float) vec.y, (float) vec.z), 1);
+	}
+
+	static void spawnHatchingParticle(
+		Level level,
+		BlockPos pos,
+		RandomSource random,
+		double px,
+		double py,
+		double pz,
+		double ox,
+		double oy,
+		double oz,
+		ParticleOptions particle
+	) {
+		if (particle.getType() == ParticleTypes.DUST) {
+			py = pos.getY() + (random.nextDouble() - 0.5) + 1;
+		} else if (particle.getType() == ParticleTypes.PORTAL) {
+			ox = (random.nextDouble() - 0.5) * 2;
+			oy = (random.nextDouble() - 0.5) * 2;
+			oz = (random.nextDouble() - 0.5) * 2;
+		}
+
+		level.addParticle(particle, px, py, pz, ox, oy, oz);
 	}
 }

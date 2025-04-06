@@ -11,11 +11,10 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import org.joml.Vector3f;
 
-public record BlankEggSyncPacket(Vector3f pos, String targetBreed, int changeTime) implements IMessage<BlankEggSyncPacket> {
+public record BlankEggSyncPacket(BlockPos pos, String targetBreed, int changeTime) implements IMessage<BlankEggSyncPacket> {
 	public static final StreamCodec<FriendlyByteBuf, BlankEggSyncPacket> STREAM_CODEC = StreamCodec.composite(
-		ByteBufCodecs.VECTOR3F,
+		BlockPos.STREAM_CODEC,
 		BlankEggSyncPacket::pos,
 		ByteBufCodecs.STRING_UTF8,
 		BlankEggSyncPacket::targetBreed,
@@ -38,12 +37,12 @@ public record BlankEggSyncPacket(Vector3f pos, String targetBreed, int changeTim
 
 	@Override
 	public BlankEggSyncPacket decode(FriendlyByteBuf buffer) {
-		return new BlankEggSyncPacket(buffer.readVector3f(), buffer.readUtf(), buffer.readInt());
+		return new BlankEggSyncPacket(buffer.readBlockPos(), buffer.readUtf(), buffer.readInt());
 	}
 
 	public void handle(IPayloadContext supplier, Player player) {
 		var level = player.level();
-		var blockEntity = level.getBlockEntity(new BlockPos((int) pos.x(), (int) pos.y(), (int) pos.z()));
+		var blockEntity = level.getBlockEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
 
 		if (blockEntity instanceof DMRBlankEggBlockEntity eggBlockEntity) {
 			eggBlockEntity.setTargetBreedId(targetBreed);

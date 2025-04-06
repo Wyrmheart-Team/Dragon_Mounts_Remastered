@@ -358,7 +358,7 @@ public class DragonTests {
 		dragon.tamedFor(player, true);
 
 		dragon.setChest(true);
-		dragon.inventory.setItem(0, new ItemStack(Items.DIAMOND, 64));
+		dragon.getInventory().setItem(0, new ItemStack(Items.DIAMOND, 64));
 		PlayerStateUtils.getHandler(player).setDragonToWhistle(dragon, 1);
 
 		dragon.kill();
@@ -377,7 +377,7 @@ public class DragonTests {
 
 		dragon.tamedFor(player, true);
 		dragon.setChest(true);
-		dragon.inventory.setItem(0, new ItemStack(Items.DIAMOND, 64));
+		dragon.getInventory().setItem(0, new ItemStack(Items.DIAMOND, 64));
 
 		dragon.kill();
 
