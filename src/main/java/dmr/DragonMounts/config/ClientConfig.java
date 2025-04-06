@@ -49,27 +49,34 @@ public class ClientConfig {
 	}
 
 	static {
-		var configurator = new ModConfigSpec.Builder().comment("Client configuration settings for Dragon Mounts Reborn.");
+		var configurator = new ModConfigSpec.Builder();
 
-		CAMERA_FLIGHT = configurator.comment("Should the dragon be controlled by the camera during flight?").define("camera_flight", true);
+		CAMERA_FLIGHT = configurator
+			.comment("Should the dragon be controlled by the camera during flight?")
+			.translation("dmr.config.client.camera_flight")
+			.define("camera_flight", true);
 
 		DOUBLE_PRESS_DISMOUNT = configurator
 			.comment(
 				"Should dismounting the dragon require double pressing the dismount button? Disabling this will not allow using sneak or the dismount button to descend."
 			)
+			.translation("dmr.config.client.alternate_dismount")
 			.define("alternate_dismount", true);
 
 		USE_ALTERNATE_ATTACK_KEY = configurator
 			.comment("Should dragon attacks require holding down the dragon attack key?")
+			.translation("dmr.config.client.alternate_attack_key")
 			.define("alternate_attack_key", true);
 
 		RIDING_CAMERA_OFFSET = configurator
 			.comment("The zoom offset for the riding camera.")
 			.comment("Higher values will zoom the camera out further.")
+			.translation("dmr.config.client.riding_camera_offset")
 			.defineInRange("riding_camera_offset", 10, 1, 100);
 
 		RENDER_HATCHING_EGG = configurator
 			.comment("Should the dragon egg render the hatching animation?")
+			.translation("dmr.config.client.render_hatching_egg")
 			.define("render_hatching_egg", true);
 
 		MOD_CONFIG_SPEC = configurator.build();
