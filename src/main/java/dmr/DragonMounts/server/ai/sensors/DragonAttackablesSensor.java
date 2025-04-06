@@ -1,6 +1,7 @@
 package dmr.DragonMounts.server.ai.sensors;
 
 import dmr.DragonMounts.data.EntityTagProvider;
+import dmr.DragonMounts.server.entity.AbstractDMRDragonEntity.AgroState;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.server.level.ServerLevel;
@@ -22,8 +23,11 @@ public class DragonAttackablesSensor extends NearestVisibleLivingEntitySensor {
 			.of(dragon.isTame() ? EntityTagProvider.DRAGON_HUNTING_TARGET : EntityTagProvider.WILD_DRAGON_HUNTING_TARGET)
 			.build();
 		var predicateMatches = predicate.matches((ServerLevel) dragon.level, target.position(), target);
+		var canHunt = !dragon.isTame() || dragon.getAgroState() == AgroState.AGGRESSIVE;
 
-		return ((this.isClose(attacker, target) && Sensor.isEntityAttackable(attacker, target) && isNotAllied) && predicateMatches);
+		return (
+			(this.isClose(attacker, target) && Sensor.isEntityAttackable(attacker, target) && isNotAllied) && predicateMatches && canHunt
+		);
 	}
 
 	private boolean isClose(LivingEntity attacker, LivingEntity target) {

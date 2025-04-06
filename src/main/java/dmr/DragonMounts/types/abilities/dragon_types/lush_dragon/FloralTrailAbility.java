@@ -34,9 +34,7 @@ public class FloralTrailAbility implements FootprintAbility {
 
 		if (steppingOn.is(BlockTags.MUSHROOM_GROW_BLOCK)) {
 			placing = (level.getRandom().nextBoolean() ? Blocks.RED_MUSHROOM : Blocks.BROWN_MUSHROOM).defaultBlockState();
-		} else if (
-			steppingOn.is(BlockTags.DIRT)
-		) { // different from the actual dirt block. Could be grass or moss
+		} else if (steppingOn.is(BlockTags.DIRT)) { // different from the actual dirt block. Could be grass or moss
 			//noinspection deprecation
 			placing = level
 				.registryAccess()

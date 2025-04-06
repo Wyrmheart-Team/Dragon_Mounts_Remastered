@@ -3,13 +3,17 @@ package dmr.DragonMounts.client.handlers;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.InputConstants.Type;
 import dmr.DragonMounts.DMR;
+import dmr.DragonMounts.client.gui.CommandMenu.CommandMenuScreen;
 import dmr.DragonMounts.config.ClientConfig;
 import dmr.DragonMounts.network.packets.DismountDragonPacket;
 import dmr.DragonMounts.network.packets.SummonDragonPacket;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import dmr.DragonMounts.server.items.DragonWhistleItem;
+import dmr.DragonMounts.util.PlayerStateUtils;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -62,14 +66,63 @@ public class KeyInputHandler {
 		InputConstants.UNKNOWN,
 		"dmr.keybind.category"
 	);
+	private static boolean lastWheelState = false;
 
 	@SubscribeEvent
 	public static void registerBindings(RegisterKeyMappingsEvent event) {
 		event.register(SUMMON_DRAGON);
 		event.register(ATTACK_KEY);
-		//		event.register(DRAGON_COMMAND_KEY);
+		event.register(DRAGON_COMMAND_KEY);
 		event.register(DISMOUNT_KEY);
 		event.register(DESCEND_KEY);
+	}
+
+	public static void onKeyboardTick() {
+		Minecraft mc = Minecraft.getInstance();
+
+		if (mc.level == null) {
+			return;
+		}
+
+		if (mc.player == null) {
+			return;
+		}
+
+		ItemStack heldItem = mc.player.getMainHandItem();
+
+		if (heldItem.isEmpty() || !(heldItem.getItem() instanceof DragonWhistleItem whistleItem)) {
+			// If the player is not holding a dragon whistle, return
+			return;
+		}
+
+		var capability = PlayerStateUtils.getHandler(mc.player);
+
+		if (!capability.dragonInstances.containsKey(whistleItem.getColor().getId())) {
+			return;
+		}
+
+		long handle = Minecraft.getInstance().getWindow().getWindow();
+		int keycode = DRAGON_COMMAND_KEY.getKey().getValue();
+		if (keycode >= 0) {
+			boolean radialMenuKeyDown =
+				(DRAGON_COMMAND_KEY.matchesMouse(keycode)
+						? GLFW.glfwGetMouseButton(handle, keycode) == 1
+						: InputConstants.isKeyDown(handle, keycode));
+			if (radialMenuKeyDown != lastWheelState) {
+				if (radialMenuKeyDown != CommandMenuScreen.active) {
+					if (radialMenuKeyDown) {
+						if (mc.screen == null || mc.screen instanceof CommandMenuScreen) {
+							CommandOverlayHandler.resetTimer();
+							CommandMenuScreen.activate();
+						}
+					} else {
+						CommandMenuScreen.INSTANCE.mouseClicked(mc.mouseHandler.xpos(), mc.mouseHandler.ypos(), 0);
+						CommandMenuScreen.deactivate();
+					}
+				}
+			}
+			lastWheelState = radialMenuKeyDown;
+		}
 	}
 
 	@OnlyIn(Dist.CLIENT)
@@ -78,6 +131,12 @@ public class KeyInputHandler {
 
 		private static Long lastUnshift = null;
 		private static boolean wasShiftDown = false;
+
+		@OnlyIn(Dist.CLIENT)
+		@SubscribeEvent
+		public static void clientTick(ClientTickEvent.Pre event) {
+			onKeyboardTick();
+		}
 
 		@OnlyIn(Dist.CLIENT)
 		@SubscribeEvent

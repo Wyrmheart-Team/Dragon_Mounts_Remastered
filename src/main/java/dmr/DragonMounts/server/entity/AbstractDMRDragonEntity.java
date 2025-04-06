@@ -56,6 +56,16 @@ public abstract class AbstractDMRDragonEntity
 		}
 	}
 
+	public enum AgroState {
+		PASSIVE,
+		NEUTRAL,
+		AGGRESSIVE
+	}
+
+	@Getter
+	@Setter
+	AgroState agroState = AgroState.NEUTRAL;
+
 	@Override
 	public void remove(RemovalReason reason) {
 		super.remove(reason);
@@ -449,6 +459,8 @@ public abstract class AbstractDMRDragonEntity
 	public void addAdditionalSaveData(CompoundTag compound) {
 		super.addAdditionalSaveData(compound);
 
+		compound.putString("agroState", agroState.name());
+
 		if (getBreed() != null && getBreed().getId() != null) {
 			compound.putString(NBTConstants.BREED, getBreed().getId());
 		}
@@ -494,6 +506,10 @@ public abstract class AbstractDMRDragonEntity
 			var breed = DragonBreedsRegistry.getDragonBreed(breedKey);
 
 			setBreed(breed);
+		}
+
+		if (compound.contains("agroState")) {
+			agroState = AgroState.valueOf(compound.getString("agroState"));
 		}
 
 		super.readAdditionalSaveData(compound);

@@ -17,7 +17,6 @@ import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.*;
 import net.minecraft.world.entity.ai.behavior.GateBehavior.OrderPolicy;
@@ -109,13 +108,19 @@ public class DragonAI {
 				Pair.of(
 					0,
 					new BehaviorWrapper<>(
-						TamableAnimal::isTame,
+						dr -> dr.isTame() && dr.getAgroState() != DMRDragonEntity.AgroState.PASSIVE,
 						OwnerHurtByTargetGoal::new,
 						OwnerHurtTargetGoal::new,
 						HurtByTargetGoal::new
 					)
 				),
-				Pair.of(1, new BehaviorWrapper<>(e -> !e.isSitting(), StartAttacking.create(DragonAI::findNearestValidAttackTarget))),
+				Pair.of(
+					1,
+					new BehaviorWrapper<>(
+						e -> !e.isSitting() && e.getAgroState() != DMRDragonEntity.AgroState.PASSIVE,
+						StartAttacking.create(DragonAI::findNearestValidAttackTarget)
+					)
+				),
 				Pair.of(
 					0,
 					new BehaviorWrapper<>(
