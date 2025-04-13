@@ -3,20 +3,19 @@ package dmr.DragonMounts.client.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.types.abilities.types.Ability;
-import java.util.List;
 import net.minecraft.advancements.AdvancementType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.ComponentRenderUtils;
 import net.minecraft.client.gui.screens.advancements.AdvancementWidgetType;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
+
+import java.util.List;
 
 public class DragonAbilityButton extends ExtendedButton {
 
@@ -35,8 +34,7 @@ public class DragonAbilityButton extends ExtendedButton {
 		this.minecraft = Minecraft.getInstance();
 		this.title = Language.getInstance().getVisualOrder(minecraft.font.substrByWidth(ability.getTranslatedName(), 163));
 		int j = 29 + minecraft.font.width(this.title);
-		this.description = Language.getInstance()
-			.getVisualOrder(this.findOptimalLines(this.minecraft, ability.getTranslatedDescription().copy(), 105));
+		this.description = ComponentRenderUtils.wrapComponents( ability.getTranslatedDescription().copy(), 105, this.minecraft.font);
 
 		for (FormattedCharSequence formattedcharsequence : this.description) {
 			j = Math.max(j, minecraft.font.width(formattedcharsequence));
@@ -80,32 +78,5 @@ public class DragonAbilityButton extends ExtendedButton {
 			guiGraphics.drawString(this.minecraft.font, this.description.get(k1), i1 + 5, l + 27 + k1 * 9, -5592406, false);
 		}
 		guiGraphics.pose().popPose();
-	}
-
-	private static final int[] TEST_SPLIT_OFFSETS = new int[] { 0, 10, -10, 25, -25 };
-
-	private static float getMaxWidth(StringSplitter manager, List<FormattedText> text) {
-		return (float) text.stream().mapToDouble(manager::stringWidth).max().orElse(0.0);
-	}
-
-	public static List<FormattedText> findOptimalLines(Minecraft minecraft, Component component, int maxWidth) {
-		StringSplitter stringsplitter = minecraft.font.getSplitter();
-		List<FormattedText> list = null;
-		float f = Float.MAX_VALUE;
-
-		for (int i : TEST_SPLIT_OFFSETS) {
-			List<FormattedText> list1 = stringsplitter.splitLines(component, maxWidth - i, Style.EMPTY);
-			float f1 = Math.abs(getMaxWidth(stringsplitter, list1) - (float) maxWidth);
-			if (f1 <= 10.0F) {
-				return list1;
-			}
-
-			if (f1 < f) {
-				f = f1;
-				list = list1;
-			}
-		}
-
-		return list;
 	}
 }

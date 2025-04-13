@@ -14,5 +14,6 @@ public class ModConstants {
 		public static final String CHEST = "chest";
 		public static final String VARIANT = "variant";
 		public static final String ORDERED_TO_SIT = "OrderedToSit";
+		public static final String WAS_HATCHED = "wasHatched";
 	}
 }

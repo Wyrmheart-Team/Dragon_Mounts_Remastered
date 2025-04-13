@@ -1,5 +1,7 @@
 package dmr.DragonMounts.server.items;
 
+import dmr.DragonMounts.client.gui.CommandMenu.CommandMenuScreen;
+import dmr.DragonMounts.client.handlers.CommandOverlayHandler;
 import dmr.DragonMounts.common.capability.DragonOwnerCapability;
 import dmr.DragonMounts.common.handlers.DragonWhistleHandler;
 import dmr.DragonMounts.network.packets.CompleteDataSync;
@@ -8,7 +10,6 @@ import dmr.DragonMounts.registry.ModCapabilities;
 import dmr.DragonMounts.registry.ModItems;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.util.PlayerStateUtils;
-import java.util.List;
 import lombok.Getter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -29,6 +30,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import java.util.List;
+
 @Getter
 public class DragonWhistleItem extends Item {
 
@@ -46,7 +49,7 @@ public class DragonWhistleItem extends Item {
 	public static ItemStack getWhistleItem(DyeColor color, int count) {
 		return new ItemStack(ModItems.DRAGON_WHISTLES.get(color.getId()).get(), count);
 	}
-
+	
 	@Override
 	public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
 		super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
@@ -66,49 +69,58 @@ public class DragonWhistleItem extends Item {
 	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
 		super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
 
-		//TODO This doesnt quite sync up with the server
 		var player = Minecraft.getInstance().player;
 		assert player != null;
 		var state = PlayerStateUtils.getHandler(player);
-		if (state.dragonInstances.containsKey(color.getId())) {
-			var nbt = state.dragonNBTs.get(color.getId());
+		var nbt = state.dragonNBTs.get(color.getId());
+		
+		if(nbt == null){
+			return;
+		}
+		
+		var breed = nbt.getString("breed");
+		var dragonBreed = DragonBreedsRegistry.getDragonBreed(breed);
+		
+		if (dragonBreed != null) {
+			var name = Component.translatable("dmr.dragon_breed." + breed).getString();
 
-			if (nbt != null) {
-				var breed = nbt.getString("breed");
-				var dragonBreed = DragonBreedsRegistry.getDragonBreed(breed);
-
-				if (dragonBreed != null) {
-					var name = Component.translatable("dmr.dragon_breed." + breed).getString();
-
-					if (nbt.contains("CustomName")) {
-						name = nbt.getString("CustomName").replace("\"", "") + " (" + name + ")";
-					}
-
-					tooltipComponents.add(
-						Component.translatable("dmr.dragon_summon.tooltip.1", name)
-							.withStyle(ChatFormatting.GRAY)
-							.withStyle(ChatFormatting.ITALIC)
-					);
-				}
-
-				if (state.respawnDelays.containsKey(color.getId()) && state.respawnDelays.get(color.getId()) > 0) {
-					tooltipComponents.add(
-						Component.translatable("dmr.dragon_summon.tooltip.2", state.respawnDelays.get(color.getId()) / 20)
-							.withStyle(ChatFormatting.ITALIC)
-							.withStyle(ChatFormatting.RED)
-					);
-				}
+			if (nbt.contains("CustomName")) {
+				name = nbt.getString("CustomName").replace("\"", "") + " (" + name + ")";
 			}
+
+			tooltipComponents.add(
+				Component.translatable("dmr.dragon_summon.tooltip.1", name)
+					.withStyle(ChatFormatting.GRAY)
+					.withStyle(ChatFormatting.ITALIC)
+			);
+		}
+		
+		if (state.respawnDelays.containsKey(color.getId()) && state.respawnDelays.get(color.getId()) > 0) {
+			tooltipComponents.add(
+				Component.translatable("dmr.dragon_summon.tooltip.2", state.respawnDelays.get(color.getId()) / 20)
+					.withStyle(ChatFormatting.ITALIC)
+					.withStyle(ChatFormatting.RED)
+			);
 		}
 	}
 
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
 		if (!pPlayer.isShiftKeyDown()) {
-			DragonWhistleHandler.summonDragon(pPlayer);
+			var state = PlayerStateUtils.getHandler(pPlayer);
+			var nbt = state.dragonNBTs.get(color.getId());
+			if(nbt == null){
+				if (!pPlayer.level.isClientSide) {
+					pPlayer.displayClientMessage(Component.translatable("dmr.dragon_call.nodragon").withStyle(ChatFormatting.RED), true);
+				}
+				return InteractionResultHolder.pass(pPlayer.getItemInHand(pUsedHand));
+			}
+			if (pPlayer.level.isClientSide) {
+				CommandOverlayHandler.resetTimer();
+				CommandMenuScreen.activate();
+			}
 			return InteractionResultHolder.pass(pPlayer.getItemInHand(pUsedHand));
 		}
-
 		return super.use(pLevel, pPlayer, pUsedHand);
 	}
 

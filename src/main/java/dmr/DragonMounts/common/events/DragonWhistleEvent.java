@@ -5,15 +5,15 @@ import dmr.DragonMounts.common.handlers.DragonWhistleHandler;
 import dmr.DragonMounts.common.handlers.DragonWhistleHandler.DragonInstance;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.network.packets.CompleteDataSync;
+import dmr.DragonMounts.network.packets.DragonNBTSync;
 import dmr.DragonMounts.network.packets.DragonRespawnDelayPacket;
 import dmr.DragonMounts.registry.ModCapabilities;
 import dmr.DragonMounts.registry.ModItems;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.server.worlddata.DragonWorldDataManager;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
@@ -27,6 +27,9 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @EventBusSubscriber(modid = DMR.MOD_ID)
 public class DragonWhistleEvent {
@@ -78,11 +81,17 @@ public class DragonWhistleEvent {
 			//Check if player is online and has a dragon instance
 			if (event.getEntity() instanceof Player player) {
 				var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
-
+				
 				if (!state.dragonInstances.isEmpty()) {
 					for (Map.Entry<Integer, DragonInstance> ent : state.dragonInstances.entrySet()) {
 						var index = ent.getKey();
 						var id = ent.getValue().getUUID();
+						
+						if(player instanceof ServerPlayer spPlayer) {
+							var nbtData = state.dragonNBTs.get(index);
+							//Send the player their dragon data
+							PacketDistributor.sendToPlayer(spPlayer, new DragonNBTSync(index, nbtData));
+						}
 
 						var dragonWasKilled = DragonWorldDataManager.isDragonDead(event.getLevel(), id);
 
@@ -101,6 +110,10 @@ public class DragonWhistleEvent {
 								state.dragonNBTs.remove(index);
 								state.respawnDelays.remove(index);
 								state.dragonInstances.remove(index);
+								
+								if (player instanceof ServerPlayer spPlayer) {
+									PacketDistributor.sendToPlayer(spPlayer, new DragonNBTSync(index, new CompoundTag()));
+								}
 							}
 
 							DragonWorldDataManager.clearDragonData(event.getLevel(), id);

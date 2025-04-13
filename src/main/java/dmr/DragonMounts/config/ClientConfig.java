@@ -24,6 +24,7 @@ public class ClientConfig {
 	public static final ModConfigSpec.BooleanValue DOUBLE_PRESS_DISMOUNT;
 	public static final ModConfigSpec.BooleanValue USE_ALTERNATE_ATTACK_KEY;
 	public static final ModConfigSpec.BooleanValue RENDER_HATCHING_EGG;
+	public static final ModConfigSpec.BooleanValue COLORED_WHISTLE_MENU;
 
 	@SubscribeEvent
 	public static void configReload(ModConfigEvent.Reloading event) {
@@ -78,6 +79,11 @@ public class ClientConfig {
 			.comment("Should the dragon egg render the hatching animation?")
 			.translation("dmr.config.client.render_hatching_egg")
 			.define("render_hatching_egg", true);
+		
+		COLORED_WHISTLE_MENU = configurator
+			.comment("Should the dragon whistle menu be colored based on the whistle's color?")
+			.translation("dmr.config.client.colored_whistle_menu")
+			.define("colored_whistle_menu", true);
 
 		MOD_CONFIG_SPEC = configurator.build();
 	}

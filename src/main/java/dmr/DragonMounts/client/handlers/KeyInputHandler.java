@@ -4,16 +4,14 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.InputConstants.Type;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.client.gui.CommandMenu.CommandMenuScreen;
+import dmr.DragonMounts.common.handlers.DragonWhistleHandler;
 import dmr.DragonMounts.config.ClientConfig;
 import dmr.DragonMounts.network.packets.DismountDragonPacket;
 import dmr.DragonMounts.network.packets.SummonDragonPacket;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import dmr.DragonMounts.server.items.DragonWhistleItem;
 import dmr.DragonMounts.util.PlayerStateUtils;
-import java.util.concurrent.TimeUnit;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -24,6 +22,8 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.concurrent.TimeUnit;
 
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = DMR.MOD_ID, value = Dist.CLIENT, bus = Bus.MOD)
@@ -48,8 +48,7 @@ public class KeyInputHandler {
 	public static KeyMapping DRAGON_COMMAND_KEY = new KeyMapping(
 		"dmr.keybind.dragon_command",
 		KeyConflictContext.IN_GAME,
-		Type.KEYSYM,
-		GLFW.GLFW_KEY_C,
+			InputConstants.UNKNOWN,
 		"dmr.keybind.category"
 	);
 
@@ -88,10 +87,9 @@ public class KeyInputHandler {
 			return;
 		}
 
-		ItemStack heldItem = mc.player.getMainHandItem();
+		var whistleItem = DragonWhistleHandler.getDragonWhistleItem(mc.player);
 
-		if (heldItem.isEmpty() || !(heldItem.getItem() instanceof DragonWhistleItem whistleItem)) {
-			// If the player is not holding a dragon whistle, return
+		if (whistleItem == null) {
 			return;
 		}
 

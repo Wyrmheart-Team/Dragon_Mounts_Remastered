@@ -3,8 +3,6 @@ package dmr.DragonMounts.network;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.network.packets.*;
 import io.netty.buffer.ByteBuf;
-import java.util.List;
-import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Utf8String;
 import net.minecraft.network.codec.StreamCodec;
@@ -15,6 +13,9 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+
+import java.util.List;
+import java.util.UUID;
 
 public class NetworkHandler {
 
@@ -42,7 +43,8 @@ public class NetworkHandler {
 		new BlankEggSyncPacket(null, null, -1),
 		new RequestDragonInventoryPacket(null, null),
 		new ClearDragonInventoryPacket(null),
-		new DragonCommandPacket(-1)
+		new DragonCommandPacket(-1),
+		new DragonNBTSync(-1, null)
 	);
 
 	public static void registerEvent(RegisterPayloadHandlersEvent event) {

@@ -1,14 +1,10 @@
 package dmr.DragonMounts.network.packets;
 
-import static dmr.DragonMounts.server.entity.AbstractDMRDragonEntity.AgroState.*;
-
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.common.handlers.DragonWhistleHandler;
 import dmr.DragonMounts.network.IMessage;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import dmr.DragonMounts.server.items.DragonWhistleItem;
 import dmr.DragonMounts.util.PlayerStateUtils;
-import java.util.Optional;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -20,6 +16,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+
+import java.util.Optional;
+
+import static dmr.DragonMounts.server.entity.AbstractDMRDragonEntity.AgroState.*;
 
 public record DragonCommandPacket(int command) implements IMessage<DragonCommandPacket> {
 	public DragonCommandPacket(Command command) {
@@ -70,13 +70,14 @@ public record DragonCommandPacket(int command) implements IMessage<DragonCommand
 
 	@Override
 	public void handleServer(IPayloadContext context, ServerPlayer player) {
-		var heldItem = player.getMainHandItem();
 		var level = (ServerLevel) player.level;
-
-		if (heldItem.isEmpty() || !(heldItem.getItem() instanceof DragonWhistleItem whistleItem)) {
+		
+		var whistleItem = DragonWhistleHandler.getDragonWhistleItem(player);
+		
+		if (whistleItem == null) {
 			return;
 		}
-
+		
 		var index = whistleItem.getColor().getId();
 		var state = PlayerStateUtils.getHandler(player);
 		var instance = state.dragonInstances.get(index);
