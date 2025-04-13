@@ -1,5 +1,6 @@
 package dmr.DragonMounts.client.gui.CommandMenu;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import dmr.DragonMounts.client.handlers.CommandOverlayHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -7,6 +8,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nonnull;
+
+import static dmr.DragonMounts.client.handlers.CommandOverlayHandler.ANGLE_PER_ITEM;
 
 public class CommandMenuScreen extends Screen {
 
@@ -38,27 +41,18 @@ public class CommandMenuScreen extends Screen {
 
 			// Get the mouse angle.
 			double mouseAngle = CommandOverlayHandler.correctAngle(
-				CommandOverlayHandler.getMouseAngle() + (CommandOverlayHandler.ANGLE_PER_ITEM + 39)
+				CommandOverlayHandler.getMouseAngle() + (2.5f * ANGLE_PER_ITEM)
 			);
-
-			float centerX = (float) (mc.getWindow().getGuiScaledWidth() * 0.5D);
-			float centerY = (float) (mc.getWindow().getGuiScaledHeight() * 0.5D);
-
+			
 			// Compute mouse distance from center in GUI coordinates.
 			// We convert the raw screen coordinates into GUI coordinates.
-			double scaleX = (double) mc.getWindow().getGuiScaledWidth() / (double) mc.getWindow().getScreenWidth();
-			double scaleY = (double) mc.getWindow().getGuiScaledHeight() / (double) mc.getWindow().getScreenHeight();
-			double guiMouseX = mc.mouseHandler.xpos() * scaleX;
-			double guiMouseY = mc.mouseHandler.ypos() * scaleY;
-			double dx = guiMouseX - centerX;
-			double dy = guiMouseY - centerY;
-			double mouseDistance = Math.sqrt(dx * dx + dy * dy);
-
+			double mouseDistance = CommandOverlayHandler.getMouseDistance();
+			
 			if (!mc.options.hideGui) {
 				for (int i = 0; i < CommandOverlayHandler.MAX_ITEMS; i++) {
 					// Segments in the unrotated system start at 0 degrees.
-					double segStart = CommandOverlayHandler.ANGLE_PER_ITEM * i + 1;
-					double segEnd = segStart + CommandOverlayHandler.ANGLE_PER_ITEM - 2;
+					double segStart = ANGLE_PER_ITEM * i;
+					double segEnd = segStart + ANGLE_PER_ITEM;
 
 					if (
 						mouseDistance < (CommandOverlayHandler.INNER_RADIUS * 1.3f) ||
@@ -93,7 +87,20 @@ public class CommandMenuScreen extends Screen {
 	public boolean isPauseScreen() {
 		return false;
 	}
-
+	
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		InputConstants.Key mouseKey = InputConstants.getKey(keyCode, scanCode);
+		if (super.keyPressed(keyCode, scanCode, modifiers)) {
+			return true;
+		} else if (Minecraft.getInstance().options.keyInventory.isActiveAndMatches(mouseKey)) {
+			this.onClose();
+			return true;
+		}
+		
+		return false;
+	}
+	
 	@Override
 	public void renderBackground(@Nonnull GuiGraphics guiGraphics, int i, int i1, float i2) {}
 }
