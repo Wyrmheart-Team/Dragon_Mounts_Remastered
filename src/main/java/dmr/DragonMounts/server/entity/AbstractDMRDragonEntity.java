@@ -11,8 +11,6 @@ import dmr.DragonMounts.server.inventory.DragonInventoryHandler;
 import dmr.DragonMounts.server.inventory.DragonInventoryHandler.DragonInventory;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.Variant;
-import java.util.Optional;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
@@ -44,6 +42,9 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
+
+import java.util.Optional;
+import java.util.UUID;
 
 public abstract class AbstractDMRDragonEntity
 	extends TamableAnimal
@@ -131,6 +132,11 @@ public abstract class AbstractDMRDragonEntity
 	public static final EntityDataAccessor<String> DATA_VARIANT = SynchedEntityData.defineId(
 		AbstractDMRDragonEntity.class,
 		EntityDataSerializers.STRING
+	);
+	
+	public static final EntityDataAccessor<Boolean> DATA_WAS_HATCHED = SynchedEntityData.defineId(
+			AbstractDMRDragonEntity.class,
+			EntityDataSerializers.BOOLEAN
 	);
 
 	@Override
@@ -262,6 +268,14 @@ public abstract class AbstractDMRDragonEntity
 		return false;
 	}
 
+	public boolean wasHatched() {
+		return entityData.get(DATA_WAS_HATCHED);
+	}
+	
+	public void setHatched(boolean wasHatched) {
+		entityData.set(DATA_WAS_HATCHED, wasHatched);
+	}
+	
 	public IDragonBreed getBreed() {
 		var origBreed = entityData.get(DATA_ORIG_BREED);
 
@@ -432,6 +446,7 @@ public abstract class AbstractDMRDragonEntity
 		builder.define(LAST_POSE_CHANGE_TICK, 0L);
 		builder.define(DATA_VARIANT, "");
 		builder.define(DATA_ORDERED_TO_SIT, false);
+		builder.define(DATA_WAS_HATCHED, false);
 	}
 
 	@Override
@@ -480,6 +495,10 @@ public abstract class AbstractDMRDragonEntity
 
 		if (entityData.get(DATA_ORDERED_TO_SIT) != null) {
 			compound.putBoolean(NBTConstants.ORDERED_TO_SIT, entityData.get(DATA_ORDERED_TO_SIT));
+		}
+		
+		if (entityData.get(DATA_WAS_HATCHED) != null) {
+			compound.putBoolean(NBTConstants.WAS_HATCHED, entityData.get(DATA_WAS_HATCHED));
 		}
 
 		getWanderTarget()
@@ -532,6 +551,10 @@ public abstract class AbstractDMRDragonEntity
 
 		if (compound.contains(NBTConstants.ORDERED_TO_SIT)) {
 			entityData.set(DATA_ORDERED_TO_SIT, compound.getBoolean(NBTConstants.ORDERED_TO_SIT));
+		}
+		
+		if (compound.contains(NBTConstants.WAS_HATCHED)) {
+			entityData.set(DATA_WAS_HATCHED, compound.getBoolean(NBTConstants.WAS_HATCHED));
 		}
 
 		Optional<GlobalPos> wanderTarget;
@@ -592,7 +615,7 @@ public abstract class AbstractDMRDragonEntity
 
 	@Override
 	public boolean removeWhenFarAway(double distanceToClosestPlayer) {
-		return !isTame() && distanceToClosestPlayer > Mth.sqrt(32) && this.tickCount > 2400 && !this.hasCustomName();
+		return !wasHatched() && !isTame() && distanceToClosestPlayer > Mth.sqrt(32) && this.tickCount > 2400 && !this.hasCustomName();
 	}
 
 	@Override
