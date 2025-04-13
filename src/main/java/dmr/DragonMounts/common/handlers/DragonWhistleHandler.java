@@ -11,11 +11,6 @@ import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.server.items.DragonWhistleItem;
 import dmr.DragonMounts.server.worlddata.DragonWorldDataManager;
 import dmr.DragonMounts.util.PlayerStateUtils;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,9 +21,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 public class DragonWhistleHandler {
 
@@ -216,12 +217,18 @@ public class DragonWhistleHandler {
 				return true;
 			}
 
-			// Spawning a new dragon
-			DMRDragonEntity newDragon = cap.createDragonEntity(player, player.level, summonItemIndex);
-			newDragon.setPos(player.getX(), player.getY(), player.getZ());
-			player.level.addFreshEntity(newDragon);
-
+			//Dragon instance is only kept up to date on the server so only spawn a new dragon server side
 			if (!player.level.isClientSide) {
+				// Spawning a new dragon
+				DMRDragonEntity newDragon = cap.createDragonEntity(player, player.level, summonItemIndex);
+
+				if (newDragon == null) {
+					return false;
+				}
+
+				newDragon.setPos(player.getX(), player.getY(), player.getZ());
+				player.level.addFreshEntity(newDragon);
+
 				PacketDistributor.sendToPlayersTrackingEntity(newDragon, new DragonStatePacket(newDragon.getId(), 1));
 			}
 
@@ -231,36 +238,53 @@ public class DragonWhistleHandler {
 		return false;
 	}
 
-	public static int getDragonSummonIndex(Player player) {
+	public static DragonWhistleItem getDragonWhistleItem(Player player) {
+		var state = PlayerStateUtils.getHandler(player);
+		Function<DragonWhistleItem, Boolean> isValid  = (DragonWhistleItem whistleItem) -> {
+			if (whistleItem.getColor() == null) {
+				return false;
+			}
+			return state.dragonNBTs.containsKey(whistleItem.getColor().getId());
+		};
+		
 		//Main hand - first
 		if (player.getInventory().getSelected().getItem() instanceof DragonWhistleItem whistleItem) {
-			DyeColor c = whistleItem.getColor();
-			return c.getId();
+			if (isValid.apply(whistleItem)) {
+				return whistleItem;
+			}
 		}
 
 		//Off hand - second
 		if (player.getInventory().offhand.get(0).getItem() instanceof DragonWhistleItem whistleItem) {
-			DyeColor c = whistleItem.getColor();
-			return c.getId();
+			if (isValid.apply(whistleItem)) {
+				return whistleItem;
+			}
 		}
 
 		//Hotbar - third
 		for (int i = 0; i < 9; i++) {
 			if (player.getInventory().getItem(i).getItem() instanceof DragonWhistleItem whistleItem) {
-				DyeColor c = whistleItem.getColor();
-				return c.getId();
+				if (isValid.apply(whistleItem)) {
+					return whistleItem;
+				}
 			}
 		}
-
+		
 		//Inventory - fourth
 		for (int i = 9; i < player.getInventory().getContainerSize(); i++) {
 			if (player.getInventory().getItem(i).getItem() instanceof DragonWhistleItem whistleItem) {
-				DyeColor c = whistleItem.getColor();
-				return c.getId();
+				if (isValid.apply(whistleItem)) {
+					return whistleItem;
+				}
 			}
 		}
 
-		return -1;
+		return null;
+	}
+	
+	public static int getDragonSummonIndex(Player player) {
+		var whistleItem = getDragonWhistleItem(player);
+		return whistleItem != null ? whistleItem.getColor().getId() : -1;
 	}
 
 	public static int getDragonSummonIndex(Player player, UUID dragonUUID) {
