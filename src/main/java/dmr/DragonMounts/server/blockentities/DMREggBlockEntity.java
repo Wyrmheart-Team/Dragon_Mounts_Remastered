@@ -146,7 +146,7 @@ public class DMREggBlockEntity extends BlockEntity {
 
 		baby.setBaby(true);
 		baby.setPos(pos.getX(), pos.getY(), pos.getZ());
-		
+
 		baby.setHatched(true);
 
 		if (data.getCustomName() != null) baby.setCustomName(data.getCustomName());

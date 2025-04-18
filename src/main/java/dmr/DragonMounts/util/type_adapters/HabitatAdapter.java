@@ -3,6 +3,7 @@ package dmr.DragonMounts.util.type_adapters;
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
 import dmr.DragonMounts.types.habitats.Habitat;
+
 import java.lang.reflect.Type;
 
 public class HabitatAdapter implements JsonDeserializer<Habitat>, JsonSerializer<Habitat> {

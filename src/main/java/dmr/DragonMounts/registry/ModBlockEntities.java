@@ -3,10 +3,11 @@ package dmr.DragonMounts.registry;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.server.blockentities.DMRBlankEggBlockEntity;
 import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
-import java.util.function.Supplier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
 
 public class ModBlockEntities {
 

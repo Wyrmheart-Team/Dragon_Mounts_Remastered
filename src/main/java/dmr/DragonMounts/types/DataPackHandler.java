@@ -15,9 +15,6 @@ import dmr.DragonMounts.server.events.LootTableInject;
 import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.StringTag;
@@ -27,6 +24,10 @@ import net.minecraft.world.level.LevelAccessor;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
 
 public class DataPackHandler {
 

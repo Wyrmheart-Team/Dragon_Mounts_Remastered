@@ -1,10 +1,11 @@
 package dmr.DragonMounts.registry;
 
 import dmr.DragonMounts.DMR;
-import java.util.function.Supplier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.schedule.Activity;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
 
 public class ModActivityTypes {
 

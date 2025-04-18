@@ -7,7 +7,6 @@ import dmr.DragonMounts.registry.ModEntities;
 import dmr.DragonMounts.registry.ModItems;
 import dmr.DragonMounts.server.items.DragonArmorItem;
 import dmr.DragonMounts.util.PlayerStateUtils;
-import java.util.Objects;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -19,6 +18,8 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
+
+import java.util.Objects;
 
 @PrefixGameTestTemplate(false)
 @ForEachTest(groups = "Dragons")

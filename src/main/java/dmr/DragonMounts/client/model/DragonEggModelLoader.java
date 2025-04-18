@@ -4,10 +4,11 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import java.io.IOException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
+
+import java.io.IOException;
 
 public class DragonEggModelLoader implements IGeometryLoader<DragonEggModel> {
 

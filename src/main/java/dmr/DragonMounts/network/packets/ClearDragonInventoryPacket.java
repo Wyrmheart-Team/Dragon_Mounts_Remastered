@@ -4,7 +4,6 @@ import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.network.IMessage;
 import dmr.DragonMounts.network.NetworkHandler;
 import dmr.DragonMounts.server.inventory.DragonInventoryHandler;
-import java.util.UUID;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -12,6 +11,8 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+
+import java.util.UUID;
 
 public record ClearDragonInventoryPacket(UUID id) implements IMessage<ClearDragonInventoryPacket> {
 	public static final StreamCodec<FriendlyByteBuf, ClearDragonInventoryPacket> STREAM_CODEC = StreamCodec.composite(

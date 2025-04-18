@@ -94,8 +94,8 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 		//noinspection removal
 		var nbtData = dragon.serializeNBT(dragon.level.registryAccess());
 		dragonNBTs.put(index, nbtData);
-		
-		if(!dragon.level.isClientSide && playerInstance instanceof ServerPlayer spPlayer) {
+
+		if (!dragon.level.isClientSide && playerInstance instanceof ServerPlayer spPlayer) {
 			PacketDistributor.sendToPlayer(spPlayer, new DragonNBTSync(index, nbtData));
 		}
 

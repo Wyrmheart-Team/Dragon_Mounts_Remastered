@@ -7,9 +7,6 @@ import dmr.DragonMounts.registry.ModBlocks;
 import dmr.DragonMounts.registry.ModItems;
 import dmr.DragonMounts.server.items.DragonWhistleItem;
 import dmr.DragonMounts.types.armor.DragonArmor;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.NonNullList;
 import net.minecraft.data.PackOutput;
@@ -26,6 +23,10 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class DMRRecipeProvider extends RecipeProvider {
 

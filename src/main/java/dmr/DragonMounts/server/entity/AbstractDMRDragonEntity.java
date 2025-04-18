@@ -133,10 +133,10 @@ public abstract class AbstractDMRDragonEntity
 		AbstractDMRDragonEntity.class,
 		EntityDataSerializers.STRING
 	);
-	
+
 	public static final EntityDataAccessor<Boolean> DATA_WAS_HATCHED = SynchedEntityData.defineId(
-			AbstractDMRDragonEntity.class,
-			EntityDataSerializers.BOOLEAN
+		AbstractDMRDragonEntity.class,
+		EntityDataSerializers.BOOLEAN
 	);
 
 	@Override
@@ -271,11 +271,11 @@ public abstract class AbstractDMRDragonEntity
 	public boolean wasHatched() {
 		return entityData.get(DATA_WAS_HATCHED);
 	}
-	
+
 	public void setHatched(boolean wasHatched) {
 		entityData.set(DATA_WAS_HATCHED, wasHatched);
 	}
-	
+
 	public IDragonBreed getBreed() {
 		var origBreed = entityData.get(DATA_ORIG_BREED);
 
@@ -496,7 +496,7 @@ public abstract class AbstractDMRDragonEntity
 		if (entityData.get(DATA_ORDERED_TO_SIT) != null) {
 			compound.putBoolean(NBTConstants.ORDERED_TO_SIT, entityData.get(DATA_ORDERED_TO_SIT));
 		}
-		
+
 		if (entityData.get(DATA_WAS_HATCHED) != null) {
 			compound.putBoolean(NBTConstants.WAS_HATCHED, entityData.get(DATA_WAS_HATCHED));
 		}
@@ -552,7 +552,7 @@ public abstract class AbstractDMRDragonEntity
 		if (compound.contains(NBTConstants.ORDERED_TO_SIT)) {
 			entityData.set(DATA_ORDERED_TO_SIT, compound.getBoolean(NBTConstants.ORDERED_TO_SIT));
 		}
-		
+
 		if (compound.contains(NBTConstants.WAS_HATCHED)) {
 			entityData.set(DATA_WAS_HATCHED, compound.getBoolean(NBTConstants.WAS_HATCHED));
 		}

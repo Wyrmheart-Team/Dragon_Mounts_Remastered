@@ -10,6 +10,5 @@
     "PlayerDismountMixin",
     "ReplenishDragonEggMixin"
   ],
-  "client": [
-  ]
+  "client": []
 }

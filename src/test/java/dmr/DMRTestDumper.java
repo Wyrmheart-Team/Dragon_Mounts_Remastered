@@ -1,12 +1,5 @@
 package dmr;
 
-import java.io.PrintWriter;
-import java.nio.file.Path;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.testframework.Test;
 import net.neoforged.testframework.Test.Result;
@@ -17,6 +10,14 @@ import net.neoforged.testframework.summary.TestSummary.TestInfo;
 import net.neoforged.testframework.summary.md.Alignment;
 import net.neoforged.testframework.summary.md.Table;
 import org.slf4j.Logger;
+
+import java.io.PrintWriter;
+import java.nio.file.Path;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class DMRTestDumper implements FileSummaryDumper {
 

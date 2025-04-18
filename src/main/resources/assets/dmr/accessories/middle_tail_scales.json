@@ -1,12 +1,5 @@
 {
-  "bones": [
-    "tai1ridge",
-    "tail2ridge",
-    "tai3ridge",
-    "tai4ridge",
-    "tai5ridge",
-    "tai6ridge"
-  ],
+  "bones": ["tai1ridge", "tail2ridge", "tai3ridge", "tai4ridge", "tai5ridge", "tai6ridge"],
   "negativeBones": [
     "tailSpike1",
     "tailSpike2",

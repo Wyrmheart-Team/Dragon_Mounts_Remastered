@@ -1,12 +1,13 @@
 package dmr.DragonMounts.server.ai.behaviours;
 
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import java.util.function.Function;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.Behavior.Status;
 import net.minecraft.world.entity.ai.behavior.BehaviorControl;
 import net.minecraft.world.entity.ai.goal.Goal;
+
+import java.util.function.Function;
 
 public class GoalWrapper implements BehaviorControl<DMRDragonEntity> {
 

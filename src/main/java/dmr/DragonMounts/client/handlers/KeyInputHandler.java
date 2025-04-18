@@ -48,7 +48,7 @@ public class KeyInputHandler {
 	public static KeyMapping DRAGON_COMMAND_KEY = new KeyMapping(
 		"dmr.keybind.dragon_command",
 		KeyConflictContext.IN_GAME,
-			InputConstants.UNKNOWN,
+		InputConstants.UNKNOWN,
 		"dmr.keybind.category"
 	);
 
@@ -113,9 +113,6 @@ public class KeyInputHandler {
 							CommandOverlayHandler.resetTimer();
 							CommandMenuScreen.activate();
 						}
-					} else {
-						CommandMenuScreen.INSTANCE.mouseClicked(mc.mouseHandler.xpos(), mc.mouseHandler.ypos(), 0);
-						CommandMenuScreen.deactivate();
 					}
 				}
 			}
@@ -173,11 +170,6 @@ public class KeyInputHandler {
 					return;
 				}
 			} else {
-				if (DRAGON_COMMAND_KEY.isDown()) {
-					//TODO: Open command GUI
-					return;
-				}
-
 				if (SUMMON_DRAGON.consumeClick()) {
 					PacketDistributor.sendToServer(new SummonDragonPacket());
 					return;

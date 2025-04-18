@@ -71,13 +71,13 @@ public record DragonCommandPacket(int command) implements IMessage<DragonCommand
 	@Override
 	public void handleServer(IPayloadContext context, ServerPlayer player) {
 		var level = (ServerLevel) player.level;
-		
+
 		var whistleItem = DragonWhistleHandler.getDragonWhistleItem(player);
-		
+
 		if (whistleItem == null) {
 			return;
 		}
-		
+
 		var index = whistleItem.getColor().getId();
 		var state = PlayerStateUtils.getHandler(player);
 		var instance = state.dragonInstances.get(index);

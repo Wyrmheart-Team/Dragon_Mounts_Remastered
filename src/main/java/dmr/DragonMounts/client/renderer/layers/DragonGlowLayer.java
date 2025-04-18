@@ -6,8 +6,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import java.util.Optional;
-import java.util.function.Function;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -20,6 +18,9 @@ import net.minecraft.util.FastColor;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
+
+import java.util.Optional;
+import java.util.function.Function;
 
 public class DragonGlowLayer extends GeoRenderLayer<DMRDragonEntity> {
 

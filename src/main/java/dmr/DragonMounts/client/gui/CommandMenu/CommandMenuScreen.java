@@ -40,14 +40,12 @@ public class CommandMenuScreen extends Screen {
 			Minecraft mc = Minecraft.getInstance();
 
 			// Get the mouse angle.
-			double mouseAngle = CommandOverlayHandler.correctAngle(
-				CommandOverlayHandler.getMouseAngle() + (2.5f * ANGLE_PER_ITEM)
-			);
-			
+			double mouseAngle = CommandOverlayHandler.correctAngle(CommandOverlayHandler.getMouseAngle() + (2.5f * ANGLE_PER_ITEM));
+
 			// Compute mouse distance from center in GUI coordinates.
 			// We convert the raw screen coordinates into GUI coordinates.
 			double mouseDistance = CommandOverlayHandler.getMouseDistance();
-			
+
 			if (!mc.options.hideGui) {
 				for (int i = 0; i < CommandOverlayHandler.MAX_ITEMS; i++) {
 					// Segments in the unrotated system start at 0 degrees.
@@ -87,7 +85,7 @@ public class CommandMenuScreen extends Screen {
 	public boolean isPauseScreen() {
 		return false;
 	}
-	
+
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		InputConstants.Key mouseKey = InputConstants.getKey(keyCode, scanCode);
@@ -97,10 +95,10 @@ public class CommandMenuScreen extends Screen {
 			this.onClose();
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public void renderBackground(@Nonnull GuiGraphics guiGraphics, int i, int i1, float i2) {}
 }

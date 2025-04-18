@@ -1,12 +1,9 @@
 package dmr.DragonMounts.client.renderer;
 
-import static net.minecraft.client.renderer.RenderType.entityTranslucentCull;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dmr.DragonMounts.client.model.DragonEggModel.Baked;
 import dmr.DragonMounts.server.blockentities.DMRBlankEggBlockEntity;
-import java.util.Objects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
@@ -19,6 +16,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.neoforged.neoforge.client.RenderTypeHelper;
 import net.neoforged.neoforge.client.model.pipeline.VertexConsumerWrapper;
+
+import java.util.Objects;
+
+import static net.minecraft.client.renderer.RenderType.entityTranslucentCull;
 
 public class BlankEggRenderer implements BlockEntityRenderer<DMRBlankEggBlockEntity> {
 

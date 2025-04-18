@@ -2,7 +2,6 @@ package dmr.DragonMounts.registry;
 
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import java.util.function.Supplier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -11,6 +10,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
 
 @EventBusSubscriber(modid = DMR.MOD_ID, bus = Bus.MOD)
 public class ModEntities {

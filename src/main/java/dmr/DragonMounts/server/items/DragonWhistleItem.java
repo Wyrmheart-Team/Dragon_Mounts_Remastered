@@ -49,7 +49,7 @@ public class DragonWhistleItem extends Item {
 	public static ItemStack getWhistleItem(DyeColor color, int count) {
 		return new ItemStack(ModItems.DRAGON_WHISTLES.get(color.getId()).get(), count);
 	}
-	
+
 	@Override
 	public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
 		super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
@@ -73,14 +73,14 @@ public class DragonWhistleItem extends Item {
 		assert player != null;
 		var state = PlayerStateUtils.getHandler(player);
 		var nbt = state.dragonNBTs.get(color.getId());
-		
-		if(nbt == null){
+
+		if (nbt == null) {
 			return;
 		}
-		
+
 		var breed = nbt.getString("breed");
 		var dragonBreed = DragonBreedsRegistry.getDragonBreed(breed);
-		
+
 		if (dragonBreed != null) {
 			var name = Component.translatable("dmr.dragon_breed." + breed).getString();
 
@@ -89,12 +89,10 @@ public class DragonWhistleItem extends Item {
 			}
 
 			tooltipComponents.add(
-				Component.translatable("dmr.dragon_summon.tooltip.1", name)
-					.withStyle(ChatFormatting.GRAY)
-					.withStyle(ChatFormatting.ITALIC)
+				Component.translatable("dmr.dragon_summon.tooltip.1", name).withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC)
 			);
 		}
-		
+
 		if (state.respawnDelays.containsKey(color.getId()) && state.respawnDelays.get(color.getId()) > 0) {
 			tooltipComponents.add(
 				Component.translatable("dmr.dragon_summon.tooltip.2", state.respawnDelays.get(color.getId()) / 20)
@@ -109,7 +107,7 @@ public class DragonWhistleItem extends Item {
 		if (!pPlayer.isShiftKeyDown()) {
 			var state = PlayerStateUtils.getHandler(pPlayer);
 			var nbt = state.dragonNBTs.get(color.getId());
-			if(nbt == null){
+			if (nbt == null) {
 				if (!pPlayer.level.isClientSide) {
 					pPlayer.displayClientMessage(Component.translatable("dmr.dragon_call.nodragon").withStyle(ChatFormatting.RED), true);
 				}

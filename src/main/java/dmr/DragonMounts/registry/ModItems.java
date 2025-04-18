@@ -4,12 +4,13 @@ import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.server.items.*;
 import dmr.DragonMounts.server.items.dev.HabitatOutcomeCheck;
 import dmr.DragonMounts.server.items.dev.InstantHatchItem;
-import java.util.HashMap;
-import java.util.function.Supplier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.HashMap;
+import java.util.function.Supplier;
 
 public class ModItems {
 

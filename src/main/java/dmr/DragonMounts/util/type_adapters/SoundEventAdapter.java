@@ -3,11 +3,12 @@ package dmr.DragonMounts.util.type_adapters;
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
 import dmr.DragonMounts.DMR;
-import java.lang.reflect.Type;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+
+import java.lang.reflect.Type;
 
 public class SoundEventAdapter implements JsonDeserializer<SoundEvent>, JsonSerializer<SoundEvent> {
 

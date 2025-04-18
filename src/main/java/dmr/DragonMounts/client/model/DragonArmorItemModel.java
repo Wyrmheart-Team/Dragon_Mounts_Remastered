@@ -8,10 +8,6 @@ import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.registry.ModComponents;
-import java.io.IOException;
-import java.util.List;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderType;
@@ -44,6 +40,11 @@ import net.neoforged.neoforge.client.model.data.ModelProperty;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class DragonArmorItemModel {
 

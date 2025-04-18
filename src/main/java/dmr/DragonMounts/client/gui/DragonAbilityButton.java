@@ -34,7 +34,7 @@ public class DragonAbilityButton extends ExtendedButton {
 		this.minecraft = Minecraft.getInstance();
 		this.title = Language.getInstance().getVisualOrder(minecraft.font.substrByWidth(ability.getTranslatedName(), 163));
 		int j = 29 + minecraft.font.width(this.title);
-		this.description = ComponentRenderUtils.wrapComponents( ability.getTranslatedDescription().copy(), 105, this.minecraft.font);
+		this.description = ComponentRenderUtils.wrapComponents(ability.getTranslatedDescription().copy(), 105, this.minecraft.font);
 
 		for (FormattedCharSequence formattedcharsequence : this.description) {
 			j = Math.max(j, minecraft.font.width(formattedcharsequence));

@@ -2,11 +2,12 @@ package dmr.DragonMounts.registry;
 
 import com.mojang.serialization.Codec;
 import dmr.DragonMounts.DMR;
-import java.util.Optional;
-import java.util.function.Supplier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.Optional;
+import java.util.function.Supplier;
 
 public class ModMemoryModuleTypes {
 

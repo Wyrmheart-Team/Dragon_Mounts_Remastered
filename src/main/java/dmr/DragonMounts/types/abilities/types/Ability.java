@@ -3,9 +3,10 @@ package dmr.DragonMounts.types.abilities.types;
 import com.mojang.serialization.Codec;
 import dmr.DragonMounts.registry.DragonAbilities;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import java.util.Map;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+
+import java.util.Map;
 
 public interface Ability {
 	Codec<Ability> CODEC = Codec.STRING.dispatch(Ability::type, DragonAbilities.REGISTRY::get);

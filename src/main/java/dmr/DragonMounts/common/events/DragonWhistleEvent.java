@@ -81,13 +81,13 @@ public class DragonWhistleEvent {
 			//Check if player is online and has a dragon instance
 			if (event.getEntity() instanceof Player player) {
 				var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
-				
+
 				if (!state.dragonInstances.isEmpty()) {
 					for (Map.Entry<Integer, DragonInstance> ent : state.dragonInstances.entrySet()) {
 						var index = ent.getKey();
 						var id = ent.getValue().getUUID();
-						
-						if(player instanceof ServerPlayer spPlayer) {
+
+						if (player instanceof ServerPlayer spPlayer) {
 							var nbtData = state.dragonNBTs.get(index);
 							//Send the player their dragon data
 							PacketDistributor.sendToPlayer(spPlayer, new DragonNBTSync(index, nbtData));
@@ -110,7 +110,7 @@ public class DragonWhistleEvent {
 								state.dragonNBTs.remove(index);
 								state.respawnDelays.remove(index);
 								state.dragonInstances.remove(index);
-								
+
 								if (player instanceof ServerPlayer spPlayer) {
 									PacketDistributor.sendToPlayer(spPlayer, new DragonNBTSync(index, new CompoundTag()));
 								}

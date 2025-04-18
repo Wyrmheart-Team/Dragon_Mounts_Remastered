@@ -8,12 +8,13 @@ import dmr.DragonMounts.config.ClientConfig;
 import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
 import dmr.DragonMounts.server.blocks.DMREggBlock;
 import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
-import java.util.Objects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.neoforged.neoforge.client.RenderTypeHelper;
+
+import java.util.Objects;
 
 public class DragonEggRenderer implements BlockEntityRenderer<DMREggBlockEntity> {
 

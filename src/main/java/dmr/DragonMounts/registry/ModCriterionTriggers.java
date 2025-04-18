@@ -4,10 +4,11 @@ import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.server.advancement.CustomTrigger;
 import dmr.DragonMounts.server.advancement.HatchCountTrigger;
 import dmr.DragonMounts.server.advancement.HatchTrigger;
-import java.util.function.Supplier;
 import net.minecraft.advancements.CriterionTrigger;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
 
 public class ModCriterionTriggers {
 

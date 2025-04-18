@@ -4,9 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
@@ -25,6 +22,10 @@ import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 import software.bernie.geckolib.util.RenderUtil;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @EventBusSubscriber(Dist.CLIENT)
 public class DragonPassengerLayer<T extends DMRDragonEntity> extends GeoRenderLayer<T> {

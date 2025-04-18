@@ -79,7 +79,7 @@ public class ClientConfig {
 			.comment("Should the dragon egg render the hatching animation?")
 			.translation("dmr.config.client.render_hatching_egg")
 			.define("render_hatching_egg", true);
-		
+
 		COLORED_WHISTLE_MENU = configurator
 			.comment("Should the dragon whistle menu be colored based on the whistle's color?")
 			.translation("dmr.config.client.colored_whistle_menu")

@@ -1,12 +1,9 @@
 package dmr.DragonMounts.util.type_adapters;
 
-import static net.minecraft.commands.arguments.ParticleArgument.ERROR_INVALID_OPTIONS;
-
 import com.google.gson.*;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.JsonOps;
-import java.lang.reflect.Type;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -14,6 +11,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
+
+import java.lang.reflect.Type;
+
+import static net.minecraft.commands.arguments.ParticleArgument.ERROR_INVALID_OPTIONS;
 
 public class ParticleOptionsAdapter implements JsonDeserializer<ParticleOptions>, JsonSerializer<ParticleOptions> {
 

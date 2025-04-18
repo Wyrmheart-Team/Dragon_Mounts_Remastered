@@ -1,7 +1,3 @@
 {
-  "bones": [
-    "tail3spine",
-    "tail4spine",
-    "tail5spine"
-  ]
+  "bones": ["tail3spine", "tail4spine", "tail5spine"]
 }

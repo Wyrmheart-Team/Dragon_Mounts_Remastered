@@ -2,11 +2,12 @@ package dmr.DragonMounts.registry;
 
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.server.ai.sensors.DragonAttackablesSensor;
-import java.util.function.Supplier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
 
 public class ModSensors {
 
