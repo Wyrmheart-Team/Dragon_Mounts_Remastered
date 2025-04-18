@@ -191,6 +191,7 @@ public class DragonWhistleHandler {
 			}
 
 			if (dragon != null) {
+				dragon.setHealth(Math.max(1, dragon.getHealth()));
 				dragon.ejectPassengers();
 
 				if (dragon.position().distanceTo(player.position()) <= DMRDragonEntity.BASE_FOLLOW_RANGE * 2) {
@@ -240,13 +241,13 @@ public class DragonWhistleHandler {
 
 	public static DragonWhistleItem getDragonWhistleItem(Player player) {
 		var state = PlayerStateUtils.getHandler(player);
-		Function<DragonWhistleItem, Boolean> isValid  = (DragonWhistleItem whistleItem) -> {
+		Function<DragonWhistleItem, Boolean> isValid = (DragonWhistleItem whistleItem) -> {
 			if (whistleItem.getColor() == null) {
 				return false;
 			}
 			return state.dragonNBTs.containsKey(whistleItem.getColor().getId());
 		};
-		
+
 		//Main hand - first
 		if (player.getInventory().getSelected().getItem() instanceof DragonWhistleItem whistleItem) {
 			if (isValid.apply(whistleItem)) {
@@ -269,7 +270,7 @@ public class DragonWhistleHandler {
 				}
 			}
 		}
-		
+
 		//Inventory - fourth
 		for (int i = 9; i < player.getInventory().getContainerSize(); i++) {
 			if (player.getInventory().getItem(i).getItem() instanceof DragonWhistleItem whistleItem) {
@@ -281,7 +282,7 @@ public class DragonWhistleHandler {
 
 		return null;
 	}
-	
+
 	public static int getDragonSummonIndex(Player player) {
 		var whistleItem = getDragonWhistleItem(player);
 		return whistleItem != null ? whistleItem.getColor().getId() : -1;
