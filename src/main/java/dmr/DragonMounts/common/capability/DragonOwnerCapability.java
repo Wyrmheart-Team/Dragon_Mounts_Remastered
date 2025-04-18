@@ -13,6 +13,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.EffectCures;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -57,14 +58,19 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 					dragon.load(nbt);
 					dragon.setUUID(UUID.randomUUID());
 					dragon.setDragonUUID(uuid);
-					dragon.clearFire();
-					dragon.hurtTime = 0;
+
 
 					dragon.stopSitting();
 					dragon.setWanderTarget(Optional.empty());
 
 					setDragonToWhistle(dragon, index);
+					
+					dragon.clearFire();
+					dragon.hurtTime = 0;
 					dragon.setHealth(Math.max(1, dragon.getHealth()));
+					
+					//Cure the dragon of any effects to prevent for example poison or wither
+					dragon.removeEffectsCuredBy(EffectCures.PROTECTED_BY_TOTEM);
 
 					return dragon;
 				}
