@@ -2,9 +2,7 @@
   "attributes": {
     "minecraft:generic.flying_speed": 0.25
   },
-  "abilities": [
-    "quick_flight"
-  ],
+  "abilities": ["quick_flight"],
   "hatch_particles": "minecraft:cloud",
   "habitats": [
     {
@@ -30,7 +28,5 @@
       "max": 1
     }
   ],
-  "accessories": [
-    "tail_mem"
-  ]
+  "accessories": ["tail_mem"]
 }

@@ -2,10 +2,7 @@
   "attributes": {
     "minecraft:generic.armor": 8.0
   },
-  "abilities": [
-    "infernal_pact",
-    "fire_proof"
-  ],
+  "abilities": ["infernal_pact", "fire_proof"],
   "habitats": [
     {
       "type": "nearby_blocks",
@@ -18,12 +15,7 @@
     }
   ],
   "hatch_particles": "minecraft:soul_fire_flame",
-  "immunities": [
-    "inFire",
-    "onFire",
-    "lava",
-    "hotFloor"
-  ],
+  "immunities": ["inFire", "onFire", "lava", "hotFloor"],
   "primary_color": "912400",
   "secondary_color": "2e0b00",
   "loot_tables": [

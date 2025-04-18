@@ -1,8 +1,5 @@
 {
-  "abilities": [
-    "nature_blessing",
-    "camouflage"
-  ],
+  "abilities": ["nature_blessing", "camouflage"],
   "habitats": [
     {
       "type": "nearby_blocks",
