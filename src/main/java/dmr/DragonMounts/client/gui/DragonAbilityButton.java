@@ -3,11 +3,9 @@ package dmr.DragonMounts.client.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.types.abilities.types.Ability;
-import net.minecraft.advancements.AdvancementType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ComponentRenderUtils;
-import net.minecraft.client.gui.screens.advancements.AdvancementWidgetType;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
@@ -21,7 +19,7 @@ public class DragonAbilityButton extends ExtendedButton {
 
 	private static final ResourceLocation TITLE_BOX_SPRITE = ResourceLocation.withDefaultNamespace("advancements/title_box");
 
-	private ResourceLocation ABILITY_ICON;
+	private final ResourceLocation ABILITY_ICON;
 	private final Minecraft minecraft;
 
 	private final FormattedCharSequence title;
@@ -63,9 +61,9 @@ public class DragonAbilityButton extends ExtendedButton {
 		i1 += 2;
 
 		guiGraphics.pose().pushPose();
-		guiGraphics.blitSprite(AdvancementWidgetType.OBTAINED.boxSprite(), 200, 26, 200, 0, i1 + 2, l, this.width - 10, 26);
-		guiGraphics.blitSprite(AdvancementWidgetType.OBTAINED.boxSprite(), 200, 26, 200 + 190, 0, i1 + (this.width - 15), l, 10, 26);
-		guiGraphics.blitSprite(AdvancementWidgetType.OBTAINED.frameSprite(AdvancementType.TASK), i1, l, 26, 26);
+		guiGraphics.blitSprite(ResourceLocation.withDefaultNamespace("advancements/box_obtained"), 200, 26, 200, 0, i1 + 2, l, this.width - 10, 26);
+		guiGraphics.blitSprite(ResourceLocation.withDefaultNamespace("advancements/box_obtained"), 200, 26, 200 + 190, 0, i1 + (this.width - 15), l, 10, 26);
+		guiGraphics.blitSprite(ResourceLocation.withDefaultNamespace("advancements/task_frame_obtained"), i1, l, 26, 26);
 		guiGraphics.pose().popPose();
 
 		guiGraphics.pose().pushPose();
