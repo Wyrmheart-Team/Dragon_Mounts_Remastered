@@ -95,23 +95,26 @@ public class KeyInputHandler {
 
 		var capability = PlayerStateUtils.getHandler(mc.player);
 
-		if (!capability.dragonInstances.containsKey(whistleItem.getColor().getId())) {
+		if (!capability.dragonNBTs.containsKey(whistleItem.getColor().getId())) {
 			return;
 		}
 
 		long handle = Minecraft.getInstance().getWindow().getWindow();
 		int keycode = DRAGON_COMMAND_KEY.getKey().getValue();
+		
 		if (keycode >= 0) {
 			boolean radialMenuKeyDown =
 				(DRAGON_COMMAND_KEY.matchesMouse(keycode)
 						? GLFW.glfwGetMouseButton(handle, keycode) == 1
 						: InputConstants.isKeyDown(handle, keycode));
+			
 			if (radialMenuKeyDown != lastWheelState) {
 				if (radialMenuKeyDown != CommandMenuScreen.active) {
 					if (radialMenuKeyDown) {
 						if (mc.screen == null || mc.screen instanceof CommandMenuScreen) {
 							CommandOverlayHandler.resetTimer();
 							CommandMenuScreen.activate();
+							DMR.LOGGER.debug("Command Menu activated");
 						}
 					}
 				}
