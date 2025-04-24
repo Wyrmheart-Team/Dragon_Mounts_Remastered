@@ -64,7 +64,7 @@ neoForge {
 
     runs {
         configureEach {
-            logLevel = org.slf4j.event.Level.INFO
+            logLevel = org.slf4j.event.Level.DEBUG
         }
         client {
             client()
