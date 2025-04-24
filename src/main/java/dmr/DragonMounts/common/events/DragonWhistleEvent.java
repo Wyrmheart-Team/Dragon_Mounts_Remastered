@@ -62,6 +62,7 @@ public class DragonWhistleEvent {
 
 				if (dragon.getOwner() != null && dragon.getOwner() instanceof Player player) {
 					var cap = player.getData(ModCapabilities.PLAYER_CAPABILITY);
+					
 					var index = DragonWhistleHandler.getDragonSummonIndex(player, dragon.getDragonUUID());
 					var instance = cap.dragonInstances.get(index);
 
@@ -70,10 +71,17 @@ public class DragonWhistleEvent {
 							var key = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(instance.getDimension()));
 
 							if (level.dimension() != key) {
+								DMR.LOGGER.debug("Removing dragon from world, dimension mismatch. Expected: {}, got: {}", instance.getDimension(), level.dimension().location());
 								event.setCanceled(true);
 								return;
 							}
 						}
+					}
+					
+					if(cap.lastSummon != null && !cap.lastSummon.equals(dragon.getUUID())) {
+						DMR.LOGGER.debug("Removing dragon from world, last summon mismatch. Expected: {}, got: {}", cap.lastSummon, dragon.getDragonUUID());
+						event.setCanceled(true);
+						return;
 					}
 				}
 			}

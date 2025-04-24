@@ -29,6 +29,7 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 	private Player playerInstance;
 
 	public Long lastCall;
+	public UUID lastSummon;
 
 	public int dragonsHatched;
 
@@ -58,8 +59,7 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 					dragon.load(nbt);
 					dragon.setUUID(UUID.randomUUID());
 					dragon.setDragonUUID(uuid);
-
-
+					
 					dragon.stopSitting();
 					dragon.setWanderTarget(Optional.empty());
 
@@ -71,7 +71,9 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 					
 					//Cure the dragon of any effects to prevent for example poison or wither
 					dragon.removeEffectsCuredBy(EffectCures.PROTECTED_BY_TOTEM);
-
+					
+					lastSummon = dragon.getUUID();
+					
 					return dragon;
 				}
 			}
@@ -110,6 +112,8 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 
 		dragon.setWanderTarget(wanderPos);
 		dragon.setOrderedToSit(sit);
+		
+		lastSummon = dragon.getUUID();
 	}
 
 	public boolean isBoundToWhistle(DMRDragonEntity dragon) {
@@ -129,7 +133,11 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 
 		tag.putBoolean("cameraFlight", cameraFlight);
 		tag.putBoolean("alternateDismount", alternateDismount);
-
+		
+		if(lastSummon != null) {
+			tag.putUUID("lastSummon", lastSummon);
+		}
+		
 		for (DyeColor color : DyeColor.values()) {
 			if (respawnDelays.containsKey(color.getId())) {
 				tag.putInt("respawnDelay_" + color.getId(), respawnDelays.get(color.getId()));
@@ -165,7 +173,11 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 
 		respawnDelays.clear();
 		dragonNBTs.clear();
-
+		
+		if(base.contains("lastSummon")) {
+			lastSummon = base.getUUID("lastSummon");
+		}
+		
 		if (base.contains("cameraFlight")) {
 			cameraFlight = base.getBoolean("cameraFlight");
 		}

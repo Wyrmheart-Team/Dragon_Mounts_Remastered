@@ -1,5 +1,6 @@
 package dmr.DragonMounts.common.handlers;
 
+import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.common.capability.DragonOwnerCapability;
 import dmr.DragonMounts.common.capability.types.NBTInterface;
 import dmr.DragonMounts.config.ServerConfig;
@@ -20,8 +21,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Map.Entry;
@@ -37,7 +40,6 @@ public class DragonWhistleHandler {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	public static class DragonInstance implements NBTInterface {
-
 		String dimension;
 		UUID entityId;
 		UUID UUID;
@@ -76,6 +78,72 @@ public class DragonWhistleHandler {
 			}
 		}
 	}
+	
+	public static DragonWhistleItem getDragonWhistleItem(Player player) {
+		var state = PlayerStateUtils.getHandler(player);
+		Function<DragonWhistleItem, Boolean> isValid = (DragonWhistleItem whistleItem) -> {
+			if (whistleItem.getColor() == null) {
+				return false;
+			}
+			return state.dragonNBTs.containsKey(whistleItem.getColor().getId());
+		};
+		
+		//Main hand - first
+		if (player.getInventory().getSelected().getItem() instanceof DragonWhistleItem whistleItem) {
+			if (isValid.apply(whistleItem)) {
+				return whistleItem;
+			}
+		}
+		
+		//Off hand - second
+		if (player.getInventory().offhand.get(0).getItem() instanceof DragonWhistleItem whistleItem) {
+			if (isValid.apply(whistleItem)) {
+				return whistleItem;
+			}
+		}
+		
+		//Hotbar - third
+		for (int i = 0; i < 9; i++) {
+			if (player.getInventory().getItem(i).getItem() instanceof DragonWhistleItem whistleItem) {
+				if (isValid.apply(whistleItem)) {
+					return whistleItem;
+				}
+			}
+		}
+		
+		//Inventory - fourth
+		for (int i = 9; i < player.getInventory().getContainerSize(); i++) {
+			if (player.getInventory().getItem(i).getItem() instanceof DragonWhistleItem whistleItem) {
+				if (isValid.apply(whistleItem)) {
+					return whistleItem;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	public static int getDragonSummonIndex(Player player) {
+		var whistleItem = getDragonWhistleItem(player);
+		return whistleItem != null ? whistleItem.getColor().getId() : -1;
+	}
+	
+	public static int getDragonSummonIndex(Player player, UUID dragonUUID) {
+		var handler = PlayerStateUtils.getHandler(player);
+		
+		return handler.dragonInstances
+			.entrySet()
+			.stream()
+			.filter(entry -> entry.getValue() != null && entry.getValue().UUID.equals(dragonUUID))
+			.map(Entry::getKey)
+			.findFirst()
+			.orElse(0);
+	}
+	
+	public static void setDragon(Player player, DMRDragonEntity dragon, int index) {
+		player.getData(ModCapabilities.PLAYER_CAPABILITY).setPlayerInstance(player);
+		player.getData(ModCapabilities.PLAYER_CAPABILITY).setDragonToWhistle(dragon, index);
+	}
 
 	public static boolean canCall(Player player, int index) {
 		var handler = PlayerStateUtils.getHandler(player);
@@ -112,7 +180,7 @@ public class DragonWhistleHandler {
 		}
 
 		if (ServerConfig.CALL_CHECK_SPACE.get()) {
-			if (!player.level.collidesWithSuffocatingBlock(null, player.getBoundingBox().inflate(1, 1, 1))) {
+			if (!player.level.noBlockCollision(null, player.getBoundingBox().move(0, 1, 0).inflate(1, 1, 1))) {
 				if (!player.level.isClientSide) {
 					player.displayClientMessage(Component.translatable("dmr.dragon_call.nospace").withStyle(ChatFormatting.RED), true);
 				}
@@ -187,6 +255,8 @@ public class DragonWhistleHandler {
 					// Transfer the dragon inventory
 					worldData2.dragonInventories.put(instance.getUUID(), worldData1.dragonInventories.get(instance.getUUID()));
 					worldData1.dragonInventories.remove(instance.getUUID());
+					
+					DMR.LOGGER.debug("Transferring dragon inventory from {} to {}", instance.getDimension(), player.level.dimension().location());
 				}
 			}
 
@@ -198,6 +268,10 @@ public class DragonWhistleHandler {
 					//Walk to player
 					dragon.setOrderedToSit(false);
 					dragon.setWanderTarget(Optional.empty());
+					
+					cap.lastSummon = dragon.getUUID();
+					
+					DMR.LOGGER.debug("Making dragon: {} follow player: {}", dragon.getDragonUUID(), player.getName().getString());
 
 					if (!player.level.isClientSide) {
 						PacketDistributor.sendToPlayersTrackingEntity(dragon, new DragonStatePacket(dragon.getId(), 1));
@@ -206,7 +280,11 @@ public class DragonWhistleHandler {
 					//Teleport to player
 					dragon.setOrderedToSit(false);
 					dragon.setWanderTarget(Optional.empty());
-
+					
+					cap.lastSummon = dragon.getUUID();
+					
+					DMR.LOGGER.debug("Teleporting dragon: {} to player: {}", dragon.getDragonUUID(), player.getName().getString());
+					
 					if (!player.level.isClientSide) {
 						dragon.setPos(player.getX(), player.getY(), player.getZ());
 					}
@@ -226,7 +304,9 @@ public class DragonWhistleHandler {
 				if (newDragon == null) {
 					return false;
 				}
-
+				
+				DMR.LOGGER.debug("Spawning new dragon: {} for player: {}", newDragon.getDragonUUID(), player.getName().getString());
+				
 				newDragon.setPos(player.getX(), player.getY(), player.getZ());
 				player.level.addFreshEntity(newDragon);
 
@@ -237,72 +317,6 @@ public class DragonWhistleHandler {
 		}
 
 		return false;
-	}
-
-	public static DragonWhistleItem getDragonWhistleItem(Player player) {
-		var state = PlayerStateUtils.getHandler(player);
-		Function<DragonWhistleItem, Boolean> isValid = (DragonWhistleItem whistleItem) -> {
-			if (whistleItem.getColor() == null) {
-				return false;
-			}
-			return state.dragonNBTs.containsKey(whistleItem.getColor().getId());
-		};
-
-		//Main hand - first
-		if (player.getInventory().getSelected().getItem() instanceof DragonWhistleItem whistleItem) {
-			if (isValid.apply(whistleItem)) {
-				return whistleItem;
-			}
-		}
-
-		//Off hand - second
-		if (player.getInventory().offhand.get(0).getItem() instanceof DragonWhistleItem whistleItem) {
-			if (isValid.apply(whistleItem)) {
-				return whistleItem;
-			}
-		}
-
-		//Hotbar - third
-		for (int i = 0; i < 9; i++) {
-			if (player.getInventory().getItem(i).getItem() instanceof DragonWhistleItem whistleItem) {
-				if (isValid.apply(whistleItem)) {
-					return whistleItem;
-				}
-			}
-		}
-
-		//Inventory - fourth
-		for (int i = 9; i < player.getInventory().getContainerSize(); i++) {
-			if (player.getInventory().getItem(i).getItem() instanceof DragonWhistleItem whistleItem) {
-				if (isValid.apply(whistleItem)) {
-					return whistleItem;
-				}
-			}
-		}
-
-		return null;
-	}
-
-	public static int getDragonSummonIndex(Player player) {
-		var whistleItem = getDragonWhistleItem(player);
-		return whistleItem != null ? whistleItem.getColor().getId() : -1;
-	}
-
-	public static int getDragonSummonIndex(Player player, UUID dragonUUID) {
-		var handler = PlayerStateUtils.getHandler(player);
-
-		return handler.dragonInstances
-			.entrySet()
-			.stream()
-			.filter(entry -> entry.getValue() != null && entry.getValue().UUID.equals(dragonUUID))
-			.map(Entry::getKey)
-			.findFirst()
-			.orElse(0);
-	}
-
-	public static void setDragon(Player player, DMRDragonEntity dragon, int index) {
-		player.getData(ModCapabilities.PLAYER_CAPABILITY).setPlayerInstance(player);
-		player.getData(ModCapabilities.PLAYER_CAPABILITY).setDragonToWhistle(dragon, index);
 	}
 
 	public static DMRDragonEntity findDragon(Player player, int index) {
@@ -316,24 +330,64 @@ public class DragonWhistleHandler {
 		if (instance != null) {
 			var dim = instance.getDimension();
 			var server = player.level.getServer();
+			assert server != null;
+			
 			var key = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(dim));
 
 			//Check if the dimension is the same as the players
-			if (key != player.level.dimension()) {
-				return null;
+			if (key == player.level.dimension()) {
+				var level = server.getLevel(key);
+
+				if (level != null) {
+					var entity = level.getEntity(instance.getEntityId());
+					if (entity instanceof DMRDragonEntity dragon) {
+						DMR.LOGGER.debug("Found dragon: {} from entity id: {}", dragon, instance.getEntityId());
+						return dragon;
+					}
+				}
 			}
+			
+			DMR.LOGGER.debug("Searching for dragon: {} near player: {}", instance.getUUID(), player.getName().getString());
 
-			assert server != null;
-			var level = server.getLevel(key);
+			var entities = player.level.getNearbyEntities(
+				DMRDragonEntity.class,
+				TargetingConditions.forNonCombat(),
+				player,
+				AABB.ofSize(player.position(), 100, 100, 100)
+			);
 
-			if (level != null) {
+			for (var entity : entities) {
+				if (entity.getDragonUUID() != null && entity.getDragonUUID().equals(instance.getUUID())) {
+					DMR.LOGGER.debug("Found dragon: {} near player: {}", entity, player.getName().getString());
+					return entity;
+				}
+			}
+			
+			DMR.LOGGER.debug("Searching for dragon: {} in all dimensions", instance.getUUID());
+			
+			//Intensive search for the dragon due to searching all levels, so its last resort
+			for(var level : server.getAllLevels()) {
 				var entity = level.getEntity(instance.getEntityId());
+				
 				if (entity instanceof DMRDragonEntity dragon) {
+					DMR.LOGGER.debug("Found dragon: {} in dimension: {} from entity id", dragon, level.dimension().location());
 					return dragon;
 				}
 			}
+			
+			//Intensive search for the dragon due to searching all levels, so its last resort
+			for(var level : server.getAllLevels()) {
+				for(var entity : level.getAllEntities()) {
+					if (entity instanceof DMRDragonEntity dragon) {
+						if (dragon.getDragonUUID() != null && dragon.getDragonUUID().equals(instance.getUUID())) {
+							DMR.LOGGER.debug("Found dragon: {} in dimension: {}", dragon, level.dimension().location());
+							return dragon;
+						}
+					}
+				}
+			}
 		}
-
+		DMR.LOGGER.debug("Could not find dragon: {} for player: {}", instance.getUUID(), player.getName().getString());
 		return null;
 	}
 }
