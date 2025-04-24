@@ -93,7 +93,7 @@ public class DragonAI {
 					new RandomLookAround(UniformInt.of(150, 250), 30.0F, 0.0F, 0.0F)
 				),
 				new BehaviorWrapper<>(
-					e -> !e.isSitting() || (e.isInLove() && e.getBrain().hasMemoryValue(MemoryModuleType.BREED_TARGET)),
+					e -> !e.isRandomlySitting() || (e.isInLove() && e.getBrain().hasMemoryValue(MemoryModuleType.BREED_TARGET)),
 					ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_PRESENT),
 					new MoveToTargetSink()
 				)

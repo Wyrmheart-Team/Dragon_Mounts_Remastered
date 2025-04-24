@@ -3,14 +3,18 @@ package dmr.DragonMounts.server.entity;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.ModConstants;
 import dmr.DragonMounts.ModConstants.NBTConstants;
+import dmr.DragonMounts.common.handlers.DragonWhistleHandler;
+import dmr.DragonMounts.common.handlers.DragonWhistleHandler.DragonInstance;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModMemoryModuleTypes;
 import dmr.DragonMounts.server.ai.DragonBodyController;
 import dmr.DragonMounts.server.ai.navigation.DragonPathNavigation;
 import dmr.DragonMounts.server.inventory.DragonInventoryHandler;
 import dmr.DragonMounts.server.inventory.DragonInventoryHandler.DragonInventory;
+import dmr.DragonMounts.server.worlddata.DragonWorldDataManager;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.Variant;
+import dmr.DragonMounts.util.PlayerStateUtils;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
@@ -38,6 +42,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -214,6 +219,12 @@ public abstract class AbstractDMRDragonEntity
 	public void setOrderedToSit(boolean orderedToSit) {
 		super.setOrderedToSit(orderedToSit);
 		entityData.set(DATA_ORDERED_TO_SIT, orderedToSit);
+		
+		if(!orderedToSit){
+			getBrain().eraseMemory(ModMemoryModuleTypes.SHOULD_SIT.get());
+		}else{
+			getBrain().setMemory(ModMemoryModuleTypes.SHOULD_SIT.get(), true);
+		}
 	}
 
 	public Optional<GlobalPos> getWanderTarget() {
@@ -763,5 +774,33 @@ public abstract class AbstractDMRDragonEntity
 		}
 
 		return getBreed().getName();
+	}
+	
+	@Override
+	public @Nullable Entity changeDimension(DimensionTransition transition) {
+		var entity = super.changeDimension(transition);
+		
+		if(entity instanceof DMRDragonEntity dragon){
+			var owner = getOwner();
+			
+			DMR.LOGGER.debug("Changing dimension of dragon {} to {}", getDragonUUID(), transition.newLevel().dimension().location());
+			
+			if(owner instanceof Player player){
+				var handler = PlayerStateUtils.getHandler(player);
+				var index = DragonWhistleHandler.getDragonSummonIndex(player, getDragonUUID());
+				handler.setDragonInstance(index, new DragonInstance(dragon));
+			}
+			
+			var worldData1 = DragonWorldDataManager.getInstance(level);
+			var worldData2 = DragonWorldDataManager.getInstance(transition.newLevel());
+			
+			// Transfer the dragon inventory
+			worldData2.dragonInventories.put(getDragonUUID(), worldData1.dragonInventories.get(getDragonUUID()));
+			worldData1.dragonInventories.remove(getDragonUUID());
+			
+			return dragon;
+		}
+		
+		return null;
 	}
 }
