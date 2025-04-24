@@ -113,7 +113,7 @@ public class DragonRenderer extends GeoEntityRenderer<DMRDragonEntity> {
 			if (!stack.clear()) {
 				stack.popPose();
 			}
-			DMR.LOGGER.warning("Error rendering dragon: " + e.getMessage());
+			DMR.LOGGER.warn("Error rendering dragon: {}", e.getMessage());
 			return;
 		}
 

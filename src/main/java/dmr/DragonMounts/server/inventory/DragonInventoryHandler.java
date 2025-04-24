@@ -69,8 +69,9 @@ public class DragonInventoryHandler {
 		}
 
 		DragonWorldData data = DragonWorldData.getInstance(level);
-
+		
 		if (!data.dragonInventories.containsKey(uuid)) {
+			DMR.LOGGER.debug("Creating new dragon inventory for {}", uuid);
 			data.dragonInventories.put(uuid, new DragonInventory(level));
 			data.setDirty();
 		}

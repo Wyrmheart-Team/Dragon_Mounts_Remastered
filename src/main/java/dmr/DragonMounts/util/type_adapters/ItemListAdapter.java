@@ -29,7 +29,7 @@ public class ItemListAdapter implements JsonDeserializer<List<Item>>, JsonSerial
 
 			return list;
 		} catch (Exception e) {
-			DMR.LOGGER.warning("Failed to deserialize Item list: " + json);
+			DMR.LOGGER.warn("Failed to deserialize Item list: {}", json);
 		}
 
 		return List.of();

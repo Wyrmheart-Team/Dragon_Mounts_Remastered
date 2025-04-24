@@ -1,6 +1,7 @@
 package dmr.DragonMounts.client.gui.CommandMenu;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.client.handlers.CommandOverlayHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -63,7 +64,8 @@ public class CommandMenuScreen extends Screen {
 					if (mouseAngle >= segStart && mouseAngle < segEnd) {
 						CommandOverlayHandler.MenuItem menuItem = CommandOverlayHandler.getItems()[(i) % CommandOverlayHandler.MAX_ITEMS];
 						if (menuItem != null && menuItem.clickListener() != null) {
-							menuItem.clickListener().onClick(mc.player, mc.player.getMainHandItem());
+							DMR.LOGGER.debug("Clicked on item: {}", menuItem.title());
+							menuItem.clickListener().onClick(mc.player);
 							deactivate();
 						}
 						break;

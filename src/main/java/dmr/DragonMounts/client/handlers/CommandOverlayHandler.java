@@ -18,7 +18,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -53,7 +52,7 @@ public class CommandOverlayHandler {
 
 	@FunctionalInterface
 	public interface MenuItemClickListener {
-		void onClick(LocalPlayer player, ItemStack stack);
+		void onClick(LocalPlayer player);
 	}
 
 	public static double getMouseAngle() {
@@ -84,25 +83,25 @@ public class CommandOverlayHandler {
 	public record MenuItem(Component title, MenuItemClickListener clickListener) {}
 
 	static final MenuItem[] activeArray = new MenuItem[] {
-		new MenuItem(Component.translatable("dmr.command_mode.sit"), (player, stack) -> {
+		new MenuItem(Component.translatable("dmr.command_mode.sit"), (player) -> {
 			PacketDistributor.sendToServer(new DragonCommandPacket(Command.SIT));
 		}),
-		new MenuItem(Component.translatable("dmr.command_mode.follow"), (player, stack) -> {
+		new MenuItem(Component.translatable("dmr.command_mode.follow"), (player) -> {
 			PacketDistributor.sendToServer(new DragonCommandPacket(Command.FOLLOW));
 		}),
-		new MenuItem(Component.translatable("dmr.command_mode.wander"), (player, stack) -> {
+		new MenuItem(Component.translatable("dmr.command_mode.wander"), (player) -> {
 			PacketDistributor.sendToServer(new DragonCommandPacket(Command.WANDER));
 		}),
-		new MenuItem(Component.translatable("dmr.command_mode.whistle"), (player, stack) -> {
+		new MenuItem(Component.translatable("dmr.command_mode.whistle"), (player) -> {
 			PacketDistributor.sendToServer(new DragonCommandPacket(Command.WHISTLE));
 		}),
-		new MenuItem(Component.translatable("dmr.command_mode.passive"), (player, stack) -> {
+		new MenuItem(Component.translatable("dmr.command_mode.passive"), (player) -> {
 			PacketDistributor.sendToServer(new DragonCommandPacket(Command.PASSIVE));
 		}),
-		new MenuItem(Component.translatable("dmr.command_mode.neutral"), (player, stack) -> {
+		new MenuItem(Component.translatable("dmr.command_mode.neutral"), (player) -> {
 			PacketDistributor.sendToServer(new DragonCommandPacket(Command.NEUTRAL));
 		}),
-		new MenuItem(Component.translatable("dmr.command_mode.aggressive"), (player, stack) -> {
+		new MenuItem(Component.translatable("dmr.command_mode.aggressive"), (player) -> {
 			PacketDistributor.sendToServer(new DragonCommandPacket(Command.AGGRESSIVE));
 		})
 	};
