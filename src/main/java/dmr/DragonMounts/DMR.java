@@ -99,8 +99,7 @@ public class DMR {
 				var method = clas.getMethod("registerTestFramework", IEventBus.class, ModContainer.class);
 				method.invoke(null, bus, container);
 			} catch (Exception e) {
-				LOGGER.debug("Failed to register test framework.");
-			}
+				LOGGER.debug("Failed to register test framework.", e);}
 		}
 	}
 

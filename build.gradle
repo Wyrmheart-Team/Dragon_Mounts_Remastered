@@ -78,6 +78,8 @@ neoForge {
         gameTestServer {
             type = "gameTestServer"
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            logLevel = org.slf4j.event.Level.INFO
+
             sourceSet = sourceSets.test
             // Include the test resources in the classpath for this specific run config.
             mods  {

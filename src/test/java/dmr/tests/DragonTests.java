@@ -21,10 +21,24 @@ import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 
 import java.util.Objects;
 
+/**
+ * Tests for the dragon entity functionality of the mod.
+ * These tests verify that dragons can be properly tamed, equipped, ridden,
+ * and that they behave correctly in various situations.
+ */
 @PrefixGameTestTemplate(false)
 @ForEachTest(groups = "Dragons")
 public class DragonTests {
 
+	/**
+	 * Tests the dragon taming functionality.
+	 * 
+	 * This test verifies that:
+	 * 1. A player can tame a dragon by interacting with it while holding a tropical fish
+	 * 2. After interaction, the dragon's tame status is set to true
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -44,6 +58,16 @@ public class DragonTests {
 		});
 	}
 
+	/**
+	 * Tests the dragon tamedFor method.
+	 * 
+	 * This test verifies that:
+	 * 1. A dragon can be directly tamed for a specific player using the tamedFor method
+	 * 2. After taming, the dragon's tame status is set to true
+	 * 3. The dragon's owner is correctly set to the player
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -65,6 +89,15 @@ public class DragonTests {
 		helper.succeed();
 	}
 
+	/**
+	 * Tests that a tamed dragon will look at its owner.
+	 * 
+	 * This test verifies that:
+	 * 1. A tamed dragon will set its look target to its owner
+	 * 2. The dragon's look target position is close to the player's position
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -228,7 +261,7 @@ public class DragonTests {
 			}
 		});
 	}
-	
+
 
 
 	@EmptyTemplate(floor = true, value = "9x9x9") //Larger area to ensure dragon can move
@@ -285,6 +318,15 @@ public class DragonTests {
 	}
 	 */
 
+	/**
+	 * Tests that a dragon can be saddled.
+	 * 
+	 * This test verifies that:
+	 * 1. A tamed dragon can be equipped with a saddle
+	 * 2. After equipping, the dragon's saddled status is set to true
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -306,6 +348,15 @@ public class DragonTests {
 		helper.succeed();
 	}
 
+	/**
+	 * Tests that a dragon can be equipped with armor.
+	 * 
+	 * This test verifies that:
+	 * 1. A tamed dragon can be equipped with dragon armor
+	 * 2. After equipping, the dragon's armor status is set to true
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -327,6 +378,15 @@ public class DragonTests {
 		helper.succeed();
 	}
 
+	/**
+	 * Tests that a dragon can be equipped with a chest.
+	 * 
+	 * This test verifies that:
+	 * 1. A tamed dragon can be equipped with a chest
+	 * 2. After equipping, the dragon's chest status is set to true
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -348,6 +408,15 @@ public class DragonTests {
 		helper.succeed();
 	}
 
+	/**
+	 * Tests that a dragon's inventory is not dropped when the dragon is selected with a whistle.
+	 * 
+	 * This test verifies that:
+	 * 1. When a dragon with a chest and items is killed
+	 * 2. If the dragon is selected with a whistle, its inventory items are not dropped
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -367,6 +436,16 @@ public class DragonTests {
 		helper.succeedWhen(() -> helper.assertItemEntityNotPresent(Items.DIAMOND, helper.relativePos(dragon.blockPosition()), 3));
 	}
 
+	/**
+	 * Tests that a dragon's chest contents are dropped when the dragon is killed.
+	 * 
+	 * This test verifies that:
+	 * 1. When a dragon with a chest containing items is killed
+	 * 2. The items in the chest are dropped in the world
+	 * 3. The correct number of items are dropped
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -385,6 +464,16 @@ public class DragonTests {
 		helper.succeedWhen(() -> helper.assertItemEntityCountIs(Items.DIAMOND, helper.relativePos(dragon.blockPosition()), 3, 64));
 	}
 
+	/**
+	 * Tests that a dragon's saddle is dropped when the dragon is killed.
+	 * 
+	 * This test verifies that:
+	 * 1. When a saddled dragon is killed
+	 * 2. The saddle is dropped in the world
+	 * 3. Exactly one saddle is dropped
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -402,6 +491,16 @@ public class DragonTests {
 		helper.succeedWhen(() -> helper.assertItemEntityCountIs(Items.SADDLE, helper.relativePos(dragon.blockPosition()), 3, 1));
 	}
 
+	/**
+	 * Tests that a dragon's armor is dropped when the dragon is killed.
+	 * 
+	 * This test verifies that:
+	 * 1. When an armored dragon is killed
+	 * 2. The dragon armor is dropped in the world
+	 * 3. Exactly one armor item is dropped
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -421,6 +520,16 @@ public class DragonTests {
 		);
 	}
 
+	/**
+	 * Tests that a player can ride a saddled dragon.
+	 * 
+	 * This test verifies that:
+	 * 1. A player can saddle a tamed dragon
+	 * 2. After saddling, the player can interact with the dragon to mount it
+	 * 3. The player becomes a passenger of the dragon
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -445,6 +554,16 @@ public class DragonTests {
 		helper.succeed();
 	}
 
+	/**
+	 * Tests that a player can dismount from a dragon.
+	 * 
+	 * This test verifies that:
+	 * 1. A player can mount a saddled dragon
+	 * 2. When the shouldDismount flag is set, the player dismounts from the dragon
+	 * 3. After dismounting, the player is no longer a passenger
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
