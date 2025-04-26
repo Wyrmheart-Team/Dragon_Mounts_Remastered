@@ -12,13 +12,11 @@ import dmr.DragonMounts.registry.ModItems;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.server.worlddata.DragonWorldDataManager;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -56,30 +54,12 @@ public class DragonWhistleEvent {
 	@SubscribeEvent
 	public static void onEntityJoinWorld(EntityJoinLevelEvent event) {
 		if (!event.getLevel().isClientSide) {
-			// Remove dragon from the world if the last summon was in a different dimension
 			if (event.getEntity() instanceof DMRDragonEntity dragon) {
-				var level = event.getLevel();
-
 				if (dragon.getOwner() != null && dragon.getOwner() instanceof Player player) {
 					var cap = player.getData(ModCapabilities.PLAYER_CAPABILITY);
 					
-					var index = DragonWhistleHandler.getDragonSummonIndex(player, dragon.getDragonUUID());
-					var instance = cap.dragonInstances.get(index);
-
-					if (instance != null) {
-						if (instance.getDimension() != null) {
-							var key = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(instance.getDimension()));
-
-							if (level.dimension() != key) {
-								DMR.LOGGER.debug("Removing dragon from world, dimension mismatch. Expected: {}, got: {}", instance.getDimension(), level.dimension().location());
-								event.setCanceled(true);
-								return;
-							}
-						}
-					}
-					
 					if(cap.lastSummon != null && !cap.lastSummon.equals(dragon.getUUID())) {
-						DMR.LOGGER.debug("Removing dragon from world, last summon mismatch. Expected: {}, got: {}", cap.lastSummon, dragon.getDragonUUID());
+						DMR.LOGGER.debug("Preventing loading of dragon in {}, last entity id mismatch. Expected: {}, got: {}", event.getLevel().dimension().location(), cap.lastSummon, dragon.getDragonUUID());
 						event.setCanceled(true);
 						return;
 					}
@@ -135,6 +115,18 @@ public class DragonWhistleEvent {
 	@SubscribeEvent
 	public static void onLivingUpdate(EntityTickEvent.Post event) {
 		if (!event.getEntity().level.isClientSide) {
+			if(event.getEntity() instanceof DMRDragonEntity dragon) {
+				if (dragon.getOwner() != null && dragon.getOwner() instanceof Player player) {
+					var cap = player.getData(ModCapabilities.PLAYER_CAPABILITY);
+					
+					if(cap.lastSummon != null && !cap.lastSummon.equals(dragon.getUUID())) {
+						DMR.LOGGER.debug("Removing dragon from {}, entity id mismatch. Expected: {}, got: {}",  event.getEntity().level.dimension().location(), cap.lastSummon, dragon.getDragonUUID());
+						dragon.setRemoved(RemovalReason.DISCARDED);
+						return;
+					}
+				}
+			}
+			
 			if (event.getEntity() instanceof Player player) {
 				var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
 				for (Map.Entry<Integer, DragonInstance> ent : state.dragonInstances.entrySet()) {

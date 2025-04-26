@@ -63,6 +63,8 @@ public class DragonInventoryHandler {
 	}
 
 	public static DragonInventory getOrCreateInventory(Level level, UUID uuid) {
+		if(uuid == null) return new DragonInventory(level);
+		
 		if (level.isClientSide()) {
 			clientSideInventories.computeIfAbsent(uuid, id -> new DragonInventory(level));
 			return clientSideInventories.get(uuid);

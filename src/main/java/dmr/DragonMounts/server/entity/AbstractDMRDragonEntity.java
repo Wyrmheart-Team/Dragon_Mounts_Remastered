@@ -178,7 +178,7 @@ public abstract class AbstractDMRDragonEntity
 	}
 
 	public UUID getDragonUUID() {
-		var id = getEntityData().get(DATA_UUID);
+		var id = entityData.get(DATA_UUID);
 		return !id.isBlank() ? UUID.fromString(id) : null;
 	}
 
@@ -789,6 +789,11 @@ public abstract class AbstractDMRDragonEntity
 				var handler = PlayerStateUtils.getHandler(player);
 				var index = DragonWhistleHandler.getDragonSummonIndex(player, getDragonUUID());
 				handler.setDragonInstance(index, new DragonInstance(dragon));
+				
+				//Update lastSummon to new UUID to prevent despawns
+				if(handler.lastSummon == getUUID()){
+					handler.lastSummon = entity.getUUID();
+				}
 			}
 			
 			var worldData1 = DragonWorldDataManager.getInstance(level);
