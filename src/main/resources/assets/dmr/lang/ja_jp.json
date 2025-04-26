@@ -39,6 +39,7 @@
   "dmr.commands.dragon_recall.success": "ドラゴンの呼び戻しに成功しました",
   "dmr.commands.dragon_recall.failure": "ドラゴンを呼び戻せませんでした",
   "dmr.commands.dragon_recall.suggest": "[%1$s] 所有者: [%2$s] 最終更新: [%3$s]",
+  "dmr.commands.clear_whistle.success": "The %1$s whistle has been cleared",
   "item.dmr.dragon_egg.hatch_tooltip": "配置して右クリックで孵化",
   "item.dmr.dragon_armor.leather": "革の竜鎧",
   "item.dmr.dragon_armor.iron": "鉄の竜鎧",
