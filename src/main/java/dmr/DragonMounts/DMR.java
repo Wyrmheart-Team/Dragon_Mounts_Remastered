@@ -85,6 +85,7 @@ public class DMR {
 		ModComponents.COMPONENTS.register(bus);
 		ModCriterionTriggers.CRITERION_TRIGGERS.register(bus);
 		ModActivityTypes.ACTIVITIES.register(bus);
+		ModCustomRecipes.RECIPES.register(bus);
 
 		bus.addListener(NetworkHandler::registerEvent);
 		bus.addListener(DataPackHandler::newDataPack);
