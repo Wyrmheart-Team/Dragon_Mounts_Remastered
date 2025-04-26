@@ -5,6 +5,7 @@ import dmr.DragonMounts.ModConstants;
 import dmr.DragonMounts.common.capability.DragonOwnerCapability;
 import dmr.DragonMounts.common.capability.types.NBTInterface;
 import dmr.DragonMounts.config.ServerConfig;
+import dmr.DragonMounts.network.packets.CompleteDataSync;
 import dmr.DragonMounts.network.packets.DragonStatePacket;
 import dmr.DragonMounts.registry.ModCapabilities;
 import dmr.DragonMounts.registry.ModItems;
@@ -22,6 +23,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -153,6 +155,19 @@ public class DragonWhistleHandler {
 		if (index == -1) {
 			player.displayClientMessage(Component.translatable("dmr.dragon_call.no_whistle").withStyle(ChatFormatting.RED), true);
 			return false;
+		}
+		
+		//Clean up invalid whistle data
+		if (!player.level.isClientSide) {
+			if ((handler.dragonNBTs.containsKey(index) && handler.dragonNBTs.get(index) == null)
+			|| (handler.dragonInstances.containsKey(index) && handler.dragonInstances.get(index) == null)
+			|| (handler.dragonInstances.containsKey(index) != handler.dragonNBTs.containsKey(index))) {
+				handler.dragonNBTs.remove(index);
+				handler.dragonInstances.remove(index);
+				handler.respawnDelays.remove(index);
+				PacketDistributor.sendToPlayer((ServerPlayer)player, new CompleteDataSync(player));
+				return false;
+			}
 		}
 
 		if (!handler.dragonInstances.containsKey(index) || handler.dragonInstances.get(index) == null) {
