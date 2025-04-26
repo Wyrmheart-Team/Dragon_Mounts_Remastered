@@ -1,9 +1,10 @@
 package dmr;
 
-import java.util.HashMap;
 import net.minecraft.Util;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.TestReporter;
+
+import java.util.HashMap;
 
 public class DMRTestReporter implements TestReporter {
 

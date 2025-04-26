@@ -6,12 +6,8 @@ import dmr.DragonMounts.server.advancement.HatchTrigger;
 import dmr.DragonMounts.server.items.DragonEggItemBlock;
 import dmr.DragonMounts.server.items.DragonSpawnEgg;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.function.Consumer;
-import net.minecraft.advancements.*;
 import net.minecraft.advancements.Advancement.Builder;
+import net.minecraft.advancements.*;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger.TriggerInstance;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.component.DataComponentPredicate;
@@ -20,6 +16,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.ServerAdvancementManager;
 import net.minecraft.server.level.ServerLevel;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class ModAdvancements {
 

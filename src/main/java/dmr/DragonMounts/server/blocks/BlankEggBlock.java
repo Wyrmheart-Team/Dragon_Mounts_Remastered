@@ -1,7 +1,5 @@
 package dmr.DragonMounts.server.blocks;
 
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
-
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModBlockEntities;
 import dmr.DragonMounts.server.blockentities.DMRBlankEggBlockEntity;
@@ -24,6 +22,8 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
 public class BlankEggBlock extends DragonEggBlock implements EntityBlock, SimpleWaterloggedBlock {
 

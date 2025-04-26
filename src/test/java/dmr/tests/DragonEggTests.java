@@ -7,10 +7,8 @@ import dmr.DragonMounts.server.blocks.DMREggBlock;
 import dmr.DragonMounts.server.entity.AbstractDMRDragonEntity;
 import dmr.DragonMounts.server.items.DragonEggItemBlock;
 import dmr.DragonMounts.util.PlayerStateUtils;
-import java.util.Objects;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
@@ -20,10 +18,26 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 
+import java.util.Objects;
+
+/**
+ * Tests for the dragon egg functionality of the mod.
+ * These tests verify that dragon eggs can be properly placed, broken, dropped,
+ * and hatched, and that the resulting dragons have the correct breed type.
+ */
 @PrefixGameTestTemplate(false)
 @ForEachTest(groups = "Dragon Eggs")
 public class DragonEggTests {
 
+	/**
+	 * Tests placing a dragon egg block in the world.
+	 * 
+	 * This test verifies that:
+	 * 1. A player can place a dragon egg block using the dragon egg item
+	 * 2. The placed block is correctly identified as a dragon egg block
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -36,6 +50,15 @@ public class DragonEggTests {
 		helper.succeed();
 	}
 
+	/**
+	 * Tests breaking a dragon egg block in the world.
+	 * 
+	 * This test verifies that:
+	 * 1. A dragon egg block can be destroyed
+	 * 2. After destruction, the block is no longer present in the world
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -47,6 +70,16 @@ public class DragonEggTests {
 		helper.succeed();
 	}
 
+	/**
+	 * Tests that breaking a dragon egg block drops the correct item.
+	 * 
+	 * This test verifies that:
+	 * 1. When a dragon egg block is broken by a player, it drops a dragon egg item
+	 * 2. The correct number of items are dropped (exactly 1)
+	 * 3. The block is removed from the world after breaking
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -61,6 +94,16 @@ public class DragonEggTests {
 		helper.succeed();
 	}
 
+	/**
+	 * Tests that breaking a specific breed's dragon egg block drops the correct breed's egg item.
+	 * 
+	 * This test verifies that:
+	 * 1. A specific breed's dragon egg (fire) can be placed in the world
+	 * 2. When broken, the egg drops an item with the same breed type
+	 * 3. The dropped item has the correct breed component data
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -88,6 +131,16 @@ public class DragonEggTests {
 		helper.succeed();
 	}
 
+	/**
+	 * Tests initiating the hatching process for a dragon egg.
+	 * 
+	 * This test verifies that:
+	 * 1. A dragon egg block can be placed in the world
+	 * 2. When a player interacts with the egg, it enters the hatching state
+	 * 3. The hatching property of the egg block is set to true
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -102,6 +155,16 @@ public class DragonEggTests {
 		helper.succeed();
 	}
 
+	/**
+	 * Tests the functionality of the dragon egg block entity.
+	 * 
+	 * This test verifies that:
+	 * 1. A dragon egg block entity is created when a dragon egg is placed
+	 * 2. The block entity can have its properties set (breed ID, hatch time, owner, custom name)
+	 * 3. The block entity can retrieve the correct dragon breed
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -128,6 +191,16 @@ public class DragonEggTests {
 		helper.succeed();
 	}
 
+	/**
+	 * Tests the tick method of the dragon egg block entity.
+	 * 
+	 * This test verifies that:
+	 * 1. A dragon egg block entity can be created
+	 * 2. The tick method can be called without errors
+	 * 3. The egg block entity properly processes a tick update
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -148,6 +221,17 @@ public class DragonEggTests {
 		helper.succeed();
 	}
 
+	/**
+	 * Tests the complete hatching process of a dragon egg.
+	 * 
+	 * This test verifies that:
+	 * 1. A dragon egg can be placed and set to hatching state
+	 * 2. When the hatch time reaches zero, the egg hatches
+	 * 3. After hatching, the egg block is removed from the world
+	 * 4. A dragon entity is spawned in place of the egg
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -177,6 +261,16 @@ public class DragonEggTests {
 		helper.succeed();
 	}
 
+	/**
+	 * Tests that a placed dragon egg block has the correct breed type.
+	 * 
+	 * This test verifies that:
+	 * 1. A specific breed's dragon egg (fire) can be placed in the world
+	 * 2. The placed egg block entity has the correct breed ID
+	 * 3. The breed information is properly stored in the block entity
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -195,6 +289,16 @@ public class DragonEggTests {
 		helper.succeed();
 	}
 
+	/**
+	 * Tests that a hatched dragon egg produces a dragon of the correct breed.
+	 * 
+	 * This test verifies that:
+	 * 1. A specific breed's dragon egg (fire) can be placed and set to hatching
+	 * 2. When the egg hatches, it spawns a dragon entity
+	 * 3. The spawned dragon has the correct breed ID matching the egg's breed
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -230,6 +334,16 @@ public class DragonEggTests {
 		helper.succeed();
 	}
 
+	/**
+	 * Tests that a player's dragon hatch count is incremented when an egg hatches.
+	 * 
+	 * This test verifies that:
+	 * 1. A dragon egg can be placed and set to hatching
+	 * 2. When the egg hatches, the player's dragonsHatched count is incremented
+	 * 3. The player's state correctly tracks the number of dragons they've hatched
+	 * 
+	 * @param helper The game test helper
+	 */
 	@EmptyTemplate(floor = true)
 	@GameTest
 	@TestHolder
@@ -251,7 +365,7 @@ public class DragonEggTests {
 
 				var playerState = PlayerStateUtils.getHandler(player);
 				if (playerState.dragonsHatched != 1) {
-					throw new GameTestAssertException("Player's dragonsHatched count is not 1");
+					helper.fail("Player's dragonsHatched count is not 1");
 				}
 			});
 		} else {

@@ -3,12 +3,13 @@ package dmr.DragonMounts.registry;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.server.blocks.BlankEggBlock;
 import dmr.DragonMounts.server.blocks.DMREggBlock;
-import java.util.function.Supplier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
 
 public class ModBlocks {
 

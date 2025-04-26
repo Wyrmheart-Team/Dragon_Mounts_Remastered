@@ -6,9 +6,6 @@ import dmr.DragonMounts.network.packets.ClearDragonInventoryPacket;
 import dmr.DragonMounts.network.packets.RequestDragonInventoryPacket;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.server.worlddata.DragonWorldData;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.HolderLookup;
@@ -24,6 +21,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @EventBusSubscriber(modid = DMR.MOD_ID)
 public class DragonInventoryHandler {
@@ -62,14 +63,17 @@ public class DragonInventoryHandler {
 	}
 
 	public static DragonInventory getOrCreateInventory(Level level, UUID uuid) {
+		if(uuid == null) return new DragonInventory(level);
+		
 		if (level.isClientSide()) {
 			clientSideInventories.computeIfAbsent(uuid, id -> new DragonInventory(level));
 			return clientSideInventories.get(uuid);
 		}
 
 		DragonWorldData data = DragonWorldData.getInstance(level);
-
+		
 		if (!data.dragonInventories.containsKey(uuid)) {
+			DMR.LOGGER.debug("Creating new dragon inventory for {}", uuid);
 			data.dragonInventories.put(uuid, new DragonInventory(level));
 			data.setDirty();
 		}

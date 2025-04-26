@@ -3,7 +3,6 @@ package dmr.DragonMounts.network.packets;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.network.IMessage;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import java.util.Optional;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -12,6 +11,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+
+import java.util.Optional;
 
 public record DragonStatePacket(int entityId, int state) implements IMessage<DragonStatePacket> {
 	public static final StreamCodec<FriendlyByteBuf, DragonStatePacket> STREAM_CODEC = StreamCodec.composite(

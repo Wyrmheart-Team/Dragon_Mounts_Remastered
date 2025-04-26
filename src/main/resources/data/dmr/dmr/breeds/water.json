@@ -23,13 +23,8 @@
     }
   ],
   "hatch_particles": "minecraft:dripping_water",
-  "immunities": [
-    "drown"
-  ],
-  "abilities": [
-    "aquatic_grace",
-    "swift_swim"
-  ],
+  "immunities": ["drown"],
+  "abilities": ["aquatic_grace", "swift_swim"],
   "primary_color": "62ff",
   "secondary_color": "5999ff",
   "loot_tables": [
@@ -40,8 +35,5 @@
       "max": 1
     }
   ],
-  "accessories": [
-    "tail_horns",
-    "leg_fins"
-  ]
+  "accessories": ["tail_horns", "leg_fins"]
 }

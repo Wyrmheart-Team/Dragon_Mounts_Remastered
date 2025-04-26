@@ -2,13 +2,6 @@ package dmr.DragonMounts.server.ai.behaviours;
 
 import com.mojang.datafixers.util.Pair;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import joptsimple.internal.Strings;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,6 +15,14 @@ import net.minecraft.world.entity.ai.behavior.ShufflingList;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
+
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @SuppressWarnings("unchecked")
 public class BehaviorWrapper<E extends LivingEntity> implements BehaviorControl<E> {

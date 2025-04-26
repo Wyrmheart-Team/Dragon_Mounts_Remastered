@@ -5,9 +5,6 @@ import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.types.habitats.Habitat;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -21,6 +18,10 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.pathfinder.PathType;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public interface IDragonBreed {
 	record LootTableEntry(

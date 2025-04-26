@@ -3,16 +3,18 @@ package dmr.DragonMounts.server.entity;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.ModConstants;
 import dmr.DragonMounts.ModConstants.NBTConstants;
+import dmr.DragonMounts.common.handlers.DragonWhistleHandler;
+import dmr.DragonMounts.common.handlers.DragonWhistleHandler.DragonInstance;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModMemoryModuleTypes;
 import dmr.DragonMounts.server.ai.DragonBodyController;
 import dmr.DragonMounts.server.ai.navigation.DragonPathNavigation;
 import dmr.DragonMounts.server.inventory.DragonInventoryHandler;
 import dmr.DragonMounts.server.inventory.DragonInventoryHandler.DragonInventory;
+import dmr.DragonMounts.server.worlddata.DragonWorldDataManager;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.Variant;
-import java.util.Optional;
-import java.util.UUID;
+import dmr.DragonMounts.util.PlayerStateUtils;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
@@ -40,10 +42,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
+
+import java.util.Optional;
+import java.util.UUID;
 
 public abstract class AbstractDMRDragonEntity
 	extends TamableAnimal
@@ -133,6 +139,11 @@ public abstract class AbstractDMRDragonEntity
 		EntityDataSerializers.STRING
 	);
 
+	public static final EntityDataAccessor<Boolean> DATA_WAS_HATCHED = SynchedEntityData.defineId(
+		AbstractDMRDragonEntity.class,
+		EntityDataSerializers.BOOLEAN
+	);
+
 	@Override
 	protected PathNavigation createNavigation(Level pLevel) {
 		DragonPathNavigation dragonNavigation = new DragonPathNavigation(this, pLevel);
@@ -167,7 +178,7 @@ public abstract class AbstractDMRDragonEntity
 	}
 
 	public UUID getDragonUUID() {
-		var id = getEntityData().get(DATA_UUID);
+		var id = entityData.get(DATA_UUID);
 		return !id.isBlank() ? UUID.fromString(id) : null;
 	}
 
@@ -208,6 +219,12 @@ public abstract class AbstractDMRDragonEntity
 	public void setOrderedToSit(boolean orderedToSit) {
 		super.setOrderedToSit(orderedToSit);
 		entityData.set(DATA_ORDERED_TO_SIT, orderedToSit);
+		
+		if(!orderedToSit){
+			getBrain().eraseMemory(ModMemoryModuleTypes.SHOULD_SIT.get());
+		}else{
+			getBrain().setMemory(ModMemoryModuleTypes.SHOULD_SIT.get(), true);
+		}
 	}
 
 	public Optional<GlobalPos> getWanderTarget() {
@@ -260,6 +277,14 @@ public abstract class AbstractDMRDragonEntity
 			return pos.dimension() == level.dimension();
 		}
 		return false;
+	}
+
+	public boolean wasHatched() {
+		return entityData.get(DATA_WAS_HATCHED);
+	}
+
+	public void setHatched(boolean wasHatched) {
+		entityData.set(DATA_WAS_HATCHED, wasHatched);
 	}
 
 	public IDragonBreed getBreed() {
@@ -432,6 +457,7 @@ public abstract class AbstractDMRDragonEntity
 		builder.define(LAST_POSE_CHANGE_TICK, 0L);
 		builder.define(DATA_VARIANT, "");
 		builder.define(DATA_ORDERED_TO_SIT, false);
+		builder.define(DATA_WAS_HATCHED, false);
 	}
 
 	@Override
@@ -480,6 +506,10 @@ public abstract class AbstractDMRDragonEntity
 
 		if (entityData.get(DATA_ORDERED_TO_SIT) != null) {
 			compound.putBoolean(NBTConstants.ORDERED_TO_SIT, entityData.get(DATA_ORDERED_TO_SIT));
+		}
+
+		if (entityData.get(DATA_WAS_HATCHED) != null) {
+			compound.putBoolean(NBTConstants.WAS_HATCHED, entityData.get(DATA_WAS_HATCHED));
 		}
 
 		getWanderTarget()
@@ -532,6 +562,10 @@ public abstract class AbstractDMRDragonEntity
 
 		if (compound.contains(NBTConstants.ORDERED_TO_SIT)) {
 			entityData.set(DATA_ORDERED_TO_SIT, compound.getBoolean(NBTConstants.ORDERED_TO_SIT));
+		}
+
+		if (compound.contains(NBTConstants.WAS_HATCHED)) {
+			entityData.set(DATA_WAS_HATCHED, compound.getBoolean(NBTConstants.WAS_HATCHED));
 		}
 
 		Optional<GlobalPos> wanderTarget;
@@ -592,7 +626,7 @@ public abstract class AbstractDMRDragonEntity
 
 	@Override
 	public boolean removeWhenFarAway(double distanceToClosestPlayer) {
-		return !isTame() && distanceToClosestPlayer > Mth.sqrt(32) && this.tickCount > 2400 && !this.hasCustomName();
+		return !wasHatched() && !isTame() && distanceToClosestPlayer > Mth.sqrt(32) && this.tickCount > 2400 && !this.hasCustomName();
 	}
 
 	@Override
@@ -740,5 +774,38 @@ public abstract class AbstractDMRDragonEntity
 		}
 
 		return getBreed().getName();
+	}
+	
+	@Override
+	public @Nullable Entity changeDimension(DimensionTransition transition) {
+		var entity = super.changeDimension(transition);
+		
+		if(entity instanceof DMRDragonEntity dragon){
+			var owner = getOwner();
+			
+			DMR.LOGGER.debug("Changing dimension of dragon {} to {}", getDragonUUID(), transition.newLevel().dimension().location());
+			
+			if(owner instanceof Player player){
+				var handler = PlayerStateUtils.getHandler(player);
+				var index = DragonWhistleHandler.getDragonSummonIndex(player, getDragonUUID());
+				handler.setDragonInstance(index, new DragonInstance(dragon));
+				
+				//Update lastSummon to new UUID to prevent despawns
+				if(handler.lastSummon == getUUID()){
+					handler.lastSummon = entity.getUUID();
+				}
+			}
+			
+			var worldData1 = DragonWorldDataManager.getInstance(level);
+			var worldData2 = DragonWorldDataManager.getInstance(transition.newLevel());
+			
+			// Transfer the dragon inventory
+			worldData2.dragonInventories.put(getDragonUUID(), worldData1.dragonInventories.get(getDragonUUID()));
+			worldData1.dragonInventories.remove(getDragonUUID());
+			
+			return dragon;
+		}
+		
+		return null;
 	}
 }

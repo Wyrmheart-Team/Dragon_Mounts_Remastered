@@ -10,9 +10,6 @@ import dmr.DragonMounts.registry.ModMemoryModuleTypes;
 import dmr.DragonMounts.registry.ModSensors;
 import dmr.DragonMounts.server.ai.behaviours.*;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,6 +27,10 @@ import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.schedule.Activity;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 public class DragonAI {
 
@@ -92,7 +93,7 @@ public class DragonAI {
 					new RandomLookAround(UniformInt.of(150, 250), 30.0F, 0.0F, 0.0F)
 				),
 				new BehaviorWrapper<>(
-					e -> !e.isSitting() || (e.isInLove() && e.getBrain().hasMemoryValue(MemoryModuleType.BREED_TARGET)),
+					e -> !e.isRandomlySitting() || (e.isInLove() && e.getBrain().hasMemoryValue(MemoryModuleType.BREED_TARGET)),
 					ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_PRESENT),
 					new MoveToTargetSink()
 				)

@@ -1,6 +1,3 @@
 {
-  "bones": [
-    "horn3",
-    "horn4"
-  ]
+  "bones": ["horn3", "horn4"]
 }

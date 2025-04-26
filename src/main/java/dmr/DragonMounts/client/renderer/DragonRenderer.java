@@ -8,8 +8,6 @@ import dmr.DragonMounts.client.renderer.layers.DragonPassengerLayer;
 import dmr.DragonMounts.client.renderer.layers.DragonSaddleLayer;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.types.ResourcePackLoader;
-import java.util.Objects;
-import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -18,6 +16,9 @@ import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
+
+import java.util.Objects;
+import java.util.Optional;
 
 public class DragonRenderer extends GeoEntityRenderer<DMRDragonEntity> {
 
@@ -112,7 +113,7 @@ public class DragonRenderer extends GeoEntityRenderer<DMRDragonEntity> {
 			if (!stack.clear()) {
 				stack.popPose();
 			}
-			DMR.LOGGER.warning("Error rendering dragon: " + e.getMessage());
+			DMR.LOGGER.warn("Error rendering dragon: {}", e.getMessage());
 			return;
 		}
 

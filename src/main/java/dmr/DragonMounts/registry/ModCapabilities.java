@@ -1,10 +1,7 @@
 package dmr.DragonMounts.registry;
 
-import static dmr.DragonMounts.DMR.MOD_ID;
-
 import dmr.DragonMounts.common.capability.DragonOwnerCapability;
 import dmr.DragonMounts.network.packets.CompleteDataSync;
-import java.util.function.Supplier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -16,6 +13,10 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+
+import java.util.function.Supplier;
+
+import static dmr.DragonMounts.DMR.MOD_ID;
 
 @EventBusSubscriber(modid = MOD_ID, bus = Bus.GAME)
 public class ModCapabilities {

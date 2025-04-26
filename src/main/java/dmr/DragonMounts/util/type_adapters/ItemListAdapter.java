@@ -2,12 +2,13 @@ package dmr.DragonMounts.util.type_adapters;
 
 import com.google.gson.*;
 import dmr.DragonMounts.DMR;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemListAdapter implements JsonDeserializer<List<Item>>, JsonSerializer<List<Item>> {
 
@@ -28,7 +29,7 @@ public class ItemListAdapter implements JsonDeserializer<List<Item>>, JsonSerial
 
 			return list;
 		} catch (Exception e) {
-			DMR.LOGGER.warning("Failed to deserialize Item list: " + json);
+			DMR.LOGGER.warn("Failed to deserialize Item list: {}", json);
 		}
 
 		return List.of();

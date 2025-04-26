@@ -5,12 +5,13 @@ import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.registry.DragonArmorRegistry;
 import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.LootTableEntry;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 public class DragonArmor {

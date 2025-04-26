@@ -1,8 +1,5 @@
 {
-  "abilities": [
-    "floral_trail",
-    "nature_blessing"
-  ],
+  "abilities": ["floral_trail", "nature_blessing"],
   "habitats": [
     {
       "type": "biome",
@@ -11,6 +8,10 @@
     {
       "type": "biome",
       "biome_tag": "minecraft:is_jungle"
+    },
+    {
+      "type": "nearby_blocks",
+      "block_tag": "dmr:lush_dragon_habitat_blocks"
     }
   ],
   "hatch_particles": "minecraft:spore_blossom_air",

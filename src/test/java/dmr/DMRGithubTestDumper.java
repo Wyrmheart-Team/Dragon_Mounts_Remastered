@@ -1,8 +1,9 @@
 package dmr;
 
-import java.nio.file.Path;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.testframework.summary.TestSummary;
+
+import java.nio.file.Path;
 
 public class DMRGithubTestDumper extends DMRTestDumper {
 

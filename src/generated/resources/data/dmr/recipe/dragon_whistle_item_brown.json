@@ -13,11 +13,7 @@
       "item": "minecraft:iron_ingot"
     }
   },
-  "pattern": [
-    "I#I",
-    "#D#",
-    "I#I"
-  ],
+  "pattern": ["I#I", "#D#", "I#I"],
   "result": {
     "count": 1,
     "id": "dmr:dragon_whistle.brown"

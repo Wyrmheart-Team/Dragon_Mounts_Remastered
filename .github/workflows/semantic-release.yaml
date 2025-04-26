@@ -27,35 +27,36 @@ jobs:
       changelog: ${{ steps.release_description.outputs.description }}
       new_release_published: ${{ steps.semantic.outputs.new_release_published }}
       new_release_version: ${{ steps.semantic.outputs.new_release_version }}
-    
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
           registry-url: 'https://npm.pkg.github.com'
-      
+
       - name: Cache npm dependencies
+        id: cache
         uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-      
+
       - name: Install Dependencies
         run: npm install
-      
+
       - name: Save updated npm cache
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-    
+
       - name: Run Semantic Release
         id: semantic
         uses: cycjimmy/semantic-release-action@v4
@@ -66,7 +67,7 @@ jobs:
           dry_run: ${{ inputs.dry-run }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      
+
       - name: Generate Changelog Value
         id: release_description
         shell: bash
@@ -76,4 +77,10 @@ jobs:
           EOF
           description=$(sed ':a;N;$!ba; s/\r//g; s/\n/\\n/g; s/"/\\"/g; s/%/\\n/g' release_notes.txt)
           echo "description=$description" >> $GITHUB_OUTPUT
+
+          # Output changelog as job summary
+          echo "## Changelog for version ${{ steps.semantic.outputs.new_release_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          cat release_notes.txt >> $GITHUB_STEP_SUMMARY
+
           rm release_notes.txt

@@ -1,8 +1,5 @@
 package dmr.DragonMounts.server.entity;
 
-import static net.minecraft.world.entity.ai.attributes.Attributes.*;
-import static net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Dynamic;
 import dmr.DragonMounts.DMR;
@@ -25,10 +22,6 @@ import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.util.BreedingUtils;
 import dmr.DragonMounts.util.PlayerStateUtils;
 import io.netty.buffer.Unpooled;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import javax.annotation.Nullable;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -89,6 +82,14 @@ import software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar;
 import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
+
+import javax.annotation.Nullable;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+
+import static net.minecraft.world.entity.ai.attributes.Attributes.*;
+import static net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED;
 
 public class DMRDragonEntity extends AbstractDMRDragonEntity {
 
@@ -897,8 +898,6 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 
 	@Override
 	protected void dropEquipment() {
-		super.dropEquipment();
-
 		//Dont drop equipment if the dragon is selected and can be summoned again
 		if (getOwner() instanceof Player player) {
 			DragonOwnerCapability capability = PlayerStateUtils.getHandler(player);
@@ -908,7 +907,7 @@ public class DMRDragonEntity extends AbstractDMRDragonEntity {
 			}
 		}
 
-		//		if (isSaddled()) spawnAtLocation(Items.SADDLE);
+		super.dropEquipment();
 
 		for (int i = 0; i < this.getInventory().getContainerSize(); ++i) {
 			ItemStack itemstack = this.getInventory().getItem(i);

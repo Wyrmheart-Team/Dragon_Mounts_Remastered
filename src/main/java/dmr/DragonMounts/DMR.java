@@ -14,8 +14,6 @@ import dmr.DragonMounts.types.DataPackHandler;
 import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.types.habitats.Habitat;
 import dmr.DragonMounts.util.type_adapters.*;
-import java.util.List;
-import java.util.logging.Logger;
 import lombok.Getter;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.particles.ParticleOptions;
@@ -33,12 +31,16 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Block;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 @Mod(DMR.MOD_ID)
 public class DMR {
 
 	public static final String MOD_ID = "dmr";
-	public static final Logger LOGGER = Logger.getLogger(MOD_ID);
+	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	@Getter
 	private static Gson Gson;
@@ -47,7 +49,7 @@ public class DMR {
 
 	public DMR(IEventBus bus, ModContainer container) {
 		DEBUG = !FMLLoader.isProduction();
-
+		
 		var gsonBuilder = new GsonBuilder();
 		gsonBuilder.setPrettyPrinting();
 		gsonBuilder.registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer());
@@ -97,8 +99,7 @@ public class DMR {
 				var method = clas.getMethod("registerTestFramework", IEventBus.class, ModContainer.class);
 				method.invoke(null, bus, container);
 			} catch (Exception e) {
-				System.err.println("Failed to register test framework.");
-			}
+				LOGGER.debug("Failed to register test framework.", e);}
 		}
 	}
 

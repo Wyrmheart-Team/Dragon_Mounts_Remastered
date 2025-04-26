@@ -2,9 +2,7 @@
   "hatch_particles": {
     "type": "minecraft:end_rod"
   },
-  "accessories": [
-    "middle_tail_scales"
-  ],
+  "accessories": ["middle_tail_scales"],
   "habitats": [
     {
       "type": "nearby_blocks",

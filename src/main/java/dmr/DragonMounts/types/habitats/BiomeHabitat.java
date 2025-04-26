@@ -12,7 +12,7 @@ public record BiomeHabitat(int points, TagKey<Biome> biomeTag) implements Habita
 	public static final Codec<BiomeHabitat> CODEC = RecordCodecBuilder.create(instance ->
 		instance
 			.group(
-				Habitat.withPoints(2, BiomeHabitat::points),
+				Habitat.withPoints(3, BiomeHabitat::points),
 				TagKey.codec(Registries.BIOME).fieldOf("biome_tag").forGetter(BiomeHabitat::biomeTag)
 			)
 			.apply(instance, BiomeHabitat::new)

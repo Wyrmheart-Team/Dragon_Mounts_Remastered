@@ -1,31 +1,28 @@
 {
-  "abilities": [
-    "ember_aura",
-    "fire_proof"
-  ],
+  "abilities": ["ember_aura", "fire_proof"],
   "habitats": [
     {
       "type": "nearby_blocks",
       "block_tag": "dmr:fire_dragon_habitat_blocks"
     },
     {
-      "type": "in_fluid",
-      "fluid_tag": "minecraft:lava",
-      "point_multiplier": 3.0
-    },
-    {
-      "type": "world_height",
-      "height": 10,
-      "below": true
+      "type": "picky",
+      "required_habitats": [
+        {
+          "type": "in_fluid",
+          "fluid_tag": "minecraft:lava",
+          "point_multiplier": 3.0
+        },
+        {
+          "type": "biome",
+          "biome_tag": "minecraft:is_overworld",
+          "points": 3
+        }
+      ]
     }
   ],
   "hatch_particles": "minecraft:flame",
-  "immunities": [
-    "onFire",
-    "inFire",
-    "lava",
-    "hotFloor"
-  ],
+  "immunities": ["onFire", "inFire", "lava", "hotFloor"],
   "primary_color": "912400",
   "secondary_color": "ff9819",
   "loot_tables": [
@@ -36,7 +33,5 @@
       "max": 1
     }
   ],
-  "accessories": [
-    "middle_tail_scales"
-  ]
+  "accessories": ["middle_tail_scales"]
 }

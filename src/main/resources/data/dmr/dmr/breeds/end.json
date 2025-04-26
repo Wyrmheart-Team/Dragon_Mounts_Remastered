@@ -9,21 +9,18 @@
     {
       "type": "biome",
       "biome_tag": "minecraft:is_end"
+    },
+    {
+      "type": "nearby_blocks",
+      "block_tag": "dmr:end_dragon_habitat_blocks"
     }
   ],
-  "abilities": [
-    "ender_cloak",
-    "void_walker"
-  ],
+  "abilities": ["ender_cloak", "void_walker"],
   "hatch_particles": "minecraft:portal",
-  "immunities": [
-    "dragonBreath"
-  ],
+  "immunities": ["dragonBreath"],
   "primary_color": "161616",
   "secondary_color": "ff63e8",
-  "accessories": [
-    "second_horns"
-  ],
+  "accessories": ["second_horns"],
   "loot_tables": [
     {
       "table": "minecraft:chests/stronghold_corridor",

@@ -1,6 +1,3 @@
 {
-  "bones": [
-    "left_front_fin",
-    "right_fin_arm"
-  ]
+  "bones": ["left_front_fin", "right_fin_arm"]
 }

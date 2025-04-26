@@ -1,8 +1,9 @@
 package dmr.DragonMounts.config;
 
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import java.util.concurrent.TimeUnit;
 import net.neoforged.neoforge.common.ModConfigSpec;
+
+import java.util.concurrent.TimeUnit;
 
 public class ServerConfig {
 

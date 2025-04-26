@@ -3,7 +3,6 @@ package dmr.DragonMounts.server.ai.behaviours;
 import com.google.common.collect.ImmutableMap;
 import dmr.DragonMounts.server.entity.AbstractDMRDragonEntity;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import java.util.Optional;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.Brain;
@@ -11,6 +10,8 @@ import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
+
+import java.util.Optional;
 
 public class DragonBreedBehaviour extends Behavior<DMRDragonEntity> {
 

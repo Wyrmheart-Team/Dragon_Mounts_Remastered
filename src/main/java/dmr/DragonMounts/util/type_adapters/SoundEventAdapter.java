@@ -3,11 +3,12 @@ package dmr.DragonMounts.util.type_adapters;
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
 import dmr.DragonMounts.DMR;
-import java.lang.reflect.Type;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+
+import java.lang.reflect.Type;
 
 public class SoundEventAdapter implements JsonDeserializer<SoundEvent>, JsonSerializer<SoundEvent> {
 
@@ -18,7 +19,7 @@ public class SoundEventAdapter implements JsonDeserializer<SoundEvent>, JsonSeri
 				ResourceLocation location = ResourceLocation.parse(json.getAsString());
 				return BuiltInRegistries.SOUND_EVENT.get(location);
 			} catch (Exception e) {
-				DMR.LOGGER.warning("Failed to deserialize SoundEvent: " + json);
+				DMR.LOGGER.warn("Failed to deserialize SoundEvent: {}", json);
 			}
 		}
 
@@ -33,7 +34,7 @@ public class SoundEventAdapter implements JsonDeserializer<SoundEvent>, JsonSeri
 				}
 			}
 		} catch (Exception e) {
-			DMR.LOGGER.warning("Failed to deserialize SoundEvent: " + json);
+			DMR.LOGGER.warn("Failed to deserialize SoundEvent: {}", json);
 		}
 
 		return null;

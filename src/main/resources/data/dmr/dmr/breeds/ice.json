@@ -1,8 +1,5 @@
 {
-  "abilities": [
-    "frost_walker",
-    "frost_aura"
-  ],
+  "abilities": ["frost_walker", "frost_aura"],
   "habitats": [
     {
       "type": "nearby_blocks",
@@ -14,10 +11,7 @@
     }
   ],
   "hatch_particles": "minecraft:snowflake",
-  "immunities": [
-    "drown",
-    "freeze"
-  ],
+  "immunities": ["drown", "freeze"],
   "primary_color": "ffffff",
   "secondary_color": "e1ff",
   "loot_tables": [

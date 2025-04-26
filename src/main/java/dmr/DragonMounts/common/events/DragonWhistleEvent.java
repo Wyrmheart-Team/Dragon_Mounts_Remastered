@@ -5,20 +5,18 @@ import dmr.DragonMounts.common.handlers.DragonWhistleHandler;
 import dmr.DragonMounts.common.handlers.DragonWhistleHandler.DragonInstance;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.network.packets.CompleteDataSync;
+import dmr.DragonMounts.network.packets.DragonNBTSync;
 import dmr.DragonMounts.network.packets.DragonRespawnDelayPacket;
 import dmr.DragonMounts.registry.ModCapabilities;
 import dmr.DragonMounts.registry.ModItems;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.server.worlddata.DragonWorldDataManager;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -27,6 +25,9 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @EventBusSubscriber(modid = DMR.MOD_ID)
 public class DragonWhistleEvent {
@@ -53,24 +54,14 @@ public class DragonWhistleEvent {
 	@SubscribeEvent
 	public static void onEntityJoinWorld(EntityJoinLevelEvent event) {
 		if (!event.getLevel().isClientSide) {
-			// Remove dragon from the world if the last summon was in a different dimension
 			if (event.getEntity() instanceof DMRDragonEntity dragon) {
-				var level = event.getLevel();
-
 				if (dragon.getOwner() != null && dragon.getOwner() instanceof Player player) {
 					var cap = player.getData(ModCapabilities.PLAYER_CAPABILITY);
-					var index = DragonWhistleHandler.getDragonSummonIndex(player, dragon.getDragonUUID());
-					var instance = cap.dragonInstances.get(index);
-
-					if (instance != null) {
-						if (instance.getDimension() != null) {
-							var key = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(instance.getDimension()));
-
-							if (level.dimension() != key) {
-								event.setCanceled(true);
-								return;
-							}
-						}
+					
+					if(cap.lastSummon != null && !cap.lastSummon.equals(dragon.getUUID())) {
+						DMR.LOGGER.debug("Preventing loading of dragon in {}, last entity id mismatch. Expected: {}, got: {}", event.getLevel().dimension().location(), cap.lastSummon, dragon.getDragonUUID());
+						event.setCanceled(true);
+						return;
 					}
 				}
 			}
@@ -83,6 +74,12 @@ public class DragonWhistleEvent {
 					for (Map.Entry<Integer, DragonInstance> ent : state.dragonInstances.entrySet()) {
 						var index = ent.getKey();
 						var id = ent.getValue().getUUID();
+
+						if (player instanceof ServerPlayer spPlayer) {
+							var nbtData = state.dragonNBTs.get(index);
+							//Send the player their dragon data
+							PacketDistributor.sendToPlayer(spPlayer, new DragonNBTSync(index, nbtData));
+						}
 
 						var dragonWasKilled = DragonWorldDataManager.isDragonDead(event.getLevel(), id);
 
@@ -101,6 +98,10 @@ public class DragonWhistleEvent {
 								state.dragonNBTs.remove(index);
 								state.respawnDelays.remove(index);
 								state.dragonInstances.remove(index);
+
+								if (player instanceof ServerPlayer spPlayer) {
+									PacketDistributor.sendToPlayer(spPlayer, new DragonNBTSync(index, new CompoundTag()));
+								}
 							}
 
 							DragonWorldDataManager.clearDragonData(event.getLevel(), id);
@@ -114,6 +115,18 @@ public class DragonWhistleEvent {
 	@SubscribeEvent
 	public static void onLivingUpdate(EntityTickEvent.Post event) {
 		if (!event.getEntity().level.isClientSide) {
+			if(event.getEntity() instanceof DMRDragonEntity dragon) {
+				if (dragon.getOwner() != null && dragon.getOwner() instanceof Player player) {
+					var cap = player.getData(ModCapabilities.PLAYER_CAPABILITY);
+					
+					if(cap.lastSummon != null && !cap.lastSummon.equals(dragon.getUUID())) {
+						DMR.LOGGER.debug("Removing dragon from {}, entity id mismatch. Expected: {}, got: {}",  event.getEntity().level.dimension().location(), cap.lastSummon, dragon.getDragonUUID());
+						dragon.setRemoved(RemovalReason.DISCARDED);
+						return;
+					}
+				}
+			}
+			
 			if (event.getEntity() instanceof Player player) {
 				var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
 				for (Map.Entry<Integer, DragonInstance> ent : state.dragonInstances.entrySet()) {

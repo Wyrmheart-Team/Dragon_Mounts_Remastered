@@ -5,15 +5,13 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import dmr.DragonMounts.network.packets.CompleteDataSync;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModEntities;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
 import dmr.DragonMounts.server.worlddata.DragonWorldData.DragonHistory;
 import dmr.DragonMounts.server.worlddata.DragonWorldDataManager;
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import dmr.DragonMounts.util.PlayerStateUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -25,7 +23,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.Comparator;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class DMRCommand {
 
@@ -154,10 +159,22 @@ public class DMRCommand {
 					)
 			)
 		);
+		
+		var clearWhistle = baseCommand.then(
+			Commands.literal("clear_whistle").then(
+				Commands.argument("color", StringArgumentType.string()).suggests((context, builder) -> {
+					for(DyeColor color : DyeColor.values()) {
+						builder.suggest(color.getName());
+					}
+					return builder.buildFuture();
+				}).executes(ctx -> runClearWhistle(ctx.getSource(), DyeColor.byName(ctx.getArgument("color", String.class), DyeColor.WHITE)))
+			)
+		);
 
 		commandDispatcher.register(spawnRegular);
 		commandDispatcher.register(spawnHybrid);
 		commandDispatcher.register(recall);
+		commandDispatcher.register(clearWhistle);
 	}
 
 	private static String getTimeAgo(long timestampMs) {
@@ -214,6 +231,16 @@ public class DMRCommand {
 		} else {
 			source.sendFailure(Component.translatable("dmr.commands.dragon_recall.failure", id.toString()));
 		}
+		return 1;
+	}
+	
+	private static int runClearWhistle(CommandSourceStack source, DyeColor color) {
+		var handler = PlayerStateUtils.getHandler(source.getPlayer());
+		handler.dragonNBTs.remove(color.getId());
+		handler.dragonInstances.remove(color.getId());
+		handler.respawnDelays.remove(color.getId());
+		PacketDistributor.sendToPlayer(source.getPlayer(), new CompleteDataSync(source.getPlayer()));
+		source.sendSuccess(() -> Component.translatable("dmr.commands.clear_whistle.success", color.getName()), true);
 		return 1;
 	}
 

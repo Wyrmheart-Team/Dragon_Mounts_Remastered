@@ -1,18 +1,13 @@
 {
   "hatch_particles": "minecraft:end_rod",
-  "accessories": [
-    "middle_tail_scales"
-  ],
+  "accessories": ["middle_tail_scales"],
   "habitats": [
     {
       "type": "nearby_blocks",
       "block_tag": "dmr:amethyst_dragon_habitat_blocks"
     }
   ],
-  "abilities": [
-    "gem_guard",
-    "crystal_harmony"
-  ],
+  "abilities": ["gem_guard", "crystal_harmony"],
   "primary_color": "A779F1",
   "secondary_color": "FECCE7",
   "ambient_sound": "dmr:entity.dragon.breathe",

@@ -1,21 +1,26 @@
 package dmr.DragonMounts.common.capability;
 
 import dmr.DragonMounts.common.handlers.DragonWhistleHandler.DragonInstance;
+import dmr.DragonMounts.network.packets.DragonNBTSync;
 import dmr.DragonMounts.server.entity.DMRDragonEntity;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.EffectCures;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 
@@ -24,6 +29,7 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 	private Player playerInstance;
 
 	public Long lastCall;
+	public UUID lastSummon;
 
 	public int dragonsHatched;
 
@@ -53,15 +59,21 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 					dragon.load(nbt);
 					dragon.setUUID(UUID.randomUUID());
 					dragon.setDragonUUID(uuid);
-					dragon.clearFire();
-					dragon.hurtTime = 0;
-
+					
 					dragon.stopSitting();
 					dragon.setWanderTarget(Optional.empty());
 
 					setDragonToWhistle(dragon, index);
+					
+					dragon.clearFire();
+					dragon.hurtTime = 0;
 					dragon.setHealth(Math.max(1, dragon.getHealth()));
-
+					
+					//Cure the dragon of any effects to prevent for example poison or wither
+					dragon.removeEffectsCuredBy(EffectCures.PROTECTED_BY_TOTEM);
+					
+					lastSummon = dragon.getUUID();
+					
 					return dragon;
 				}
 			}
@@ -91,11 +103,17 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 		var nbtData = dragon.serializeNBT(dragon.level.registryAccess());
 		dragonNBTs.put(index, nbtData);
 
+		if (!dragon.level.isClientSide && playerInstance instanceof ServerPlayer spPlayer) {
+			PacketDistributor.sendToPlayer(spPlayer, new DragonNBTSync(index, nbtData));
+		}
+
 		var instance = new DragonInstance(dragon);
 		dragonInstances.put(index, instance);
 
 		dragon.setWanderTarget(wanderPos);
 		dragon.setOrderedToSit(sit);
+		
+		lastSummon = dragon.getUUID();
 	}
 
 	public boolean isBoundToWhistle(DMRDragonEntity dragon) {
@@ -115,7 +133,11 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 
 		tag.putBoolean("cameraFlight", cameraFlight);
 		tag.putBoolean("alternateDismount", alternateDismount);
-
+		
+		if(lastSummon != null) {
+			tag.putUUID("lastSummon", lastSummon);
+		}
+		
 		for (DyeColor color : DyeColor.values()) {
 			if (respawnDelays.containsKey(color.getId())) {
 				tag.putInt("respawnDelay_" + color.getId(), respawnDelays.get(color.getId()));
@@ -151,7 +173,11 @@ public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 
 		respawnDelays.clear();
 		dragonNBTs.clear();
-
+		
+		if(base.contains("lastSummon")) {
+			lastSummon = base.getUUID("lastSummon");
+		}
+		
 		if (base.contains("cameraFlight")) {
 			cameraFlight = base.getBoolean("cameraFlight");
 		}

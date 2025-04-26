@@ -39,6 +39,7 @@
   "dmr.commands.dragon_recall.success": "The dragon has successfully been recalled",
   "dmr.commands.dragon_recall.failure": "Unable to recall the dragon",
   "dmr.commands.dragon_recall.suggest": "[%1$s] owned by: [%2$s] Last updated: [%3$s]",
+  "dmr.commands.clear_whistle.success": "The %1$s whistle has been cleared",
   "item.dmr.dragon_egg.hatch_tooltip": "Place & right click to hatch",
   "item.dmr.dragon_armor.leather": "Leather Dragon Armor",
   "item.dmr.dragon_armor.iron": "Iron Dragon Armor",

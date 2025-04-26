@@ -4,15 +4,16 @@ import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.server.items.*;
 import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.function.Supplier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.function.Supplier;
 
 public class ModCreativeTabs {
 
