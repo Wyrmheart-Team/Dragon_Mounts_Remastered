@@ -23,7 +23,7 @@ public class ForceSitting implements BehaviorControl<DMRDragonEntity> {
 	public final boolean tryStart(ServerLevel level, DMRDragonEntity entity, long gameTime) {
 		if(entity.isFlying()){
 			this.status = Behavior.Status.RUNNING;
-			Vec3 pos = LandRandomPos.getPos(entity, 16, 32);
+			Vec3 pos = LandRandomPos.getPos(entity, 8, 32);
 			if(pos != null){
 				entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, 0.5F, 0));
 			}
@@ -43,7 +43,7 @@ public class ForceSitting implements BehaviorControl<DMRDragonEntity> {
 	public final void tickOrStop(ServerLevel level, DMRDragonEntity entity, long gameTime) {
 		if(entity.isFlying()){
 			if(!entity.getBrain().hasMemoryValue(MemoryModuleType.WALK_TARGET)){
-				Vec3 pos = LandRandomPos.getPos(entity, 16, 32);
+				Vec3 pos = LandRandomPos.getPos(entity, 8, 32);
 				if(pos != null){
 					entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, 0.5F, 0));
 				}

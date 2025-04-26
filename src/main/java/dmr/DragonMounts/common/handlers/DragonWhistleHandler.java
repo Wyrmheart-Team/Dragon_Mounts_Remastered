@@ -291,7 +291,7 @@ public class DragonWhistleHandler {
 					dragon.setOrderedToSit(false);
 					dragon.setWanderTarget(Optional.empty());
 
-					cap.lastSummon = dragon.getUUID();
+					cap.lastSummons.put(summonItemIndex, dragon.getUUID());
 
 					DMR.LOGGER.debug("Making dragon: {} follow player: {}", dragon.getDragonUUID(), player.getName().getString());
 					PacketDistributor.sendToPlayersTrackingEntity(dragon, new DragonStatePacket(dragon.getId(), ModConstants.DragonConstants.DRAGON_STATE_FOLLOW));
@@ -299,8 +299,8 @@ public class DragonWhistleHandler {
 					//Teleport to player
 					dragon.setOrderedToSit(false);
 					dragon.setWanderTarget(Optional.empty());
-
-					cap.lastSummon = dragon.getUUID();
+					
+					cap.lastSummons.put(summonItemIndex, dragon.getUUID());
 
 					DMR.LOGGER.debug("Teleporting dragon: {} to player: {}", dragon.getDragonUUID(), player.getName().getString());
 					

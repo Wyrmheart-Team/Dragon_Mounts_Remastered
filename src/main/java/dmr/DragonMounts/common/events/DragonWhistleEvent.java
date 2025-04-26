@@ -57,11 +57,14 @@ public class DragonWhistleEvent {
 			if (event.getEntity() instanceof DMRDragonEntity dragon) {
 				if (dragon.getOwner() != null && dragon.getOwner() instanceof Player player) {
 					var cap = player.getData(ModCapabilities.PLAYER_CAPABILITY);
+					var index = DragonWhistleHandler.getDragonSummonIndex(player, dragon.getDragonUUID());
 					
-					if(cap.lastSummon != null && !cap.lastSummon.equals(dragon.getUUID())) {
-						DMR.LOGGER.debug("Preventing loading of dragon in {}, last entity id mismatch. Expected: {}, got: {}", event.getLevel().dimension().location(), cap.lastSummon, dragon.getDragonUUID());
-						event.setCanceled(true);
-						return;
+					if(cap.lastSummons != null && !cap.lastSummons.isEmpty()) {
+						if(cap.lastSummons.containsKey(index) && !cap.lastSummons.get(index).equals(dragon.getUUID())) {
+							DMR.LOGGER.debug("Preventing loading of dragon in {}, last entity id mismatch. Expected: {}, got: {}", event.getLevel().dimension().location(), cap.lastSummons.get(index), dragon.getDragonUUID());
+							event.setCanceled(true);
+							return;
+						}
 					}
 				}
 			}
@@ -118,11 +121,14 @@ public class DragonWhistleEvent {
 			if(event.getEntity() instanceof DMRDragonEntity dragon) {
 				if (dragon.getOwner() != null && dragon.getOwner() instanceof Player player) {
 					var cap = player.getData(ModCapabilities.PLAYER_CAPABILITY);
+					var index = DragonWhistleHandler.getDragonSummonIndex(player, dragon.getDragonUUID());
 					
-					if(cap.lastSummon != null && !cap.lastSummon.equals(dragon.getUUID())) {
-						DMR.LOGGER.debug("Removing dragon from {}, entity id mismatch. Expected: {}, got: {}",  event.getEntity().level.dimension().location(), cap.lastSummon, dragon.getDragonUUID());
-						dragon.setRemoved(RemovalReason.DISCARDED);
-						return;
+					if(cap.lastSummons != null && !cap.lastSummons.isEmpty()) {
+						if(cap.lastSummons.containsKey(index) && !cap.lastSummons.get(index).equals(dragon.getUUID())) {
+							DMR.LOGGER.debug("Removing dragon from {}, entity id mismatch. Expected: {}, got: {}",  event.getEntity().level.dimension().location(), cap.lastSummons.get(index), dragon.getDragonUUID());
+							dragon.setRemoved(RemovalReason.DISCARDED);
+							return;
+						}
 					}
 				}
 			}

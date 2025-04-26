@@ -791,8 +791,8 @@ public abstract class AbstractDMRDragonEntity
 				handler.setDragonInstance(index, new DragonInstance(dragon));
 				
 				//Update lastSummon to new UUID to prevent despawns
-				if(handler.lastSummon == getUUID()){
-					handler.lastSummon = entity.getUUID();
+				if(handler.lastSummons.get(index) != null && handler.lastSummons.get(index).equals(getUUID())){
+					handler.lastSummons.put(index, entity.getUUID());
 				}
 			}
 			
