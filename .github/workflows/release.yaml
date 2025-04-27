@@ -60,6 +60,9 @@ jobs:
         run: crowdin download translations -b ${{ github.ref_name }}
         env:
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+  
+      - name: Post-process crowdin files
+        run: bash .github/scripts/crowdin-post-process.sh
 
       - name: Set up JDK
         uses: actions/setup-java@v3
