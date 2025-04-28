@@ -16,6 +16,10 @@
     {
       "type": "biome",
       "biome_tag": "minecraft:is_mountain"
+    },
+    {
+      "type": "biome",
+      "biome_tag": "aether:is_aether"
     }
   ],
   "primary_color": "718aa9",
