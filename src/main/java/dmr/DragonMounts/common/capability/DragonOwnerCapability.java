@@ -3,6 +3,10 @@ package dmr.DragonMounts.common.capability;
 import dmr.DragonMounts.common.handlers.DragonWhistleHandler.DragonInstance;
 import dmr.DragonMounts.network.packets.DragonNBTSync;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.HolderLookup.Provider;
@@ -16,11 +20,6 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.EffectCures;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.network.PacketDistributor;
-
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 

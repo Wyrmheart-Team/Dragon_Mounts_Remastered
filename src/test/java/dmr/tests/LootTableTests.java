@@ -19,7 +19,7 @@ import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 
 @PrefixGameTestTemplate(false)
-@ForEachTest(groups = "LootTable")
+@ForEachTest(groups = "Loot Tables")
 public class LootTableTests {
 
     /**

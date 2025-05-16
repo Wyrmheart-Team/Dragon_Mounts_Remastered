@@ -11,6 +11,8 @@ import dmr.DragonMounts.registry.ModCapabilities;
 import dmr.DragonMounts.registry.ModItems;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.server.worlddata.DragonWorldDataManager;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -24,9 +26,6 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @EventBusSubscriber(modid = DMR.MOD_ID)
 public class DragonWhistleEvent {
