@@ -12,13 +12,15 @@ import net.neoforged.neoforge.network.PacketDistributor;
 @EventBusSubscriber(modid = DMR.MOD_ID)
 public class PlayerJoinWorld {
 
-	@SubscribeEvent
-	public static void onPlayerJoinWorld(PlayerEvent.PlayerLoggedInEvent event) {
-		if (!event.getEntity().level.isClientSide()) {
-			var player = event.getEntity();
-			var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
-			var tag = state.serializeNBT(player.level.registryAccess());
-			PacketDistributor.sendToPlayer((ServerPlayer) player, new CompleteDataSync(event.getEntity().getId(), tag));
-		}
-	}
+    @SubscribeEvent
+    public static void onPlayerJoinWorld(PlayerEvent.PlayerLoggedInEvent event) {
+        if (!event.getEntity().level.isClientSide()) {
+            var player = event.getEntity();
+            var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
+            var tag = state.serializeNBT(player.level.registryAccess());
+            PacketDistributor.sendToPlayer(
+                    (ServerPlayer) player,
+                    new CompleteDataSync(event.getEntity().getId(), tag));
+        }
+    }
 }

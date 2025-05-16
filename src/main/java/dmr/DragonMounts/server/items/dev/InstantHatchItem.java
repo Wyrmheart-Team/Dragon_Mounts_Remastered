@@ -8,15 +8,15 @@ import net.minecraft.world.item.context.UseOnContext;
 
 public class InstantHatchItem extends DMRDevItem {
 
-	@Override
-	public InteractionResult useOn(UseOnContext pContext) {
-		if (!pContext.getLevel().isClientSide) {
-			if (pContext.getLevel().getBlockEntity(pContext.getClickedPos()) instanceof DMREggBlockEntity entity) {
-				entity.hatch((ServerLevel) entity.getLevel(), entity.getBlockPos());
-				return InteractionResult.SUCCESS;
-			}
-		}
+    @Override
+    public InteractionResult useOn(UseOnContext pContext) {
+        if (!pContext.getLevel().isClientSide) {
+            if (pContext.getLevel().getBlockEntity(pContext.getClickedPos()) instanceof DMREggBlockEntity entity) {
+                entity.hatch((ServerLevel) entity.getLevel(), entity.getBlockPos());
+                return InteractionResult.SUCCESS;
+            }
+        }
 
-		return super.useOn(pContext);
-	}
+        return super.useOn(pContext);
+    }
 }

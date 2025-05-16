@@ -5,7 +5,7 @@ import net.minecraft.world.item.Rarity;
 
 public class DMRDevItem extends Item {
 
-	public DMRDevItem() {
-		super(new Properties().rarity(Rarity.EPIC).stacksTo(1));
-	}
+    public DMRDevItem() {
+        super(new Properties().rarity(Rarity.EPIC).stacksTo(1));
+    }
 }

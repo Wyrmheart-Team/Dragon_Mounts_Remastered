@@ -16,13 +16,16 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 @EventBusSubscriber(bus = Bus.MOD, value = Dist.CLIENT)
 public class ClientModHandler {
 
-	public static DragonModel MODEL_INSTANCE = new DragonModel();
+    public static DragonModel MODEL_INSTANCE = new DragonModel();
 
-	@OnlyIn(Dist.CLIENT)
-	@SubscribeEvent
-	public static void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
-		event.registerEntityRenderer(ModEntities.DRAGON_ENTITY.get(), manager -> new DragonRenderer(manager, MODEL_INSTANCE));
-		event.registerBlockEntityRenderer(ModBlockEntities.DRAGON_EGG_BLOCK_ENTITY.get(), manager -> new DragonEggRenderer());
-		event.registerBlockEntityRenderer(ModBlockEntities.BLANK_EGG_BLOCK_ENTITY.get(), manager -> new BlankEggRenderer());
-	}
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(
+                ModEntities.DRAGON_ENTITY.get(), manager -> new DragonRenderer(manager, MODEL_INSTANCE));
+        event.registerBlockEntityRenderer(
+                ModBlockEntities.DRAGON_EGG_BLOCK_ENTITY.get(), manager -> new DragonEggRenderer());
+        event.registerBlockEntityRenderer(
+                ModBlockEntities.BLANK_EGG_BLOCK_ENTITY.get(), manager -> new BlankEggRenderer());
+    }
 }

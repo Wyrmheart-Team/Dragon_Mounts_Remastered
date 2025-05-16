@@ -2,33 +2,33 @@ package dmr.DragonMounts.types.abilities.types;
 
 import com.mojang.serialization.Codec;
 import dmr.DragonMounts.registry.DragonAbilities;
-import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import dmr.DragonMounts.server.entity.TameableDragonEntity;
+import java.util.Map;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.Map;
-
 public interface Ability {
-	Codec<Ability> CODEC = Codec.STRING.dispatch(Ability::type, DragonAbilities.REGISTRY::get);
-	String type();
+    Codec<Ability> CODEC = Codec.STRING.dispatch(Ability::type, DragonAbilities.REGISTRY::get);
 
-	default Component getTranslatedName() {
-		return Component.translatable("dmr.ability." + type() + ".name");
-	}
+    String type();
 
-	default Component getTranslatedDescription() {
-		return Component.translatable("dmr.ability." + type() + ".description");
-	}
+    default Component getTranslatedName() {
+        return Component.translatable("dmr.ability." + type() + ".name");
+    }
 
-	default void initialize(DMRDragonEntity dragon) {}
+    default Component getTranslatedDescription() {
+        return Component.translatable("dmr.ability." + type() + ".description");
+    }
 
-	default void close(DMRDragonEntity dragon) {}
+    default void initialize(TameableDragonEntity dragon) {}
 
-	default void tick(DMRDragonEntity dragon) {}
+    default void close(TameableDragonEntity dragon) {}
 
-	default void onMove(DMRDragonEntity dragon) {}
+    default void tick(TameableDragonEntity dragon) {}
 
-	default Map<ResourceLocation, Double> getAttributes() {
-		return null;
-	}
+    default void onMove(TameableDragonEntity dragon) {}
+
+    default Map<ResourceLocation, Double> getAttributes() {
+        return null;
+    }
 }

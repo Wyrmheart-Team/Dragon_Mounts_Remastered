@@ -3,6 +3,7 @@ plugins {
     id 'idea'
     id "io.freefair.lombok" version "8.10"
     id "net.neoforged.moddev"
+    id 'com.diffplug.spotless' version '7.0.3'
 }
 
 version = "$minecraft_version-$mod_version"
@@ -14,6 +15,21 @@ base {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+
+spotless {
+    java {
+        target 'src/*/java/**/*.java'
+        targetExclude 'src/generated/**/*.java', 'src/test/**/*Test.java'
+
+        importOrder 'java', 'javax', 'org', 'com', 'net.minecraft', 'net.neoforged', ''
+        removeUnusedImports()
+        cleanthat()
+        palantirJavaFormat()
+        trimTrailingWhitespace()
+        endWithNewline()
+        formatAnnotations()
+    }
+}
 
 sourceSets {
     test {

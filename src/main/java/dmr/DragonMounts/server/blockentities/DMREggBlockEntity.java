@@ -1,10 +1,13 @@
 package dmr.DragonMounts.server.blockentities;
 
+import static dmr.DragonMounts.server.blocks.DMREggBlock.HATCHING;
+
 import dmr.DragonMounts.ModConstants.NBTConstants;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.*;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.util.PlayerStateUtils;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
@@ -24,162 +27,163 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.UUID;
-
-import static dmr.DragonMounts.server.blocks.DMREggBlock.HATCHING;
-
 public class DMREggBlockEntity extends BlockEntity {
 
-	@Getter
-	@Setter
-	private String breedId;
+    @Getter
+    @Setter
+    private String breedId;
 
-	@Getter
-	@Setter
-	private String variantId = "";
+    @Getter
+    @Setter
+    private String variantId = "";
 
-	@Getter
-	@Setter
-	private int hatchTime = ServerConfig.HATCH_TIME_CONFIG.get();
+    @Getter
+    @Setter
+    private int hatchTime = ServerConfig.HATCH_TIME_CONFIG.get();
 
-	@Getter
-	@Setter
-	private String owner;
+    @Getter
+    @Setter
+    private String owner;
 
-	@Getter
-	@Setter
-	private Component customName;
+    @Getter
+    @Setter
+    private Component customName;
 
-	public DMREggBlockEntity(BlockPos pPos, BlockState pBlockState) {
-		super(ModBlockEntities.DRAGON_EGG_BLOCK_ENTITY.get(), pPos, pBlockState);
-	}
+    public DMREggBlockEntity(BlockPos pPos, BlockState pBlockState) {
+        super(ModBlockEntities.DRAGON_EGG_BLOCK_ENTITY.get(), pPos, pBlockState);
+    }
 
-	public IDragonBreed getBreed() {
-		return DragonBreedsRegistry.getDragonBreed(getBreedId());
-	}
+    public IDragonBreed getBreed() {
+        return DragonBreedsRegistry.getDragonBreed(getBreedId());
+    }
 
-	public void setBreed(IDragonBreed breed) {
-		setBreedId(breed.getId());
-	}
+    public void setBreed(IDragonBreed breed) {
+        setBreedId(breed.getId());
+    }
 
-	@Override
-	protected void saveAdditional(CompoundTag pTag, Provider registries) {
-		super.saveAdditional(pTag, registries);
+    @Override
+    protected void saveAdditional(CompoundTag pTag, Provider registries) {
+        super.saveAdditional(pTag, registries);
 
-		if (getBreedId() != null) pTag.putString(NBTConstants.BREED, getBreedId());
+        if (getBreedId() != null) pTag.putString(NBTConstants.BREED, getBreedId());
 
-		pTag.putInt("hatchTime", getHatchTime());
-		pTag.putString("owner", getOwner() == null ? "" : getOwner());
+        pTag.putInt("hatchTime", getHatchTime());
+        pTag.putString("owner", getOwner() == null ? "" : getOwner());
 
-		if (getCustomName() != null) pTag.putString("name", Component.Serializer.toJson(customName, registries));
-	}
+        if (getCustomName() != null) pTag.putString("name", Component.Serializer.toJson(customName, registries));
+    }
 
-	@Override
-	protected void loadAdditional(CompoundTag tag, Provider registries) {
-		super.loadAdditional(tag, registries);
-		setBreedId(tag.getString(NBTConstants.BREED));
-		setHatchTime(tag.getInt("hatchTime"));
-		setOwner(tag.getString("owner"));
+    @Override
+    protected void loadAdditional(CompoundTag tag, Provider registries) {
+        super.loadAdditional(tag, registries);
+        setBreedId(tag.getString(NBTConstants.BREED));
+        setHatchTime(tag.getInt("hatchTime"));
+        setOwner(tag.getString("owner"));
 
-		var name = tag.getString("name");
-		if (!name.isBlank()) setCustomName(Component.Serializer.fromJson(name, registries));
-	}
+        var name = tag.getString("name");
+        if (!name.isBlank()) setCustomName(Component.Serializer.fromJson(name, registries));
+    }
 
-	@Override
-	protected void applyImplicitComponents(DataComponentInput componentInput) {
-		super.applyImplicitComponents(componentInput);
-		setBreedId(componentInput.get(ModComponents.DRAGON_BREED));
-		setHatchTime(componentInput.getOrDefault(ModComponents.EGG_HATCH_TIME, ServerConfig.HATCH_TIME_CONFIG.get()));
-		setOwner(componentInput.get(ModComponents.EGG_OWNER));
-	}
+    @Override
+    protected void applyImplicitComponents(DataComponentInput componentInput) {
+        super.applyImplicitComponents(componentInput);
+        setBreedId(componentInput.get(ModComponents.DRAGON_BREED));
+        setHatchTime(componentInput.getOrDefault(ModComponents.EGG_HATCH_TIME, ServerConfig.HATCH_TIME_CONFIG.get()));
+        setOwner(componentInput.get(ModComponents.EGG_OWNER));
+    }
 
-	@Override
-	protected void collectImplicitComponents(Builder components) {
-		super.collectImplicitComponents(components);
-		components.set(ModComponents.DRAGON_BREED, getBreedId());
-		components.set(ModComponents.EGG_HATCH_TIME, getHatchTime());
-		components.set(ModComponents.EGG_OWNER, getOwner());
-	}
+    @Override
+    protected void collectImplicitComponents(Builder components) {
+        super.collectImplicitComponents(components);
+        components.set(ModComponents.DRAGON_BREED, getBreedId());
+        components.set(ModComponents.EGG_HATCH_TIME, getHatchTime());
+        components.set(ModComponents.EGG_OWNER, getOwner());
+    }
 
-	public int tickCount = 0;
+    public int tickCount = 0;
 
-	public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
-		tickCount++;
-		int maxHatchTime = getBreed() == null ? 1 : getBreed().getHatchTime();
-		int growthStage = (maxHatchTime / 3);
+    public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
+        tickCount++;
+        int maxHatchTime = getBreed() == null ? 1 : getBreed().getHatchTime();
+        int growthStage = (maxHatchTime / 3);
 
-		if (tickCount % 20 == 0) {
-			if (pState.getValue(HATCHING)) {
-				if (hatchTime <= 0) {
-					if (!pLevel.isClientSide) hatch((ServerLevel) pLevel, pPos);
-				} else {
-					hatchTime -= 1;
+        if (tickCount % 20 == 0) {
+            if (pState.getValue(HATCHING)) {
+                if (hatchTime <= 0) {
+                    if (!pLevel.isClientSide) hatch((ServerLevel) pLevel, pPos);
+                } else {
+                    hatchTime -= 1;
 
-					var stage = Mth.clamp((maxHatchTime - hatchTime) / growthStage, 0, 3);
+                    var stage = Mth.clamp((maxHatchTime - hatchTime) / growthStage, 0, 3);
 
-					if (stage == 3) {
-						level.playSound(
-							null,
-							pPos,
-							SoundEvents.TURTLE_EGG_CRACK,
-							SoundSource.BLOCKS,
-							0.85f,
-							0.95f + level.getRandom().nextFloat() * 0.2f
-						);
-					}
-				}
-			}
-		}
-	}
+                    if (stage == 3) {
+                        level.playSound(
+                                null,
+                                pPos,
+                                SoundEvents.TURTLE_EGG_CRACK,
+                                SoundSource.BLOCKS,
+                                0.85f,
+                                0.95f + level.getRandom().nextFloat() * 0.2f);
+                    }
+                }
+            }
+        }
+    }
 
-	@SuppressWarnings("ConstantConditions")
-	public void hatch(ServerLevel level, BlockPos pos) {
-		var data = (DMREggBlockEntity) level.getBlockEntity(pos);
-		var baby = ModEntities.DRAGON_ENTITY.get().create(level);
-		var ownerId = data.getOwner();
+    @SuppressWarnings("ConstantConditions")
+    public void hatch(ServerLevel level, BlockPos pos) {
+        var data = (DMREggBlockEntity) level.getBlockEntity(pos);
+        var baby = ModEntities.DRAGON_ENTITY.get().create(level);
+        var ownerId = data.getOwner();
 
-		level.playSound(null, pos, SoundEvents.TURTLE_EGG_HATCH, SoundSource.BLOCKS, 1.2f, 0.95f + level.getRandom().nextFloat() * 0.2f);
-		level.removeBlock(pos, false); // remove block AFTER data is cached
+        level.playSound(
+                null,
+                pos,
+                SoundEvents.TURTLE_EGG_HATCH,
+                SoundSource.BLOCKS,
+                1.2f,
+                0.95f + level.getRandom().nextFloat() * 0.2f);
+        level.removeBlock(pos, false); // remove block AFTER data is cached
 
-		baby.setBreed(data.getBreed());
-		baby.setVariant(data.getVariantId());
+        baby.setBreed(data.getBreed());
+        baby.setVariant(data.getVariantId());
 
-		baby.setBaby(true);
-		baby.setPos(pos.getX(), pos.getY(), pos.getZ());
+        baby.setBaby(true);
+        baby.setPos(pos.getX(), pos.getY(), pos.getZ());
 
-		baby.setHatched(true);
+        baby.setHatched(true);
 
-		if (data.getCustomName() != null) baby.setCustomName(data.getCustomName());
+        if (data.getCustomName() != null) baby.setCustomName(data.getCustomName());
 
-		level.addFreshEntity(baby);
+        level.addFreshEntity(baby);
 
-		if (ownerId != null && !ownerId.isBlank()) {
-			UUID owner = UUID.fromString(data.getOwner());
-			var player = level.getPlayerByUUID(owner);
-			if (player instanceof ServerPlayer serverPlayer) {
-				var state = PlayerStateUtils.getHandler(player);
-				state.dragonsHatched++;
+        if (ownerId != null && !ownerId.isBlank()) {
+            UUID owner = UUID.fromString(data.getOwner());
+            var player = level.getPlayerByUUID(owner);
+            if (player instanceof ServerPlayer serverPlayer) {
+                var state = PlayerStateUtils.getHandler(player);
+                state.dragonsHatched++;
 
-				ModCriterionTriggers.HATCH_COUNT_TRIGGER.get().trigger(serverPlayer, state.dragonsHatched);
+                ModCriterionTriggers.HATCH_COUNT_TRIGGER.get().trigger(serverPlayer, state.dragonsHatched);
 
-				if (data.getBreed().isHybrid()) {
-					ModCriterionTriggers.IS_HYBRID_HATCH_TRIGGER.get().trigger(serverPlayer);
-				} else {
-					ModCriterionTriggers.HATCH_TRIGGER.get().trigger(serverPlayer, data.getBreedId());
-				}
-			}
-		}
-	}
+                if (data.getBreed().isHybrid()) {
+                    ModCriterionTriggers.IS_HYBRID_HATCH_TRIGGER.get().trigger(serverPlayer);
+                } else {
+                    ModCriterionTriggers.HATCH_TRIGGER.get().trigger(serverPlayer, data.getBreedId());
+                }
+            }
+        }
+    }
 
-	@Override
-	public Packet<ClientGamePacketListener> getUpdatePacket() {
-		return ClientboundBlockEntityDataPacket.create(this);
-	}
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
 
-	@Override
-	public CompoundTag getUpdateTag(Provider registries) {
-		var tag = super.getUpdateTag(registries);
-		saveAdditional(tag, registries);
-		return tag;
-	}
+    @Override
+    public CompoundTag getUpdateTag(Provider registries) {
+        var tag = super.getUpdateTag(registries);
+        saveAdditional(tag, registries);
+        return tag;
+    }
 }

@@ -3,7 +3,8 @@ package dmr.DragonMounts.client.renderer.layers;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dmr.DragonMounts.DMR;
-import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import dmr.DragonMounts.server.entity.TameableDragonEntity;
+import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -15,59 +16,58 @@ import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
-import java.util.Optional;
+public class DragonSaddleLayer extends GeoRenderLayer<TameableDragonEntity> {
 
-public class DragonSaddleLayer extends GeoRenderLayer<DMRDragonEntity> {
+    public DragonSaddleLayer(GeoRenderer<TameableDragonEntity> entityRendererIn) {
+        super(entityRendererIn);
+    }
 
-	public DragonSaddleLayer(GeoRenderer<DMRDragonEntity> entityRendererIn) {
-		super(entityRendererIn);
-	}
+    @Override
+    public void render(
+            PoseStack matrixStackIn,
+            TameableDragonEntity entityLivingBaseIn,
+            BakedGeoModel bakedModel,
+            RenderType renderType1,
+            MultiBufferSource bufferSource,
+            VertexConsumer buffer,
+            float partialTick,
+            int packedLight,
+            int packedOverlay) {
+        if (DMR.DEBUG) {
+            Minecraft.getInstance().getProfiler().push("saddle_layer");
+        }
+        if (entityLivingBaseIn.isSaddled()) {
+            var breed = entityLivingBaseIn.getBreed();
+            var breedResourceLocation = breed.getResourceLocation();
+            ResourceLocation saddleTexture =
+                    DMR.id("textures/entity/dragon/" + breedResourceLocation.getPath() + "/saddle.png");
 
-	@Override
-	public void render(
-		PoseStack matrixStackIn,
-		DMRDragonEntity entityLivingBaseIn,
-		BakedGeoModel bakedModel,
-		RenderType renderType1,
-		MultiBufferSource bufferSource,
-		VertexConsumer buffer,
-		float partialTick,
-		int packedLight,
-		int packedOverlay
-	) {
-		if (DMR.DEBUG) {
-			Minecraft.getInstance().getProfiler().push("saddle_layer");
-		}
-		if (entityLivingBaseIn.isSaddled()) {
-			var breed = entityLivingBaseIn.getBreed();
-			var breedResourceLocation = breed.getResourceLocation();
-			ResourceLocation saddleTexture = DMR.id("textures/entity/dragon/" + breedResourceLocation.getPath() + "/saddle.png");
+            if (entityLivingBaseIn.hasVariant()
+                    && entityLivingBaseIn.getVariant().saddleTexture() != null) {
+                saddleTexture = entityLivingBaseIn.getVariant().saddleTexture();
+            }
 
-			if (entityLivingBaseIn.hasVariant() && entityLivingBaseIn.getVariant().saddleTexture() != null) {
-				saddleTexture = entityLivingBaseIn.getVariant().saddleTexture();
-			}
+            Optional<Resource> resourceOptional =
+                    Minecraft.getInstance().getResourceManager().getResource(saddleTexture);
+            if (resourceOptional.isEmpty()) return;
 
-			Optional<Resource> resourceOptional = Minecraft.getInstance().getResourceManager().getResource(saddleTexture);
-			if (resourceOptional.isEmpty()) return;
-
-			RenderType type = RenderType.entityCutoutNoCullZOffset(saddleTexture);
-			VertexConsumer vertexConsumer = bufferSource.getBuffer(type);
-			getRenderer()
-				.reRender(
-					bakedModel,
-					matrixStackIn,
-					bufferSource,
-					entityLivingBaseIn,
-					type,
-					vertexConsumer,
-					partialTick,
-					packedLight,
-					OverlayTexture.NO_OVERLAY,
-					FastColor.ARGB32.opaque(0xFFFFFF)
-				);
-		}
-		if (DMR.DEBUG) {
-			Minecraft.getInstance().getProfiler().pop();
-		}
-	}
+            RenderType type = RenderType.entityCutoutNoCullZOffset(saddleTexture);
+            VertexConsumer vertexConsumer = bufferSource.getBuffer(type);
+            getRenderer()
+                    .reRender(
+                            bakedModel,
+                            matrixStackIn,
+                            bufferSource,
+                            entityLivingBaseIn,
+                            type,
+                            vertexConsumer,
+                            partialTick,
+                            packedLight,
+                            OverlayTexture.NO_OVERLAY,
+                            FastColor.ARGB32.opaque(0xFFFFFF));
+        }
+        if (DMR.DEBUG) {
+            Minecraft.getInstance().getProfiler().pop();
+        }
+    }
 }

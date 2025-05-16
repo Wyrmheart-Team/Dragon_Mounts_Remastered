@@ -1,5 +1,7 @@
 package dmr.DragonMounts;
 
+import static net.neoforged.fml.common.EventBusSubscriber.Bus.MOD;
+
 import dmr.DragonMounts.client.gui.DragonInventoryScreen;
 import dmr.DragonMounts.client.model.DragonEggModelLoader;
 import dmr.DragonMounts.registry.ModItems;
@@ -19,35 +21,36 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
-import static net.neoforged.fml.common.EventBusSubscriber.Bus.MOD;
-
 @EventBusSubscriber(bus = MOD, value = Dist.CLIENT)
 public class ClientRegistry {
 
-	@OnlyIn(Dist.CLIENT)
-	@SubscribeEvent
-	public static void setupClient(final FMLClientSetupEvent event) {
-		ResourcePackLoader.addReloadListener(event);
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void setupClient(final FMLClientSetupEvent event) {
+        ResourcePackLoader.addReloadListener(event);
 
-		var modContainer = ModLoadingContext.get().getActiveContainer();
-		modContainer.registerExtensionPoint(IConfigScreenFactory.class, (mc, parent) -> new ConfigurationScreen(modContainer, parent));
-	}
+        var modContainer = ModLoadingContext.get().getActiveContainer();
+        modContainer.registerExtensionPoint(
+                IConfigScreenFactory.class, (mc, parent) -> new ConfigurationScreen(modContainer, parent));
+    }
 
-	@OnlyIn(Dist.CLIENT)
-	@SubscribeEvent
-	public static void registerMenus(RegisterMenuScreensEvent e) {
-		e.register(ModMenus.DRAGON_MENU.get(), DragonInventoryScreen::new);
-	}
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void registerMenus(RegisterMenuScreensEvent e) {
+        e.register(ModMenus.DRAGON_MENU.get(), DragonInventoryScreen::new);
+    }
 
-	@OnlyIn(Dist.CLIENT)
-	@SubscribeEvent
-	public static void registerGeometryLoaders(ModelEvent.RegisterGeometryLoaders e) {
-		e.register(DMR.id("dragon_egg"), DragonEggModelLoader.INSTANCE);
-	}
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void registerGeometryLoaders(ModelEvent.RegisterGeometryLoaders e) {
+        e.register(DMR.id("dragon_egg"), DragonEggModelLoader.INSTANCE);
+    }
 
-	@OnlyIn(Dist.CLIENT)
-	@SubscribeEvent
-	public static void registerColorHandlers(RegisterColorHandlersEvent.Item e) {
-		e.register((stack, layer) -> FastColor.ARGB32.opaque(DragonSpawnEgg.getColor(stack, layer)), ModItems.DRAGON_SPAWN_EGG.get());
-	}
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void registerColorHandlers(RegisterColorHandlersEvent.Item e) {
+        e.register(
+                (stack, layer) -> FastColor.ARGB32.opaque(DragonSpawnEgg.getColor(stack, layer)),
+                ModItems.DRAGON_SPAWN_EGG.get());
+    }
 }

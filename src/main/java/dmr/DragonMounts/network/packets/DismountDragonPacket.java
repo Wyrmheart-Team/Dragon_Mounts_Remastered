@@ -13,47 +13,47 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record DismountDragonPacket(int entityId, boolean state) implements IMessage<DismountDragonPacket> {
-	public static final StreamCodec<FriendlyByteBuf, DismountDragonPacket> STREAM_CODEC = StreamCodec.composite(
-		ByteBufCodecs.INT,
-		DismountDragonPacket::entityId,
-		ByteBufCodecs.BOOL,
-		DismountDragonPacket::state,
-		DismountDragonPacket::new
-	);
+    public static final StreamCodec<FriendlyByteBuf, DismountDragonPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT,
+            DismountDragonPacket::entityId,
+            ByteBufCodecs.BOOL,
+            DismountDragonPacket::state,
+            DismountDragonPacket::new);
 
-	@Override
-	public StreamCodec<? super RegistryFriendlyByteBuf, DismountDragonPacket> streamCodec() {
-		return STREAM_CODEC;
-	}
+    @Override
+    public StreamCodec<? super RegistryFriendlyByteBuf, DismountDragonPacket> streamCodec() {
+        return STREAM_CODEC;
+    }
 
-	public static final CustomPacketPayload.Type<DragonStatePacket> TYPE = new CustomPacketPayload.Type<>(DMR.id("dismount_dragon"));
+    public static final CustomPacketPayload.Type<DragonStatePacket> TYPE =
+            new CustomPacketPayload.Type<>(DMR.id("dismount_dragon"));
 
-	@Override
-	public Type<? extends CustomPacketPayload> type() {
-		return TYPE;
-	}
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
 
-	@Override
-	public DismountDragonPacket decode(FriendlyByteBuf buffer) {
-		return new DismountDragonPacket(buffer.readInt(), buffer.readBoolean());
-	}
+    @Override
+    public DismountDragonPacket decode(FriendlyByteBuf buffer) {
+        return new DismountDragonPacket(buffer.readInt(), buffer.readBoolean());
+    }
 
-	@Override
-	public boolean autoSync() {
-		return true;
-	}
+    @Override
+    public boolean autoSync() {
+        return true;
+    }
 
-	public void handle(IPayloadContext supplier, Player player) {
-		var level = player.level;
-		var entity = level.getEntity(entityId);
+    public void handle(IPayloadContext supplier, Player player) {
+        var level = player.level;
+        var entity = level.getEntity(entityId);
 
-		if (entity instanceof Player player1) {
-			DragonOwnerCapability cap = player1.getData(ModCapabilities.PLAYER_CAPABILITY);
-			cap.shouldDismount = state;
+        if (entity instanceof Player player1) {
+            DragonOwnerCapability cap = player1.getData(ModCapabilities.PLAYER_CAPABILITY);
+            cap.shouldDismount = state;
 
-			if (state) {
-				player1.stopRiding();
-			}
-		}
-	}
+            if (state) {
+                player1.stopRiding();
+            }
+        }
+    }
 }

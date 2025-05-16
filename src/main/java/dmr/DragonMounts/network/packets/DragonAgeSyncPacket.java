@@ -2,7 +2,7 @@ package dmr.DragonMounts.network.packets;
 
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.network.IMessage;
-import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -12,37 +12,37 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record DragonAgeSyncPacket(int dragonId, int age) implements IMessage<DragonAgeSyncPacket> {
-	public static final CustomPacketPayload.Type<DragonStatePacket> TYPE = new CustomPacketPayload.Type<>(DMR.id("age_sync"));
+    public static final CustomPacketPayload.Type<DragonStatePacket> TYPE =
+            new CustomPacketPayload.Type<>(DMR.id("age_sync"));
 
-	@Override
-	public Type<? extends CustomPacketPayload> type() {
-		return TYPE;
-	}
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
 
-	@Override
-	public DragonAgeSyncPacket decode(FriendlyByteBuf buffer) {
-		return new DragonAgeSyncPacket(buffer.readInt(), buffer.readInt());
-	}
+    @Override
+    public DragonAgeSyncPacket decode(FriendlyByteBuf buffer) {
+        return new DragonAgeSyncPacket(buffer.readInt(), buffer.readInt());
+    }
 
-	@Override
-	public void handle(IPayloadContext context, Player player) {
-		var dragon = player.level.getEntity(dragonId);
+    @Override
+    public void handle(IPayloadContext context, Player player) {
+        var dragon = player.level.getEntity(dragonId);
 
-		if (dragon instanceof DMRDragonEntity dragonEntity) {
-			dragonEntity.setAge(age);
-		}
-	}
+        if (dragon instanceof TameableDragonEntity dragonEntity) {
+            dragonEntity.setAge(age);
+        }
+    }
 
-	public static final StreamCodec<FriendlyByteBuf, DragonAgeSyncPacket> STREAM_CODEC = StreamCodec.composite(
-		ByteBufCodecs.INT,
-		DragonAgeSyncPacket::dragonId,
-		ByteBufCodecs.INT,
-		DragonAgeSyncPacket::age,
-		DragonAgeSyncPacket::new
-	);
+    public static final StreamCodec<FriendlyByteBuf, DragonAgeSyncPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT,
+            DragonAgeSyncPacket::dragonId,
+            ByteBufCodecs.INT,
+            DragonAgeSyncPacket::age,
+            DragonAgeSyncPacket::new);
 
-	@Override
-	public StreamCodec<? super RegistryFriendlyByteBuf, DragonAgeSyncPacket> streamCodec() {
-		return STREAM_CODEC;
-	}
+    @Override
+    public StreamCodec<? super RegistryFriendlyByteBuf, DragonAgeSyncPacket> streamCodec() {
+        return STREAM_CODEC;
+    }
 }

@@ -3,7 +3,7 @@ package dmr.DragonMounts.client.gui;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.network.packets.DragonStatePacket;
 import dmr.DragonMounts.server.container.DragonContainerMenu;
-import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.server.inventory.DragonInventoryHandler.DragonInventory;
 import dmr.DragonMounts.types.abilities.types.Ability;
 import net.minecraft.client.gui.GuiGraphics;
@@ -21,104 +21,98 @@ import net.neoforged.neoforge.network.PacketDistributor;
 @OnlyIn(Dist.CLIENT)
 public class DragonInventoryScreen extends AbstractContainerScreen<DragonContainerMenu> {
 
-	private static final ResourceLocation INVENTORY_LOCATION = DMR.id("textures/gui/dragon.png");
-	private final DMRDragonEntity dragon;
-	/**
-	 * The mouse x-position recorded during the last rendered frame.
-	 */
-	private float xMouse;
-	/**
-	 * The mouse y-position recorded during the last rendered frame.
-	 */
-	private float yMouse;
+    private static final ResourceLocation INVENTORY_LOCATION = DMR.id("textures/gui/dragon.png");
+    private final TameableDragonEntity dragon;
 
-	public DragonInventoryScreen(DragonContainerMenu pMenu, Inventory pPlayerInventory, Component component) {
-		super(pMenu, pPlayerInventory, component);
-		this.dragon = pMenu.dragon;
-	}
+    /** The mouse x-position recorded during the last rendered frame. */
+    private float xMouse;
 
-	@Override
-	protected void init() {
-		super.init();
-		int xSize = 176;
-		int ySize = 233;
-		leftPos = (width - xSize) / 2;
-		topPos = (height - ySize) / 2;
+    /** The mouse y-position recorded during the last rendered frame. */
+    private float yMouse;
 
-		addRenderableWidget(
-			new ExtendedButton(leftPos + 114, topPos + 7, 55, 20, Component.translatable("dmr.inventory.sit"), p_214087_1_ -> {
-				PacketDistributor.sendToServer(new DragonStatePacket(dragon.getId(), 0));
-			})
-		);
+    public DragonInventoryScreen(DragonContainerMenu pMenu, Inventory pPlayerInventory, Component component) {
+        super(pMenu, pPlayerInventory, component);
+        this.dragon = pMenu.dragon;
+    }
 
-		addRenderableWidget(
-			new ExtendedButton(leftPos + 114, topPos + 31, 55, 20, Component.translatable("dmr.inventory.follow"), p_214087_1_ -> {
-				PacketDistributor.sendToServer(new DragonStatePacket(dragon.getId(), 1));
-			})
-		);
+    @Override
+    protected void init() {
+        super.init();
+        int xSize = 176;
+        int ySize = 233;
+        leftPos = (width - xSize) / 2;
+        topPos = (height - ySize) / 2;
 
-		addRenderableWidget(
-			new ExtendedButton(leftPos + 114, topPos + 55, 55, 20, Component.translatable("dmr.inventory.wander"), p_214087_1_ -> {
-				PacketDistributor.sendToServer(new DragonStatePacket(dragon.getId(), 2));
-			})
-		);
+        addRenderableWidget(new ExtendedButton(
+                leftPos + 114, topPos + 7, 55, 20, Component.translatable("dmr.inventory.sit"), p_214087_1_ -> {
+                    PacketDistributor.sendToServer(new DragonStatePacket(dragon.getId(), 0));
+                }));
 
-		int i = 0;
-		int offsetY = 0;
-		for (Ability ability : dragon.getBreed().getAbilities()) {
-			var btn = new DragonAbilityButton(leftPos - 124, topPos + 5 + offsetY, ability);
-			addRenderableWidget(btn);
-			offsetY += 40 + btn.description.size() * 9;
-			i++;
-		}
-	}
+        addRenderableWidget(new ExtendedButton(
+                leftPos + 114, topPos + 31, 55, 20, Component.translatable("dmr.inventory.follow"), p_214087_1_ -> {
+                    PacketDistributor.sendToServer(new DragonStatePacket(dragon.getId(), 1));
+                }));
 
-	public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-		this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-		this.xMouse = (float) pMouseX;
-		this.yMouse = (float) pMouseY;
-		super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-		this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
-	}
+        addRenderableWidget(new ExtendedButton(
+                leftPos + 114, topPos + 55, 55, 20, Component.translatable("dmr.inventory.wander"), p_214087_1_ -> {
+                    PacketDistributor.sendToServer(new DragonStatePacket(dragon.getId(), 2));
+                }));
 
-	protected void renderLabels(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY) {
-		pGuiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
+        int i = 0;
+        int offsetY = 0;
+        for (Ability ability : dragon.getBreed().getAbilities()) {
+            var btn = new DragonAbilityButton(leftPos - 124, topPos + 5 + offsetY, ability);
+            addRenderableWidget(btn);
+            offsetY += 40 + btn.description.size() * 9;
+            i++;
+        }
+    }
 
-		if (dragon.hasChest()) {
-			if (dragon.getInventory().getItem(DragonInventory.CHEST_SLOT).is(Items.ENDER_CHEST)) {
-				pGuiGraphics.drawString(
-					this.font,
-					Component.translatable("container.enderchest"),
-					this.inventoryLabelX,
-					this.inventoryLabelY,
-					4210752,
-					false
-				);
-				return;
-			}
-		}
+    public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        this.xMouse = (float) pMouseX;
+        this.yMouse = (float) pMouseY;
+        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
+    }
 
-		pGuiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 4210752, false);
-	}
+    protected void renderLabels(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY) {
+        pGuiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
 
-	protected void renderBg(GuiGraphics pGuiGraphics, float pPartialTick, int pMouseX, int pMouseY) {
-		pGuiGraphics.blit(INVENTORY_LOCATION, leftPos, topPos, 0, 0, 176, 233, 512, 512);
+        if (dragon.hasChest()) {
+            if (dragon.getInventory().getItem(DragonInventory.CHEST_SLOT).is(Items.ENDER_CHEST)) {
+                pGuiGraphics.drawString(
+                        this.font,
+                        Component.translatable("container.enderchest"),
+                        this.inventoryLabelX,
+                        this.inventoryLabelY,
+                        4210752,
+                        false);
+                return;
+            }
+        }
 
-		if (dragon.hasChest()) {
-			pGuiGraphics.blit(INVENTORY_LOCATION, leftPos + 7, topPos + 83, 176, 0, 9 * 18, 54, 512, 512);
-		}
+        pGuiGraphics.drawString(
+                this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 4210752, false);
+    }
 
-		InventoryScreen.renderEntityInInventoryFollowsMouse(
-			pGuiGraphics,
-			leftPos + 28,
-			topPos + 18,
-			leftPos + 28 + 81,
-			topPos + 18 + 52,
-			10,
-			1,
-			this.xMouse,
-			this.yMouse,
-			this.dragon
-		);
-	}
+    protected void renderBg(GuiGraphics pGuiGraphics, float pPartialTick, int pMouseX, int pMouseY) {
+        pGuiGraphics.blit(INVENTORY_LOCATION, leftPos, topPos, 0, 0, 176, 233, 512, 512);
+
+        if (dragon.hasChest()) {
+            pGuiGraphics.blit(INVENTORY_LOCATION, leftPos + 7, topPos + 83, 176, 0, 9 * 18, 54, 512, 512);
+        }
+
+        InventoryScreen.renderEntityInInventoryFollowsMouse(
+                pGuiGraphics,
+                leftPos + 28,
+                topPos + 18,
+                leftPos + 28 + 81,
+                topPos + 18 + 52,
+                10,
+                1,
+                this.xMouse,
+                this.yMouse,
+                this.dragon);
+    }
 }

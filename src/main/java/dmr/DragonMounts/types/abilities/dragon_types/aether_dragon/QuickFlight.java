@@ -4,8 +4,8 @@ import dmr.DragonMounts.types.abilities.types.Ability;
 
 public class QuickFlight implements Ability {
 
-	@Override
-	public String type() {
-		return "quick_flight";
-	}
+    @Override
+    public String type() {
+        return "quick_flight";
+    }
 }

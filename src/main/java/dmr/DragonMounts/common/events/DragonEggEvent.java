@@ -15,18 +15,25 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 @EventBusSubscriber(bus = Bus.GAME)
 public class DragonEggEvent {
 
-	@SubscribeEvent
-	public static void interactWithEgg(PlayerInteractEvent.RightClickBlock e) {
-		if (ServerConfig.ALLOW_EGG_OVERRIDE.get() && e.getLevel().getBlockState(e.getPos()).is(Blocks.DRAGON_EGG)) {
-			if (DragonBreedsRegistry.hasDragonBreed("end")) {
-				if (e.getLevel().isClientSide) {
-					e.getEntity().swing(InteractionHand.MAIN_HAND);
-				} else {
-					var state = ModBlocks.DRAGON_EGG_BLOCK.get().defaultBlockState().setValue(DMREggBlock.HATCHING, true);
-					DMREggBlock.place((ServerLevel) e.getLevel(), e.getPos(), state, DragonBreedsRegistry.getDragonBreed("end"), null);
-				}
-				e.setCanceled(true);
-			}
-		}
-	}
+    @SubscribeEvent
+    public static void interactWithEgg(PlayerInteractEvent.RightClickBlock e) {
+        if (ServerConfig.ALLOW_EGG_OVERRIDE.get()
+                && e.getLevel().getBlockState(e.getPos()).is(Blocks.DRAGON_EGG)) {
+            if (DragonBreedsRegistry.hasDragonBreed("end")) {
+                if (e.getLevel().isClientSide) {
+                    e.getEntity().swing(InteractionHand.MAIN_HAND);
+                } else {
+                    var state =
+                            ModBlocks.DRAGON_EGG_BLOCK.get().defaultBlockState().setValue(DMREggBlock.HATCHING, true);
+                    DMREggBlock.place(
+                            (ServerLevel) e.getLevel(),
+                            e.getPos(),
+                            state,
+                            DragonBreedsRegistry.getDragonBreed("end"),
+                            null);
+                }
+                e.setCanceled(true);
+            }
+        }
+    }
 }

@@ -9,16 +9,17 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public interface IMessage<T extends CustomPacketPayload> extends CustomPacketPayload {
-	T decode(FriendlyByteBuf buffer);
-	StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec();
+    T decode(FriendlyByteBuf buffer);
 
-	default boolean autoSync() {
-		return false;
-	}
+    StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec();
 
-	void handle(IPayloadContext context, Player player);
+    default boolean autoSync() {
+        return false;
+    }
 
-	default void handleServer(IPayloadContext context, ServerPlayer player) {}
+    void handle(IPayloadContext context, Player player);
 
-	default void handleClient(IPayloadContext context, Player player) {}
+    default void handleServer(IPayloadContext context, ServerPlayer player) {}
+
+    default void handleClient(IPayloadContext context, Player player) {}
 }

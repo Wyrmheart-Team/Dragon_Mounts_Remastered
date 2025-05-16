@@ -2,7 +2,7 @@ package dmr.DragonMounts.common.capability;
 
 import dmr.DragonMounts.common.handlers.DragonWhistleHandler.DragonInstance;
 import dmr.DragonMounts.network.packets.DragonNBTSync;
-import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.HolderLookup.Provider;
@@ -24,198 +24,197 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DragonOwnerCapability implements INBTSerializable<CompoundTag> {
 
-	@Setter
-	@Getter
-	private Player playerInstance;
+    @Setter
+    @Getter
+    private Player playerInstance;
 
-	public Long lastCall;
+    public Long lastCall;
 
-	public int dragonsHatched;
+    public int dragonsHatched;
 
-	public ConcurrentHashMap<Integer, UUID> lastSummons = new ConcurrentHashMap<>();
-	public ConcurrentHashMap<Integer, Integer> respawnDelays = new ConcurrentHashMap<>();
-	public ConcurrentHashMap<Integer, CompoundTag> dragonNBTs = new ConcurrentHashMap<>();
-	public ConcurrentHashMap<Integer, DragonInstance> dragonInstances = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<Integer, UUID> lastSummons = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<Integer, Integer> respawnDelays = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<Integer, CompoundTag> dragonNBTs = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<Integer, DragonInstance> dragonInstances = new ConcurrentHashMap<>();
 
-	public boolean shouldDismount;
+    public boolean shouldDismount;
 
-	//Client side synced configs
-	public boolean cameraFlight = true;
-	public boolean alternateDismount = true;
+    // Client side synced configs
+    public boolean cameraFlight = true;
+    public boolean alternateDismount = true;
 
-	public DMRDragonEntity createDragonEntity(Player player, Level world, int index) {
-		setPlayerInstance(player);
+    public TameableDragonEntity createDragonEntity(Player player, Level world, int index) {
+        setPlayerInstance(player);
 
-		var instance = getDragonInstance(index);
-		var nbt = dragonNBTs.get(index);
-		var uuid = instance.getUUID();
+        var instance = getDragonInstance(index);
+        var nbt = dragonNBTs.get(index);
+        var uuid = instance.getUUID();
 
-		if (nbt != null) {
-			Optional<EntityType<?>> type = EntityType.by(nbt);
+        if (nbt != null) {
+            Optional<EntityType<?>> type = EntityType.by(nbt);
 
-			if (type.isPresent()) {
-				Entity entity = type.get().create(world);
-				if (entity instanceof DMRDragonEntity dragon) {
-					dragon.load(nbt);
-					dragon.setUUID(UUID.randomUUID());
-					dragon.setDragonUUID(uuid);
-					
-					dragon.stopSitting();
-					dragon.setWanderTarget(Optional.empty());
+            if (type.isPresent()) {
+                Entity entity = type.get().create(world);
+                if (entity instanceof TameableDragonEntity dragon) {
+                    dragon.load(nbt);
+                    dragon.setUUID(UUID.randomUUID());
+                    dragon.setDragonUUID(uuid);
 
-					setDragonToWhistle(dragon, index);
-					
-					dragon.clearFire();
-					dragon.hurtTime = 0;
-					dragon.setHealth(Math.max(1, dragon.getHealth()));
-					
-					//Cure the dragon of any effects to prevent for example poison or wither
-					dragon.removeEffectsCuredBy(EffectCures.PROTECTED_BY_TOTEM);
-					
-					lastSummons.put(index, dragon.getUUID());
-					
-					return dragon;
-				}
-			}
-		}
-		return null;
-	}
+                    dragon.stopSitting();
+                    dragon.setWanderTarget(Optional.empty());
 
-	public DragonInstance getDragonInstance(int index) {
-		return dragonInstances.get(index);
-	}
+                    setDragonToWhistle(dragon, index);
 
-	public void setDragonInstance(int index, DragonInstance instance) {
-		dragonInstances.put(index, instance);
-	}
+                    dragon.clearFire();
+                    dragon.hurtTime = 0;
+                    dragon.setHealth(Math.max(1, dragon.getHealth()));
 
-	public void setDragonToWhistle(DMRDragonEntity dragon, int index) {
-		dragon.setTame(true, true);
-		dragon.setOwnerUUID(playerInstance.getGameProfile().getId());
+                    // Cure the dragon of any effects to prevent for example poison or wither
+                    dragon.removeEffectsCuredBy(EffectCures.PROTECTED_BY_TOTEM);
 
-		var wanderPos = dragon.getWanderTarget();
-		var sit = dragon.isOrderedToSit();
+                    lastSummons.put(index, dragon.getUUID());
 
-		dragon.setWanderTarget(Optional.empty());
-		dragon.setOrderedToSit(false);
+                    return dragon;
+                }
+            }
+        }
+        return null;
+    }
 
-		//noinspection removal
-		var nbtData = dragon.serializeNBT(dragon.level.registryAccess());
-		dragonNBTs.put(index, nbtData);
+    public DragonInstance getDragonInstance(int index) {
+        return dragonInstances.get(index);
+    }
 
-		if (!dragon.level.isClientSide && playerInstance instanceof ServerPlayer spPlayer) {
-			PacketDistributor.sendToPlayer(spPlayer, new DragonNBTSync(index, nbtData));
-		}
+    public void setDragonInstance(int index, DragonInstance instance) {
+        dragonInstances.put(index, instance);
+    }
 
-		var instance = new DragonInstance(dragon);
-		dragonInstances.put(index, instance);
+    public void setDragonToWhistle(TameableDragonEntity dragon, int index) {
+        dragon.setTame(true, true);
+        dragon.setOwnerUUID(playerInstance.getGameProfile().getId());
 
-		dragon.setWanderTarget(wanderPos);
-		dragon.setOrderedToSit(sit);
-		
-		lastSummons.put(index, dragon.getUUID());
-	}
+        var wanderPos = dragon.getWanderTarget();
+        var sit = dragon.isOrderedToSit();
 
-	public boolean isBoundToWhistle(DMRDragonEntity dragon) {
-		if (dragon.getDragonUUID() != null) {
-			return dragonInstances.values().stream().anyMatch(instance -> instance.getUUID().equals(dragon.getDragonUUID()));
-		}
+        dragon.setWanderTarget(Optional.empty());
+        dragon.setOrderedToSit(false);
 
-		return false;
-	}
+        // noinspection removal
+        var nbtData = dragon.serializeNBT(dragon.level.registryAccess());
+        dragonNBTs.put(index, nbtData);
 
-	@Override
-	public CompoundTag serializeNBT(Provider provider) {
-		CompoundTag tag = new CompoundTag();
+        if (!dragon.level.isClientSide && playerInstance instanceof ServerPlayer spPlayer) {
+            PacketDistributor.sendToPlayer(spPlayer, new DragonNBTSync(index, nbtData));
+        }
 
-		tag.putBoolean("shouldDismount", shouldDismount);
-		tag.putInt("dragonsHatched", dragonsHatched);
+        var instance = new DragonInstance(dragon);
+        dragonInstances.put(index, instance);
 
-		tag.putBoolean("cameraFlight", cameraFlight);
-		tag.putBoolean("alternateDismount", alternateDismount);
-		
-		
-		for (DyeColor color : DyeColor.values()) {
-			if(lastSummons.containsKey(color.getId())) {
-				tag.putUUID("last_summon_" + color.getId(), lastSummons.get(color.getId()));
-			}
-			
-			if (respawnDelays.containsKey(color.getId())) {
-				tag.putInt("respawnDelay_" + color.getId(), respawnDelays.get(color.getId()));
-			}
+        dragon.setWanderTarget(wanderPos);
+        dragon.setOrderedToSit(sit);
 
-			if (dragonNBTs.containsKey(color.getId())) {
-				tag.put("dragonNBT_" + color.getId(), dragonNBTs.get(color.getId()));
-			}
-		}
+        lastSummons.put(index, dragon.getUUID());
+    }
 
-		// Save dragon instances
-		CompoundTag instancesTag = new CompoundTag();
-		for (Entry<Integer, DragonInstance> entry : dragonInstances
-			.entrySet()
-			.stream()
-			.filter(e -> e.getKey() != null && e.getValue() != null)
-			.toList()) {
-			DragonInstance instance = entry.getValue();
-			instancesTag.put(entry.getKey().toString(), instance.writeNBT());
-		}
-		tag.put("dragonInstances", instancesTag);
+    public boolean isBoundToWhistle(TameableDragonEntity dragon) {
+        if (dragon.getDragonUUID() != null) {
+            return dragonInstances.values().stream()
+                    .anyMatch(instance -> instance.getUUID().equals(dragon.getDragonUUID()));
+        }
 
-		return tag;
-	}
+        return false;
+    }
 
-	@Override
-	public void deserializeNBT(Provider provider, CompoundTag base) {
-		if (base.contains("shouldDismount")) {
-			shouldDismount = base.getBoolean("shouldDismount");
-		}
+    @Override
+    public CompoundTag serializeNBT(Provider provider) {
+        CompoundTag tag = new CompoundTag();
 
-		dragonsHatched = base.getInt("dragonsHatched");
+        tag.putBoolean("shouldDismount", shouldDismount);
+        tag.putInt("dragonsHatched", dragonsHatched);
 
-		respawnDelays.clear();
-		dragonNBTs.clear();
-		dragonInstances.clear();
-		
-		if (base.contains("cameraFlight")) {
-			cameraFlight = base.getBoolean("cameraFlight");
-		}
+        tag.putBoolean("cameraFlight", cameraFlight);
+        tag.putBoolean("alternateDismount", alternateDismount);
 
-		if (base.contains("alternateDismount")) {
-			alternateDismount = base.getBoolean("alternateDismount");
-		}
+        for (DyeColor color : DyeColor.values()) {
+            if (lastSummons.containsKey(color.getId())) {
+                tag.putUUID("last_summon_" + color.getId(), lastSummons.get(color.getId()));
+            }
 
-		for (DyeColor color : DyeColor.values()) {
-			if( base.contains("last_summon_" + color.getId()) ) {
-				lastSummons.put(color.getId(), base.getUUID("last_summon_" + color.getId()));
-			}
-			
-			if (base.contains("respawnDelay_" + color.getId())) {
-				respawnDelays.put(color.getId(), base.getInt("respawnDelay_" + color.getId()));
-			}
+            if (respawnDelays.containsKey(color.getId())) {
+                tag.putInt("respawnDelay_" + color.getId(), respawnDelays.get(color.getId()));
+            }
 
-			if (base.contains("dragonNBT_" + color.getId())) {
-				dragonNBTs.put(color.getId(), base.getCompound("dragonNBT_" + color.getId()));
-			}
+            if (dragonNBTs.containsKey(color.getId())) {
+                tag.put("dragonNBT_" + color.getId(), dragonNBTs.get(color.getId()));
+            }
+        }
 
-			// Legacy support for dragonUUID, remove in future versions
-			if (base.contains("dragonUUID_" + color.getId())) {
-				var id = base.getUUID("dragonUUID_" + color.getId());
-				var instance = new DragonInstance(
-					getPlayerInstance() != null ? getPlayerInstance().level.dimension().toString() : "minecraft:overworld",
-					UUID.randomUUID(),
-					id
-				);
-				dragonInstances.put(color.getId(), instance);
-			}
-		}
+        // Save dragon instances
+        CompoundTag instancesTag = new CompoundTag();
+        for (Entry<Integer, DragonInstance> entry : dragonInstances.entrySet().stream()
+                .filter(e -> e.getKey() != null && e.getValue() != null)
+                .toList()) {
+            DragonInstance instance = entry.getValue();
+            instancesTag.put(entry.getKey().toString(), instance.writeNBT());
+        }
+        tag.put("dragonInstances", instancesTag);
 
-		// Load dragon instances
-		var instances = base.getCompound("dragonInstances");
-		for (String jsKey : instances.getAllKeys()) {
-			var key = Integer.parseInt(jsKey);
-			var instance = new DragonInstance();
-			instance.readNBT(instances.getCompound(jsKey));
-			dragonInstances.put(key, instance);
-		}
-	}
+        return tag;
+    }
+
+    @Override
+    public void deserializeNBT(Provider provider, CompoundTag base) {
+        if (base.contains("shouldDismount")) {
+            shouldDismount = base.getBoolean("shouldDismount");
+        }
+
+        dragonsHatched = base.getInt("dragonsHatched");
+
+        respawnDelays.clear();
+        dragonNBTs.clear();
+        dragonInstances.clear();
+
+        if (base.contains("cameraFlight")) {
+            cameraFlight = base.getBoolean("cameraFlight");
+        }
+
+        if (base.contains("alternateDismount")) {
+            alternateDismount = base.getBoolean("alternateDismount");
+        }
+
+        for (DyeColor color : DyeColor.values()) {
+            if (base.contains("last_summon_" + color.getId())) {
+                lastSummons.put(color.getId(), base.getUUID("last_summon_" + color.getId()));
+            }
+
+            if (base.contains("respawnDelay_" + color.getId())) {
+                respawnDelays.put(color.getId(), base.getInt("respawnDelay_" + color.getId()));
+            }
+
+            if (base.contains("dragonNBT_" + color.getId())) {
+                dragonNBTs.put(color.getId(), base.getCompound("dragonNBT_" + color.getId()));
+            }
+
+            // Legacy support for dragonUUID, remove in future versions
+            if (base.contains("dragonUUID_" + color.getId())) {
+                var id = base.getUUID("dragonUUID_" + color.getId());
+                var instance = new DragonInstance(
+                        getPlayerInstance() != null
+                                ? getPlayerInstance().level.dimension().toString()
+                                : "minecraft:overworld",
+                        UUID.randomUUID(),
+                        id);
+                dragonInstances.put(color.getId(), instance);
+            }
+        }
+
+        // Load dragon instances
+        var instances = base.getCompound("dragonInstances");
+        for (String jsKey : instances.getAllKeys()) {
+            var key = Integer.parseInt(jsKey);
+            var instance = new DragonInstance();
+            instance.readNBT(instances.getCompound(jsKey));
+            dragonInstances.put(key, instance);
+        }
+    }
 }
