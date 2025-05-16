@@ -3,6 +3,7 @@ package dmr.tests;
 import dmr.DMRTestConstants;
 import dmr.DragonMounts.network.packets.DragonStatePacket;
 import dmr.DragonMounts.registry.ModEntities;
+import io.netty.buffer.Unpooled;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.GameType;
@@ -12,12 +13,10 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 
-import io.netty.buffer.Unpooled;
-
 /**
- * Tests for the network packet handling functionality of the mod.
- * These tests verify that network packets can be properly encoded, decoded,
- * and processed to ensure reliable communication between client and server.
+ * Tests for the network packet handling functionality of the mod. These tests
+ * verify that network packets can be properly encoded, decoded, and processed
+ * to ensure reliable communication between client and server.
  */
 @PrefixGameTestTemplate(false)
 @ForEachTest(groups = "Network")
@@ -25,14 +24,15 @@ public class NetworkTests {
 
     /**
      * Tests the DragonStatePacket encoding and decoding functionality.
-     * 
-     * This test verifies that:
-     * 1. A DragonStatePacket can be created with the correct entity ID and state
-     * 2. The packet can be properly encoded to a byte buffer
-     * 3. The packet can be properly decoded from a byte buffer
-     * 4. The decoded packet contains the same values as the original packet
-     * 
-     * @param helper The game test helper
+     *
+     * <p>
+     * This test verifies that: 1. A DragonStatePacket can be created with the
+     * correct entity ID and state 2. The packet can be properly encoded to a byte
+     * buffer 3. The packet can be properly decoded from a byte buffer 4. The
+     * decoded packet contains the same values as the original packet
+     *
+     * @param helper
+     *            The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest

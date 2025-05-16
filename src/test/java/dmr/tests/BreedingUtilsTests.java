@@ -7,6 +7,10 @@ import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.types.habitats.Habitat;
 import dmr.DragonMounts.util.BreedingUtils;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.Component;
@@ -18,26 +22,22 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-
 /**
- * Tests for the breeding utility functions of the mod.
- * These tests verify that dragon breeding mechanics work correctly.
+ * Tests for the breeding utility functions of the mod. These tests verify that
+ * dragon breeding mechanics work correctly.
  */
 @PrefixGameTestTemplate(false)
 @ForEachTest(groups = "Breeding")
 public class BreedingUtilsTests {
 
     /**
-     * Tests the habitat-based breed outcome functionality.
-     * This test verifies that:
-     * 1. The getHabitatBreedOutcomes method returns a sorted list of breeds based on habitat points
-     * 2. The getHabitatBreedOutcome method returns the breed with the highest habitat points
+     * Tests the habitat-based breed outcome functionality. This test verifies that:
+     * 1. The getHabitatBreedOutcomes method returns a sorted list of breeds based
+     * on habitat points 2. The getHabitatBreedOutcome method returns the breed with
+     * the highest habitat points
      *
-     * @param helper The test helper provided by the game test framework
+     * @param helper
+     *            The test helper provided by the game test framework
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -137,13 +137,13 @@ public class BreedingUtilsTests {
     }
 
     /**
-     * Tests the custom name generation for baby dragons.
-     * This test verifies that:
+     * Tests the custom name generation for baby dragons. This test verifies that:
      * 1. The generateCustomName method generates a name based on the parents' names
-     * 2. The generated name is not empty
-     * 3. The generated name follows the expected format based on the parents' names
+     * 2. The generated name is not empty 3. The generated name follows the expected
+     * format based on the parents' names
      *
-     * @param helper The test helper provided by the game test framework
+     * @param helper
+     *            The test helper provided by the game test framework
      */
     @EmptyTemplate(floor = true)
     @GameTest

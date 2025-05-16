@@ -4,6 +4,9 @@ import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.server.events.LootTableInject;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.LootTableEntry;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.GameType;
@@ -15,22 +18,20 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-
 @PrefixGameTestTemplate(false)
 @ForEachTest(groups = "LootTable")
 public class LootTableTests {
 
     /**
      * Tests the LootTableInject.injectEggLoot method.
-     * 
-     * This test verifies that:
-     * 1. The injectEggLoot method creates a loot pool with the correct name format (breedId-egg)
-     * 2. The created loot pool contains the appropriate dragon egg loot
-     * 
-     * @param helper The game test helper
+     *
+     * <p>
+     * This test verifies that: 1. The injectEggLoot method creates a loot pool with
+     * the correct name format (breedId-egg) 2. The created loot pool contains the
+     * appropriate dragon egg loot
+     *
+     * @param helper
+     *            The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -57,13 +58,15 @@ public class LootTableTests {
 
     /**
      * Tests adding a dragon egg loot pool to a loot table.
-     * 
-     * This test verifies that:
-     * 1. A loot pool created by injectEggLoot can be successfully added to a loot table
-     * 2. The loot pool can be retrieved from the table using its name
-     * 3. The integration between DragonBreed, LootTableEntry, and LootTable works correctly
-     * 
-     * @param helper The game test helper
+     *
+     * <p>
+     * This test verifies that: 1. A loot pool created by injectEggLoot can be
+     * successfully added to a loot table 2. The loot pool can be retrieved from the
+     * table using its name 3. The integration between DragonBreed, LootTableEntry,
+     * and LootTable works correctly
+     *
+     * @param helper
+     *            The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest

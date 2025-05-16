@@ -5,6 +5,8 @@ import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.level.GameType;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -13,31 +15,29 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Tests for the data pack handling functionality of the mod.
- * These tests verify that dragon breeds and armor can be properly registered,
- * retrieved, and updated through the registry system.
- * 
+ * Tests for the data pack handling functionality of the mod. These tests verify
+ * that dragon breeds and armor can be properly registered, retrieved, and
+ * updated through the registry system.
+ *
+ * <p>
  * Note: While there is some overlap with DragonArmorTests and DragonBreedTests,
- * this class focuses on testing the registry functionality from a data pack perspective,
- * testing both registries together to ensure they work correctly in the context of
- * data pack loading and processing.
+ * this class focuses on testing the registry functionality from a data pack
+ * perspective, testing both registries together to ensure they work correctly
+ * in the context of data pack loading and processing.
  */
 @PrefixGameTestTemplate(false)
 @ForEachTest(groups = "DataPack")
 public class DataPackTests {
 
     /**
-     * Tests the basic registration and retrieval functionality of the DragonBreedsRegistry.
-     * This test verifies that:
-     * 1. A new dragon breed can be registered
-     * 2. The registered breed can be retrieved by ID
-     * 3. The retrieved breed has the correct ID
+     * Tests the basic registration and retrieval functionality of the
+     * DragonBreedsRegistry. This test verifies that: 1. A new dragon breed can be
+     * registered 2. The registered breed can be retrieved by ID 3. The retrieved
+     * breed has the correct ID
      *
-     * @param helper The test helper provided by the game test framework
+     * @param helper
+     *            The test helper provided by the game test framework
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -64,13 +64,13 @@ public class DataPackTests {
     }
 
     /**
-     * Tests the basic registration and retrieval functionality of the DragonArmorRegistry.
-     * This test verifies that:
-     * 1. A new dragon armor can be registered
-     * 2. The registered armor can be retrieved by ID
-     * 3. The retrieved armor has the correct ID
+     * Tests the basic registration and retrieval functionality of the
+     * DragonArmorRegistry. This test verifies that: 1. A new dragon armor can be
+     * registered 2. The registered armor can be retrieved by ID 3. The retrieved
+     * armor has the correct ID
      *
-     * @param helper The test helper provided by the game test framework
+     * @param helper
+     *            The test helper provided by the game test framework
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -97,14 +97,14 @@ public class DataPackTests {
     }
 
     /**
-     * Tests the bulk update functionality of both registries.
-     * This test verifies that:
-     * 1. The registries can be completely replaced with new collections
-     * 2. The new collections are properly registered and can be retrieved
-     * 3. The registry sizes are updated correctly
-     * 4. The registries can be restored to their original state
+     * Tests the bulk update functionality of both registries. This test verifies
+     * that: 1. The registries can be completely replaced with new collections 2.
+     * The new collections are properly registered and can be retrieved 3. The
+     * registry sizes are updated correctly 4. The registries can be restored to
+     * their original state
      *
-     * @param helper The test helper provided by the game test framework
+     * @param helper
+     *            The test helper provided by the game test framework
      */
     @EmptyTemplate(floor = true)
     @GameTest
