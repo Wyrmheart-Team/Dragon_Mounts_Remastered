@@ -9,14 +9,13 @@ import dmr.DragonMounts.network.packets.DragonNBTSync;
 import dmr.DragonMounts.network.packets.DragonRespawnDelayPacket;
 import dmr.DragonMounts.registry.ModCapabilities;
 import dmr.DragonMounts.registry.ModItems;
-import dmr.DragonMounts.server.entity.DMRDragonEntity;
+import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.server.worlddata.DragonWorldDataManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -32,170 +31,166 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @EventBusSubscriber(modid = DMR.MOD_ID)
 public class DragonWhistleEvent {
 
-	@SubscribeEvent
-	public static void onWorldTick(LevelTickEvent.Post event) {
-		if (!event.getLevel().isClientSide) {
-			var data = DragonWorldDataManager.getInstance(event.getLevel());
+    @SubscribeEvent
+    public static void onWorldTick(LevelTickEvent.Post event) {
+        if (!event.getLevel().isClientSide) {
+            var data = DragonWorldDataManager.getInstance(event.getLevel());
 
-			for (var uuid : data.deadDragons) {
-				if (data.deathDelay.get(uuid) > 0) {
-					data.deathDelay.put(uuid, data.deathDelay.get(uuid) - 1);
-				}
-			}
+            for (var uuid : data.deadDragons) {
+                if (data.deathDelay.get(uuid) > 0) {
+                    data.deathDelay.put(uuid, data.deathDelay.get(uuid) - 1);
+                }
+            }
 
-			for (var uuid : new CopyOnWriteArrayList<>(data.deadDragons)) {
-				if (data.deathDelay.get(uuid) <= 0) {
-					DragonWorldDataManager.clearDragonData(event.getLevel(), uuid);
-				}
-			}
-		}
-	}
+            for (var uuid : new CopyOnWriteArrayList<>(data.deadDragons)) {
+                if (data.deathDelay.get(uuid) <= 0) {
+                    DragonWorldDataManager.clearDragonData(event.getLevel(), uuid);
+                }
+            }
+        }
+    }
 
-	@SubscribeEvent
-	public static void onEntityJoinWorld(EntityJoinLevelEvent event) {
-		if (!event.getLevel().isClientSide) {
-			if (event.getEntity() instanceof DMRDragonEntity dragon) {
-				if (dragon.getOwner() != null && dragon.getOwner() instanceof Player player) {
-					var cap = player.getData(ModCapabilities.PLAYER_CAPABILITY);
-					var index = DragonWhistleHandler.getDragonSummonIndex(player, dragon.getDragonUUID());
-					
-					if(cap.lastSummons != null && !cap.lastSummons.isEmpty()) {
-						if(cap.lastSummons.containsKey(index) && !cap.lastSummons.get(index).equals(dragon.getUUID())) {
-							DMR.LOGGER.debug("Preventing loading of dragon in {}, last entity id mismatch. Expected: {}, got: {}", event.getLevel().dimension().location(), cap.lastSummons.get(index), dragon.getDragonUUID());
-							event.setCanceled(true);
-							return;
-						}
-					}
-				}
-			}
+    @SubscribeEvent
+    public static void onEntityJoinWorld(EntityJoinLevelEvent event) {
+        if (!event.getLevel().isClientSide) {
+            if (event.getEntity() instanceof TameableDragonEntity dragon) {
+                if (dragon.getOwner() != null && dragon.getOwner() instanceof Player player) {
+                    var cap = player.getData(ModCapabilities.PLAYER_CAPABILITY);
+                    var index = DragonWhistleHandler.getDragonSummonIndex(player, dragon.getDragonUUID());
 
-			//Check if player is online and has a dragon instance
-			if (event.getEntity() instanceof Player player) {
-				var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
+                    if (!ServerConfig.DISABLE_DUPLICATE_PREVENTION.get()) {
+                        if (cap.lastSummons != null && !cap.lastSummons.isEmpty()) {
+                            if (cap.lastSummons.containsKey(index)
+                                    && !cap.lastSummons.get(index).equals(dragon.getUUID())) {
+                                DMR.LOGGER.debug(
+                                        "Preventing loading of dragon in {}, last entity id mismatch. Expected: {}, got: {}",
+                                        event.getLevel().dimension().location(),
+                                        cap.lastSummons.get(index),
+                                        dragon.getDragonUUID());
+                                event.setCanceled(true);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
 
-				if (!state.dragonInstances.isEmpty()) {
-					for (Map.Entry<Integer, DragonInstance> ent : state.dragonInstances.entrySet()) {
-						var index = ent.getKey();
-						var id = ent.getValue().getUUID();
+            // Check if player is online and has a dragon instance
+            if (event.getEntity() instanceof Player player) {
+                var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
 
-						if (player instanceof ServerPlayer spPlayer) {
-							var nbtData = state.dragonNBTs.get(index);
-							//Send the player their dragon data
-							PacketDistributor.sendToPlayer(spPlayer, new DragonNBTSync(index, nbtData));
-						}
+                if (!state.dragonInstances.isEmpty()) {
+                    for (Map.Entry<Integer, DragonInstance> ent : state.dragonInstances.entrySet()) {
+                        var index = ent.getKey();
+                        var id = ent.getValue().getUUID();
 
-						var dragonWasKilled = DragonWorldDataManager.isDragonDead(event.getLevel(), id);
+                        if (player instanceof ServerPlayer spPlayer) {
+                            var nbtData = state.dragonNBTs.get(index);
+                            // Send the player their dragon data
+                            PacketDistributor.sendToPlayer(spPlayer, new DragonNBTSync(index, nbtData));
+                        }
 
-						if (dragonWasKilled) {
-							var dragonRespawnDelay = DragonWorldDataManager.getDeathDelay(event.getLevel(), id);
-							var message = DragonWorldDataManager.getDeathMessage(event.getLevel(), id);
-							var mes = Component.Serializer.fromJsonLenient(message, event.getLevel().registryAccess());
+                        var dragonWasKilled = DragonWorldDataManager.isDragonDead(event.getLevel(), id);
 
-							if (mes != null) {
-								player.displayClientMessage(mes, false);
-							}
+                        if (dragonWasKilled) {
+                            var dragonRespawnDelay = DragonWorldDataManager.getDeathDelay(event.getLevel(), id);
+                            var message = DragonWorldDataManager.getDeathMessage(event.getLevel(), id);
+                            var mes = Component.Serializer.fromJsonLenient(
+                                    message, event.getLevel().registryAccess());
 
-							if (ServerConfig.ALLOW_RESPAWN.get()) {
-								state.respawnDelays.put(index, dragonRespawnDelay);
-							} else {
-								state.dragonNBTs.remove(index);
-								state.respawnDelays.remove(index);
-								state.dragonInstances.remove(index);
+                            if (mes != null) {
+                                player.displayClientMessage(mes, false);
+                            }
 
-								if (player instanceof ServerPlayer spPlayer) {
-									PacketDistributor.sendToPlayer(spPlayer, new DragonNBTSync(index, new CompoundTag()));
-								}
-							}
+                            if (ServerConfig.ALLOW_RESPAWN.get()) {
+                                state.respawnDelays.put(index, dragonRespawnDelay);
+                            } else {
+                                state.dragonNBTs.remove(index);
+                                state.respawnDelays.remove(index);
+                                state.dragonInstances.remove(index);
 
-							DragonWorldDataManager.clearDragonData(event.getLevel(), id);
-						}
-					}
-				}
-			}
-		}
-	}
+                                if (player instanceof ServerPlayer spPlayer) {
+                                    PacketDistributor.sendToPlayer(
+                                            spPlayer, new DragonNBTSync(index, new CompoundTag()));
+                                }
+                            }
 
-	@SubscribeEvent
-	public static void onLivingUpdate(EntityTickEvent.Post event) {
-		if (!event.getEntity().level.isClientSide) {
-			if(event.getEntity() instanceof DMRDragonEntity dragon) {
-				if (dragon.getOwner() != null && dragon.getOwner() instanceof Player player) {
-					var cap = player.getData(ModCapabilities.PLAYER_CAPABILITY);
-					var index = DragonWhistleHandler.getDragonSummonIndex(player, dragon.getDragonUUID());
-					
-					if(cap.lastSummons != null && !cap.lastSummons.isEmpty()) {
-						if(cap.lastSummons.containsKey(index) && !cap.lastSummons.get(index).equals(dragon.getUUID())) {
-							DMR.LOGGER.debug("Removing dragon from {}, entity id mismatch. Expected: {}, got: {}",  event.getEntity().level.dimension().location(), cap.lastSummons.get(index), dragon.getDragonUUID());
-							dragon.setRemoved(RemovalReason.DISCARDED);
-							return;
-						}
-					}
-				}
-			}
-			
-			if (event.getEntity() instanceof Player player) {
-				var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
-				for (Map.Entry<Integer, DragonInstance> ent : state.dragonInstances.entrySet()) {
-					var index = ent.getKey();
-					var id = ent.getValue().getUUID();
+                            DragonWorldDataManager.clearDragonData(event.getLevel(), id);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-					if (state.respawnDelays.containsKey(index) && state.respawnDelays.get(index) > 0) {
-						state.respawnDelays.put(index, state.respawnDelays.get(index) - 1);
-						PacketDistributor.sendToPlayer(
-							(ServerPlayer) player,
-							new DragonRespawnDelayPacket(index, state.respawnDelays.get(index))
-						);
-						if (state.respawnDelays.get(index) == 0) {
-							DragonWorldDataManager.clearDragonData(player.level, id);
-						}
-					}
-				}
-			}
-		}
-	}
+    @SubscribeEvent
+    public static void onLivingUpdate(EntityTickEvent.Post event) {
+        if (!event.getEntity().level.isClientSide) {
+            if (event.getEntity() instanceof Player player) {
+                var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
+                for (Map.Entry<Integer, DragonInstance> ent : state.dragonInstances.entrySet()) {
+                    var index = ent.getKey();
+                    var id = ent.getValue().getUUID();
 
-	@SubscribeEvent
-	public static void onEntityDeath(LivingDeathEvent event) {
-		if (!event.getEntity().level.isClientSide) {
-			if (event.getEntity() instanceof DMRDragonEntity dragon) {
-				var mes = ((MutableComponent) event.getSource().getLocalizedDeathMessage(event.getEntity())).withStyle(ChatFormatting.RED);
+                    if (state.respawnDelays.containsKey(index) && state.respawnDelays.get(index) > 0) {
+                        state.respawnDelays.put(index, state.respawnDelays.get(index) - 1);
+                        PacketDistributor.sendToPlayer(
+                                (ServerPlayer) player,
+                                new DragonRespawnDelayPacket(index, state.respawnDelays.get(index)));
+                        if (state.respawnDelays.get(index) == 0) {
+                            DragonWorldDataManager.clearDragonData(player.level, id);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-				//Player is online, do death handle
-				if (dragon.getOwner() != null && dragon.getOwner() instanceof Player player) {
-					//Death message already gets sent by vanilla, so until I can figure out how to cancel that, just let vanilla send the message when player is online
-					player.displayClientMessage(mes, false);
+    @SubscribeEvent
+    public static void onEntityDeath(LivingDeathEvent event) {
+        if (!event.getEntity().level.isClientSide) {
+            if (event.getEntity() instanceof TameableDragonEntity dragon) {
+                var mes = ((MutableComponent) event.getSource().getLocalizedDeathMessage(event.getEntity()))
+                        .withStyle(ChatFormatting.RED);
 
-					var index = DragonWhistleHandler.getDragonSummonIndex(player, dragon.getDragonUUID());
+                // Player is online, do death handle
+                if (dragon.getOwner() != null && dragon.getOwner() instanceof Player player) {
+                    // Death message already gets sent by vanilla, so until I can figure out how to
+                    // cancel
+                    // that, just let vanilla send the message when player is online
+                    player.displayClientMessage(mes, false);
 
-					if (!ServerConfig.ALLOW_RESPAWN.get()) {
-						var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
+                    var index = DragonWhistleHandler.getDragonSummonIndex(player, dragon.getDragonUUID());
 
-						state.dragonInstances.remove(index);
-						state.dragonNBTs.remove(index);
-						state.respawnDelays.remove(index);
-						PacketDistributor.sendToPlayer((ServerPlayer) player, new CompleteDataSync(player));
-					} else if (ServerConfig.RESPAWN_TIME.get() > 0) {
-						var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
-						state.respawnDelays.put(index, ServerConfig.RESPAWN_TIME.get() * 20);
+                    if (!ServerConfig.ALLOW_RESPAWN.get()) {
+                        var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
 
-						var whistle = ModItems.DRAGON_WHISTLES.get(index).get();
+                        state.dragonInstances.remove(index);
+                        state.dragonNBTs.remove(index);
+                        state.respawnDelays.remove(index);
+                        PacketDistributor.sendToPlayer((ServerPlayer) player, new CompleteDataSync(player));
+                    } else if (ServerConfig.RESPAWN_TIME.get() > 0) {
+                        var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
+                        state.respawnDelays.put(index, ServerConfig.RESPAWN_TIME.get() * 20);
 
-						if (!player.getCooldowns().isOnCooldown(whistle)) {
-							player.getCooldowns().addCooldown(whistle, ServerConfig.RESPAWN_TIME.get() * 20);
-						}
+                        var whistle = ModItems.DRAGON_WHISTLES.get(index).get();
 
-						if (player instanceof ServerPlayer serverPlayer) {
-							PacketDistributor.sendToPlayer(serverPlayer, new CompleteDataSync(player));
-						}
-					}
-				} else {
-					//Player isnt online, save to world
-					DragonWorldDataManager.setDragonDead(
-						dragon,
-						Component.Serializer.toJson(mes, event.getEntity().level.registryAccess())
-					);
-				}
-			}
-		}
-	}
+                        if (!player.getCooldowns().isOnCooldown(whistle)) {
+                            player.getCooldowns().addCooldown(whistle, ServerConfig.RESPAWN_TIME.get() * 20);
+                        }
+
+                        if (player instanceof ServerPlayer serverPlayer) {
+                            PacketDistributor.sendToPlayer(serverPlayer, new CompleteDataSync(player));
+                        }
+                    }
+                } else {
+                    // Player isnt online, save to world
+                    DragonWorldDataManager.setDragonDead(
+                            dragon,
+                            Component.Serializer.toJson(
+                                    mes, event.getEntity().level.registryAccess()));
+                }
+            }
+        }
+    }
 }
