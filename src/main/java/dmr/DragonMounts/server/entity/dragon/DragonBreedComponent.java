@@ -133,6 +133,7 @@ abstract class DragonBreedComponent extends DragonBreathComponent {
     }
 
     public void tick() {
+        super.tick();
         if (tickCount % 20 == 0) getBreed().tick(getDragon());
     }
 

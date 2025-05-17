@@ -53,6 +53,7 @@ abstract class DragonMountingComponent extends DragonOwnershipComponent {
      */
     @Override
     protected Vec3 getRiddenInput(Player driver, Vec3 move) {
+
         double moveSideways = move.x;
         double moveY = 0;
         double moveForward = Math.min(Math.abs(driver.zza) + Math.abs(driver.xxa), 1);
@@ -165,6 +166,8 @@ abstract class DragonMountingComponent extends DragonOwnershipComponent {
      */
     @Override
     protected void tickRidden(Player driver, Vec3 move) {
+        super.tickRidden(driver, move);
+
         // rotate head to match driver
         float yaw = driver.yHeadRot;
         if (move.z > 0) { // rotate in the direction of the drivers controls
@@ -201,7 +204,7 @@ abstract class DragonMountingComponent extends DragonOwnershipComponent {
     }
 
     public void baseTick() {
-        super.tick();
+        super.baseTick();
 
         if (isControlledByLocalInstance() && getControllingPassenger() != null) {
             if (isRandomlySitting()) {

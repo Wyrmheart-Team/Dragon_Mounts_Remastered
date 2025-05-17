@@ -86,8 +86,12 @@ class BlockTagProvider extends BlockTagsProvider {
                 .add(Blocks.AMETHYST_CLUSTER, Blocks.BUDDING_AMETHYST, Blocks.AMETHYST_BLOCK);
 
         tag(SCULK_DRAGON_HABITAT_BLOCKS)
-                .add(Blocks.SCULK_SENSOR, Blocks.SCULK_CATALYST, Blocks.SCULK_SHRIEKER, Blocks.SCULK_VEIN, Blocks.SCULK)
-                .addTags(BlockTags.SCULK_REPLACEABLE);
+                .add(
+                        Blocks.SCULK_SENSOR,
+                        Blocks.SCULK_CATALYST,
+                        Blocks.SCULK_SHRIEKER,
+                        Blocks.SCULK_VEIN,
+                        Blocks.SCULK);
 
         tag(LUSH_DRAGON_HABITAT_BLOCKS)
                 .add(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET, Blocks.CAVE_VINES, Blocks.GLOW_LICHEN);

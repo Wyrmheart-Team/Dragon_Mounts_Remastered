@@ -119,130 +119,131 @@ public class DragonTests {
                 }));
     }
 
-    //    /**
-    //     * Tests that a tamed dragon will attack its owner's target.
-    //     *
-    //     * <p>
-    //     * This test verifies that:
-    //     * 1. When a player attacks another entity
-    //     * 2. The player's tamed dragon will target the same entity
-    //     * 3. The dragon's target is correctly set to the player's target
-    //     *
-    //     * @param helper The game test helper
-    //     */
-    //    @EmptyTemplate(floor = true)
-    //    @GameTest
-    //    @TestHolder
-    //    public static void willAttackOwnerTarget(ExtendedGameTestHelper helper) {
-    //        var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
-    //        player.moveToCentre();
+    /**
+     * Tests that a tamed dragon will attack its owner's target.
+     *
+     * <p>
+     * This test verifies that:
+     * 1. When a player attacks another entity
+     * 2. The player's tamed dragon will target the same entity
+     * 3. The dragon's target is correctly set to the player's target
+     *
+     * @param helper The game test helper
+     */
+    @EmptyTemplate(floor = true)
+    @GameTest
+    @TestHolder
+    public static void willAttackOwnerTarget(ExtendedGameTestHelper helper) {
+        var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+        player.moveToCentre();
+
+        var target = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+        target.moveToCorner();
+
+        var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
+        dragon.setBreed(DragonBreedsRegistry.getDefault());
+
+        helper.onEachTick(() -> {
+            player.tick();
+            target.tick();
+            dragon.tick();
+        });
+
+        dragon.tamedFor(player, true);
+        helper.runAtTickTime(20, () -> {
+            player.attack(target);
+            player.doHurtTarget(target);
+        });
+
+        helper.succeedWhen(() -> {
+            var dragonTarget = dragon.getTarget();
+            if (dragonTarget == null || (!dragonTarget.is(target) && dragonTarget.getId() != target.getId())) {
+                helper.fail("Dragon did not attack owner's target. Target was: " + dragonTarget);
+            }
+        });
+    }
     //
-    //        var target = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
-    //        target.moveToCorner();
+    //        /**
+    //         * Tests that a tamed dragon will defend its owner.
+    //         *
+    //         * <p>
+    //         * This test verifies that:
+    //         * 1. When a player is attacked by another entity
+    //         * 2. The player's tamed dragon will target the attacker
+    //         * 3. The dragon's target is correctly set to the entity that attacked its owner
+    //         *
+    //         * @param helper The game test helper
+    //         */
+    //        @EmptyTemplate(floor = true)
+    //        @GameTest
+    //        @TestHolder
+    //        public static void willDefendOwner(ExtendedGameTestHelper helper) {
+    //            var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+    //            player.moveToCentre();
     //
-    //        var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
-    //        dragon.setBreed(DragonBreedsRegistry.getDefault());
+    //            var target = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+    //            target.moveToCorner();
     //
-    //	    helper.onEachTick(() -> {
-    //		    player.tick();
-    //		    target.tick();
-    //		    dragon.tick();
-    //	    });
+    //            var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
+    //            dragon.setBreed(DragonBreedsRegistry.getDefault());
     //
-    //	    dragon.tamedFor(player, true);
-    //		helper.runAtTickTime(20, () -> {
-    //			player.attack(target);
-    //			player.doHurtTarget(target);
-    //		});
+    //            dragon.tamedFor(player, true);
+    //            target.attack(player);
     //
-    //        helper.succeedWhen(() -> {
-    //            var dragonTarget = dragon.getTarget();
-    //            if (dragonTarget == null || (!dragonTarget.is(target) && dragonTarget.getId() != target.getId())) {
-    //                helper.fail("Dragon did not attack owner's target. Target was: " + dragonTarget);
-    //            }
-    //        });
-    //    }
+    //            helper.onEachTick(() -> {
+    //                player.tick();
+    //                target.tick();
+    //                dragon.tick();
+    //            });
     //
-    //    /**
-    //     * Tests that a tamed dragon will defend its owner.
-    //     *
-    //     * <p>
-    //     * This test verifies that:
-    //     * 1. When a player is attacked by another entity
-    //     * 2. The player's tamed dragon will target the attacker
-    //     * 3. The dragon's target is correctly set to the entity that attacked its owner
-    //     *
-    //     * @param helper The game test helper
-    //     */
-    //    @EmptyTemplate(floor = true)
-    //    @GameTest
-    //    @TestHolder
-    //    public static void willDefendOwner(ExtendedGameTestHelper helper) {
-    //        var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
-    //        player.moveToCentre();
+    //            helper.succeedWhen(() -> {
+    //                var dragonTarget = dragon.getTarget();
+    //                if (dragonTarget == null || (!dragonTarget.is(target) && dragonTarget.getId() != target.getId()))
+    // {
+    //                    helper.fail("Dragon did not defend owner. Target was: " + dragonTarget);
+    //                }
+    //            });
+    //        }
     //
-    //        var target = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
-    //        target.moveToCorner();
+    //        /**
+    //         * Tests that a tamed dragon will attack a non-owner entity when directed.
+    //         *
+    //         * <p>
+    //         * This test verifies that:
+    //         * 1. When a player attacks another entity
+    //         * 2. The player's tamed dragon will target that entity
+    //         * 3. The dragon's target is correctly set to the entity the player attacked
+    //         *
+    //         * @param helper The game test helper
+    //         */
+    //        @EmptyTemplate(floor = true)
+    //        @GameTest
+    //        @TestHolder
+    //        public static void willAttackNonOwner(ExtendedGameTestHelper helper) {
+    //            var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
+    //            player.moveToCentre();
     //
-    //        var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
-    //        dragon.setBreed(DragonBreedsRegistry.getDefault());
+    //            var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
+    //            dragon.setBreed(DragonBreedsRegistry.getDefault());
     //
-    //        dragon.tamedFor(player, true);
-    //        target.attack(player);
+    //            var otherPlayer = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
     //
-    //        helper.onEachTick(() -> {
-    //            player.tick();
-    //            target.tick();
-    //            dragon.tick();
-    //        });
+    //            dragon.tamedFor(player, true);
+    //            player.attack(otherPlayer);
     //
-    //        helper.succeedWhen(() -> {
-    //            var dragonTarget = dragon.getTarget();
-    //            if (dragonTarget == null || (!dragonTarget.is(target) && dragonTarget.getId() != target.getId())) {
-    //                helper.fail("Dragon did not defend owner. Target was: " + dragonTarget);
-    //            }
-    //        });
-    //    }
+    //            helper.onEachTick(() -> {
+    //                player.tick();
+    //                otherPlayer.tick();
+    //                dragon.tick();
+    //            });
     //
-    //    /**
-    //     * Tests that a tamed dragon will attack a non-owner entity when directed.
-    //     *
-    //     * <p>
-    //     * This test verifies that:
-    //     * 1. When a player attacks another entity
-    //     * 2. The player's tamed dragon will target that entity
-    //     * 3. The dragon's target is correctly set to the entity the player attacked
-    //     *
-    //     * @param helper The game test helper
-    //     */
-    //    @EmptyTemplate(floor = true)
-    //    @GameTest
-    //    @TestHolder
-    //    public static void willAttackNonOwner(ExtendedGameTestHelper helper) {
-    //        var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
-    //        player.moveToCentre();
-    //
-    //        var dragon = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
-    //        dragon.setBreed(DragonBreedsRegistry.getDefault());
-    //
-    //        var otherPlayer = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
-    //
-    //        dragon.tamedFor(player, true);
-    //        player.attack(otherPlayer);
-    //
-    //        helper.onEachTick(() -> {
-    //            player.tick();
-    //            otherPlayer.tick();
-    //            dragon.tick();
-    //        });
-    //
-    //        helper.succeedWhen(() -> {
-    //            var target = dragon.getTarget();
-    //            if (target == null || (!target.is(otherPlayer) && target.getId() != otherPlayer.getId())) {
-    //                helper.fail("Dragon did not attack non-owner. Target was: " + target);
-    //            }
-    //        });
-    //    }
+    //            helper.succeedWhen(() -> {
+    //                var target = dragon.getTarget();
+    //                if (target == null || (!target.is(otherPlayer) && target.getId() != otherPlayer.getId())) {
+    //                    helper.fail("Dragon did not attack non-owner. Target was: " + target);
+    //                }
+    //            });
+    //        }
 
     /**
      * Tests that a tamed dragon will not attack its owner.

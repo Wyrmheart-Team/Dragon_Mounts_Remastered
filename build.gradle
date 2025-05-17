@@ -172,3 +172,11 @@ idea {
         downloadJavadoc = true
     }
 }
+
+tasks.named('spotlessCheck') {
+    enabled = false
+}
+
+tasks.named('build') {
+    dependsOn tasks.named('spotlessApply')
+}
