@@ -17,7 +17,7 @@ public class DragonEggEvent {
 
     @SubscribeEvent
     public static void interactWithEgg(PlayerInteractEvent.RightClickBlock e) {
-        if (ServerConfig.ALLOW_EGG_OVERRIDE.get()
+        if (ServerConfig.ALLOW_EGG_OVERRIDE
                 && e.getLevel().getBlockState(e.getPos()).is(Blocks.DRAGON_EGG)) {
             if (DragonBreedsRegistry.hasDragonBreed("end")) {
                 if (e.getLevel().isClientSide) {

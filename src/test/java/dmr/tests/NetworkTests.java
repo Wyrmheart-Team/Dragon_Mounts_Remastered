@@ -32,7 +32,7 @@ public class NetworkTests {
      * decoded packet contains the same values as the original packet
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -53,20 +53,20 @@ public class NetworkTests {
         DragonStatePacket decodedPacket = DragonStatePacket.STREAM_CODEC.decode(buffer);
 
         // Verify the packet has the correct values
-        if (packet.entityId() != dragon.getId()) {
+        if (packet.getEntityId() != dragon.getId()) {
             helper.fail("Packet entity ID doesn't match expected value");
         }
 
-        if (packet.state() != 1) {
+        if (packet.getState() != 1) {
             helper.fail("Packet state doesn't match expected value");
         }
 
         // Verify the decoded packet has the correct values
-        if (decodedPacket.entityId() != dragon.getId()) {
+        if (decodedPacket.getEntityId() != dragon.getId()) {
             helper.fail("Decoded packet entity ID doesn't match expected value");
         }
 
-        if (decodedPacket.state() != 1) {
+        if (decodedPacket.getState() != 1) {
             helper.fail("Decoded packet state doesn't match expected value");
         }
 

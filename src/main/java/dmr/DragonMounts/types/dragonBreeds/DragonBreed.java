@@ -3,20 +3,23 @@ package dmr.DragonMounts.types.dragonBreeds;
 import com.google.gson.annotations.SerializedName;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.config.ServerConfig;
+import dmr.DragonMounts.registry.DragonBreathRegistry;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.types.abilities.types.Ability;
+import dmr.DragonMounts.types.breath.DragonBreathType;
 import dmr.DragonMounts.types.habitats.Habitat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DragonBreed implements IDragonBreed {
 
@@ -54,7 +57,7 @@ public class DragonBreed implements IDragonBreed {
     @Override
     public int getHatchTime() {
         if (hatchTime <= 0) {
-            return ServerConfig.HATCH_TIME_CONFIG.get();
+            return ServerConfig.HATCH_TIME_CONFIG.intValue();
         } else return hatchTime;
     }
 
@@ -64,7 +67,7 @@ public class DragonBreed implements IDragonBreed {
     @Override
     public int getGrowthTime() {
         if (growthTime <= 0) {
-            return ServerConfig.GROWTH_TIME_CONFIG.get() * 20;
+            return (int) (ServerConfig.GROWTH_TIME_CONFIG * 20);
         } else return growthTime;
     }
 
@@ -74,7 +77,7 @@ public class DragonBreed implements IDragonBreed {
     @Override
     public float getSizeModifier() {
         if (sizeModifier <= 0) {
-            return ServerConfig.SIZE_MODIFIER.get().floatValue();
+            return (float) ServerConfig.SIZE_MODIFIER;
         } else {
             return sizeModifier;
         }
@@ -92,6 +95,14 @@ public class DragonBreed implements IDragonBreed {
 
     public int getSecondaryColor() {
         return secondary_color == null ? 0 : Integer.parseInt(secondary_color, 16);
+    }
+
+    @SerializedName("breath_type")
+    private String breathType;
+
+    @Override
+    public DragonBreathType getBreathType() {
+        return DragonBreathRegistry.getBreathType(breathType);
     }
 
     @SerializedName("immunities")

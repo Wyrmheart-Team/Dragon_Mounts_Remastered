@@ -1,41 +1,60 @@
 package dmr.DragonMounts.network.packets;
 
-import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.common.capability.DragonOwnerCapability;
-import dmr.DragonMounts.network.IMessage;
+import dmr.DragonMounts.network.AbstractMessage;
 import dmr.DragonMounts.registry.ModCapabilities;
+import lombok.Getter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record DismountDragonPacket(int entityId, boolean state) implements IMessage<DismountDragonPacket> {
-    public static final StreamCodec<FriendlyByteBuf, DismountDragonPacket> STREAM_CODEC = StreamCodec.composite(
+/**
+ * Packet for dismounting a dragon.
+ */
+public class DismountDragonPacket extends AbstractMessage<DismountDragonPacket> {
+    private static final StreamCodec<FriendlyByteBuf, DismountDragonPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT,
-            DismountDragonPacket::entityId,
+            DismountDragonPacket::getEntityId,
             ByteBufCodecs.BOOL,
-            DismountDragonPacket::state,
+            DismountDragonPacket::isState,
             DismountDragonPacket::new);
+
+    @Getter
+    private final int entityId;
+
+    @Getter
+    private final boolean state;
+
+    /**
+     * Empty constructor for NetworkHandler.
+     */
+    DismountDragonPacket() {
+        this.entityId = -1;
+        this.state = false;
+    }
+
+    /**
+     * Creates a new packet with the given parameters.
+     *
+     * @param entityId The ID of the entity
+     * @param state The state to set
+     */
+    public DismountDragonPacket(int entityId, boolean state) {
+        this.entityId = entityId;
+        this.state = state;
+    }
+
+    @Override
+    protected String getTypeName() {
+        return "dismount_dragon";
+    }
 
     @Override
     public StreamCodec<? super RegistryFriendlyByteBuf, DismountDragonPacket> streamCodec() {
         return STREAM_CODEC;
-    }
-
-    public static final CustomPacketPayload.Type<DragonStatePacket> TYPE =
-            new CustomPacketPayload.Type<>(DMR.id("dismount_dragon"));
-
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
-    }
-
-    @Override
-    public DismountDragonPacket decode(FriendlyByteBuf buffer) {
-        return new DismountDragonPacket(buffer.readInt(), buffer.readBoolean());
     }
 
     @Override

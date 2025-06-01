@@ -1,21 +1,27 @@
 package dmr.DragonMounts.server.entity.dragon;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import java.util.Objects;
+import dmr.DragonMounts.client.particle.particleoptions.DragonBreathParticleOptions;
+import dmr.DragonMounts.network.packets.DragonBreathTargetSyncPacket;
+import dmr.DragonMounts.types.breath.DragonBreathType;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.util.Mth;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
+import net.minecraft.world.entity.ai.behavior.EntityTracker;
+import net.minecraft.world.entity.ai.behavior.PositionTracker;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector3d;
 
 /**
@@ -24,14 +30,20 @@ import org.joml.Vector3d;
  */
 abstract class DragonBreathComponent extends DragonAnimationComponent {
 
+    @Getter
     private static final double breathLength = 2.5; // 5 * 0.5
+
+    private static final double breathRange = 4;
 
     // Breath attack properties
     @Getter
     @Setter
     protected Vector3d breathSourcePosition;
 
-    protected long breathTime = -1;
+    @Getter
+    protected PositionTracker breathTarget;
+
+    protected int breathTime = -1;
 
     protected DragonBreathComponent(EntityType<? extends TamableAnimal> entityType, Level level) {
         super(entityType, level);
@@ -41,30 +53,33 @@ abstract class DragonBreathComponent extends DragonAnimationComponent {
      * Renders the visual effects of the dragon's breath attack.
      */
     @OnlyIn(Dist.CLIENT)
-    public void renderDragonBreath(
-            float entityYaw, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer) {
-        if (getControllingPassenger() == null) return;
-
-        double yawRadians = Math.toRadians(entityYaw);
-        double f4 = -Math.sin(yawRadians);
-        double f5 = Math.cos(yawRadians);
-        Vec3 lookVector = new Vec3(f4, 0, f5);
-
-        var viewVector = getControllingPassenger().getViewVector(1f);
-
+    public void renderDragonBreath() {
         if (breathSourcePosition != null) {
-            for (int i = 0; i < 20; i++) {
-                Vec3 speed = new Vec3(
-                        lookVector.x * (0.5f + (getRandom().nextFloat() / 2)),
-                        viewVector.y,
-                        lookVector.z * (0.5f + (getRandom().nextFloat() / 2)));
+            var dragonSource = position().add(breathSourcePosition.x, breathSourcePosition.y, breathSourcePosition.z);
+            var target = getBreathTarget().currentPosition().add(0, 0.5, 0);
 
-                var particle = ParticleTypes.FLAME;
+            var diff = target.subtract(dragonSource).normalize();
+
+            var breathSource = new Vec3(breathSourcePosition.x, breathSourcePosition.y, breathSourcePosition.z)
+                    .add(diff.scale(0.5f));
+
+            var breathType = getDragon().getBreed().getBreathType();
+            if (breathType == null) return;
+            var particleDensity = breathType.getParticleDensity();
+
+            for (int i = 0; i < particleDensity; i++) {
+                Vec3 speed = new Vec3(
+                        diff.x * (0.5f + (getRandom().nextFloat() / 4)),
+                        diff.y,
+                        diff.z * (0.5f + (getRandom().nextFloat() / 4)));
+
+                var breathOptions = new DragonBreathParticleOptions(breathType);
+
                 level().addParticle(
-                                particle,
-                                getX() + breathSourcePosition.x,
-                                getY() + breathSourcePosition.y,
-                                getZ() + breathSourcePosition.z,
+                                breathOptions,
+                                getX() + breathSource.x,
+                                getY() + breathSource.y,
+                                getZ() + breathSource.z,
                                 speed.x,
                                 speed.y,
                                 speed.z);
@@ -72,78 +87,43 @@ abstract class DragonBreathComponent extends DragonAnimationComponent {
         }
     }
 
-    /**
-     * Handles the breath attack logic.
-     */
-    public void doBreathAttack() {
-        if (breathTime == -1) {
-            breathTime = 0;
-        } else {
-            if (breathTime >= (int) (breathLength * 20)) {
-                breathTime = -1;
-            } else {
-                breathTime++;
+    public void setBreathAttackTarget(LivingEntity target) {
+        setTarget(new EntityTracker(target, true));
+    }
 
-                if (getControllingPassenger() == null) return;
-                var viewVector = getControllingPassenger().getViewVector(1f);
+    private void setTarget(PositionTracker tracker) {
+        if (isValidTarget(tracker)) {
+            breathTarget = tracker;
+            breathTime = -1;
 
-                float degrees = Mth.wrapDegrees(getControllingPassenger().yBodyRot);
-
-                double yawRadians = Math.toRadians(degrees);
-                double f4 = -Math.sin(yawRadians);
-                double f5 = Math.cos(yawRadians);
-                Vec3 lookVector = new Vec3(f4, viewVector.y, f5);
-
-                var dimensions = getDimensions(getPose());
-                float size = 15f;
-
-                var offsetBoundingBox = new AABB(
-                        getX() + (dimensions.width() / 2),
-                        getY() + (dimensions.height() / 2),
-                        getZ() + (dimensions.width() / 2),
-                        getX() + (dimensions.width() / 2) + lookVector.x * size,
-                        getY() + (dimensions.height() / 2) + lookVector.y * size,
-                        getZ() + (dimensions.width() / 2) + lookVector.z * size);
-                var entities = level().getNearbyEntities(
-                                LivingEntity.class,
-                                breathAttackTargetConditions(),
-                                getControllingPassenger(),
-                                offsetBoundingBox);
-
-                entities.stream()
-                        .filter(e -> e != this && e != getControllingPassenger())
-                        .forEach(this::attackWithBreath);
+            // Send packet to sync the target to clients
+            if (!level().isClientSide) {
+                if (tracker instanceof EntityTracker entityTracker) {
+                    Entity targetEntity = entityTracker.getEntity();
+                    PacketDistributor.sendToPlayersTrackingEntity(
+                            this, DragonBreathTargetSyncPacket.forEntityTarget(getId(), targetEntity.getId()));
+                } else if (tracker instanceof BlockPosTracker blockPosTracker) {
+                    PacketDistributor.sendToPlayersTrackingEntity(
+                            this, DragonBreathTargetSyncPacket.forPositionTarget(getId(), blockPosTracker.currentBlockPosition()));
+                }
             }
         }
     }
 
-    /**
-     * Returns the targeting conditions for breath attacks.
-     */
-    public TargetingConditions breathAttackTargetConditions() {
-        return TargetingConditions.forCombat().ignoreInvisibilityTesting().selector(this::canHarmWithBreath);
+    private boolean isValidTarget(PositionTracker tracker) {
+        if (tracker == null) return false;
+
+        // TODO Check if attack is out of range in terms of pitch and yaw
+
+        return tracker.isVisibleBy(this) || level.isClientSide;
     }
 
-    /**
-     * Checks if the dragon has a breath attack.
-     */
-    public boolean hasBreathAttack() {
-        return true;
+    public void setBreathAttackPosition(Vec3 pos) {
+        setTarget(new BlockPosTracker(pos));
     }
 
-    /**
-     * Checks if the dragon can harm the target with its breath.
-     */
-    public boolean canHarmWithBreath(LivingEntity target) {
-        return Objects.requireNonNull(getOwner()).canAttack(target) && !target.isAlliedTo(getOwner());
-    }
-
-    /**
-     * Applies damage to the target from the breath attack.
-     */
-    public void attackWithBreath(LivingEntity target) {
-        target.hurt(level().damageSources().mobAttack(this), 2);
-        target.setRemainingFireTicks(5);
+    public void setBreathAttackBlock(BlockPos pos) {
+        setTarget(new BlockPosTracker(pos));
     }
 
     /**
@@ -152,10 +132,111 @@ abstract class DragonBreathComponent extends DragonAnimationComponent {
     public void tick() {
         super.tick();
 
-        if (hasBreathAttack() && !level().isClientSide) {
-            if (breathTime != -1) {
-                doBreathAttack();
+        if (hasBreathAttack()) {
+            if (hasBreathTarget()) {
+                if (breathTime == -1) {
+                    breathTime = (int) (20 * breathLength);
+                    this.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, getBreathTarget());
+                } else if (breathTime == 0) {
+                    stopBreathAttack();
+                    breathTime = -1;
+                } else {
+                    breathTime--;
+                    this.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, getBreathTarget());
+                    this.getDragon().triggerAnim("head-controller", "breath");
+
+                    var target = getBreathTarget().currentPosition().add(0, 0.5, 0);
+                    var breathBoundingBox =
+                            getBoundingBox().expandTowards(target).inflate(1);
+
+                    if (getBreathTarget() instanceof EntityTracker entityTracker) {
+                        Entity targetEntity = entityTracker.getEntity();
+                        
+                        if(!targetEntity.isAlive()){
+                            stopBreathAttack();
+                            return;
+                        }
+                        
+                        attackWithBreath((LivingEntity) targetEntity);
+                    } else {
+                        var entitiesInRange = level
+                                .getEntities(
+                                        this,
+                                        breathBoundingBox,
+                                        ent -> ent instanceof LivingEntity living && canHarmWithBreath(living))
+                                .stream()
+                                .map(s -> (LivingEntity) s)
+                                .toList();
+                        for (LivingEntity entity : entitiesInRange) {
+                            attackWithBreath(entity);
+                        }
+                    }
+                }
             }
         }
+    }
+
+    /**
+     * Checks if the dragon has a breath attack.
+     */
+    public boolean hasBreathAttack() {
+        return getDragon().getBreed().getBreathType() != null;
+    }
+
+    public boolean hasBreathTarget() {
+        return breathTarget != null;
+    }
+
+    public void stopBreathAttack() {
+        breathTime = 0;
+        breathTarget = null;
+        this.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
+        this.getDragon().stopTriggeredAnim("head-controller", "breath");
+
+        // Send packet to notify clients to stop the breath attack
+        if (!level().isClientSide) {
+            PacketDistributor.sendToPlayersTrackingEntity(this, DragonBreathTargetSyncPacket.forStopBreath(getId()));
+        }
+    }
+
+    /**
+     * Applies damage to the target from the breath attack.
+     */
+    public void attackWithBreath(LivingEntity target) {
+        var breathType = getDragon().getBreed().getBreathType();
+        if (breathType == null) return;
+
+        // Apply damage using the custom damage source from the breath type
+        target.hurt(breathType.getDamageSource(this), breathType.getDamage());
+
+        // Apply fire if applicable
+        if (breathType.getFireTime() > 0) {
+            target.setRemainingFireTicks(breathType.getFireTime());
+        }
+
+        // Apply effects
+        for (DragonBreathType.BreathEffect effect : breathType.getEffects()) {
+            if (getRandom().nextFloat() <= effect.getChance()) {
+                var effectId = effect.getEffectId();
+                if (effectId == null) continue;
+
+                var effectResourceLoc = ResourceLocation.parse(effectId);
+                var effectType = BuiltInRegistries.MOB_EFFECT
+                        .getHolder(effectResourceLoc)
+                        .orElse(null);
+                if (effectType == null) continue;
+
+                var instance = new MobEffectInstance(effectType, effect.getDuration(), effect.getAmplifier());
+                target.addEffect(instance);
+            }
+        }
+    }
+
+    /**
+     * Checks if the dragon can harm the target with its breath.
+     */
+    public boolean canHarmWithBreath(LivingEntity target) {
+        var ownerCanAttack = getOwner() == null || getOwner().canAttack(target) && !target.isAlliedTo(getOwner());
+        return ownerCanAttack && target.distanceToSqr(this) <= breathRange;
     }
 }

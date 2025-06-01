@@ -16,10 +16,11 @@ public record NearbyBlocksHabitat(float multiplier, TagKey<Block> tag) implement
 
     @Override
     public int getHabitatPoints(Level level, BlockPos basePos) {
-        return (int) (BlockPos.betweenClosedStream(basePos.offset(1, 1, 1), basePos.offset(-1, -1, -1))
-                        .filter(p -> level.getBlockState(p).is(tag))
-                        .count()
-                * multiplier);
+        var blockPositions = BlockPos.betweenClosedStream(basePos.offset(1, 1, 1), basePos.offset(-1, -1, -1));
+        var blocks = blockPositions.filter(s -> !level.isEmptyBlock(s));
+        var states = blocks.map(level::getBlockState);
+        var filteredStates = states.filter(s -> s.is(tag));
+        return (int) (filteredStates.count() * multiplier);
     }
 
     @Override

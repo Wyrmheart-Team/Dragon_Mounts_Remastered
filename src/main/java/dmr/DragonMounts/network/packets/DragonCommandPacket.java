@@ -2,29 +2,71 @@ package dmr.DragonMounts.network.packets;
 
 import static dmr.DragonMounts.server.entity.DragonAgroState.*;
 
-import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.common.handlers.DragonWhistleHandler;
-import dmr.DragonMounts.network.IMessage;
+import dmr.DragonMounts.network.AbstractMessage;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.util.PlayerStateUtils;
 import java.util.Optional;
+import lombok.Getter;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record DragonCommandPacket(int command) implements IMessage<DragonCommandPacket> {
+/**
+ * Packet for sending dragon commands from the client to the server.
+ */
+public class DragonCommandPacket extends AbstractMessage<DragonCommandPacket> {
+    private static final StreamCodec<FriendlyByteBuf, DragonCommandPacket> STREAM_CODEC =
+            StreamCodec.composite(ByteBufCodecs.INT, DragonCommandPacket::getCommand, DragonCommandPacket::new);
+
+    @Getter
+    private final int command;
+
+    /**
+     * Empty constructor for NetworkHandler.
+     */
+    DragonCommandPacket() {
+        this.command = -1;
+    }
+
+    /**
+     * Creates a new packet with the given command.
+     *
+     * @param command The command ID
+     */
+    public DragonCommandPacket(int command) {
+        this.command = command;
+    }
+
+    /**
+     * Creates a new DragonCommandPacket with the given command.
+     *
+     * @param command The command to send
+     */
     public DragonCommandPacket(Command command) {
         this(command.id);
     }
 
+    @Override
+    public StreamCodec<? super RegistryFriendlyByteBuf, DragonCommandPacket> streamCodec() {
+        return STREAM_CODEC;
+    }
+
+    @Override
+    protected String getTypeName() {
+        return "dragon_command";
+    }
+
+    /**
+     * Enum of possible dragon commands.
+     */
     public enum Command {
         SIT(0),
         FOLLOW(1),
@@ -39,26 +81,6 @@ public record DragonCommandPacket(int command) implements IMessage<DragonCommand
         Command(int id) {
             this.id = id;
         }
-    }
-
-    public static final StreamCodec<FriendlyByteBuf, DragonCommandPacket> STREAM_CODEC =
-            StreamCodec.composite(ByteBufCodecs.INT, DragonCommandPacket::command, DragonCommandPacket::new);
-
-    @Override
-    public StreamCodec<? super RegistryFriendlyByteBuf, DragonCommandPacket> streamCodec() {
-        return STREAM_CODEC;
-    }
-
-    public static final Type<DragonCommandPacket> TYPE = new Type<>(DMR.id("dragon_command"));
-
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
-    }
-
-    @Override
-    public DragonCommandPacket decode(FriendlyByteBuf buffer) {
-        return new DragonCommandPacket(buffer.readInt());
     }
 
     @Override

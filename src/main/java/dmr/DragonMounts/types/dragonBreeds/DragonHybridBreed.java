@@ -2,6 +2,7 @@ package dmr.DragonMounts.types.dragonBreeds;
 
 import com.google.gson.annotations.SerializedName;
 import dmr.DragonMounts.types.abilities.types.Ability;
+import dmr.DragonMounts.types.breath.DragonBreathType;
 import dmr.DragonMounts.types.habitats.Habitat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,6 +67,13 @@ public class DragonHybridBreed implements IDragonBreed {
     @Override
     public int getSecondaryColor() {
         return parent2.getPrimaryColor();
+    }
+
+    @Override
+    public DragonBreathType getBreathType() {
+        return parent1.getBreathType() != null
+                ? parent1.getBreathType()
+                : parent2.getBreathType() != null ? parent2.getBreathType() : null;
     }
 
     @Override

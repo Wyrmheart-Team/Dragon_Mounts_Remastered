@@ -28,7 +28,7 @@ public class DragonWorldData extends SavedData {
     public Map<UUID, DragonHistory> dragonHistory = new LinkedHashMap<>() {
         @Override
         public boolean removeEldestEntry(Map.Entry<UUID, DragonHistory> eldest) {
-            return size() > ServerConfig.DRAGON_HISTORY_SIZE.get();
+            return size() > ServerConfig.DRAGON_HISTORY_SIZE;
         }
     };
 

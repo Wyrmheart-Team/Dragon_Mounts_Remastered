@@ -1,0 +1,7 @@
+{
+  "colors": ["FFFFFF", "FFD700", "0000FF"],
+  "damage": 2.5,
+  "fire_time": 0,
+  "particle_density": 3,
+  "effects": []
+}

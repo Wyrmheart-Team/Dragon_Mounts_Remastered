@@ -24,7 +24,7 @@ public class DragonArmorTests {
      * verifies that the armor registry is properly initialized and populated.
      *
      * @param helper
-     *            The test helper provided by the game test framework
+     *               The test helper provided by the game test framework
      */
     @EmptyTemplate
     @GameTest
@@ -46,7 +46,7 @@ public class DragonArmorTests {
      * armor is used as a fallback when a specific armor type cannot be found.
      *
      * @param helper
-     *            The test helper provided by the game test framework
+     *               The test helper provided by the game test framework
      */
     @EmptyTemplate
     @GameTest
@@ -68,7 +68,7 @@ public class DragonArmorTests {
      * registry. This is used as a fallback when no default armor is specified.
      *
      * @param helper
-     *            The test helper provided by the game test framework
+     *               The test helper provided by the game test framework
      */
     @EmptyTemplate
     @GameTest
@@ -90,7 +90,7 @@ public class DragonArmorTests {
      * that the retrieved armor has the correct ID.
      *
      * @param helper
-     *            The test helper provided by the game test framework
+     *               The test helper provided by the game test framework
      */
     @EmptyTemplate
     @GameTest
@@ -119,7 +119,7 @@ public class DragonArmorTests {
      * Tests that the DragonArmorRegistry can check if a specific armor ID exists.
      *
      * @param helper
-     *            The test helper provided by the game test framework
+     *               The test helper provided by the game test framework
      */
     @EmptyTemplate
     @GameTest

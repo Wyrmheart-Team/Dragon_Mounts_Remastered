@@ -71,8 +71,28 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
     public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, LivingEntity pPlacer, ItemStack pStack) {
         if (pLevel.getBlockEntity(pPos) instanceof DMREggBlockEntity e) {
             var breedId = pStack.get(ModComponents.DRAGON_BREED);
-            var hatchTime = pStack.getOrDefault(ModComponents.EGG_HATCH_TIME, ServerConfig.HATCH_TIME_CONFIG.get());
+            var hatchTime = pStack.getOrDefault(
+                    ModComponents.EGG_HATCH_TIME,
+                    ServerConfig.HATCH_TIME_CONFIG.intValue());
             var variantId = pStack.get(ModComponents.DRAGON_VARIANT);
+
+            if (ServerConfig.ENABLE_RANDOM_STATS) {
+                var healthAttribute = pStack.get(ModComponents.DRAGON_HEALTH_ATTRIBUTE);
+                var speedAttribute = pStack.get(ModComponents.DRAGON_MOVEMENT_SPEED_ATTRIBUTE);
+                var damageAttribute = pStack.get(ModComponents.DRAGON_ATTACK_ATTRIBUTE);
+
+                if (healthAttribute != null) {
+                    e.setHealthAttribute(healthAttribute);
+                }
+
+                if (speedAttribute != null) {
+                    e.setSpeedAttribute(speedAttribute);
+                }
+
+                if (damageAttribute != null) {
+                    e.setDamageAttribute(damageAttribute);
+                }
+            }
 
             e.setOwner(pPlacer.getUUID().toString());
 
@@ -128,7 +148,7 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
     public RenderShape getRenderShape(BlockState pState) {
         return (pState.getValue(HATCHING)
                         && ClientConfig.MOD_CONFIG_SPEC.isLoaded()
-                        && ClientConfig.RENDER_HATCHING_EGG.get())
+                        && ClientConfig.RENDER_HATCHING_EGG)
                 ? RenderShape.INVISIBLE
                 : RenderShape.MODEL;
     }

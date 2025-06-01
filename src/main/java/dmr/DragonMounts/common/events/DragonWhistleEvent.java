@@ -57,18 +57,16 @@ public class DragonWhistleEvent {
                     var cap = player.getData(ModCapabilities.PLAYER_CAPABILITY);
                     var index = DragonWhistleHandler.getDragonSummonIndex(player, dragon.getDragonUUID());
 
-                    if (!ServerConfig.DISABLE_DUPLICATE_PREVENTION.get()) {
-                        if (cap.lastSummons != null && !cap.lastSummons.isEmpty()) {
-                            if (cap.lastSummons.containsKey(index)
-                                    && !cap.lastSummons.get(index).equals(dragon.getUUID())) {
-                                DMR.LOGGER.debug(
-                                        "Preventing loading of dragon in {}, last entity id mismatch. Expected: {}, got: {}",
-                                        event.getLevel().dimension().location(),
-                                        cap.lastSummons.get(index),
-                                        dragon.getDragonUUID());
-                                event.setCanceled(true);
-                                return;
-                            }
+                    if (cap.lastSummons != null && !cap.lastSummons.isEmpty()) {
+                        if (cap.lastSummons.containsKey(index)
+                                && !cap.lastSummons.get(index).equals(dragon.getUUID())) {
+                            DMR.LOGGER.debug(
+                                    "Preventing loading of dragon in {}, last entity id mismatch. Expected: {}, got: {}",
+                                    event.getLevel().dimension().location(),
+                                    cap.lastSummons.get(index),
+                                    dragon.getDragonUUID());
+                            event.setCanceled(true);
+                            return;
                         }
                     }
                 }
@@ -101,7 +99,7 @@ public class DragonWhistleEvent {
                                 player.displayClientMessage(mes, false);
                             }
 
-                            if (ServerConfig.ALLOW_RESPAWN.get()) {
+                            if (ServerConfig.ALLOW_RESPAWN) {
                                 state.respawnDelays.put(index, dragonRespawnDelay);
                             } else {
                                 state.dragonNBTs.remove(index);
@@ -161,21 +159,21 @@ public class DragonWhistleEvent {
 
                     var index = DragonWhistleHandler.getDragonSummonIndex(player, dragon.getDragonUUID());
 
-                    if (!ServerConfig.ALLOW_RESPAWN.get()) {
+                    if (!ServerConfig.ALLOW_RESPAWN) {
                         var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
 
                         state.dragonInstances.remove(index);
                         state.dragonNBTs.remove(index);
                         state.respawnDelays.remove(index);
                         PacketDistributor.sendToPlayer((ServerPlayer) player, new CompleteDataSync(player));
-                    } else if (ServerConfig.RESPAWN_TIME.get() > 0) {
+                    } else if (ServerConfig.RESPAWN_TIME > 0) {
                         var state = player.getData(ModCapabilities.PLAYER_CAPABILITY);
-                        state.respawnDelays.put(index, ServerConfig.RESPAWN_TIME.get() * 20);
+                        state.respawnDelays.put(index, ServerConfig.RESPAWN_TIME * 20);
 
                         var whistle = ModItems.DRAGON_WHISTLES.get(index).get();
 
                         if (!player.getCooldowns().isOnCooldown(whistle)) {
-                            player.getCooldowns().addCooldown(whistle, ServerConfig.RESPAWN_TIME.get() * 20);
+                            player.getCooldowns().addCooldown(whistle, ServerConfig.RESPAWN_TIME * 20);
                         }
 
                         if (player instanceof ServerPlayer serverPlayer) {

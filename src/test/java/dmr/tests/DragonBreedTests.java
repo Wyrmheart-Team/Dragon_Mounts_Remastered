@@ -26,7 +26,7 @@ public class DragonBreedTests {
      * verifies that the breed registry is properly initialized and populated.
      *
      * @param helper
-     *            The test helper provided by the game test framework
+     *               The test helper provided by the game test framework
      */
     @EmptyTemplate
     @GameTest
@@ -48,7 +48,7 @@ public class DragonBreedTests {
      * used as a fallback when a specific breed cannot be found.
      *
      * @param helper
-     *            The test helper provided by the game test framework
+     *               The test helper provided by the game test framework
      */
     @EmptyTemplate
     @GameTest
@@ -70,7 +70,7 @@ public class DragonBreedTests {
      * registry. This is used as a fallback when no default breed is specified.
      *
      * @param helper
-     *            The test helper provided by the game test framework
+     *               The test helper provided by the game test framework
      */
     @EmptyTemplate
     @GameTest
@@ -92,7 +92,7 @@ public class DragonBreedTests {
      * that the retrieved breed has the correct ID.
      *
      * @param helper
-     *            The test helper provided by the game test framework
+     *               The test helper provided by the game test framework
      */
     @EmptyTemplate
     @GameTest
@@ -121,7 +121,7 @@ public class DragonBreedTests {
      * Tests that the DragonBreedsRegistry can check if a specific breed ID exists.
      *
      * @param helper
-     *            The test helper provided by the game test framework
+     *               The test helper provided by the game test framework
      */
     @EmptyTemplate
     @GameTest
@@ -153,7 +153,7 @@ public class DragonBreedTests {
      * breeds.
      *
      * @param helper
-     *            The test helper provided by the game test framework
+     *               The test helper provided by the game test framework
      */
     @EmptyTemplate
     @GameTest
@@ -175,7 +175,7 @@ public class DragonBreedTests {
      * its parent breeds.
      *
      * @param helper
-     *            The test helper provided by the game test framework
+     *               The test helper provided by the game test framework
      */
     @EmptyTemplate
     @GameTest
@@ -205,7 +205,7 @@ public class DragonBreedTests {
      * ID format (hybrid_parent1_parent2)
      *
      * @param helper
-     *            The test helper provided by the game test framework
+     *               The test helper provided by the game test framework
      */
     @EmptyTemplate
     @GameTest

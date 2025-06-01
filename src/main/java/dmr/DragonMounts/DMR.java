@@ -6,7 +6,7 @@ import com.google.gson.GsonBuilder;
 import com.mojang.brigadier.CommandDispatcher;
 import dmr.DragonMounts.config.ClientConfig;
 import dmr.DragonMounts.config.ServerConfig;
-import dmr.DragonMounts.network.NetworkHandler;
+import dmr.DragonMounts.network.packets.PacketRegistry;
 import dmr.DragonMounts.registry.*;
 import dmr.DragonMounts.server.commands.DMRCommand;
 import dmr.DragonMounts.server.events.LootTableInject;
@@ -14,7 +14,6 @@ import dmr.DragonMounts.types.DataPackHandler;
 import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.types.habitats.Habitat;
 import dmr.DragonMounts.util.type_adapters.*;
-import java.util.List;
 import lombok.Getter;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.particles.ParticleOptions;
@@ -34,6 +33,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 @Mod(DMR.MOD_ID)
 public class DMR {
@@ -85,8 +86,9 @@ public class DMR {
         ModCriterionTriggers.CRITERION_TRIGGERS.register(bus);
         ModActivityTypes.ACTIVITIES.register(bus);
         ModCustomRecipes.RECIPES.register(bus);
+        ModParticles.PARTICLE_TYPES.register(bus);
 
-        bus.addListener(NetworkHandler::registerEvent);
+        bus.addListener(PacketRegistry::registerEvent);
         bus.addListener(DataPackHandler::newDataPack);
 
         NeoForge.EVENT_BUS.addListener(DataPackHandler::dataPackData);

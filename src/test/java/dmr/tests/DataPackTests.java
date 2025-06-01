@@ -37,7 +37,7 @@ public class DataPackTests {
      * breed has the correct ID
      *
      * @param helper
-     *            The test helper provided by the game test framework
+     *               The test helper provided by the game test framework
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -70,7 +70,7 @@ public class DataPackTests {
      * armor has the correct ID
      *
      * @param helper
-     *            The test helper provided by the game test framework
+     *               The test helper provided by the game test framework
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -104,7 +104,7 @@ public class DataPackTests {
      * their original state
      *
      * @param helper
-     *            The test helper provided by the game test framework
+     *               The test helper provided by the game test framework
      */
     @EmptyTemplate(floor = true)
     @GameTest

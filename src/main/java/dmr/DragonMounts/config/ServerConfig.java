@@ -1,133 +1,177 @@
 package dmr.DragonMounts.config;
 
+import dmr.DragonMounts.config.annotations.Config;
+import dmr.DragonMounts.config.annotations.RangeConstraint;
 import dmr.DragonMounts.server.entity.DragonConstants;
-import java.util.concurrent.TimeUnit;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class ServerConfig {
-
     public static final ModConfigSpec MOD_CONFIG_SPEC;
 
-    public static final int HATCH_TIME = (int) TimeUnit.SECONDS.convert(10, TimeUnit.MINUTES); // (10 minutes))
-    public static final int GROWTH_TIME = (int) TimeUnit.SECONDS.convert(10, TimeUnit.MINUTES); // (10 minutes))
-    public static final float BASE_SIZE_MODIFIER = 1.0f;
+    @Config(key = "hatch_time", comment = "Time in seconds for a dragon egg to hatch.")
+    @RangeConstraint(min = 0, max = Integer.MAX_VALUE)
+    public static Long HATCH_TIME_CONFIG = DragonConstants.HATCH_TIME;
 
-    public static final ModConfigSpec.BooleanValue ALLOW_EGG_OVERRIDE;
-    public static final ModConfigSpec.LongValue WHISTLE_COOLDOWN_CONFIG;
-    public static final ModConfigSpec.BooleanValue CALL_CHECK_SPACE;
-    public static final ModConfigSpec.IntValue HATCH_TIME_CONFIG;
-    public static final ModConfigSpec.IntValue GROWTH_TIME_CONFIG;
-    public static final ModConfigSpec.DoubleValue SIZE_MODIFIER;
-    public static final ModConfigSpec.BooleanValue REPLENISH_EGGS;
-    public static final ModConfigSpec.BooleanValue ALLOW_HYBRIDIZATION;
-    public static final ModConfigSpec.BooleanValue HABITAT_OFFSPRING;
-    public static final ModConfigSpec.DoubleValue BASE_HEALTH;
-    public static final ModConfigSpec.DoubleValue BASE_DAMAGE;
-    public static final ModConfigSpec.BooleanValue ALLOW_RESPAWN;
-    public static final ModConfigSpec.IntValue RESPAWN_TIME;
-    public static final ModConfigSpec.IntValue DRAGON_HISTORY_SIZE;
+    @Config(key = "growth_time", comment = "Time in seconds for a dragon to grow.")
+    @RangeConstraint(min = 0, max = Integer.MAX_VALUE)
+    public static Long GROWTH_TIME_CONFIG = DragonConstants.GROWTH_TIME;
 
-    public static final ModConfigSpec.BooleanValue ENABLE_BLANK_EGG;
+    @Config(
+            key = "allow_egg_override",
+            comment = {
+                "Allow the vanilla ender egg to be interacted with? (Hatchable)",
+                "Useful to help with mod compatibility"
+            },
+            category = "eggs")
+    public static boolean ALLOW_EGG_OVERRIDE = true;
 
-    private static final Long WHISTLE_COOLDOWN = TimeUnit.MILLISECONDS.convert(5, TimeUnit.SECONDS); // 5 minutes
+    @Config(
+            key = "replenish_eggs",
+            comment = {
+                "Should Ender Dragon Eggs replenish on the exit portal after a respawned dragon is defeated?",
+                "Useful for multiplayer scenarios."
+            },
+            category = "eggs")
+    public static boolean REPLENISH_EGGS = true;
 
-    public static final ModConfigSpec.BooleanValue ENABLE_DRAGON_BREATH;
-    public static final ModConfigSpec.BooleanValue DISABLE_DUPLICATE_PREVENTION;
+    @Config(key = "allow_hybridization", comment = "Allow hybridization between dragons.", category = "eggs")
+    public static boolean ALLOW_HYBRIDIZATION = true;
 
+    @Config(
+            key = "habitat_offspring",
+            comment = "Offspring from breeding can turn into dragon type matching current environment.",
+            category = "eggs")
+    public static boolean HABITAT_OFFSPRING = true;
+
+    @Config(
+            key = "enable_blank_egg",
+            comment = "Enable blank dragon eggs which changes based on the environment.",
+            category = "eggs")
+    public static boolean ENABLE_BLANK_EGG = false;
+
+    @Config(key = "enable_natural_dragon_spawns", comment = "Enable or disable natural dragon spawns.")
+    public static boolean ENABLE_NATURAL_DRAGON_SPAWNS = false;
+
+    @Config(
+            key = "dragon_history_size",
+            comment =
+                    "The maximum number of dragons to keep track of in the dragon history. This allows recalling missing dragons through commands. Larger values may increase world save size.")
+    @RangeConstraint(min = 1, max = Integer.MAX_VALUE)
+    public static int DRAGON_HISTORY_SIZE = 20;
+
+    @Config(key = "base_health", comment = "Base health of all dragons.", category = "base_stats")
+    @RangeConstraint(min = 1.0)
+    public static double BASE_HEALTH = DragonConstants.BASE_HEALTH;
+
+    @Config(key = "health_regen", comment = "Passive health regen value for dragons.", category = "base_stats")
+    @RangeConstraint(min = 0)
+    public static double HEALTH_REGEN = 1.0;
+
+    @Config(key = "base_damage", comment = "Base damage of all dragons.", category = "base_stats")
+    @RangeConstraint(min = 1.0)
+    public static double BASE_DAMAGE = DragonConstants.BASE_DAMAGE;
+
+    @Config(key = "base_speed", comment = "Base movement speed for all dragons.", category = "base_stats")
+    @RangeConstraint(min = 0)
+    public static double BASE_SPEED = 1.0;
+
+    @Config(key = "size_modifier", comment = "Size modifier for all dragons.", category = "base_stats")
+    @RangeConstraint(min = 0.01)
+    public static double SIZE_MODIFIER = 1.0;
+
+    @Config(
+            key = "enable_random_stats",
+            comment = "Whether to enable random stats for dragons.",
+            category = {"base_stats", "random_stats"})
+    public static boolean ENABLE_RANDOM_STATS = true;
+
+    @Config(
+            key = "upper_max_health",
+            comment = "The maximum health bonus for dragons with random stats.",
+            category = {"base_stats", "random_stats"})
+    @RangeConstraint(min = 0)
+    public static double UPPER_MAX_HEALTH = 10.0;
+
+    @Config(
+            key = "upper_damage",
+            comment = "The maximum damage bonus for dragons with random stats.",
+            category = {"base_stats", "random_stats"})
+    @RangeConstraint(min = 0)
+    public static double UPPER_DAMAGE = 5.0;
+
+    @Config(
+            key = "upper_speed",
+            comment = "The maximum speed bonus for dragons with random stats.",
+            category = {"base_stats", "random_stats"})
+    @RangeConstraint(min = 0)
+    public static double UPPER_SPEED = 0.2;
+
+    @Config(
+            key = "lower_max_health",
+            comment = "The minimum health penalty for dragons with random stats.",
+            category = {"base_stats", "random_stats"})
+    @RangeConstraint(min = -Double.MAX_VALUE, max = -1)
+    public static double LOWER_MAX_HEALTH = -5.0;
+
+    @Config(
+            key = "lower_damage",
+            comment = "The minimum damage penalty for dragons with random stats.",
+            category = {"base_stats", "random_stats"})
+    @RangeConstraint(min = -Double.MAX_VALUE, max = -1)
+    public static double LOWER_DAMAGE = -2.5;
+
+    @Config(
+            key = "lower_speed",
+            comment = "The minimum speed penalty for dragons with random stats.",
+            category = {"base_stats", "random_stats"})
+    @RangeConstraint(min = -Double.MAX_VALUE, max = 0)
+    public static double LOWER_SPEED = -0.1;
+
+    @Config(key = "whistle_cooldown", comment = "The cooldown for using the whistle ability.", category = "whistle")
+    @RangeConstraint(min = 0, max = Long.MAX_VALUE)
+    public static long WHISTLE_COOLDOWN_CONFIG = DragonConstants.WHISTLE_COOLDOWN;
+
+    @Config(
+            key = "whistle_check_space",
+            comment = "Check if there is enough space to call the dragon before calling it.",
+            category = "whistle")
+    public static boolean CALL_CHECK_SPACE = true;
+
+    @Config(key = "allow_respawn", comment = "Allow dragons to respawn after being killed.", category = "whistle")
+    public static boolean ALLOW_RESPAWN = true;
+
+    @Config(
+            key = "respawn_time",
+            comment = "Time in seconds for a dragon to respawn after being killed.",
+            category = "whistle")
+    @RangeConstraint(min = 0, max = Integer.MAX_VALUE)
+    public static int RESPAWN_TIME = 60;
+
+    @Config(
+            key = "dragon_egg_spawn_chance",
+            comment =
+                    "Multiplier for dragon egg spawn chances in loot sources. 0 disables spawning, 1 is default rate, 2 doubles the chance.",
+            category = "eggs",
+            worldRestart = true)
+    @RangeConstraint(min = 0.0, max = 100.0)
+    public static double DRAGON_EGG_SPAWN_CHANCE = 1.0;
+
+    @Config(
+            key = "min_follow_distance",
+            comment = "Minimum distance a dragon will maintain when following its owner.",
+            category = "behavior")
+    @RangeConstraint(min = 1, max = 16)
+    public static int MIN_FOLLOW_DISTANCE = 4;
+
+    @Config(
+            key = "max_follow_distance",
+            comment = "Maximum distance before a dragon will start following its owner.",
+            category = "behavior")
+    @RangeConstraint(min = 2, max = 64)
+    public static int MAX_FOLLOW_DISTANCE = 8;
+
+    // Initialize the config
     static {
-        var configurator = new ModConfigSpec.Builder();
-
-        ALLOW_EGG_OVERRIDE = configurator
-                .comment(
-                        "Allow the vanilla ender egg to be interacted with? (Hatchable)",
-                        "Useful to help with mod compatability")
-                .translation("dmr.config.server.allow_egg_override")
-                .define("allow_egg_override", true);
-
-        REPLENISH_EGGS = configurator
-                .comment(
-                        "Should Ender Dragon Eggs replenish on the exit portal after a respawned dragon is deafeated?",
-                        "Useful for multiplayer scenarios.")
-                .translation("dmr.config.server.replenish_eggs")
-                .define("replenish_eggs", true);
-
-        ENABLE_BLANK_EGG = configurator
-                .comment("Enable blank dragon eggs which changes based on the environment.")
-                .translation("dmr.config.server.enable_blank_egg")
-                .define("enable_blank_egg", false);
-
-        HATCH_TIME_CONFIG = configurator
-                .comment("Time in seconds for a dragon egg to hatch.")
-                .translation("dmr.config.server.hatch_time")
-                .defineInRange("hatch_time", HATCH_TIME, 0, Integer.MAX_VALUE);
-
-        GROWTH_TIME_CONFIG = configurator
-                .comment("Time in seconds for a dragon to grow.")
-                .translation("dmr.config.server.growth_time")
-                .defineInRange("growth_time", GROWTH_TIME, 0, Integer.MAX_VALUE);
-
-        SIZE_MODIFIER = configurator
-                .comment("Size modifier for all dragons.")
-                .translation("dmr.config.server.size_modifier")
-                .defineInRange("size_modifier", BASE_SIZE_MODIFIER, 0.0, Double.MAX_VALUE);
-
-        ALLOW_HYBRIDIZATION = configurator
-                .comment("Allow hybridization between dragons.")
-                .translation("dmr.config.server.allow_hybridization")
-                .define("allow_hybridization", true);
-
-        HABITAT_OFFSPRING = configurator
-                .comment("Offspring from breeding can turn into dragon type matching current environment.")
-                .translation("dmr.config.server.habitat_offspring")
-                .define("habitat_offspring", true);
-
-        WHISTLE_COOLDOWN_CONFIG = configurator
-                .comment("The cooldown for using the whistle ability.")
-                .translation("dmr.config.server.whistle_cooldown")
-                .defineInRange("whistle_cooldown", WHISTLE_COOLDOWN, 0L, Long.MAX_VALUE);
-
-        CALL_CHECK_SPACE = configurator
-                .comment("Should the dragon whistle check for available space?")
-                .translation("dmr.config.server.whistle_check_space")
-                .define("whistle_check_space", true);
-
-        BASE_HEALTH = configurator
-                .comment("Base health for all dragons.")
-                .translation("dmr.config.server.base_health")
-                .defineInRange("base_health", DragonConstants.BASE_HEALTH, 1.0, Double.MAX_VALUE);
-
-        BASE_DAMAGE = configurator
-                .comment("Base damage for all dragons.")
-                .translation("dmr.config.server.base_damage")
-                .defineInRange("base_damage", DragonConstants.BASE_DAMAGE, 1.0, Double.MAX_VALUE);
-
-        ALLOW_RESPAWN = configurator
-                .comment("Allow dragons to respawn after death.")
-                .translation("dmr.config.server.allow_respawn")
-                .define("allow_respawn", true);
-
-        RESPAWN_TIME = configurator
-                .comment("Time in seconds for a dragon to respawn.")
-                .translation("dmr.config.server.respawn_time")
-                .defineInRange("respawn_time", 60, 0, Integer.MAX_VALUE);
-
-        DRAGON_HISTORY_SIZE = configurator
-                .comment(
-                        "The maximum number of dragons to keep track of in the dragon history. This for being able to recall missing dragons through commands. Bigger numbers could increase world save size.")
-                .translation("dmr.config.server.dragon_history_size")
-                .defineInRange("dragon_history_size", 20, 1, Integer.MAX_VALUE);
-
-        ENABLE_DRAGON_BREATH = configurator
-                .comment(
-                        "Enable dragon breath attacks, this is still highly WIP and is not representative of the final version. Issues and bug reports will not be accepted for this feature in the current state.")
-                .translation("dmr.config.server.enable_dragon_breath")
-                .define("enable_dragon_breath", false);
-
-        DISABLE_DUPLICATE_PREVENTION = configurator
-                .comment(
-                        "Disable duplicate prevention for dragons when using whistles, this is NOT RECOMMENDED and will cause issues with whistles, but it prevents dragons from being accidentally removed.")
-                .define("disable_duplicate_prevention", true);
-
-        MOD_CONFIG_SPEC = configurator.build();
+        MOD_CONFIG_SPEC = ConfigProcessor.processConfig(ServerConfig.class);
     }
 }

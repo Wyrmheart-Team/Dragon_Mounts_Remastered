@@ -17,7 +17,7 @@ import net.minecraft.world.level.Level;
  * Abstract class that implements core dragon functionality.
  * This is the final layer in the abstract dragon entity hierarchy.
  */
-public abstract class AbstractDragonEntity extends DragonAudioComponent {
+public abstract class AbstractDragonEntity extends DragonAttributeComponent {
 
     protected static final EntityDataAccessor<String> uuidDataAccessor =
             SynchedEntityData.defineId(AbstractDragonEntity.class, EntityDataSerializers.STRING);

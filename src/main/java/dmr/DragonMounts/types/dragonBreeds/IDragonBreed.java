@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.types.abilities.types.Ability;
+import dmr.DragonMounts.types.breath.DragonBreathType;
 import dmr.DragonMounts.types.habitats.Habitat;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ public interface IDragonBreed {
             @SerializedName("saddle_texture") ResourceLocation saddleTexture,
             @SerializedName("glow_texture") ResourceLocation glowTexture,
             @SerializedName("egg_texture") ResourceLocation eggTexture,
+            @SerializedName("breath_type") DragonBreathType breathType,
             @SerializedName("primary_color") String primaryColor,
             @SerializedName("secondary_color") String secondaryColor,
             @SerializedName("size_modifier") float sizeModifier) {
@@ -131,6 +133,8 @@ public interface IDragonBreed {
     int getPrimaryColor();
 
     int getSecondaryColor();
+
+    DragonBreathType getBreathType();
 
     String getId();
 

@@ -20,7 +20,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 @OnlyIn(Dist.CLIENT)
 public class DragonInventoryScreen extends AbstractContainerScreen<DragonContainerMenu> {
-
     private static final ResourceLocation INVENTORY_LOCATION = DMR.id("textures/gui/dragon.png");
     private final TameableDragonEntity dragon;
 

@@ -39,7 +39,19 @@ public class DMREggBlockEntity extends BlockEntity {
 
     @Getter
     @Setter
-    private int hatchTime = ServerConfig.HATCH_TIME_CONFIG.get();
+    private float healthAttribute;
+
+    @Getter
+    @Setter
+    private float speedAttribute;
+
+    @Getter
+    @Setter
+    private float damageAttribute;
+
+    @Getter
+    @Setter
+    private int hatchTime = ServerConfig.HATCH_TIME_CONFIG.intValue();
 
     @Getter
     @Setter
@@ -88,8 +100,18 @@ public class DMREggBlockEntity extends BlockEntity {
     protected void applyImplicitComponents(DataComponentInput componentInput) {
         super.applyImplicitComponents(componentInput);
         setBreedId(componentInput.get(ModComponents.DRAGON_BREED));
-        setHatchTime(componentInput.getOrDefault(ModComponents.EGG_HATCH_TIME, ServerConfig.HATCH_TIME_CONFIG.get()));
+        setHatchTime(
+                componentInput.getOrDefault(ModComponents.EGG_HATCH_TIME, ServerConfig.HATCH_TIME_CONFIG.intValue()));
         setOwner(componentInput.get(ModComponents.EGG_OWNER));
+
+        if (ServerConfig.ENABLE_RANDOM_STATS) {
+            setSpeedAttribute(
+                    componentInput.getOrDefault(ModComponents.DRAGON_MOVEMENT_SPEED_ATTRIBUTE, (float) Math.random()));
+            setDamageAttribute(
+                    componentInput.getOrDefault(ModComponents.DRAGON_ATTACK_ATTRIBUTE, (float) Math.random()));
+            setHealthAttribute(
+                    componentInput.getOrDefault(ModComponents.DRAGON_HEALTH_ATTRIBUTE, (float) Math.random()));
+        }
     }
 
     @Override
@@ -98,6 +120,12 @@ public class DMREggBlockEntity extends BlockEntity {
         components.set(ModComponents.DRAGON_BREED, getBreedId());
         components.set(ModComponents.EGG_HATCH_TIME, getHatchTime());
         components.set(ModComponents.EGG_OWNER, getOwner());
+
+        if (ServerConfig.ENABLE_RANDOM_STATS) {
+            components.set(ModComponents.DRAGON_HEALTH_ATTRIBUTE, getHealthAttribute());
+            components.set(ModComponents.DRAGON_ATTACK_ATTRIBUTE, getDamageAttribute());
+            components.set(ModComponents.DRAGON_MOVEMENT_SPEED_ATTRIBUTE, getSpeedAttribute());
+        }
     }
 
     public int tickCount = 0;
@@ -152,6 +180,12 @@ public class DMREggBlockEntity extends BlockEntity {
         baby.setPos(pos.getX(), pos.getY(), pos.getZ());
 
         baby.setHatched(true);
+
+        if (ServerConfig.ENABLE_RANDOM_STATS) {
+            baby.setHealthAttribute(data.getHealthAttribute());
+            baby.setSpeedAttribute(data.getSpeedAttribute());
+            baby.setDamageAttribute(data.getDamageAttribute());
+        }
 
         if (data.getCustomName() != null) baby.setCustomName(data.getCustomName());
 

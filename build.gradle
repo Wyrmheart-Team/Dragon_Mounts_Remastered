@@ -8,7 +8,6 @@ plugins {
 
 version = "$minecraft_version-$mod_version"
 group = mod_group_id
-
 base {
     archivesName = mod_name
 }

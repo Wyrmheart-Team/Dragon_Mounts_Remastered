@@ -1,14 +1,13 @@
 package dmr.DragonMounts.network.packets;
 
-import dmr.DragonMounts.DMR;
-import dmr.DragonMounts.network.IMessage;
+import dmr.DragonMounts.network.AbstractMessage;
 import dmr.DragonMounts.registry.ModCriterionTriggers;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
+import lombok.Getter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -18,18 +17,40 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record DragonAttackPacket(int entityId) implements IMessage<DragonAttackPacket> {
-    public static final CustomPacketPayload.Type<DragonStatePacket> TYPE =
-            new CustomPacketPayload.Type<>(DMR.id("dragon_attack"));
+/**
+ * Packet for triggering a dragon attack.
+ */
+public class DragonAttackPacket extends AbstractMessage<DragonAttackPacket> {
+    private static final StreamCodec<FriendlyByteBuf, DragonAttackPacket> STREAM_CODEC =
+            StreamCodec.composite(ByteBufCodecs.INT, DragonAttackPacket::getEntityId, DragonAttackPacket::new);
 
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    @Getter
+    private final int entityId;
+
+    /**
+     * Empty constructor for NetworkHandler.
+     */
+    DragonAttackPacket() {
+        this.entityId = -1;
+    }
+
+    /**
+     * Creates a new packet with the given entity ID.
+     *
+     * @param entityId The ID of the entity
+     */
+    public DragonAttackPacket(int entityId) {
+        this.entityId = entityId;
     }
 
     @Override
-    public DragonAttackPacket decode(FriendlyByteBuf buffer) {
-        return new DragonAttackPacket(buffer.readInt());
+    protected String getTypeName() {
+        return "dragon_attack";
+    }
+
+    @Override
+    public StreamCodec<? super RegistryFriendlyByteBuf, DragonAttackPacket> streamCodec() {
+        return STREAM_CODEC;
     }
 
     @Override
@@ -70,13 +91,5 @@ public record DragonAttackPacket(int entityId) implements IMessage<DragonAttackP
                 }
             }
         }
-    }
-
-    public static final StreamCodec<FriendlyByteBuf, DragonAttackPacket> STREAM_CODEC =
-            StreamCodec.composite(ByteBufCodecs.INT, DragonAttackPacket::entityId, DragonAttackPacket::new);
-
-    @Override
-    public StreamCodec<? super RegistryFriendlyByteBuf, DragonAttackPacket> streamCodec() {
-        return STREAM_CODEC;
     }
 }

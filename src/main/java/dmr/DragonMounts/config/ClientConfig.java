@@ -1,89 +1,47 @@
 package dmr.DragonMounts.config;
 
-import dmr.DragonMounts.DMR;
-import dmr.DragonMounts.network.packets.ClientConfigSync;
-import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundTag;
+import dmr.DragonMounts.config.annotations.Config;
+import dmr.DragonMounts.config.annotations.RangeConstraint;
+import dmr.DragonMounts.config.annotations.SyncedConfig;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 @OnlyIn(Dist.CLIENT)
-@EventBusSubscriber(modid = DMR.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class ClientConfig {
 
     public static final ModConfigSpec MOD_CONFIG_SPEC;
 
-    public static final ModConfigSpec.BooleanValue CAMERA_FLIGHT;
-    public static final ModConfigSpec.IntValue RIDING_CAMERA_OFFSET;
-    public static final ModConfigSpec.BooleanValue DOUBLE_PRESS_DISMOUNT;
-    public static final ModConfigSpec.BooleanValue USE_ALTERNATE_ATTACK_KEY;
-    public static final ModConfigSpec.BooleanValue RENDER_HATCHING_EGG;
-    public static final ModConfigSpec.BooleanValue COLORED_WHISTLE_MENU;
+    @Config(key = "camera_flight", comment = "Should the dragon be controlled by the camera during flight?")
+    @SyncedConfig
+    public static boolean CAMERA_FLIGHT = true;
 
-    @SubscribeEvent
-    public static void configReload(ModConfigEvent.Reloading event) {
-        var tag = new CompoundTag();
-        tag.putBoolean("camera_flight", CAMERA_FLIGHT.get());
-        tag.putBoolean("alternate_dismount", DOUBLE_PRESS_DISMOUNT.get());
+    @Config(
+            key = "alternate_dismount",
+            comment =
+                    "Should dismounting the dragon require double pressing the dismount button? Disabling this will not allow using sneak or the dismount button to descend.")
+    @SyncedConfig
+    public static boolean DOUBLE_PRESS_DISMOUNT = true;
 
-        // TODO This is unlikely to work properly, find a better way to sync the config
-        var client = Minecraft.getInstance();
-        if (client.player != null) {
-            PacketDistributor.sendToServer(new ClientConfigSync(client.player.getId(), tag));
-        }
-    }
+    @Config(key = "alternate_attack_key", comment = "Should dragon attacks require holding down the dragon attack key?")
+    public static boolean USE_ALTERNATE_ATTACK_KEY = false;
 
-    @EventBusSubscriber(modid = DMR.MOD_ID, value = Dist.CLIENT)
-    public static class ClientConfigSyncHandler {
+    @Config(
+            key = "riding_camera_offset",
+            comment = "The zoom offset for the riding camera. Higher values will zoom the camera out further.")
+    @RangeConstraint(min = 1, max = 100)
+    public static int RIDING_CAMERA_OFFSET = 10;
 
-        @SubscribeEvent
-        public static void playerLoggedIn(PlayerLoggedInEvent event) {
-            if (!event.getEntity().isLocalPlayer()) return;
-            configReload(null);
-        }
-    }
+    @Config(key = "render_hatching_egg", comment = "Should the dragon egg render the hatching animation?")
+    public static boolean RENDER_HATCHING_EGG = true;
 
+    @Config(
+            key = "colored_whistle_menu",
+            comment = "Should the dragon whistle command menu display colors matching the whistle's color?")
+    public static boolean COLORED_WHISTLE_MENU = true;
+
+    // Initialize the config
     static {
-        var configurator = new ModConfigSpec.Builder();
-
-        CAMERA_FLIGHT = configurator
-                .comment("Should the dragon be controlled by the camera during flight?")
-                .translation("dmr.config.client.camera_flight")
-                .define("camera_flight", true);
-
-        DOUBLE_PRESS_DISMOUNT = configurator
-                .comment(
-                        "Should dismounting the dragon require double pressing the dismount button? Disabling this will not allow using sneak or the dismount button to descend.")
-                .translation("dmr.config.client.alternate_dismount")
-                .define("alternate_dismount", true);
-
-        USE_ALTERNATE_ATTACK_KEY = configurator
-                .comment("Should dragon attacks require holding down the dragon attack key?")
-                .translation("dmr.config.client.alternate_attack_key")
-                .define("alternate_attack_key", true);
-
-        RIDING_CAMERA_OFFSET = configurator
-                .comment("The zoom offset for the riding camera.")
-                .comment("Higher values will zoom the camera out further.")
-                .translation("dmr.config.client.riding_camera_offset")
-                .defineInRange("riding_camera_offset", 10, 1, 100);
-
-        RENDER_HATCHING_EGG = configurator
-                .comment("Should the dragon egg render the hatching animation?")
-                .translation("dmr.config.client.render_hatching_egg")
-                .define("render_hatching_egg", true);
-
-        COLORED_WHISTLE_MENU = configurator
-                .comment("Should the dragon whistle menu be colored based on the whistle's color?")
-                .translation("dmr.config.client.colored_whistle_menu")
-                .define("colored_whistle_menu", true);
-
-        MOD_CONFIG_SPEC = configurator.build();
+        MOD_CONFIG_SPEC = ConfigProcessor.processConfig(ClientConfig.class);
     }
 }

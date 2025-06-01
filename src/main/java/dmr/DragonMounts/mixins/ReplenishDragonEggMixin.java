@@ -22,6 +22,6 @@ public class ReplenishDragonEggMixin {
                             target = "Lnet/minecraft/world/level/dimension/end/EndDragonFight;previouslyKilled:Z",
                             opcode = Opcodes.GETFIELD))
     private boolean dragonmounts_replenishDragonEgg(EndDragonFight instance) {
-        return !(!instance.hasPreviouslyKilledDragon() || ServerConfig.REPLENISH_EGGS.get());
+        return !(!instance.hasPreviouslyKilledDragon() || ServerConfig.REPLENISH_EGGS);
     }
 }

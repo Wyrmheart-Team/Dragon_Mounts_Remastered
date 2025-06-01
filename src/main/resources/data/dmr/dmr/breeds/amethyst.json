@@ -11,6 +11,7 @@
   "primary_color": "A779F1",
   "secondary_color": "FECCE7",
   "ambient_sound": "dmr:entity.dragon.breathe",
+  "breath_type": "amethyst",
   "loot_tables": [
     {
       "table": "minecraft:chests/stronghold_library",

@@ -37,7 +37,7 @@ public class DragonEggTests {
      * block
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -59,7 +59,7 @@ public class DragonEggTests {
      * destruction, the block is no longer present in the world
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -81,7 +81,7 @@ public class DragonEggTests {
      * 1) 3. The block is removed from the world after breaking
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -107,7 +107,7 @@ public class DragonEggTests {
      * type 3. The dropped item has the correct breed component data
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -142,7 +142,7 @@ public class DragonEggTests {
      * hatching property of the egg block is set to true
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -168,7 +168,7 @@ public class DragonEggTests {
      * correct dragon breed
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -205,7 +205,7 @@ public class DragonEggTests {
      * processes a tick update
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -238,7 +238,7 @@ public class DragonEggTests {
      * place of the egg
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -279,7 +279,7 @@ public class DragonEggTests {
      * 3. The breed information is properly stored in the block entity
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -307,7 +307,7 @@ public class DragonEggTests {
      * 3. The spawned dragon has the correct breed ID matching the egg's breed
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -353,7 +353,7 @@ public class DragonEggTests {
      * player's state correctly tracks the number of dragons they've hatched
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest

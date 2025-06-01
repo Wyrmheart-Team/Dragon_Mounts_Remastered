@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.animal.Animal;
@@ -17,6 +19,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class BreedingUtils {
+    static final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    public static IDragonBreed getHabitatBreedOutcome(ServerLevel level, BlockPos pos) {
+        var outcomes = getHabitatBreedOutcomes(level, pos);
+        var first = outcomes.stream().findFirst();
+        return first.map(Entry::getValue).orElse(null);
+    }
 
     public static List<Entry<Integer, IDragonBreed>> getHabitatBreedOutcomes(ServerLevel level, BlockPos pos) {
         var outcomes = new ArrayList<Entry<Integer, IDragonBreed>>();
@@ -30,8 +39,7 @@ public class BreedingUtils {
             for (Habitat habitat : dragonBreed.getHabitats()) {
                 if (habitat == null) continue;
 
-                var point = habitat.getHabitatPoints(level, pos);
-                points += point;
+                points += Math.max(0, habitat.getHabitatPoints(level, pos));
             }
 
             if (points > 0) {
@@ -43,12 +51,6 @@ public class BreedingUtils {
         Collections.reverse(outcomes);
 
         return outcomes;
-    }
-
-    public static IDragonBreed getHabitatBreedOutcome(ServerLevel level, BlockPos pos) {
-        var outcomes = getHabitatBreedOutcomes(level, pos);
-        var first = outcomes.stream().findFirst();
-        return first.map(Entry::getValue).orElse(null);
     }
 
     @NotNull public static String generateCustomName(TameableDragonEntity mate1, Animal animal) {

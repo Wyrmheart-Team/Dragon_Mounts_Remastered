@@ -25,6 +25,7 @@
   "immunities": ["onFire", "inFire", "lava", "hotFloor"],
   "primary_color": "912400",
   "secondary_color": "ff9819",
+  "breath_type": "fire",
   "loot_tables": [
     {
       "table": "minecraft:chests/desert_pyramid",

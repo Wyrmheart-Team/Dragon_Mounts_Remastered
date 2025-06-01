@@ -1,12 +1,11 @@
 package dmr.DragonMounts.server.entity;
 
-import static net.minecraft.world.entity.ai.attributes.Attributes.*;
-import static net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED;
-
 import com.mojang.serialization.Dynamic;
 import dmr.DragonMounts.DMR;
+import dmr.DragonMounts.ModConstants;
 import dmr.DragonMounts.common.handlers.DragonWhistleHandler;
 import dmr.DragonMounts.common.handlers.DragonWhistleHandler.DragonInstance;
+import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.ModCriterionTriggers;
 import dmr.DragonMounts.server.ai.DragonAI;
 import dmr.DragonMounts.server.entity.dragon.AbstractDragonEntity;
@@ -15,6 +14,7 @@ import dmr.DragonMounts.server.worlddata.DragonWorldDataManager;
 import dmr.DragonMounts.util.PlayerStateUtils;
 import java.util.Optional;
 import lombok.Getter;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.DebugPackets;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.server.level.ServerLevel;
@@ -24,11 +24,9 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.Brain.Provider;
-import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
@@ -50,24 +48,13 @@ public class TameableDragonEntity extends AbstractDragonEntity {
                 (Brain<TameableDragonEntity>) this.brainProvider().makeBrain(dynamic));
     }
 
-    public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes()
-                .add(MOVEMENT_SPEED, DragonConstants.BASE_SPEED_GROUND)
-                .add(MAX_HEALTH, DragonConstants.BASE_HEALTH)
-                .add(FOLLOW_RANGE, DragonConstants.BASE_FOLLOW_RANGE)
-                .add(KNOCKBACK_RESISTANCE, DragonConstants.BASE_KB_RESISTANCE)
-                .add(ATTACK_DAMAGE, DragonConstants.BASE_DAMAGE)
-                .add(FLYING_SPEED, DragonConstants.BASE_SPEED_FLYING)
-                .add(SWIM_SPEED, DragonConstants.BASE_SPEED_WATER);
-    }
-
     @Override
     protected void customServerAiStep() {
         this.level().getProfiler().push("dragonBrain");
         this.getBrain().tick((ServerLevel) this.level, this);
         this.level().getProfiler().pop();
         this.level().getProfiler().push("dragonActivityUpdate");
-        DragonAI.updateActivity(this);
+        DragonAI.selectMostAppropriateActivity(this);
         this.level().getProfiler().pop();
         super.customServerAiStep();
     }
@@ -84,11 +71,20 @@ public class TameableDragonEntity extends AbstractDragonEntity {
 
     @Override
     public boolean removeWhenFarAway(double distanceToClosestPlayer) {
-        return (!wasHatched()
+        return ((wasHatched() || this.tickCount > 2400 || isNaturalSpawn())
                 && !isTame()
                 && distanceToClosestPlayer > Mth.sqrt(32)
-                && this.tickCount > 2400
                 && !this.hasCustomName());
+    }
+
+    @Override
+    protected Component getTypeName() {
+        if (hasVariant()) {
+            return Component.translatable(
+                    DMR.MOD_ID + ".dragon_breed." + getBreed().getId() + ModConstants.VARIANT_DIVIDER + getVariantId());
+        }
+
+        return getBreed().getName();
     }
 
     @Override
@@ -178,7 +174,7 @@ public class TameableDragonEntity extends AbstractDragonEntity {
         super.baseTick();
 
         if (!this.level.isClientSide && this.isAlive() && this.tickCount % 20 == 0) {
-            this.heal(1.0F);
+            this.heal(ServerConfig.HEALTH_REGEN);
         }
 
         if (getDragonInventory() != null && getDragonInventory().isDirty()) {

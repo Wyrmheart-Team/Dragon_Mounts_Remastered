@@ -17,7 +17,7 @@ public class HabitatOutcomeCheck extends DMRDevItem {
         if (pIsSelected && pEntity instanceof Player pPlayer) {
             if (!pLevel.isClientSide && pPlayer.tickCount % 10 == 0) {
                 var outcomes = BreedingUtils.getHabitatBreedOutcomes((ServerLevel) pLevel, pPlayer.blockPosition());
-                if (outcomes.size() > 0) {
+                if (!outcomes.isEmpty()) {
                     StringJoiner joiner = new StringJoiner(", ");
                     outcomes.stream()
                             .limit(3)

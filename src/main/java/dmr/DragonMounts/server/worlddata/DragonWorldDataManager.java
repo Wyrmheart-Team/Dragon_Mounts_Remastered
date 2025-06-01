@@ -40,7 +40,7 @@ public class DragonWorldDataManager {
         var level = dragon.level;
         DragonWorldData data = DragonWorldData.getInstance(level);
         data.deadDragons.add(dragon.getDragonUUID());
-        data.deathDelay.put(dragon.getDragonUUID(), ServerConfig.RESPAWN_TIME.get() * 20);
+        data.deathDelay.put(dragon.getDragonUUID(), ServerConfig.RESPAWN_TIME * 20);
         data.deathMessages.put(dragon.getDragonUUID(), message);
         data.setDirty();
     }

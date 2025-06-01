@@ -3,12 +3,6 @@
     "type": "minecraft:end_rod"
   },
   "accessories": ["middle_tail_scales"],
-  "habitats": [
-    {
-      "type": "nearby_blocks",
-      "block_tag": "dmr:amethyst_dragon_habitat_blocks"
-    }
-  ],
   "abilities": [
     {
       "type": "gem_guard"

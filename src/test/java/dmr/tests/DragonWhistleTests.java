@@ -40,7 +40,7 @@ public class DragonWhistleTests {
      * corresponding dragon data, the method correctly returns the whistle item
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -88,7 +88,7 @@ public class DragonWhistleTests {
      * ID
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -132,7 +132,7 @@ public class DragonWhistleTests {
      * dragon instance has the correct UUID matching the original dragon
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -173,7 +173,7 @@ public class DragonWhistleTests {
      * the canCall method returns false
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -200,7 +200,7 @@ public class DragonWhistleTests {
      * associated dragon, the canCall method returns false
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -227,7 +227,7 @@ public class DragonWhistleTests {
      * UUID matching the original dragon
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -263,7 +263,7 @@ public class DragonWhistleTests {
      * successfully called using the whistle
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate
     @GameTest
@@ -312,7 +312,7 @@ public class DragonWhistleTests {
      * The lastCall timestamp is different after summoning the dragon
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate
     @GameTest

@@ -29,7 +29,7 @@ public class CapabilityTests {
      * retrieve a capability handler for a player 2. The handler is not null
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -49,7 +49,7 @@ public class CapabilityTests {
      * The player instance is automatically set in the handler
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -74,7 +74,7 @@ public class CapabilityTests {
      * handler
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -95,7 +95,7 @@ public class CapabilityTests {
      * associated with a whistle slot in the player's capability handler
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -123,7 +123,7 @@ public class CapabilityTests {
      * (1) in the dragonNBTs map
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -160,7 +160,7 @@ public class CapabilityTests {
      * entity is not null
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest

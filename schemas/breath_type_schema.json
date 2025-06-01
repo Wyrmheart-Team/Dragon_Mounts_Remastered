@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "colors": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "Hex color code for the breath gradient",
+        "pattern": "^[0-9a-fA-F]{6}$"
+      },
+      "description": "List of colors for the breath gradient"
+    },
+    "damage": {
+      "type": "number",
+      "description": "Damage dealt by the breath attack",
+      "minimum": 0
+    },
+    "fire_time": {
+      "type": "integer",
+      "description": "Time in ticks that the target will be set on fire",
+      "minimum": 0
+    },
+    "particle_density": {
+      "type": "integer",
+      "description": "Density of particles in the breath attack",
+      "minimum": 1
+    },
+    "effects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "effect": {
+            "type": "string",
+            "description": "Effect ID to apply",
+            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_/.]+$"
+          },
+          "duration": {
+            "type": "integer",
+            "description": "Duration of the effect in ticks",
+            "minimum": 1
+          },
+          "amplifier": {
+            "type": "integer",
+            "description": "Amplifier level of the effect",
+            "minimum": 0
+          },
+          "chance": {
+            "type": "number",
+            "description": "Chance to apply the effect",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": ["effect", "duration", "amplifier"]
+      },
+      "description": "List of effects to apply to targets"
+    }
+  },
+  "required": ["colors"]
+}

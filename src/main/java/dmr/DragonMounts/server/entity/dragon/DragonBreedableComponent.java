@@ -1,10 +1,5 @@
 package dmr.DragonMounts.server.entity.dragon;
 
-import static net.minecraft.world.entity.ai.attributes.Attributes.*;
-import static net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE;
-import static net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH;
-
-import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.network.packets.DragonAgeSyncPacket;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
@@ -15,18 +10,13 @@ import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.util.BreedingUtils;
 import java.util.Optional;
 import net.minecraft.core.GlobalPos;
-import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.TamableAnimal;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -80,6 +70,10 @@ abstract class DragonBreedableComponent extends DragonBreedComponent {
                 : null;
         var egg = DMREggBlock.place(level, blockPosition(), state, offSpringBreed, variant);
 
+        if (ServerConfig.ENABLE_RANDOM_STATS) {
+            getDragon().setEggBreedAttributes(mate, () -> egg);
+        }
+
         // mix the custom names in case both parents have one
         if (hasCustomName() && animal.hasCustomName()) {
             String babyName = BreedingUtils.generateCustomName(getDragon(), animal);
@@ -118,38 +112,10 @@ abstract class DragonBreedableComponent extends DragonBreedComponent {
         updateAgeProperties();
     }
 
-    private static final ResourceLocation SCALE_MODIFIER =
-            ResourceLocation.fromNamespaceAndPath(DMR.MOD_ID, "scale_attribute");
-
     /** Updates the age-related properties of the dragon. */
     public void updateAgeProperties() {
         refreshDimensions();
-
-        AttributeInstance stepHeightInstance = getAttribute(STEP_HEIGHT);
-        if (stepHeightInstance != null) {
-            stepHeightInstance.setBaseValue(Math.max(2 * getAgeProgress(), 1));
-        }
-
-        AttributeInstance baseHealthInstance = getAttribute(MAX_HEALTH);
-        if (baseHealthInstance != null) {
-            baseHealthInstance.setBaseValue(ServerConfig.BASE_HEALTH.get());
-        }
-
-        AttributeInstance attackDamageInstance = getAttribute(ATTACK_DAMAGE);
-        if (attackDamageInstance != null) {
-            attackDamageInstance.setBaseValue(ServerConfig.BASE_DAMAGE.get());
-        }
-
-        var mod = new AttributeModifier(SCALE_MODIFIER, getScale(), Operation.ADD_VALUE);
-        for (var attribute : new Holder[] {MAX_HEALTH, ATTACK_DAMAGE}) { // avoid duped code
-            AttributeInstance instance = getAttribute(attribute);
-            if (instance != null) {
-                instance.removeModifier(SCALE_MODIFIER);
-            }
-            if (instance != null) {
-                instance.addTransientModifier(mod);
-            }
-        }
+        getDragon().updateAgeAttributes();
     }
 
     /**
@@ -165,6 +131,7 @@ abstract class DragonBreedableComponent extends DragonBreedComponent {
     public boolean isAdult() {
         return getAgeProgress() >= 1f;
     }
+
     /**
      * Checks if the dragon is a baby.
      */

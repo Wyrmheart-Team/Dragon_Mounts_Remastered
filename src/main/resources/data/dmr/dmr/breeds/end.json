@@ -20,6 +20,7 @@
   "immunities": ["dragonBreath"],
   "primary_color": "161616",
   "secondary_color": "ff63e8",
+  "breath_type": "ender",
   "accessories": ["second_horns"],
   "loot_tables": [
     {

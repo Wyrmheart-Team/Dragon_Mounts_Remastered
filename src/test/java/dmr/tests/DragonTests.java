@@ -39,7 +39,7 @@ public class DragonTests {
      * is set to true
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -69,7 +69,7 @@ public class DragonTests {
      * set to true 3. The dragon's owner is correctly set to the player
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -100,7 +100,7 @@ public class DragonTests {
      * owner 2. The dragon's look target position is close to the player's position
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -198,7 +198,7 @@ public class DragonTests {
     //
     //            helper.succeedWhen(() -> {
     //                var dragonTarget = dragon.getTarget();
-    //                if (dragonTarget == null || (!dragonTarget.is(target) && dragonTarget.getId() != target.getId()))
+    //                if(dragonTarget == null || (!dragonTarget.is(target) && dragonTarget.getId() != target.getId()))
     // {
     //                    helper.fail("Dragon did not defend owner. Target was: " + dragonTarget);
     //                }
@@ -239,7 +239,7 @@ public class DragonTests {
     //
     //            helper.succeedWhen(() -> {
     //                var target = dragon.getTarget();
-    //                if (target == null || (!target.is(otherPlayer) && target.getId() != otherPlayer.getId())) {
+    //                if(target == null || (!target.is(otherPlayer) && target.getId() != otherPlayer.getId())) {
     //                    helper.fail("Dragon did not attack non-owner. Target was: " + target);
     //                }
     //            });
@@ -331,7 +331,7 @@ public class DragonTests {
      * After equipping, the dragon's saddled status is set to true
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -362,7 +362,7 @@ public class DragonTests {
      * 2. After equipping, the dragon's armor status is set to true
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -394,7 +394,7 @@ public class DragonTests {
      * After equipping, the dragon's chest status is set to true
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -426,7 +426,7 @@ public class DragonTests {
      * If the dragon is selected with a whistle, its inventory items are not dropped
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -457,7 +457,7 @@ public class DragonTests {
      * number of items are dropped
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -486,7 +486,7 @@ public class DragonTests {
      * dropped in the world 3. Exactly one saddle is dropped
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -514,7 +514,7 @@ public class DragonTests {
      * armor is dropped in the world 3. Exactly one armor item is dropped
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -543,7 +543,7 @@ public class DragonTests {
      * becomes a passenger of the dragon
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -578,7 +578,7 @@ public class DragonTests {
      * dismounting, the player is no longer a passenger
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest

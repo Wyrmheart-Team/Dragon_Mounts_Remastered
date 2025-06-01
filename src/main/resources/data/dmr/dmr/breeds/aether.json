@@ -24,6 +24,7 @@
   ],
   "primary_color": "718aa9",
   "secondary_color": "e6e6e6",
+  "breath_type": "aether",
   "loot_tables": [
     {
       "table": "minecraft:chests/simple_dungeon",

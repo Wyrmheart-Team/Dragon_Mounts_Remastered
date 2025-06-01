@@ -199,7 +199,7 @@ public class DragonWhistleHandler {
         }
 
         // TODO Implement a better handeling of space checking for game tests
-        if (ServerConfig.CALL_CHECK_SPACE.get() && !GameTestHooks.isGametestEnabled()) {
+        if (ServerConfig.CALL_CHECK_SPACE && !GameTestHooks.isGametestEnabled()) {
             if (!player.level.noBlockCollision(
                     null, player.getBoundingBox().move(0, 1, 0).inflate(1, 1, 1))) {
                 if (!player.level.isClientSide) {
@@ -210,8 +210,8 @@ public class DragonWhistleHandler {
             }
         }
 
-        if (handler.lastCall != null && ServerConfig.WHISTLE_COOLDOWN_CONFIG.get() > 0) {
-            if (handler.lastCall + ServerConfig.WHISTLE_COOLDOWN_CONFIG.get() > System.currentTimeMillis()) {
+        if (handler.lastCall != null && ServerConfig.WHISTLE_COOLDOWN_CONFIG > 0) {
+            if (handler.lastCall + ServerConfig.WHISTLE_COOLDOWN_CONFIG > System.currentTimeMillis()) {
                 if (!player.level.isClientSide) {
                     player.displayClientMessage(
                             Component.translatable("dmr.dragon_call.on_cooldown")
@@ -236,7 +236,7 @@ public class DragonWhistleHandler {
                                 .addCooldown(
                                         s.get(),
                                         (int) TimeUnit.SECONDS.convert(
-                                                        ServerConfig.WHISTLE_COOLDOWN_CONFIG.get(),
+                                                        ServerConfig.WHISTLE_COOLDOWN_CONFIG,
                                                         TimeUnit.MILLISECONDS)
                                                 * 20);
                     }

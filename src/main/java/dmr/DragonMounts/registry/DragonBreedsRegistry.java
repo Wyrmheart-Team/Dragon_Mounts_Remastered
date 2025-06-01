@@ -6,11 +6,12 @@ import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.util.BreedingUtils;
+import net.minecraft.server.level.ServerLevel;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import net.minecraft.server.level.ServerLevel;
 
 public class DragonBreedsRegistry {
 
@@ -82,7 +83,7 @@ public class DragonBreedsRegistry {
         eggOutcomes.addAll(getBreeds(tameableDragonEntity));
         eggOutcomes.addAll(getBreeds(mate));
 
-        if (ServerConfig.HABITAT_OFFSPRING.get()) {
+        if (ServerConfig.HABITAT_OFFSPRING) {
             IDragonBreed highestBreed1 =
                     BreedingUtils.getHabitatBreedOutcome(level, tameableDragonEntity.blockPosition());
             IDragonBreed highestBreed2 = BreedingUtils.getHabitatBreedOutcome(level, mate.blockPosition());
@@ -96,7 +97,7 @@ public class DragonBreedsRegistry {
             }
         }
 
-        if (ServerConfig.ALLOW_HYBRIDIZATION.get()) {
+        if (ServerConfig.ALLOW_HYBRIDIZATION) {
             var newList = new ArrayList<IDragonBreed>();
 
             for (IDragonBreed breed1 : eggOutcomes) {

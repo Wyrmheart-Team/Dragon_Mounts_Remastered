@@ -18,6 +18,7 @@
   "immunities": ["inFire", "onFire", "lava", "hotFloor"],
   "primary_color": "912400",
   "secondary_color": "2e0b00",
+  "breath_type": "nether",
   "loot_tables": [
     {
       "table": "minecraft:chests/bastion_treasure",

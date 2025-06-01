@@ -1,5 +1,6 @@
 package dmr.DragonMounts.server.events;
 
+import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.DragonArmorRegistry;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModComponents;
@@ -88,8 +89,14 @@ public class LootTableInject {
         if (variant != null) {
             lootItemBuilder.apply(SetComponentsFunction.setComponent(ModComponents.DRAGON_VARIANT.get(), variant.id()));
         }
+        var chanceMultiplier = 1d;
+
+        if (ServerConfig.MOD_CONFIG_SPEC.isLoaded()) {
+            chanceMultiplier = ServerConfig.DRAGON_EGG_SPAWN_CHANCE;
+        }
+
         var lootPoolBuilder = LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(entry.chance()))
+                .when(LootItemRandomChanceCondition.randomChance((float) (entry.chance() * chanceMultiplier)))
                 .add(lootItemBuilder)
                 .name(breed.getId() + "-egg");
 

@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#c:is_nether",
+  "spawners": {
+    "type": "dmr:dragon",
+    "maxCount": 2,
+    "minCount": 1,
+    "weight": 1
+  }
+}

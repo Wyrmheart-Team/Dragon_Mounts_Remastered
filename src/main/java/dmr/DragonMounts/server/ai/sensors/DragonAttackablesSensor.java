@@ -26,7 +26,14 @@ public class DragonAttackablesSensor extends NearestVisibleLivingEntitySensor {
             if (player.getLastHurtMob() == target && !isNotAllied) return true;
         }
 
-        if (target instanceof TameableDragonEntity) return false; // Dont hunt other dragons
+        // Only hunt non-tamed dragons from other spawn groups
+        if (target instanceof TameableDragonEntity otherDragon) {
+            if (dragon.getSpawnGroupId() == otherDragon.getSpawnGroupId()) {
+                return false;
+            } else if (!otherDragon.isTame() && !dragon.isTame()) {
+                return true;
+            }
+        }
 
         var predicate = EntityPredicate.Builder.entity()
                 .of(

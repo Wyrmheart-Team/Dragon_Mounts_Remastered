@@ -20,7 +20,7 @@ public class RidingCameraHandler {
         LocalPlayer currentPlayer = Minecraft.getInstance().player;
 
         if (currentPlayer != null && currentPlayer.getRootVehicle() instanceof TameableDragonEntity) {
-            float gradualIncrease = Mth.lerp(0.02f, lastCameraIncrease, ClientConfig.RIDING_CAMERA_OFFSET.get());
+            float gradualIncrease = Mth.lerp(0.02f, lastCameraIncrease, ClientConfig.RIDING_CAMERA_OFFSET);
             event.setDistance(gradualIncrease);
             lastCameraIncrease = gradualIncrease;
             return;

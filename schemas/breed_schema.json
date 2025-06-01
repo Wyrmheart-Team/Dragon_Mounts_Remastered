@@ -137,6 +137,11 @@
       },
       "description": "List of abilities"
     },
+    "breath_type": {
+      "type": "string",
+      "description": "The type of dragon breath to use",
+      "pattern": "^[a-zA-Z0-9_/.]+$"
+    },
     "taming_items": {
       "type": "array",
       "items": {

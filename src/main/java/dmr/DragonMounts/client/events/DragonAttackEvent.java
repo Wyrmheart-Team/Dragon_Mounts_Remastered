@@ -1,9 +1,7 @@
 package dmr.DragonMounts.client.events;
 
-import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.client.handlers.KeyInputHandler;
 import dmr.DragonMounts.config.ClientConfig;
-import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.network.packets.DragonAttackPacket;
 import dmr.DragonMounts.network.packets.DragonBreathPacket;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
@@ -22,7 +20,7 @@ public class DragonAttackEvent {
 
     @SubscribeEvent
     public static void onClickEvent(InteractionKeyMappingTriggered event) {
-        if (ClientConfig.USE_ALTERNATE_ATTACK_KEY.get() && !KeyInputHandler.ATTACK_KEY.isDown()) return;
+        if (ClientConfig.USE_ALTERNATE_ATTACK_KEY && !KeyInputHandler.ATTACK_KEY.isDown()) return;
 
         var player = Minecraft.getInstance().player;
         if (player != null) {
@@ -36,7 +34,7 @@ public class DragonAttackEvent {
                         event.setCanceled(true);
                         event.setSwingHand(false);
                         PacketDistributor.sendToServer(new DragonAttackPacket(dragon.getId()));
-                    } else if (event.isUseItem() && (DMR.DEBUG || ServerConfig.ENABLE_DRAGON_BREATH.get())) {
+                    } else if (event.isUseItem()) {
                         event.setCanceled(true);
                         event.setSwingHand(false);
                         PacketDistributor.sendToServer(new DragonBreathPacket(dragon.getId()));

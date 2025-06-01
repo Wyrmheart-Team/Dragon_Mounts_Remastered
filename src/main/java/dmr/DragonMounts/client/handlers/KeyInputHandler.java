@@ -10,7 +10,6 @@ import dmr.DragonMounts.network.packets.DismountDragonPacket;
 import dmr.DragonMounts.network.packets.SummonDragonPacket;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.util.PlayerStateUtils;
-import java.util.concurrent.TimeUnit;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
@@ -23,6 +22,8 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.concurrent.TimeUnit;
 
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = DMR.MOD_ID, value = Dist.CLIENT, bus = Bus.MOD)
@@ -133,7 +134,7 @@ public class KeyInputHandler {
                 if (Minecraft.getInstance().options.keyShift.consumeClick()) {
                     wasShiftDown = true;
 
-                    if (ClientConfig.DOUBLE_PRESS_DISMOUNT.get()) {
+                    if (ClientConfig.DOUBLE_PRESS_DISMOUNT) {
                         if (lastUnshift != null
                                 && System.currentTimeMillis() > lastUnshift
                                 && System.currentTimeMillis()

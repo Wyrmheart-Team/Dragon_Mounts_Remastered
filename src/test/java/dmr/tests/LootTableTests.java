@@ -31,7 +31,7 @@ public class LootTableTests {
      * appropriate dragon egg loot
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -66,7 +66,7 @@ public class LootTableTests {
      * and LootTable works correctly
      *
      * @param helper
-     *            The game test helper
+     *               The game test helper
      */
     @EmptyTemplate(floor = true)
     @GameTest

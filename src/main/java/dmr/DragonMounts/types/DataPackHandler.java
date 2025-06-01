@@ -9,10 +9,12 @@ import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.network.packets.SyncDataPackPacket;
 import dmr.DragonMounts.registry.DragonArmorRegistry;
+import dmr.DragonMounts.registry.DragonBreathRegistry;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModAdvancements;
 import dmr.DragonMounts.server.events.LootTableInject;
 import dmr.DragonMounts.types.armor.DragonArmor;
+import dmr.DragonMounts.types.breath.DragonBreathType;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import java.util.ArrayList;
@@ -32,6 +34,8 @@ public class DataPackHandler {
 
     public static final ResourceKey<Registry<DragonBreed>> BREEDS_KEY = ResourceKey.createRegistryKey(DMR.id("breeds"));
     public static final ResourceKey<Registry<DragonArmor>> ARMORS_KEY = ResourceKey.createRegistryKey(DMR.id("armor"));
+    public static final ResourceKey<Registry<DragonBreathType>> BREATH_TYPES_KEY =
+            ResourceKey.createRegistryKey(DMR.id("breath_types"));
 
     public static final Codec<DragonBreed> BREED_CODEC = new PrimitiveCodec<>() {
         @Override
@@ -57,9 +61,22 @@ public class DataPackHandler {
         }
     };
 
+    public static final Codec<DragonBreathType> BREATH_TYPE_CODEC = new PrimitiveCodec<>() {
+        @Override
+        public <T> DataResult<DragonBreathType> read(DynamicOps<T> ops, T input) {
+            return readData(input, DragonBreathType.class);
+        }
+
+        @Override
+        public <T> T write(DynamicOps<T> ops, DragonBreathType value) {
+            return ops.createString(DMR.getGson().toJson(value));
+        }
+    };
+
     public static void newDataPack(DataPackRegistryEvent.NewRegistry event) {
         event.dataPackRegistry(BREEDS_KEY, BREED_CODEC, BREED_CODEC);
         event.dataPackRegistry(ARMORS_KEY, ARMOR_CODEC, ARMOR_CODEC);
+        event.dataPackRegistry(BREATH_TYPES_KEY, BREATH_TYPE_CODEC, BREATH_TYPE_CODEC);
     }
 
     public static void dataPackData(OnDatapackSyncEvent event) {
@@ -81,9 +98,13 @@ public class DataPackHandler {
         var armor_reg = level.registryAccess()
                 .registry(ARMORS_KEY)
                 .orElseGet(() -> RegistryAccess.EMPTY.registryOrThrow(ARMORS_KEY));
+        var breath_reg = level.registryAccess()
+                .registry(BREATH_TYPES_KEY)
+                .orElseGet(() -> RegistryAccess.EMPTY.registryOrThrow(BREATH_TYPES_KEY));
 
         List<DragonArmor> armorList = new ArrayList<>();
         List<IDragonBreed> breedList = new ArrayList<>();
+        List<DragonBreathType> breathList = new ArrayList<>();
 
         for (Entry<ResourceKey<DragonArmor>, DragonArmor> ent : armor_reg.entrySet()) {
             var key = ent.getKey();
@@ -93,6 +114,15 @@ public class DataPackHandler {
         }
 
         DragonArmorRegistry.setArmors(armorList);
+
+        for (Entry<ResourceKey<DragonBreathType>, DragonBreathType> ent : breath_reg.entrySet()) {
+            var key = ent.getKey();
+            var breathType = ent.getValue();
+            breathType.setId(key.location().getPath());
+            breathList.add(breathType);
+        }
+
+        DragonBreathRegistry.setBreathTypes(breathList);
 
         for (Entry<ResourceKey<DragonBreed>, DragonBreed> ent : breed_reg.entrySet()) {
             var key = ent.getKey();
@@ -111,7 +141,7 @@ public class DataPackHandler {
             ModAdvancements.init(serverLevel);
         }
 
-        if (!ServerConfig.ENABLE_BLANK_EGG.get()) {
+        if (!ServerConfig.ENABLE_BLANK_EGG) {
             var server = level.getServer();
             if (server == null) return;
             server.getRecipeManager()

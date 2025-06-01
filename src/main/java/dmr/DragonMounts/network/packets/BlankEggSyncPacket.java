@@ -1,45 +1,68 @@
 package dmr.DragonMounts.network.packets;
 
-import dmr.DragonMounts.DMR;
-import dmr.DragonMounts.network.IMessage;
+import dmr.DragonMounts.network.AbstractMessage;
 import dmr.DragonMounts.server.blockentities.DMRBlankEggBlockEntity;
+import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record BlankEggSyncPacket(BlockPos pos, String targetBreed, int changeTime)
-        implements IMessage<BlankEggSyncPacket> {
-    public static final StreamCodec<FriendlyByteBuf, BlankEggSyncPacket> STREAM_CODEC = StreamCodec.composite(
+public class BlankEggSyncPacket extends AbstractMessage<BlankEggSyncPacket> {
+    private static final StreamCodec<FriendlyByteBuf, BlankEggSyncPacket> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC,
-            BlankEggSyncPacket::pos,
+            BlankEggSyncPacket::getPos,
             ByteBufCodecs.STRING_UTF8,
-            BlankEggSyncPacket::targetBreed,
+            BlankEggSyncPacket::getTargetBreed,
             ByteBufCodecs.INT,
-            BlankEggSyncPacket::changeTime,
+            BlankEggSyncPacket::getChangeTime,
             BlankEggSyncPacket::new);
+
+    @Getter
+    private final BlockPos pos;
+
+    @Getter
+    private final String targetBreed;
+
+    @Getter
+    private final int changeTime;
+
+    /**
+     * Empty constructor for NetworkHandler.
+     */
+    BlankEggSyncPacket() {
+        this.pos = BlockPos.ZERO;
+        this.targetBreed = "";
+        this.changeTime = -1;
+    }
+
+    /**
+     * Creates a new packet with the given parameters.
+     *
+     * @param pos The position of the egg
+     * @param targetBreed The target breed ID
+     * @param changeTime The change time
+     */
+    public BlankEggSyncPacket(BlockPos pos, String targetBreed, int changeTime) {
+        this.pos = pos;
+        this.targetBreed = targetBreed;
+        this.changeTime = changeTime;
+    }
+
+    @Override
+    protected String getTypeName() {
+        return "blank_egg_sync";
+    }
 
     @Override
     public StreamCodec<? super RegistryFriendlyByteBuf, BlankEggSyncPacket> streamCodec() {
         return STREAM_CODEC;
     }
 
-    public static final Type<BlankEggSyncPacket> TYPE = new Type<>(DMR.id("blank_egg_sync"));
-
     @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
-    }
-
-    @Override
-    public BlankEggSyncPacket decode(FriendlyByteBuf buffer) {
-        return new BlankEggSyncPacket(buffer.readBlockPos(), buffer.readUtf(), buffer.readInt());
-    }
-
     public void handle(IPayloadContext supplier, Player player) {
         var level = player.level();
         var blockEntity = level.getBlockEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));

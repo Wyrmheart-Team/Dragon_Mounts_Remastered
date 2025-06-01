@@ -1,39 +1,59 @@
 package dmr.DragonMounts.server.ai.behaviours;
 
-import dmr.DragonMounts.DMR;
-import dmr.DragonMounts.config.ServerConfig;
+import com.google.common.collect.ImmutableMap;
 import dmr.DragonMounts.registry.ModMemoryModuleTypes;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.behavior.EntityTracker;
-import net.minecraft.world.entity.ai.behavior.OneShot;
-import net.minecraft.world.entity.ai.behavior.declarative.BehaviorBuilder;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.memory.MemoryStatus;
 
-public class DragonBreathAttack {
+/**
+ * Manages dragon breath attack behavior.
+ * This behavior allows dragons to perform ranged breath attacks against targets
+ * when not on cooldown.
+ */
+public class DragonBreathAttack extends Behavior<TameableDragonEntity> {
+    /** Duration of breath attack in ticks */
+    private static final int ATTACK_DURATION = (int) (TameableDragonEntity.getBreathLength() * 20d);
 
-    public static OneShot<TameableDragonEntity> create(int cooldown) {
-        return BehaviorBuilder.create(instance -> instance.group(
-                        instance.registered(MemoryModuleType.LOOK_TARGET),
-                        instance.present(MemoryModuleType.ATTACK_TARGET),
-                        instance.absent(ModMemoryModuleTypes.HAS_BREATH_COOLDOWN.get()),
-                        instance.present(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES))
-                .apply(
-                        instance,
-                        (lookTarget, attackTarget, attackCooldown, visibleEntities) -> (level, dragon, p_258541_) -> {
-                            LivingEntity livingentity = instance.get(attackTarget);
+    /** Cooldown period after breath attack in ticks */
+    private static final int COOLDOWN_DURATION = 200;
 
-                            if (!DMR.DEBUG && !ServerConfig.ENABLE_DRAGON_BREATH.get()) return false;
+    /** Current status of this behavior */
+    private Behavior.Status status = Behavior.Status.STOPPED;
 
-                            if (!dragon.hasBreathAttack()
-                                    || !dragon.canHarmWithBreath(livingentity)
-                                    || dragon.distanceTo(livingentity) > 16
-                                    || !instance.get(visibleEntities).contains(livingentity)) return false;
+    public DragonBreathAttack() {
+        super(
+                ImmutableMap.of(
+                        MemoryModuleType.ATTACK_TARGET,
+                        MemoryStatus.VALUE_PRESENT,
+                        ModMemoryModuleTypes.HAS_BREATH_COOLDOWN.get(),
+                        MemoryStatus.VALUE_ABSENT),
+                ATTACK_DURATION);
+    }
 
-                            lookTarget.set(new EntityTracker(livingentity, true));
-                            dragon.doBreathAttack();
-                            attackCooldown.setWithExpiry(true, cooldown);
-                            return true;
-                        }));
+    @Override
+    public Behavior.Status getStatus() {
+        return this.status;
+    }
+
+    @Override
+    protected void start(ServerLevel level, TameableDragonEntity entity, long gameTime) {
+        var target = entity.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET);
+
+        entity.setBreathAttackTarget(target.get());
+        entity.getBrain().setMemoryWithExpiry(ModMemoryModuleTypes.HAS_BREATH_COOLDOWN.get(), true, COOLDOWN_DURATION);
+        status = Behavior.Status.RUNNING;
+    }
+
+    @Override
+    protected boolean canStillUse(ServerLevel level, TameableDragonEntity entity, long gameTime) {
+        return entity.hasBreathTarget();
+    }
+
+    @Override
+    protected void stop(ServerLevel level, TameableDragonEntity entity, long gameTime) {
+        status = Status.STOPPED;
     }
 }

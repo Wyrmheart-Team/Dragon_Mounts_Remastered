@@ -178,7 +178,7 @@ public class CommandOverlayHandler {
                 var color = mouseIn ? selectedColor : unselectedColor;
                 var bsColor = new Color(whistleItem.getColor().getTextureDiffuseColor());
                 bsColor = new Color(bsColor.getRed(), bsColor.getGreen(), bsColor.getBlue(), color.getAlpha());
-                var bgColor = ClientConfig.COLORED_WHISTLE_MENU.getAsBoolean() ? bsColor : color;
+                var bgColor = ClientConfig.COLORED_WHISTLE_MENU ? bsColor : color;
 
                 if (mouseIn) {
                     bgColor = bgColor.darker();

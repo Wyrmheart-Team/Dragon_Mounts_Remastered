@@ -26,6 +26,13 @@ public class ModComponents {
     public static final Supplier<DataComponentType<String>> EGG_OWNER =
             register("egg_owner", Codec.STRING, ByteBufCodecs.STRING_UTF8);
 
+    public static final Supplier<DataComponentType<Float>> DRAGON_HEALTH_ATTRIBUTE =
+            register("dragon_health_attribute", Codec.FLOAT, ByteBufCodecs.FLOAT);
+    public static final Supplier<DataComponentType<Float>> DRAGON_MOVEMENT_SPEED_ATTRIBUTE =
+            register("dragon_movement_speed_attribute", Codec.FLOAT, ByteBufCodecs.FLOAT);
+    public static final Supplier<DataComponentType<Float>> DRAGON_ATTACK_ATTRIBUTE =
+            register("dragon_attack_attribute", Codec.FLOAT, ByteBufCodecs.FLOAT);
+
     private static <T> Supplier<DataComponentType<T>> register(
             String name, Codec<T> codec, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
         return COMPONENTS.registerComponentType(

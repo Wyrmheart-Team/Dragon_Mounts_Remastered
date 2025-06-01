@@ -37,7 +37,7 @@ public class BreedingUtilsTests {
      * the highest habitat points
      *
      * @param helper
-     *            The test helper provided by the game test framework
+     *               The test helper provided by the game test framework
      */
     @EmptyTemplate(floor = true)
     @GameTest
@@ -143,7 +143,7 @@ public class BreedingUtilsTests {
      * format based on the parents' names
      *
      * @param helper
-     *            The test helper provided by the game test framework
+     *               The test helper provided by the game test framework
      */
     @EmptyTemplate(floor = true)
     @GameTest

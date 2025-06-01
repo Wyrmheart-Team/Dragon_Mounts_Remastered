@@ -36,7 +36,12 @@ public class DragonSaddleLayer extends GeoRenderLayer<TameableDragonEntity> {
         if (DMR.DEBUG) {
             Minecraft.getInstance().getProfiler().push("saddle_layer");
         }
+
         if (entityLivingBaseIn.isSaddled()) {
+            if (DMR.DEBUG) {
+                Minecraft.getInstance().getProfiler().push("saddle_texture");
+            }
+
             var breed = entityLivingBaseIn.getBreed();
             var breedResourceLocation = breed.getResourceLocation();
             ResourceLocation saddleTexture =
@@ -49,7 +54,16 @@ public class DragonSaddleLayer extends GeoRenderLayer<TameableDragonEntity> {
 
             Optional<Resource> resourceOptional =
                     Minecraft.getInstance().getResourceManager().getResource(saddleTexture);
+
+            if (DMR.DEBUG) {
+                Minecraft.getInstance().getProfiler().pop();
+            }
+
             if (resourceOptional.isEmpty()) return;
+
+            if (DMR.DEBUG) {
+                Minecraft.getInstance().getProfiler().push("saddle_render");
+            }
 
             RenderType type = RenderType.entityCutoutNoCullZOffset(saddleTexture);
             VertexConsumer vertexConsumer = bufferSource.getBuffer(type);
@@ -67,6 +81,7 @@ public class DragonSaddleLayer extends GeoRenderLayer<TameableDragonEntity> {
                             FastColor.ARGB32.opaque(0xFFFFFF));
         }
         if (DMR.DEBUG) {
+            Minecraft.getInstance().getProfiler().pop();
             Minecraft.getInstance().getProfiler().pop();
         }
     }

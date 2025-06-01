@@ -18,6 +18,7 @@
   "primary_color": "83A93D",
   "secondary_color": "F569BA",
   "ambient_sound": "dmr:entity.dragon.breathe",
+  "breath_type": "lush",
   "loot_tables": [
     {
       "table": "dungeoncrawl:chests/treasure",

@@ -36,8 +36,7 @@ abstract class DragonAnimationComponent extends CoreDragonComponent {
     public static final RawAnimation SIT = RawAnimation.begin().thenLoop("sit");
     public static final RawAnimation SIT_ALT = RawAnimation.begin().thenLoop("sit-alt");
     public static final RawAnimation BITE = RawAnimation.begin().thenPlay("bite");
-    public static final int BREATH_COUNT = 5;
-    public static final RawAnimation BREATH = RawAnimation.begin().thenPlayXTimes("breath", BREATH_COUNT);
+    public static final RawAnimation BREATH = RawAnimation.begin().thenPlay("breath");
     public static final RawAnimation IDLE = RawAnimation.begin().thenLoop("idle");
 
     // Animation controllers
@@ -74,7 +73,7 @@ abstract class DragonAnimationComponent extends CoreDragonComponent {
 
         animationController = new AnimationController<>(this, "controller", 5, state -> {
             Vec3 motio = new Vec3(getX() - xo, getY() - yo, getZ() - zo);
-            boolean isMovingHorizontal = Math.sqrt(Math.pow(motio.x, 2) + Math.pow(motio.z, 2)) > 0.05;
+            boolean isMovingHorizontal = Math.sqrt(Math.pow(motio.x, 2) + Math.pow(motio.z, 2)) > 0.01;
             state.setControllerSpeed(1);
 
             if (isSwimming()) {
@@ -124,7 +123,7 @@ abstract class DragonAnimationComponent extends CoreDragonComponent {
                 if (isSprinting()) {
                     return state.setAndContinue(SPRINT);
                 } else {
-                    state.setControllerSpeed(1.1f + (isShiftKeyDown() ? 2f : getSpeed()));
+                    state.setControllerSpeed(0.5f + (isShiftKeyDown() ? 2f : getSpeed()));
                     return state.setAndContinue(isShiftKeyDown() ? SNEAK_WALK : WALK);
                 }
             }

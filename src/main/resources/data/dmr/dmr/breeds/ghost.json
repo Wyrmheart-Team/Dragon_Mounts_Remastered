@@ -39,6 +39,7 @@
   "immunities": ["drown", "wither", "in_wall", "magic"],
   "primary_color": "c4c4c4",
   "secondary_color": "c2f8ff",
+  "breath_type": "ghost",
   "loot_tables": [
     {
       "table": "minecraft:chests/abandoned_mineshaft",

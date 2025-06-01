@@ -27,6 +27,7 @@ abstract class DragonAudioComponent extends DragonMountingComponent {
                 ? getBreed().getAmbientSound()
                 : ModSounds.DRAGON_AMBIENT_SOUND.get();
     }
+
     /**
      * Gets the hurt sound for the dragon.
      */
@@ -39,6 +40,7 @@ abstract class DragonAudioComponent extends DragonMountingComponent {
     public SoundEvent getDeathSound() {
         return ModSounds.DRAGON_DEATH_SOUND.get();
     }
+
     /**
      * Gets the eating sound for the dragon.
      */

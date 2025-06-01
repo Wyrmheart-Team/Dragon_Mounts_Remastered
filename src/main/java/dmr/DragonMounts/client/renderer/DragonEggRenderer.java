@@ -25,7 +25,7 @@ public class DragonEggRenderer implements BlockEntityRenderer<DMREggBlockEntity>
             MultiBufferSource multiBufferSource,
             int i,
             int i1) {
-        if (!ClientConfig.RENDER_HATCHING_EGG.get()) {
+        if (!ClientConfig.RENDER_HATCHING_EGG) {
             return;
         }
 

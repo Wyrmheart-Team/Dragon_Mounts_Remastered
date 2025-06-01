@@ -1,0 +1,14 @@
+{
+  "colors": ["FFFFFF", "00FFFF"],
+  "damage": 2.0,
+  "fire_time": 0,
+  "particle_density": 3,
+  "effects": [
+    {
+      "effect": "minecraft:slowness",
+      "duration": 100,
+      "amplifier": 1,
+      "chance": 0.75
+    }
+  ]
+}
