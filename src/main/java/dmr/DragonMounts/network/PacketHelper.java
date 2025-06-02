@@ -1,6 +1,9 @@
 package dmr.DragonMounts.network;
 
 import dmr.DragonMounts.DMR;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -9,10 +12,6 @@ import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * Helper class for packet creation and standardization.
@@ -41,16 +40,16 @@ public class PacketHelper {
      */
     public static <T> StreamCodec<FriendlyByteBuf, T> createUnitCodec(T packet) {
         return new StreamCodec<>() {
-                    @Override
-                    public T decode(FriendlyByteBuf buffer) {
-                        return packet;
-                    }
-                    
-                    @Override
-                    public void encode(FriendlyByteBuf buffer, T value) {
-                        // No fields to encode
-                    }
-                };
+            @Override
+            public T decode(FriendlyByteBuf buffer) {
+                return packet;
+            }
+
+            @Override
+            public void encode(FriendlyByteBuf buffer, T value) {
+                // No fields to encode
+            }
+        };
     }
 
     /**

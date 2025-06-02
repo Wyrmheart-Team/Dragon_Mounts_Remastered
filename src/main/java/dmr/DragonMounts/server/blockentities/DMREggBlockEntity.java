@@ -39,15 +39,15 @@ public class DMREggBlockEntity extends BlockEntity {
 
     @Getter
     @Setter
-    private float healthAttribute;
+    private double healthAttribute;
 
     @Getter
     @Setter
-    private float speedAttribute;
+    private double speedAttribute;
 
     @Getter
     @Setter
-    private float damageAttribute;
+    private double damageAttribute;
 
     @Getter
     @Setter
@@ -106,11 +106,9 @@ public class DMREggBlockEntity extends BlockEntity {
 
         if (ServerConfig.ENABLE_RANDOM_STATS) {
             setSpeedAttribute(
-                    componentInput.getOrDefault(ModComponents.DRAGON_MOVEMENT_SPEED_ATTRIBUTE, (float) Math.random()));
-            setDamageAttribute(
-                    componentInput.getOrDefault(ModComponents.DRAGON_ATTACK_ATTRIBUTE, (float) Math.random()));
-            setHealthAttribute(
-                    componentInput.getOrDefault(ModComponents.DRAGON_HEALTH_ATTRIBUTE, (float) Math.random()));
+                    componentInput.getOrDefault(ModComponents.DRAGON_MOVEMENT_SPEED_ATTRIBUTE, Math.random()));
+            setDamageAttribute(componentInput.getOrDefault(ModComponents.DRAGON_ATTACK_ATTRIBUTE, Math.random()));
+            setHealthAttribute(componentInput.getOrDefault(ModComponents.DRAGON_HEALTH_ATTRIBUTE, Math.random()));
         }
     }
 

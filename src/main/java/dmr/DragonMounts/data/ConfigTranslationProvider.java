@@ -4,12 +4,11 @@ import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.config.ClientConfig;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.config.annotations.Config;
-import net.minecraft.data.PackOutput;
-import net.neoforged.neoforge.common.data.LanguageProvider;
-
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
+import net.minecraft.data.PackOutput;
+import net.neoforged.neoforge.common.data.LanguageProvider;
 
 /**
  * Generates language entries for configuration options.

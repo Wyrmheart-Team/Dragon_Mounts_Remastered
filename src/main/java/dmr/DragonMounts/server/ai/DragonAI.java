@@ -12,6 +12,9 @@ import dmr.DragonMounts.registry.ModSensors;
 import dmr.DragonMounts.server.ai.behaviours.*;
 import dmr.DragonMounts.server.entity.DragonAgroState;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,10 +32,6 @@ import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.schedule.Activity;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Manages AI behavior for dragon entities.

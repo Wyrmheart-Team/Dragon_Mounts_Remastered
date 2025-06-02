@@ -236,8 +236,7 @@ public class DragonWhistleHandler {
                                 .addCooldown(
                                         s.get(),
                                         (int) TimeUnit.SECONDS.convert(
-                                                        ServerConfig.WHISTLE_COOLDOWN_CONFIG,
-                                                        TimeUnit.MILLISECONDS)
+                                                        ServerConfig.WHISTLE_COOLDOWN_CONFIG, TimeUnit.MILLISECONDS)
                                                 * 20);
                     }
                 });

@@ -104,7 +104,9 @@ abstract class DragonBreathComponent extends DragonAnimationComponent {
                             this, DragonBreathTargetSyncPacket.forEntityTarget(getId(), targetEntity.getId()));
                 } else if (tracker instanceof BlockPosTracker blockPosTracker) {
                     PacketDistributor.sendToPlayersTrackingEntity(
-                            this, DragonBreathTargetSyncPacket.forPositionTarget(getId(), blockPosTracker.currentBlockPosition()));
+                            this,
+                            DragonBreathTargetSyncPacket.forPositionTarget(
+                                    getId(), blockPosTracker.currentBlockPosition()));
                 }
             }
         }
@@ -151,12 +153,12 @@ abstract class DragonBreathComponent extends DragonAnimationComponent {
 
                     if (getBreathTarget() instanceof EntityTracker entityTracker) {
                         Entity targetEntity = entityTracker.getEntity();
-                        
-                        if(!targetEntity.isAlive()){
+
+                        if (!targetEntity.isAlive()) {
                             stopBreathAttack();
                             return;
                         }
-                        
+
                         attackWithBreath((LivingEntity) targetEntity);
                     } else {
                         var entitiesInRange = level

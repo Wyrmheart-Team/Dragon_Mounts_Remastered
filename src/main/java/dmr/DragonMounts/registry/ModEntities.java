@@ -58,8 +58,7 @@ public class ModEntities {
             RandomSource random) {
         if (spawnType == MobSpawnType.CHUNK_GENERATION)
             return false; // Dragon spawning relies on the worldgen to decide breed.
-        if (!ServerConfig.MOD_CONFIG_SPEC.isLoaded() || !ServerConfig.ENABLE_NATURAL_DRAGON_SPAWNS)
-            return false;
+        if (!ServerConfig.MOD_CONFIG_SPEC.isLoaded() || !ServerConfig.ENABLE_NATURAL_DRAGON_SPAWNS) return false;
         return TameableDragonEntity.checkDragonSpawnRules(entityType, serverLevel, spawnType, pos, random);
     }
 }

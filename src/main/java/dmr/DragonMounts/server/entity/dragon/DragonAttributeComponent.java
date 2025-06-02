@@ -33,15 +33,15 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
 
     @Getter
     @Setter
-    private float healthAttribute;
+    private double healthAttribute;
 
     @Getter
     @Setter
-    private float speedAttribute;
+    private double speedAttribute;
 
     @Getter
     @Setter
-    private float damageAttribute;
+    private double damageAttribute;
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
@@ -74,10 +74,7 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
         {
             var randomStatsHealth = new AttributeModifier(
                     RANDOM_STATS_MODIFIER,
-                    upperLower(
-                            getHealthAttribute(),
-                            ServerConfig.LOWER_MAX_HEALTH,
-                            ServerConfig.UPPER_MAX_HEALTH),
+                    upperLower(getHealthAttribute(), ServerConfig.LOWER_MAX_HEALTH, ServerConfig.UPPER_MAX_HEALTH),
                     Operation.ADD_VALUE);
             var healthInstance = getAttribute(MAX_HEALTH);
 
@@ -88,10 +85,7 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
         {
             var randomStatsDamage = new AttributeModifier(
                     RANDOM_STATS_MODIFIER,
-                    upperLower(
-                            getDamageAttribute(),
-                            ServerConfig.LOWER_DAMAGE,
-                            ServerConfig.UPPER_DAMAGE),
+                    upperLower(getDamageAttribute(), ServerConfig.LOWER_DAMAGE, ServerConfig.UPPER_DAMAGE),
                     Operation.ADD_VALUE);
             var damageInstance = getAttribute(ATTACK_DAMAGE);
 
@@ -102,10 +96,7 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
         {
             var randomStatsSpeed = new AttributeModifier(
                     RANDOM_STATS_MODIFIER,
-                    upperLower(
-                            getSpeedAttribute(),
-                            ServerConfig.LOWER_SPEED,
-                            ServerConfig.UPPER_SPEED),
+                    upperLower(getSpeedAttribute(), ServerConfig.LOWER_SPEED, ServerConfig.UPPER_SPEED),
                     Operation.ADD_VALUE);
             var speedInstance = getAttribute(MOVEMENT_SPEED);
 
@@ -149,29 +140,29 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
         eggBlockEntitySupplier.get().setDamageAttribute(randomUpperLower(lowestDamage, highestDamage));
     }
 
-    private float upperLower(float value, float lower, float upper) {
+    private double upperLower(double value, double lower, double upper) {
         return (value * (upper - lower)) + lower;
     }
 
-    private float randomUpperLower(float lower, float upper) {
-        return upperLower((float) Math.random(), lower, upper);
+    private double randomUpperLower(double lower, double upper) {
+        return upperLower(Math.random(), lower, upper);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
 
-        compound.putFloat("healthAttribute", healthAttribute);
-        compound.putFloat("speedAttribute", speedAttribute);
-        compound.putFloat("damageAttribute", damageAttribute);
+        compound.putDouble("healthAttribute", healthAttribute);
+        compound.putDouble("speedAttribute", speedAttribute);
+        compound.putDouble("damageAttribute", damageAttribute);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
 
-        healthAttribute = compound.getFloat("healthAttribute");
-        speedAttribute = compound.getFloat("speedAttribute");
-        damageAttribute = compound.getFloat("damageAttribute");
+        healthAttribute = compound.getDouble("healthAttribute");
+        speedAttribute = compound.getDouble("speedAttribute");
+        damageAttribute = compound.getDouble("damageAttribute");
     }
 }

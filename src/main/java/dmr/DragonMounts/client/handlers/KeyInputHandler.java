@@ -10,6 +10,7 @@ import dmr.DragonMounts.network.packets.DismountDragonPacket;
 import dmr.DragonMounts.network.packets.SummonDragonPacket;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.util.PlayerStateUtils;
+import java.util.concurrent.TimeUnit;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
@@ -22,8 +23,6 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.concurrent.TimeUnit;
 
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = DMR.MOD_ID, value = Dist.CLIENT, bus = Bus.MOD)

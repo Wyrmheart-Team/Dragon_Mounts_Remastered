@@ -3,11 +3,10 @@ package dmr.DragonMounts.config;
 import dmr.DragonMounts.config.annotations.Config;
 import dmr.DragonMounts.config.annotations.RangeConstraint;
 import dmr.DragonMounts.config.annotations.SyncedConfig;
-import net.neoforged.neoforge.common.ModConfigSpec;
-
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class ConfigProcessor {
     private static final Map<String, ConfigField> SYNCED_CONFIGS = new HashMap<>();
@@ -25,18 +24,18 @@ public class ConfigProcessor {
 
             String[] categories = configAnnotation.category();
             ModConfigSpec.Builder targetBuilder = builder;
-	        
-	        for (String category : categories) {
-		        builder = builder.push(category);
-	        }
-	        
-	        processField(field, configAnnotation, targetBuilder, configClass);
-            
+
+            for (String category : categories) {
+                builder = builder.push(category);
+            }
+
+            processField(field, configAnnotation, targetBuilder, configClass);
+
             for (String ignored : categories) {
                 builder = builder.pop();
             }
         }
-        
+
         return builder.build();
     }
 

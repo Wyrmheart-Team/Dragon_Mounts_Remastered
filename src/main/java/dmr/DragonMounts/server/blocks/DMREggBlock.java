@@ -71,9 +71,8 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
     public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, LivingEntity pPlacer, ItemStack pStack) {
         if (pLevel.getBlockEntity(pPos) instanceof DMREggBlockEntity e) {
             var breedId = pStack.get(ModComponents.DRAGON_BREED);
-            var hatchTime = pStack.getOrDefault(
-                    ModComponents.EGG_HATCH_TIME,
-                    ServerConfig.HATCH_TIME_CONFIG.intValue());
+            var hatchTime =
+                    pStack.getOrDefault(ModComponents.EGG_HATCH_TIME, ServerConfig.HATCH_TIME_CONFIG.intValue());
             var variantId = pStack.get(ModComponents.DRAGON_VARIANT);
 
             if (ServerConfig.ENABLE_RANDOM_STATS) {
