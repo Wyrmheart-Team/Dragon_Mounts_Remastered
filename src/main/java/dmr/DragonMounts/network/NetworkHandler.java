@@ -6,6 +6,7 @@ import io.netty.buffer.ByteBuf;
 import java.util.List;
 import java.util.UUID;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Utf8String;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
@@ -43,7 +44,7 @@ public class NetworkHandler {
             new RequestDragonInventoryPacket(null, null),
             new ClearDragonInventoryPacket(null),
             new DragonCommandPacket(-1),
-            new DragonNBTSync(-1, null));
+            new DragonNBTSync(-1, (CompoundTag) null));
 
     public static void registerEvent(RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar(DMR.MOD_ID);

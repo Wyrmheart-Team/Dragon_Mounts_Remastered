@@ -2,6 +2,7 @@ package dmr.DragonMounts.network.packets;
 
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.network.IMessage;
+import dmr.DragonMounts.registry.ModCapabilities;
 import dmr.DragonMounts.util.PlayerStateUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -15,6 +16,11 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record DragonNBTSync(int id, CompoundTag tag) implements IMessage<DragonNBTSync> {
+
+    public DragonNBTSync(int id, ServerPlayer player) {
+        this(player.getId(), getNBTData(id, player));
+    }
+
     public static final StreamCodec<FriendlyByteBuf, DragonNBTSync> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT, DragonNBTSync::id, ByteBufCodecs.COMPOUND_TAG, DragonNBTSync::tag, DragonNBTSync::new);
     public static final CustomPacketPayload.Type<DragonStatePacket> TYPE =
@@ -55,5 +61,10 @@ public record DragonNBTSync(int id, CompoundTag tag) implements IMessage<DragonN
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
+    }
+
+    private static CompoundTag getNBTData(int id, ServerPlayer player) {
+        var tag = player.getData(ModCapabilities.PLAYER_CAPABILITY).dragonNBTs.get(id);
+        return tag == null ? new CompoundTag() : tag;
     }
 }

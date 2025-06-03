@@ -84,9 +84,8 @@ public class DragonWhistleEvent {
                         var id = ent.getValue().getUUID();
 
                         if (player instanceof ServerPlayer spPlayer) {
-                            var nbtData = state.dragonNBTs.get(index);
                             // Send the player their dragon data
-                            PacketDistributor.sendToPlayer(spPlayer, new DragonNBTSync(index, nbtData));
+                            PacketDistributor.sendToPlayer(spPlayer, new DragonNBTSync(index, spPlayer));
                         }
 
                         var dragonWasKilled = DragonWorldDataManager.isDragonDead(event.getLevel(), id);
