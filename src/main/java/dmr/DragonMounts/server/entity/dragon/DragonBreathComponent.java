@@ -18,6 +18,7 @@ import net.minecraft.world.entity.ai.behavior.EntityTracker;
 import net.minecraft.world.entity.ai.behavior.PositionTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -147,10 +148,6 @@ abstract class DragonBreathComponent extends DragonAnimationComponent {
                     this.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, getBreathTarget());
                     this.getDragon().triggerAnim("head-controller", "breath");
 
-                    var target = getBreathTarget().currentPosition().add(0, 0.5, 0);
-                    var breathBoundingBox =
-                            getBoundingBox().expandTowards(target).inflate(1);
-
                     if (getBreathTarget() instanceof EntityTracker entityTracker) {
                         Entity targetEntity = entityTracker.getEntity();
 
@@ -160,18 +157,40 @@ abstract class DragonBreathComponent extends DragonAnimationComponent {
                         }
 
                         attackWithBreath((LivingEntity) targetEntity);
-                    } else {
-                        var entitiesInRange = level
-                                .getEntities(
-                                        this,
-                                        breathBoundingBox,
-                                        ent -> ent instanceof LivingEntity living && canHarmWithBreath(living))
-                                .stream()
-                                .map(s -> (LivingEntity) s)
-                                .toList();
-                        for (LivingEntity entity : entitiesInRange) {
-                            attackWithBreath(entity);
+                    }
+
+                    var dragonPos = position();
+                    var target = getBreathTarget().currentPosition().add(0, 0.5, 0);
+                    var direction = target.subtract(dragonPos).normalize();
+                    var breathEnd = dragonPos.add(direction.scale(breathRange));
+                    var breathWidth = 2;
+
+                    // Create a bounding box along the breath path
+                    var minX = Math.min(dragonPos.x, breathEnd.x) - breathWidth; // Add width to the breath
+                    var minY = Math.min(dragonPos.y, breathEnd.y) - breathWidth;
+                    var minZ = Math.min(dragonPos.z, breathEnd.z) - breathWidth;
+                    var maxX = Math.max(dragonPos.x, breathEnd.x) + breathWidth;
+                    var maxY = Math.max(dragonPos.y, breathEnd.y) + breathWidth;
+                    var maxZ = Math.max(dragonPos.z, breathEnd.z) + breathWidth;
+
+                    var breathBoundingBox = new AABB(minX, minY, minZ, maxX, maxY, maxZ);
+
+                    var allEntities = level.getEntities(this, breathBoundingBox);
+                    System.out.println(allEntities);
+
+                    var entitiesInRange = level
+                            .getEntities(
+                                    this,
+                                    breathBoundingBox,
+                                    ent -> ent instanceof LivingEntity living && canHarmWithBreath(living))
+                            .stream()
+                            .map(s -> (LivingEntity) s)
+                            .toList();
+                    for (LivingEntity entity : entitiesInRange) {
+                        if (getBreathTarget() instanceof EntityTracker entityTracker) {
+                            if (entityTracker.getEntity().equals(entity)) continue;
                         }
+                        attackWithBreath(entity);
                     }
                 }
             }
@@ -238,7 +257,6 @@ abstract class DragonBreathComponent extends DragonAnimationComponent {
      * Checks if the dragon can harm the target with its breath.
      */
     public boolean canHarmWithBreath(LivingEntity target) {
-        var ownerCanAttack = getOwner() == null || getOwner().canAttack(target) && !target.isAlliedTo(getOwner());
-        return ownerCanAttack && target.distanceToSqr(this) <= breathRange;
+        return getOwner() == null || getOwner().canAttack(target) && !target.isAlliedTo(getOwner());
     }
 }

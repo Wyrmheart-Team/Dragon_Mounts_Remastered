@@ -122,4 +122,7 @@ public class BlankEggBlock extends DragonEggBlock implements EntityBlock, Simple
         var particle = DMREggBlock.getHatchingParticles(breed, random);
         DMREggBlock.spawnHatchingParticle(level, pos, random, px, py, pz, ox, oy, oz, particle);
     }
+
+    @Override
+    public void teleport(BlockState state, Level level, BlockPos pos) {}
 }

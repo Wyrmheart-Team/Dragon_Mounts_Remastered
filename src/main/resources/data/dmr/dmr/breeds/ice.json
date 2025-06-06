@@ -18,7 +18,7 @@
   "loot_tables": [
     {
       "table": "minecraft:chests/igloo_chest",
-      "chance": 0.2,
+      "chance": 0.15,
       "min": 1,
       "max": 1
     }

@@ -10,7 +10,7 @@ public class DragonConstants {
     public Long WHISTLE_COOLDOWN = TimeUnit.MILLISECONDS.convert(5, TimeUnit.SECONDS); // 5 minutes
 
     public double BASE_SPEED_GROUND = 0.3;
-    public double BASE_SPEED_WATER = 0.3;
+    public double BASE_SPEED_WATER = 0.2;
     public double BASE_SPEED_FLYING = 0.2;
     public double BASE_DAMAGE = 8;
     public double BASE_HEALTH = 60;

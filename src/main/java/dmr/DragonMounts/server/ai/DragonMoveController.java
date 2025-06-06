@@ -38,12 +38,13 @@ public class DragonMoveController extends MoveControl {
             }
 
             boolean isAmphibious = !dragon.canDrownInFluidType(Fluids.WATER.getFluidType());
+            boolean isInWater = this.mob.isInWater();
 
             BlockPos blockpos = this.mob.blockPosition();
             BlockState blockstate = this.mob.level.getBlockState(blockpos);
 
             var shouldFly = !blockstate.isSolid() && dragon.canFly() && (!blockstate.is(Blocks.WATER) || !isAmphibious);
-            dragon.setNoGravity(shouldFly || (isAmphibious && dragon.isInWater()));
+            dragon.setNoGravity(shouldFly || isInWater);
             dragon.setFlying(shouldFly);
 
             float f9 = (float) ((Mth.atan2(zDif, xDif) * 180.0F) / (float) Math.PI) - 90.0F;
@@ -53,13 +54,11 @@ public class DragonMoveController extends MoveControl {
 
             if (this.mob.onGround()) {
                 speed = (float) (this.speedModifier * this.mob.getAttributeValue(Attributes.MOVEMENT_SPEED));
-            } else if (this.mob.isInWater() && isAmphibious) {
+            } else if (isInWater) {
                 speed = (float) (this.speedModifier * this.mob.getAttributeValue(NeoForgeMod.SWIM_SPEED));
             } else {
                 speed = (float) (this.speedModifier * this.mob.getAttributeValue(Attributes.FLYING_SPEED));
             }
-
-            boolean isInWater = this.mob.isInWater();
 
             if (!isInWater) {
                 if (mob.getNavigation().getPath() != null) {
@@ -73,7 +72,7 @@ public class DragonMoveController extends MoveControl {
 
             this.mob.setSpeed(speed);
             double d4 = Math.sqrt(xDif * xDif + zDif * zDif);
-            if (isInWater && isAmphibious) {
+            if (isInWater) {
                 if (Math.abs(yDif) > 1.0E-5F || Math.abs(d4) > 1.0E-5F) {
                     float f3 = -((float) ((Mth.atan2(yDif, d4) * 180.0F) / (float) Math.PI));
                     f3 = Mth.clamp(Mth.wrapDegrees(f3), (float) (-85), (float) 10);

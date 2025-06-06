@@ -1,10 +1,15 @@
 package dmr.DragonMounts.server.entity.dragon;
 
+import static net.minecraft.world.entity.ai.attributes.Attributes.*;
+import static net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED;
+
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
 import dmr.DragonMounts.server.entity.DragonConstants;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
+import java.util.List;
+import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.Holder;
@@ -19,12 +24,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.level.Level;
-
-import java.util.List;
-import java.util.function.Supplier;
-
-import static net.minecraft.world.entity.ai.attributes.Attributes.*;
-import static net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED;
 
 abstract class DragonAttributeComponent extends DragonSpawnComponent {
     protected DragonAttributeComponent(EntityType<? extends TamableAnimal> entityType, Level level) {

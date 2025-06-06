@@ -7,9 +7,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
@@ -61,25 +61,46 @@ public class DragonBreathPacket extends AbstractMessage<DragonBreathPacket> {
             Vec3 eyePos = player.getEyePosition();
             Vec3 lookVector = player.getLookAngle();
             Vec3 targetPos = eyePos.add(lookVector.scale(10));
-            AABB aabb = player.getBoundingBox().expandTowards(targetPos).inflate(1.0);
-            var hitResult = ProjectileUtil.getEntityHitResult(
-                    player,
-                    eyePos,
-                    targetPos,
-                    aabb,
-                    ent -> ent instanceof LivingEntity livingEntity && dragon.canHarmWithBreath(livingEntity),
-                    10);
 
-            if (hitResult != null && hitResult.getType() == HitResult.Type.ENTITY) {
-                if (hitResult.getEntity() instanceof LivingEntity livingEntity
-                        && dragon.canHarmWithBreath(livingEntity)) {
-                    dragon.setBreathAttackTarget(livingEntity);
-                    return;
+            // Create a larger bounding box in the direction the player is looking
+            double searchDistance = 10.0;
+            AABB searchBox = player.getBoundingBox().inflate(searchDistance);
+
+            // Find all valid entities within the search box
+            var potentialTargets = level.getEntities(
+                    player,
+                    searchBox,
+                    ent -> ent instanceof LivingEntity livingEntity && dragon.canHarmWithBreath(livingEntity));
+
+            // Find the closest entity that's in front of the player
+            LivingEntity closestTarget = null;
+            double closestDistance = Double.MAX_VALUE;
+
+            for (Entity potentialTarget : potentialTargets) {
+                // Check if the entity is in front of the player (dot product > 0)
+                Vec3 directionToTarget =
+                        potentialTarget.position().subtract(eyePos).normalize();
+                double dotProduct = directionToTarget.dot(lookVector);
+
+                // Only consider entities that are in the general direction the player is looking
+                if (dotProduct > 0.7) { // Approximately within a 45-degree cone
+                    double distance = potentialTarget.distanceToSqr(eyePos);
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestTarget = (LivingEntity) potentialTarget;
+                    }
                 }
             }
 
+            // If we found a valid target, use it
+            if (closestTarget != null) {
+                dragon.setBreathAttackTarget(closestTarget);
+                return;
+            }
+
+            // If no entity target was found, check for block hits
             var clipContext =
-                    new ClipContext(lookVector, targetPos, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, player);
+                    new ClipContext(eyePos, targetPos, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, player);
             var blockHitResult = level.clip(clipContext);
 
             if (blockHitResult.getType() == HitResult.Type.BLOCK) {
@@ -92,6 +113,7 @@ public class DragonBreathPacket extends AbstractMessage<DragonBreathPacket> {
                 }
             }
 
+            // If no entity or block was hit, target the position
             dragon.setBreathAttackPosition(targetPos);
         }
     }

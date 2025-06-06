@@ -69,7 +69,6 @@ abstract class DragonMovementComponent extends DragonInventoryComponent {
     public float getSpeed() {
         return ((isSprinting() ? 1.25f : 1) * (float) getAttributeValue(Attributes.MOVEMENT_SPEED));
     }
-
     /** Checks if the dragon can fly. */
     public boolean canFly() {
         // hatchling's can't fly
@@ -115,7 +114,7 @@ abstract class DragonMovementComponent extends DragonInventoryComponent {
             setFlying(flying);
         }
 
-        if (isNoGravity() != shouldFly()) {
+        if (isNoGravity() != shouldFly() && !isInWater()) {
             setNoGravity(shouldFly());
         }
 
@@ -145,10 +144,6 @@ abstract class DragonMovementComponent extends DragonInventoryComponent {
     public void aiStep() {
         super.aiStep();
 
-        if (isNoGravity() != shouldFly()) {
-            setNoGravity(shouldFly());
-        }
-
         if (getControllingPassenger() == null && !getDragon().hasWanderTarget() && !isOrderedToSit()) {
             if (isPathFinding()) {
                 var dest = getNavigation().getTargetPos();
@@ -163,6 +158,11 @@ abstract class DragonMovementComponent extends DragonInventoryComponent {
     /** Checks if the dragon is affected by fluids. */
     public boolean isAffectedByFluids() {
         return canDrownInFluidType(Fluids.WATER.getFluidType());
+    }
+
+    @Override
+    protected float getWaterSlowDown() {
+        return 0.5f;
     }
 
     /** Checks if the dragon can drown in a specific fluid type. */
@@ -184,7 +184,7 @@ abstract class DragonMovementComponent extends DragonInventoryComponent {
         if (pathType == PathType.WATER) {
             return canDrownInFluidType(NeoForgeMod.WATER_TYPE.getDelegate().value())
                     ? originalMalus
-                    : originalMalus * 8f;
+                    : originalMalus * 2f;
         }
 
         if (pathType == PathType.OPEN) {

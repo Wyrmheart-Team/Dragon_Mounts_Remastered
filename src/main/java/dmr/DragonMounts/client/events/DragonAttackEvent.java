@@ -25,20 +25,25 @@ public class DragonAttackEvent {
         var player = Minecraft.getInstance().player;
         if (player != null) {
             if (player.getControlledVehicle() instanceof TameableDragonEntity dragon) {
-                if (lastAttack == null
-                        || System.currentTimeMillis() - lastAttack
-                                > TimeUnit.MILLISECONDS.convert(1, TimeUnit.SECONDS)) {
-                    lastAttack = System.currentTimeMillis();
+                var didAttack = lastAttack == null
+                        || System.currentTimeMillis() - lastAttack > TimeUnit.MILLISECONDS.convert(1, TimeUnit.SECONDS);
 
-                    if (event.isAttack()) {
-                        event.setCanceled(true);
-                        event.setSwingHand(false);
+                if (event.isAttack()) {
+                    event.setCanceled(true);
+                    event.setSwingHand(false);
+                    if (didAttack) {
                         PacketDistributor.sendToServer(new DragonAttackPacket(dragon.getId()));
-                    } else if (event.isUseItem()) {
-                        event.setCanceled(true);
-                        event.setSwingHand(false);
+                    }
+                } else if (event.isUseItem()) {
+                    event.setCanceled(true);
+                    event.setSwingHand(false);
+                    if (didAttack) {
                         PacketDistributor.sendToServer(new DragonBreathPacket(dragon.getId()));
                     }
+                }
+
+                if (didAttack) {
+                    lastAttack = System.currentTimeMillis();
                 }
             }
         }

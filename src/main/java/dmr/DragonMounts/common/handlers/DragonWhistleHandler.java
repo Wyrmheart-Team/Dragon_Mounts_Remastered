@@ -258,7 +258,7 @@ public class DragonWhistleHandler {
                     player.blockPosition(),
                     ModSounds.DRAGON_WHISTLE_SOUND.get(),
                     player.getSoundSource(),
-                    1,
+                    0.75f,
                     (float) (ModConstants.DragonConstants.WHISTLE_BASE_PITCH
                             + rand.nextGaussian() / ModConstants.DragonConstants.WHISTLE_PITCH_DIVISOR));
 

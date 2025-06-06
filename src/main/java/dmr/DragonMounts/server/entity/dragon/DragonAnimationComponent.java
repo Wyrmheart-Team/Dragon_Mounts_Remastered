@@ -81,6 +81,9 @@ abstract class DragonAnimationComponent extends CoreDragonComponent {
             } else if (isInWater()) {
                 if (isMovingHorizontal) {
                     return state.setAndContinue(SWIM);
+                } else if (level.getBlockState(blockPosition().below())
+                        .isSolidRender(level, blockPosition().below())) {
+                    return state.setAndContinue(IDLE);
                 } else {
                     return state.setAndContinue(SWIM_IDLE);
                 }
@@ -123,7 +126,7 @@ abstract class DragonAnimationComponent extends CoreDragonComponent {
                 if (isSprinting()) {
                     return state.setAndContinue(SPRINT);
                 } else {
-                    state.setControllerSpeed(0.5f + (isShiftKeyDown() ? 2f : getSpeed()));
+                    state.setControllerSpeed(1.1f + (isShiftKeyDown() ? 2f : getSpeed()));
                     return state.setAndContinue(isShiftKeyDown() ? SNEAK_WALK : WALK);
                 }
             }

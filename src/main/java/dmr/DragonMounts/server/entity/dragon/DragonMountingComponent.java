@@ -53,7 +53,6 @@ abstract class DragonMountingComponent extends DragonOwnershipComponent {
      */
     @Override
     protected Vec3 getRiddenInput(Player driver, Vec3 move) {
-
         double moveSideways = move.x;
         double moveY = 0;
         double moveForward = Math.min(Math.abs(driver.zza) + Math.abs(driver.xxa), 1);

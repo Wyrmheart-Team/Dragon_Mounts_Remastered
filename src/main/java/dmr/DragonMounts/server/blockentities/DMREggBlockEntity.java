@@ -169,12 +169,12 @@ public class DMREggBlockEntity extends BlockEntity {
                 SoundSource.BLOCKS,
                 1.2f,
                 0.95f + level.getRandom().nextFloat() * 0.2f);
-        level.removeBlock(pos, false); // remove block AFTER data is cached
 
         baby.setBreed(data.getBreed());
         baby.setVariant(data.getVariantId());
 
         baby.setBaby(true);
+        baby.setAge(-Math.abs(data.getBreed().getGrowthTime()));
         baby.setPos(pos.getX(), pos.getY(), pos.getZ());
 
         baby.setHatched(true);
@@ -187,7 +187,7 @@ public class DMREggBlockEntity extends BlockEntity {
 
         if (data.getCustomName() != null) baby.setCustomName(data.getCustomName());
 
-        level.addFreshEntity(baby);
+        if (!level.addFreshEntity(baby)) return;
 
         if (ownerId != null && !ownerId.isBlank()) {
             UUID owner = UUID.fromString(data.getOwner());
@@ -205,6 +205,8 @@ public class DMREggBlockEntity extends BlockEntity {
                 }
             }
         }
+
+        level.removeBlock(pos, false);
     }
 
     @Override
