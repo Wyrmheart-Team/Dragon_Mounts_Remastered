@@ -8,9 +8,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class DragonNBTSync extends AbstractMessage<DragonNBTSync> {
@@ -43,7 +41,7 @@ public class DragonNBTSync extends AbstractMessage<DragonNBTSync> {
      */
     public DragonNBTSync(int id, CompoundTag tag) {
         this.id = id;
-        this.tag = tag;
+        this.tag = tag != null ? tag : new CompoundTag();
     }
 
     @Override
@@ -58,14 +56,7 @@ public class DragonNBTSync extends AbstractMessage<DragonNBTSync> {
 
     @Override
     public void handle(IPayloadContext context, Player player) {}
-
-    @Override
-    public void handleServer(IPayloadContext context, ServerPlayer player) {
-        var state = PlayerStateUtils.getHandler(player);
-        var tag = state.dragonNBTs.get(id);
-        PacketDistributor.sendToPlayer(player, new DragonNBTSync(id, tag == null ? new CompoundTag() : tag));
-    }
-
+    
     @Override
     public void handleClient(IPayloadContext context, Player player) {
         var state = PlayerStateUtils.getHandler(player);

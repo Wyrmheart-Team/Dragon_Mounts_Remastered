@@ -9,16 +9,17 @@ import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.types.breath.DragonBreathType;
 import dmr.DragonMounts.types.habitats.Habitat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DragonBreed implements IDragonBreed {
 
@@ -95,7 +96,16 @@ public class DragonBreed implements IDragonBreed {
     public int getSecondaryColor() {
         return secondary_color == null ? 0 : Integer.parseInt(secondary_color, 16);
     }
-
+    
+    @SerializedName("inventory_texture")
+    private ResourceLocation uiStyle;
+    private final ResourceLocation defaultUiStyle = ResourceLocation.parse("textures/block/stone.png");
+    
+    @Override
+    public ResourceLocation getInventoryTexture() {
+        return uiStyle != null ? uiStyle : defaultUiStyle;
+    }
+    
     @SerializedName("breath_type")
     private String breathType;
 

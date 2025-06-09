@@ -19,6 +19,7 @@
   "primary_color": "912400",
   "secondary_color": "2e0b00",
   "breath_type": "nether",
+  "inventory_texture": "textures/block/netherrack.png",
   "loot_tables": [
     {
       "table": "minecraft:chests/bastion_treasure",

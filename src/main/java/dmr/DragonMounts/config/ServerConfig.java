@@ -90,7 +90,7 @@ public class ServerConfig {
             comment = "The maximum health bonus for dragons with random stats.",
             category = {"base_stats", "random_stats"})
     @RangeConstraint(min = 0)
-    public static double UPPER_MAX_HEALTH = 10.0;
+    public static int UPPER_MAX_HEALTH = 10;
 
     @Config(
             key = "upper_damage",
@@ -110,8 +110,8 @@ public class ServerConfig {
             key = "lower_max_health",
             comment = "The minimum health penalty for dragons with random stats.",
             category = {"base_stats", "random_stats"})
-    @RangeConstraint(min = -Double.MAX_VALUE, max = -1)
-    public static double LOWER_MAX_HEALTH = -5.0;
+    @RangeConstraint(min = -Integer.MAX_VALUE, max = -1)
+    public static int LOWER_MAX_HEALTH = -5;
 
     @Config(
             key = "lower_damage",

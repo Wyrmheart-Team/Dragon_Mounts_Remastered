@@ -19,6 +19,7 @@
   "secondary_color": "F569BA",
   "ambient_sound": "dmr:entity.dragon.breathe",
   "breath_type": "lush",
+  "inventory_texture": "textures/block/flowering_azalea_leaves.png",
   "loot_tables": [
     {
       "table": "dungeoncrawl:chests/treasure",

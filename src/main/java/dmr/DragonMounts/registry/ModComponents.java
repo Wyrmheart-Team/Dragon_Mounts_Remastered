@@ -2,13 +2,14 @@ package dmr.DragonMounts.registry;
 
 import com.mojang.serialization.Codec;
 import dmr.DragonMounts.DMR;
-import java.util.function.Supplier;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
 
 public class ModComponents {
 
@@ -32,6 +33,8 @@ public class ModComponents {
             register("dragon_movement_speed_attribute", Codec.DOUBLE, ByteBufCodecs.DOUBLE);
     public static final Supplier<DataComponentType<Double>> DRAGON_ATTACK_ATTRIBUTE =
             register("dragon_attack_attribute", Codec.DOUBLE, ByteBufCodecs.DOUBLE);
+    public static final Supplier<DataComponentType<Double>> DRAGON_SCALE_ATTRIBUTE =
+            register("dragon_scale_attribute", Codec.DOUBLE, ByteBufCodecs.DOUBLE);
 
     private static <T> Supplier<DataComponentType<T>> register(
             String name, Codec<T> codec, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {

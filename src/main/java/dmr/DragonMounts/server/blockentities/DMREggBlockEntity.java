@@ -1,13 +1,10 @@
 package dmr.DragonMounts.server.blockentities;
 
-import static dmr.DragonMounts.server.blocks.DMREggBlock.HATCHING;
-
 import dmr.DragonMounts.ModConstants.NBTConstants;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.*;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.util.PlayerStateUtils;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
@@ -26,6 +23,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.UUID;
+
+import static dmr.DragonMounts.server.blocks.DMREggBlock.HATCHING;
 
 public class DMREggBlockEntity extends BlockEntity {
 
@@ -48,6 +49,10 @@ public class DMREggBlockEntity extends BlockEntity {
     @Getter
     @Setter
     private double damageAttribute;
+    
+    @Getter
+    @Setter
+    private double maxScaleAttribute;
 
     @Getter
     @Setter
@@ -109,6 +114,7 @@ public class DMREggBlockEntity extends BlockEntity {
                     componentInput.getOrDefault(ModComponents.DRAGON_MOVEMENT_SPEED_ATTRIBUTE, Math.random()));
             setDamageAttribute(componentInput.getOrDefault(ModComponents.DRAGON_ATTACK_ATTRIBUTE, Math.random()));
             setHealthAttribute(componentInput.getOrDefault(ModComponents.DRAGON_HEALTH_ATTRIBUTE, Math.random()));
+            setMaxScaleAttribute(componentInput.getOrDefault(ModComponents.DRAGON_SCALE_ATTRIBUTE, Math.random()));
         }
     }
 
@@ -123,6 +129,7 @@ public class DMREggBlockEntity extends BlockEntity {
             components.set(ModComponents.DRAGON_HEALTH_ATTRIBUTE, getHealthAttribute());
             components.set(ModComponents.DRAGON_ATTACK_ATTRIBUTE, getDamageAttribute());
             components.set(ModComponents.DRAGON_MOVEMENT_SPEED_ATTRIBUTE, getSpeedAttribute());
+            components.set(ModComponents.DRAGON_SCALE_ATTRIBUTE, getMaxScaleAttribute());
         }
     }
 
@@ -180,9 +187,7 @@ public class DMREggBlockEntity extends BlockEntity {
         baby.setHatched(true);
 
         if (ServerConfig.ENABLE_RANDOM_STATS) {
-            baby.setHealthAttribute(data.getHealthAttribute());
-            baby.setSpeedAttribute(data.getSpeedAttribute());
-            baby.setDamageAttribute(data.getDamageAttribute());
+            baby.setHatchedAttributes(this);
         }
 
         if (data.getCustomName() != null) baby.setCustomName(data.getCustomName());

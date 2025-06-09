@@ -16,6 +16,7 @@
   "secondary_color": "19295",
   "ambient_sound": "dmr:entity.dragon.breathe",
   "breath_type": "skulk",
+  "inventory_texture": "textures/block/sculk.png",
   "loot_tables": [
     {
       "table": "minecraft:chests/ancient_city",

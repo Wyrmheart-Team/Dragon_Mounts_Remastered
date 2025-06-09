@@ -25,6 +25,7 @@
   "primary_color": "718aa9",
   "secondary_color": "e6e6e6",
   "breath_type": "aether",
+  "inventory_texture": "textures/block/cyan_concrete_powder.png",
   "loot_tables": [
     {
       "table": "minecraft:chests/simple_dungeon",

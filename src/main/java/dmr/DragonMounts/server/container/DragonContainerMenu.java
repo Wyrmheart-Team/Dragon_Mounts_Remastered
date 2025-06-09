@@ -4,8 +4,6 @@ import dmr.DragonMounts.registry.ModMenus;
 import dmr.DragonMounts.server.container.slots.DragonInventorySlot;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.server.inventory.DragonInventoryHandler.DragonInventory;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -14,6 +12,9 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DragonContainerMenu extends AbstractContainerMenu {
 
@@ -31,7 +32,7 @@ public class DragonContainerMenu extends AbstractContainerMenu {
         this.dragonContainer = dragon.getInventory();
 
         dragonContainer.startOpen(pPlayerInventory.player);
-        this.addSlot(new Slot(dragonContainer, DragonInventory.SADDLE_SLOT, 8, 18) {
+        this.addSlot(new Slot(dragonContainer, DragonInventory.SADDLE_SLOT, 102, 18) {
             public boolean mayPlace(ItemStack p_39677_) {
                 return p_39677_.is(Items.SADDLE) && !this.hasItem() && dragon.isSaddleable();
             }
@@ -48,7 +49,7 @@ public class DragonContainerMenu extends AbstractContainerMenu {
             }
         });
 
-        this.addSlot(new Slot(dragonContainer, DragonInventory.ARMOR_SLOT, 8, 36) {
+        this.addSlot(new Slot(dragonContainer, DragonInventory.ARMOR_SLOT, 120, 18) {
             public boolean mayPlace(ItemStack p_39690_) {
                 return dragon.isArmor(p_39690_);
             }
@@ -64,7 +65,7 @@ public class DragonContainerMenu extends AbstractContainerMenu {
             }
         });
 
-        this.addSlot(new Slot(dragonContainer, DragonInventory.CHEST_SLOT, 8, 54) {
+        this.addSlot(new Slot(dragonContainer, DragonInventory.CHEST_SLOT, 138, 18) {
             @Override
             public boolean mayPickup(Player pPlayer) {
                 return (dragon.inventoryEmpty()
@@ -98,8 +99,8 @@ public class DragonContainerMenu extends AbstractContainerMenu {
                 var chestSlot =
                         new DragonInventorySlot(
                                 l + k * 9,
-                                8 + l * 18,
-                                84 + k * 18,
+                                102 + l * 18,
+                                53 + k * 18,
                                 dragonContainer,
                                 pPlayerInventory.player.getEnderChestInventory()) {
                             @Override
@@ -120,12 +121,12 @@ public class DragonContainerMenu extends AbstractContainerMenu {
 
         for (int i1 = 0; i1 < 3; ++i1) {
             for (int k1 = 0; k1 < 9; ++k1) {
-                this.addSlot(new Slot(pPlayerInventory, k1 + i1 * 9 + 9, 8 + k1 * 18, 151 + i1 * 18));
+                this.addSlot(new Slot(pPlayerInventory, k1 + i1 * 9 + 9, 102 + k1 * 18, 123 + i1 * 18));
             }
         }
 
         for (int j1 = 0; j1 < 9; ++j1) {
-            this.addSlot(new Slot(pPlayerInventory, j1, 8 + j1 * 18, 209));
+            this.addSlot(new Slot(pPlayerInventory, j1, 102 + j1 * 18, 181));
         }
     }
 

@@ -18,6 +18,7 @@
   "primary_color": "54a00",
   "secondary_color": "a9600",
   "breath_type": "forest",
+  "inventory_texture": "textures/block/moss_block.png",
   "loot_tables": [
     {
       "table": "minecraft:chests/jungle_temple",

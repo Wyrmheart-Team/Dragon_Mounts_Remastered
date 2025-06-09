@@ -15,12 +15,6 @@ import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.server.items.DragonWhistleItem;
 import dmr.DragonMounts.server.worlddata.DragonWorldDataManager;
 import dmr.DragonMounts.util.PlayerStateUtils;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,6 +31,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.gametest.GameTestHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 public class DragonWhistleHandler {
 
@@ -101,7 +102,7 @@ public class DragonWhistleHandler {
         }
 
         // Off hand - second
-        if (player.getInventory().offhand.get(0).getItem() instanceof DragonWhistleItem whistleItem) {
+        if (player.getInventory().offhand.getFirst().getItem() instanceof DragonWhistleItem whistleItem) {
             if (isValid.apply(whistleItem)) {
                 return whistleItem;
             }
@@ -198,7 +199,7 @@ public class DragonWhistleHandler {
             return false;
         }
 
-        // TODO Implement a better handeling of space checking for game tests
+        // TODO Implement a better handling of space checking for game tests
         if (ServerConfig.CALL_CHECK_SPACE && !GameTestHooks.isGametestEnabled()) {
             if (!player.level.noBlockCollision(
                     null, player.getBoundingBox().move(0, 1, 0).inflate(1, 1, 1))) {

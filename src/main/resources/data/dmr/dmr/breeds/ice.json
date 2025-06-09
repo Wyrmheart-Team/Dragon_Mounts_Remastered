@@ -15,6 +15,7 @@
   "primary_color": "ffffff",
   "secondary_color": "e1ff",
   "breath_type": "ice",
+  "inventory_texture": "textures/block/ice.png",
   "loot_tables": [
     {
       "table": "minecraft:chests/igloo_chest",

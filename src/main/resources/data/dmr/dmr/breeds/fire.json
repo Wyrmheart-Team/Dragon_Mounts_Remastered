@@ -26,6 +26,7 @@
   "primary_color": "912400",
   "secondary_color": "ff9819",
   "breath_type": "fire",
+  "inventory_texture": "textures/block/magma.png",
   "loot_tables": [
     {
       "table": "minecraft:chests/desert_pyramid",

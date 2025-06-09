@@ -28,6 +28,7 @@
   "primary_color": "62ff",
   "secondary_color": "5999ff",
   "breath_type": "water",
+  "inventory_texture": "textures/block/prismarine.png",
   "loot_tables": [
     {
       "table": "minecraft:chests/buried_treasure",
