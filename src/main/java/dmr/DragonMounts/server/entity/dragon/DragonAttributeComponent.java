@@ -11,15 +11,16 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -38,12 +39,23 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
     public static final EntityDataAccessor<Float> maxScaleAttribute = SynchedEntityData.defineId(DragonAttributeComponent.class, EntityDataSerializers.FLOAT);
     
     @Override
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor accessor, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+        entityData.set(healthAttribute, (float) Math.random());
+        entityData.set(speedAttribute, (float) Math.random());
+        entityData.set(damageAttribute, (float) Math.random());
+        entityData.set(maxScaleAttribute, (float) Math.random());
+        
+        return super.finalizeSpawn(accessor, difficulty, spawnType, spawnGroupData);
+    }
+    
+    @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(healthAttribute, (float)Math.random());
-        builder.define(speedAttribute, (float)Math.random());
-        builder.define(damageAttribute, (float)Math.random());
-        builder.define(maxScaleAttribute, (float)Math.random());
+        builder.define(healthAttribute, 0f);
+        builder.define(speedAttribute, 0f);
+        builder.define(damageAttribute, 0f);
+        builder.define(maxScaleAttribute, 0f);
+        
     }
     
     public static AttributeSupplier.Builder createAttributes() {
