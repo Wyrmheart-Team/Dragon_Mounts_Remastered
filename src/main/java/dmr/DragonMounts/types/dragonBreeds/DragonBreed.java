@@ -139,20 +139,10 @@ public class DragonBreed implements IDragonBreed {
     }
 
     @SerializedName("model_location")
-    private ResourceLocation modelLocation;
-
-    @Override
-    public ResourceLocation getDragonModelLocation() {
-        return modelLocation != null ? modelLocation : DMR.id("geo/dragon.geo.json");
-    }
-
+    private ResourceLocation dragonModelLocation;
+    
     @SerializedName("animation_location")
-    private ResourceLocation animationLocation;
-
-    @Override
-    public ResourceLocation getDragonAnimationLocation() {
-        return animationLocation != null ? animationLocation : DMR.id("animations/dragon.animation.json");
-    }
+    private ResourceLocation dragonAnimationLocation;
     
     @SerializedName("armor_type")
     private String armorTypeId = "default";

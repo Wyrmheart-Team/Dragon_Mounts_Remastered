@@ -10,7 +10,6 @@ import dmr.DragonMounts.registry.ModItems;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.server.items.DragonWhistleItem;
 import dmr.DragonMounts.util.PlayerStateUtils;
-import java.util.Objects;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundSource;
@@ -26,6 +25,9 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
+
+import java.util.Objects;
+import java.util.UUID;
 
 @PrefixGameTestTemplate(false)
 @ForEachTest(groups = "Dragon Whistles")
@@ -67,7 +69,7 @@ public class DragonWhistleTests {
                     ((DragonWhistleItem) whistle.get()).getColor().getId(), new CompoundTag());
             handler.dragonInstances.put(
                     ((DragonWhistleItem) whistle.get()).getColor().getId(),
-                    new DragonInstance(player.level, null, null));
+                    new DragonInstance(player.level, UUID.randomUUID(), UUID.randomUUID()));
 
             whistleItem = DragonWhistleHandler.getDragonWhistleItem(player);
             if (whistleItem == null) {
@@ -112,7 +114,7 @@ public class DragonWhistleTests {
             var handler = PlayerStateUtils.getHandler(player);
             int whistleId = ((DragonWhistleItem) whistle.get()).getColor().getId();
             handler.dragonNBTs.put(whistleId, new CompoundTag());
-            handler.dragonInstances.put(whistleId, new DragonInstance(player.level, null, null));
+            handler.dragonInstances.put(whistleId, new DragonInstance(player.level, UUID.randomUUID(), UUID.randomUUID()));
 
             index = DragonWhistleHandler.getDragonSummonIndex(player);
             if (index != whistleId) {
@@ -466,6 +468,14 @@ public class DragonWhistleTests {
 
         dragon1.setOrderedToSit(true);
         dragon2.setOrderedToSit(true);
+        
+        // Disable ai to prevent dragons from moving when not meant to
+        dragon1.setNoAi(true);
+        dragon2.setNoAi(true);
+        
+        // Make sure falling doesnt impact the test result
+        dragon1.setNoGravity(true);
+        dragon2.setNoGravity(true);
 
         // Store original positions
         var dragon1OrigPos = dragon1.position();

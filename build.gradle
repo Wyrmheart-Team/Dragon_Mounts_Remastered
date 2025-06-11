@@ -1,3 +1,5 @@
+import org.slf4j.event.Level
+
 plugins {
     id 'java-library'
     id 'idea'
@@ -93,7 +95,7 @@ neoForge {
         gameTestServer {
             type = "gameTestServer"
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-            logLevel = org.slf4j.event.Level.INFO
+            logLevel = Level.INFO
 
             sourceSet = sourceSets.test
             // Include the test resources in the classpath for this specific run config.
