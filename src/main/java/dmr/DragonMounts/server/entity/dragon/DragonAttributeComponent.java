@@ -31,6 +31,10 @@ import static net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED;
 abstract class DragonAttributeComponent extends DragonSpawnComponent {
     protected DragonAttributeComponent(EntityType<? extends TamableAnimal> entityType, Level level) {
         super(entityType, level);
+        entityData.set(healthAttribute, (float) Math.random());
+        entityData.set(speedAttribute, (float) Math.random());
+        entityData.set(damageAttribute, (float) Math.random());
+        entityData.set(maxScaleAttribute, (float) Math.random());
     }
     
     public static final EntityDataAccessor<Float> healthAttribute = SynchedEntityData.defineId(DragonAttributeComponent.class, EntityDataSerializers.FLOAT);
@@ -55,7 +59,6 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
         builder.define(speedAttribute, 0f);
         builder.define(damageAttribute, 0f);
         builder.define(maxScaleAttribute, 0f);
-        
     }
     
     public static AttributeSupplier.Builder createAttributes() {

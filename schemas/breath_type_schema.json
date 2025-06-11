@@ -34,7 +34,7 @@
           "effect": {
             "type": "string",
             "description": "Effect ID to apply",
-            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_/.]+$"
+            "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$"
           },
           "duration": {
             "type": "integer",

@@ -5,12 +5,12 @@
     "ambient_sound": {
       "type": "string",
       "description": "Ambient sound of the dragon",
-      "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_/.]+$"
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$"
     },
     "death_loot": {
       "type": "string",
       "description": "Loot table for the dragon's death",
-      "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_/.]+$"
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$"
     },
     "hatch_time": {
       "type": "integer",
@@ -40,7 +40,7 @@
     "inventory_texture": {
       "type": "string",
       "description": "The texture to use in the dragons inventory",
-      "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_/.]+$"
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$"
     },
     "immunities": {
       "type": "array",
@@ -73,60 +73,45 @@
           "fluid_tag": {
             "type": "string",
             "description": "Fluid tag for the habitat",
-            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_/.]+$"
+            "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$"
           },
           "block_tag": {
             "type": "string",
             "description": "Block tag for the habitat",
-            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_/.]+$"
+            "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$"
           },
           "biome_tag": {
             "type": "string",
             "description": "Biome tag for the habitat",
-            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_/.]+$"
+            "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$"
           },
           "point_multiplier": {
             "type": "number",
             "description": "Point multiplier for the habitat",
             "minimum": 0
           },
-          "required_habitats": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "description": "Type of required habitat",
-                  "pattern": "^[a-zA-Z0-9_]+$"
-                },
-                "below": {
-                  "type": "boolean",
-                  "description": "Whether the habitat is below a certain level"
-                },
-                "height": {
-                  "type": "integer",
-                  "description": "Height level for the habitat",
-                  "minimum": 0
-                },
-                "light": {
-                  "type": "integer",
-                  "description": "Light level for the habitat",
-                  "minimum": 0
-                },
-                "is_day": {
-                  "type": "boolean",
-                  "description": "Whether it is day time"
-                },
-                "points": {
-                  "type": "integer",
-                  "description": "Points for the habitat",
-                  "minimum": 0
-                }
-              },
-              "required": ["type"]
-            },
-            "description": "List of required habitats"
+          "height": {
+            "type": "integer",
+            "description": "Height level for the habitat",
+            "minimum": 0
+          },
+          "light": {
+            "type": "integer",
+            "description": "Light level for the habitat",
+            "minimum": 0
+          },
+          "is_day": {
+            "type": "boolean",
+            "description": "Whether it is day time"
+          },
+          "points": {
+            "type": "integer",
+            "description": "Points for the habitat",
+            "minimum": 0
+          },
+          "below": {
+            "type": "boolean",
+            "description": "Whether the habitat is below a certain level"
           }
         },
         "required": ["type"]
@@ -138,7 +123,7 @@
       "items": {
         "type": "string",
         "description": "Type of ability",
-        "pattern": "^[a-zA-Z0-9_]+$",
+        "pattern": "^[a-zA-Z0-9_]+$"
       },
       "description": "List of abilities"
     },
@@ -152,7 +137,7 @@
       "items": {
         "type": "string",
         "description": "Items used for taming the dragon",
-        "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_/.]+$"
+        "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$"
       },
       "description": "List of taming items"
     },
@@ -161,14 +146,14 @@
       "items": {
         "type": "string",
         "description": "Items used for breeding the dragon",
-        "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_/.]+$"
+        "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$"
       },
       "description": "List of breeding items"
     },
     "hatch_particles": {
       "type": "string",
       "description": "Particles displayed when the dragon hatches",
-      "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_/.]+$"
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$"
     },
     "accessories": {
       "type": "array",
@@ -187,7 +172,7 @@
           "table": {
             "type": "string",
             "description": "Loot table",
-            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_/.]+$"
+            "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$"
           },
           "chance": {
             "type": "number",
@@ -213,12 +198,12 @@
     "model_location": {
       "type": "string",
       "description": "Location of the dragon model",
-      "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_/.]+$"
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$"
     },
     "animation_location": {
       "type": "string",
       "description": "Location of the dragon animation",
-      "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_/.]+$"
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$"
     },
     "variants": {
       "type": "array",

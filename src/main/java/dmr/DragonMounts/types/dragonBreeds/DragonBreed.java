@@ -9,6 +9,10 @@ import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.types.breath.DragonBreathType;
 import dmr.DragonMounts.types.habitats.Habitat;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -21,54 +25,42 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Represents a dragon breed with specific attributes, abilities, and characteristics.
+ * This class implements the IDragonBreed interface and provides serialization support
+ * for loading breed data from JSON files.
+ */
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(of = {"id"} )
+@Getter
 public class DragonBreed implements IDragonBreed {
-
+    private <T> T getValueOrDefault(T value, T defaultValue) {
+        return value != null && (!(value instanceof Number) || ((Number)value).doubleValue() > 0) ? value : defaultValue;
+    }
+    
+    @Setter
     private String id;
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
+    
     @SerializedName("ambient_sound")
     private SoundEvent ambientSound;
-
-    @Override
-    public SoundEvent getAmbientSound() {
-        return ambientSound;
-    }
-
+    
     @SerializedName("death_loot")
-    private ResourceLocation deathLoot;
-
-    @Override
-    public ResourceLocation getDeathLootTable() {
-        return deathLoot;
-    }
-
+    private ResourceLocation deathLootTable;
+    
     @SerializedName("hatch_time")
     private int hatchTime = -1;
-
+    
     @Override
     public int getHatchTime() {
-        if (hatchTime <= 0) {
-            return ServerConfig.HATCH_TIME_CONFIG.intValue();
-        } else return hatchTime;
+        return getValueOrDefault(hatchTime, ServerConfig.HATCH_TIME_CONFIG.intValue());
     }
 
     @SerializedName("growth_time")
     private int growthTime = -1;
-
+    
     @Override
     public int getGrowthTime() {
-        if (growthTime <= 0) {
-            return (int) (ServerConfig.GROWTH_TIME_CONFIG * 20);
-        } else return growthTime;
+        return getValueOrDefault(growthTime, (int)(ServerConfig.GROWTH_TIME_CONFIG * 20));
     }
 
     @SerializedName("size_modifier")
@@ -76,34 +68,30 @@ public class DragonBreed implements IDragonBreed {
 
     @Override
     public float getSizeModifier() {
-        if (sizeModifier <= 0) {
-            return (float) ServerConfig.SIZE_MODIFIER;
-        } else {
-            return sizeModifier;
-        }
+        return getValueOrDefault(sizeModifier, (float)ServerConfig.SIZE_MODIFIER);
     }
 
     @SerializedName("primary_color")
-    private String primary_color;
+    private String primaryColor;
 
     @SerializedName("secondary_color")
-    private String secondary_color;
+    private String secondaryColor;
 
     public int getPrimaryColor() {
-        return primary_color == null ? 0 : Integer.parseInt(primary_color, 16);
+        return primaryColor == null ? 0 : Integer.parseInt(primaryColor, 16);
     }
 
     public int getSecondaryColor() {
-        return secondary_color == null ? 0 : Integer.parseInt(secondary_color, 16);
+        return secondaryColor == null ? 0 : Integer.parseInt(secondaryColor, 16);
     }
     
     @SerializedName("inventory_texture")
-    private ResourceLocation uiStyle;
-    private final ResourceLocation defaultUiStyle = ResourceLocation.parse("textures/block/stone.png");
+    private ResourceLocation inventoryTexture;
+    private final ResourceLocation defaultInventoryTexture = ResourceLocation.parse("textures/block/stone.png");
     
     @Override
     public ResourceLocation getInventoryTexture() {
-        return uiStyle != null ? uiStyle : defaultUiStyle;
+        return inventoryTexture != null ? inventoryTexture : defaultInventoryTexture;
     }
     
     @SerializedName("breath_type")
@@ -117,75 +105,30 @@ public class DragonBreed implements IDragonBreed {
     @SerializedName("immunities")
     private List<String> immunities = new ArrayList<>();
 
-    @Override
-    public List<String> getImmunities() {
-        return immunities;
-    }
-
     @SerializedName("attributes")
     private Map<ResourceLocation, Double> attributes = new HashMap<>();
-
-    @Override
-    public Map<ResourceLocation, Double> getAttributes() {
-        return attributes;
-    }
-
+    
     @SerializedName("habitats")
     private List<Habitat> habitats = new ArrayList<>();
-
-    @Override
-    public List<Habitat> getHabitats() {
-        return habitats;
-    }
-
+    
     @SerializedName("abilities")
     private List<Ability> abilities = new ArrayList<>();
-
-    @Override
-    public List<Ability> getAbilities() {
-        return abilities;
-    }
-
+    
     @SerializedName("taming_items")
     private List<Item> tamingItems = new ArrayList<>();
-
-    @Override
-    public List<Item> getTamingItems() {
-        return tamingItems;
-    }
 
     @SerializedName("breeding_items")
     private List<Item> breedingItems = new ArrayList<>();
 
-    @Override
-    public List<Item> getBreedingItems() {
-        return breedingItems;
-    }
-
     @SerializedName("hatch_particles")
     private ParticleOptions hatchParticles;
-
-    @Override
-    public ParticleOptions getHatchParticles() {
-        return hatchParticles;
-    }
-
+    
     @SerializedName("accessories")
-    private List<String> modelAccessories = new ArrayList<>();
-
-    @Override
-    public List<String> getAccessories() {
-        return new ArrayList<>(modelAccessories);
-    }
+    private List<String> accessories = new ArrayList<>();
 
     @SerializedName("loot_tables")
     private List<LootTableEntry> lootTable = new ArrayList<>();
-
-    @Override
-    public List<LootTableEntry> getLootTable() {
-        return lootTable;
-    }
-
+    
     @Override
     public Component getName() {
         return Component.translatable(DMR.MOD_ID + ".dragon_breed." + getId());
@@ -200,7 +143,7 @@ public class DragonBreed implements IDragonBreed {
 
     @Override
     public ResourceLocation getDragonModelLocation() {
-        return modelLocation;
+        return modelLocation != null ? modelLocation : DMR.id("geo/dragon.geo.json");
     }
 
     @SerializedName("animation_location")
@@ -208,23 +151,22 @@ public class DragonBreed implements IDragonBreed {
 
     @Override
     public ResourceLocation getDragonAnimationLocation() {
-        return animationLocation;
+        return animationLocation != null ? animationLocation : DMR.id("animations/dragon.animation.json");
     }
-
+    
     @SerializedName("armor_type")
     private String armorTypeId = "default";
-
-    @Override
-    public String getArmorTypeId() {
-        return armorTypeId;
-    }
-
+    
     @SerializedName("variants")
     private Variant[] variants;
-
+    private List<Variant> cachedVariants = null;
+    
     @Override
     public List<Variant> getVariants() {
-        return variants != null ? List.of(variants) : List.of();
+        if (cachedVariants == null) {
+            cachedVariants = variants != null ? List.of(variants) : List.of();
+        }
+        return List.copyOf(cachedVariants);
     }
 
     public static IDragonBreed getDragonType(ItemStack stack) {
@@ -245,17 +187,12 @@ public class DragonBreed implements IDragonBreed {
     }
 
     public static void setDragonType(ItemStack stack, IDragonBreed type) {
-        if (type == null) return;
+        if (stack == null || type == null) return;
         stack.set(ModComponents.DRAGON_BREED, type.getId());
     }
 
     public static void setDragonTypeVariant(ItemStack stack, IDragonBreed type, Variant variant) {
         setDragonType(stack, type);
         stack.set(ModComponents.DRAGON_VARIANT, variant.id());
-    }
-
-    @Override
-    public String toString() {
-        return "DragonBreed{" + "id='" + id + '\'' + '}';
     }
 }
