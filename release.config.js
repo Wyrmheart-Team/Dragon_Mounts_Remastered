@@ -14,7 +14,7 @@ const types = [
     // { type: "chore", section: "🛠️ Chores", hidden: false },
 ];
 module.exports = {
-    branches: [{ name: "1.21" }, { name: "1.20.4", range: "1.1.x" }],
+    branches: [{name: "main"}, { name: "1.21" }, { name: "1.20.4", range: "1.1.x" }],
     plugins: [
         [
             "@semantic-release/commit-analyzer",
