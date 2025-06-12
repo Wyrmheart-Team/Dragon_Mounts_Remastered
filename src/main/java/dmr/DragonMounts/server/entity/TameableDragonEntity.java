@@ -98,10 +98,13 @@ public class TameableDragonEntity extends AbstractDragonEntity {
         if (!isTame()) {
             if (isServer() && isTamingItem(stack)) {
                 stack.shrink(1);
-                tamedFor(player, getRandom().nextInt(5) == 0);
+                var shouldTame = getRandom().nextInt(5) == 0;
+                tamedFor(player, shouldTame);
 
-                if (player instanceof ServerPlayer serverPlayer) {
-                    ModCriterionTriggers.TAME_DRAGON.get().trigger(serverPlayer);
+                if (shouldTame) {
+                    if (player instanceof ServerPlayer serverPlayer) {
+                        ModCriterionTriggers.TAME_DRAGON.get().trigger(serverPlayer);
+                    }
                 }
 
                 return InteractionResult.SUCCESS;

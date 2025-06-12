@@ -175,9 +175,6 @@ abstract class DragonBreathComponent extends DragonAnimationComponent {
 
                     var breathBoundingBox = new AABB(minX, minY, minZ, maxX, maxY, maxZ);
 
-                    var allEntities = level.getEntities(this, breathBoundingBox);
-                    System.out.println(allEntities);
-
                     var entitiesInRange = level
                             .getEntities(
                                     this,
