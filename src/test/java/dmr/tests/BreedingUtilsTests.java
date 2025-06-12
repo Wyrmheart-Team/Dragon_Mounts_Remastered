@@ -4,7 +4,6 @@ import dmr.DMRTestConstants;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModEntities;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.types.habitats.Habitat;
 import dmr.DragonMounts.util.BreedingUtils;
 import java.lang.reflect.Field;
@@ -110,7 +109,7 @@ public class BreedingUtilsTests {
         DragonBreedsRegistry.register(testBreed2);
 
         // Test getHabitatBreedOutcomes
-        List<Entry<Integer, IDragonBreed>> outcomes = BreedingUtils.getHabitatBreedOutcomes(level, pos);
+        List<Entry<Integer, DragonBreed>> outcomes = BreedingUtils.getHabitatBreedOutcomes(level, pos);
 
         // Verify that the outcomes are sorted by habitat points (highest first)
         if (outcomes.isEmpty()) {
@@ -118,13 +117,13 @@ public class BreedingUtilsTests {
         }
 
         // The first outcome should have the highest points (testBreed2 with 20 points)
-        Entry<Integer, IDragonBreed> firstOutcome = outcomes.get(0);
+        Entry<Integer, DragonBreed> firstOutcome = outcomes.get(0);
         if (firstOutcome.getKey() != 20 || !firstOutcome.getValue().getId().equals("test_breed2")) {
             helper.fail("First outcome should be test_breed2 with 20 points");
         }
 
         // Test getHabitatBreedOutcome
-        IDragonBreed highestBreed = BreedingUtils.getHabitatBreedOutcome(level, pos);
+        DragonBreed highestBreed = BreedingUtils.getHabitatBreedOutcome(level, pos);
         if (highestBreed == null) {
             helper.fail("No highest habitat breed found");
         }

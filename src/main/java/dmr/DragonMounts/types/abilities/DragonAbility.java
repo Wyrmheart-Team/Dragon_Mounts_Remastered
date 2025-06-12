@@ -6,9 +6,12 @@ import lombok.Setter;
 
 @Getter
 public class DragonAbility {
-	@Setter
-	private String id;
-	
-	@SerializedName("max_tier")
-	private int maxTier;
+    @Setter
+    private String id;
+
+    @SerializedName("max_tier")
+    private int maxTier;
+    
+    @SerializedName("breed_transferable")
+    private boolean breedTransferable;
 }

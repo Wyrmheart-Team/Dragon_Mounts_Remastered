@@ -1,11 +1,10 @@
 package dmr.DragonMounts.server.entity.dragon;
 
-import static net.minecraft.world.entity.ai.attributes.Attributes.FLYING_SPEED;
-
 import dmr.DragonMounts.registry.ModMemoryModuleTypes;
 import dmr.DragonMounts.server.ai.DragonBodyController;
 import dmr.DragonMounts.server.ai.DragonMoveController;
 import dmr.DragonMounts.server.ai.navigation.DragonPathNavigation;
+import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -20,6 +19,9 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import org.jetbrains.annotations.Nullable;
+
+import static net.minecraft.world.entity.ai.attributes.Attributes.FLYING_SPEED;
 
 /**
  * Abstract class that implements additional dragon movement functionality.
@@ -225,7 +227,15 @@ abstract class DragonMovementComponent extends DragonInventoryComponent {
     @Override
     protected void onChangedBlock(ServerLevel level, BlockPos pos) {
         super.onChangedBlock(level, pos);
-        getBreed().onMove(getDragon());
         getBrain().eraseMemory(ModMemoryModuleTypes.IDLE_TICKS.get());
+    }
+    
+    @Override
+    public void finalizeDragon(@Nullable TameableDragonEntity parent1, @Nullable TameableDragonEntity parent2) {
+        super.finalizeDragon(parent1, parent2);
+        
+        if (!canDrownInFluidType(Fluids.WATER.getFluidType())) {
+            setPathfindingMalus(PathType.WATER, 0.0F);
+        }
     }
 }

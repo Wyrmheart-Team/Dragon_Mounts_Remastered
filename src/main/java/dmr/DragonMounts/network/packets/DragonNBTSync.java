@@ -56,7 +56,7 @@ public class DragonNBTSync extends AbstractMessage<DragonNBTSync> {
 
     @Override
     public void handle(IPayloadContext context, Player player) {}
-    
+
     @Override
     public void handleClient(IPayloadContext context, Player player) {
         var state = PlayerStateUtils.getHandler(player);

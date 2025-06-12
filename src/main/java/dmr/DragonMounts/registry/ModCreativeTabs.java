@@ -3,7 +3,8 @@ package dmr.DragonMounts.registry;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.server.items.*;
 import dmr.DragonMounts.types.armor.DragonArmor;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
+import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
+import dmr.DragonMounts.types.dragonBreeds.DragonVariant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.function.Supplier;
@@ -19,7 +20,6 @@ public class ModCreativeTabs {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, DMR.MOD_ID);
 
-    public static Supplier<CreativeModeTab> MOD_HYBRIDS_DEV_TAB;
     public static Supplier<CreativeModeTab> MOD_TESTING_DEV_TAB;
 
     public static final Supplier<CreativeModeTab> MOD_TAB =
@@ -30,22 +30,18 @@ public class ModCreativeTabs {
                         entries.accept(ModItems.BLANK_EGG_BLOCK_ITEM.get().getDefaultInstance());
 
                         var breeds = DragonBreedsRegistry.getDragonBreeds();
-                        for (IDragonBreed type : breeds) {
-                            if (!type.isHybrid()) {
-                                entries.accept(DragonEggItemBlock.getDragonEggStack(type));
+                        for (DragonBreed type : breeds) {
+                            entries.accept(DragonEggItemBlock.getDragonEggStack(type));
 
-                                for (IDragonBreed.Variant variant : type.getVariants()) {
-                                    entries.accept(DragonEggItemBlock.getDragonEggStack(type, variant));
-                                }
+                            for (DragonVariant variant : type.getVariants()) {
+                                entries.accept(DragonEggItemBlock.getDragonEggStack(type, variant));
                             }
                         }
-                        for (IDragonBreed type : breeds) {
-                            if (!type.isHybrid()) {
-                                entries.accept(DragonSpawnEgg.create(type));
+                        for (DragonBreed type : breeds) {
+                            entries.accept(DragonSpawnEgg.create(type));
 
-                                for (IDragonBreed.Variant variant : type.getVariants()) {
-                                    entries.accept(DragonSpawnEgg.create(type, variant));
-                                }
+                            for (DragonVariant variant : type.getVariants()) {
+                                entries.accept(DragonSpawnEgg.create(type, variant));
                             }
                         }
                         var armors = new ArrayList<>(DragonArmorRegistry.getDragonArmors());
@@ -63,25 +59,6 @@ public class ModCreativeTabs {
 
     public static void init() {
         if (DMR.DEBUG) {
-            MOD_HYBRIDS_DEV_TAB =
-                    CREATIVE_MODE_TABS.register("dragon_mounts_hybrids_dev", () -> CreativeModeTab.builder()
-                            .icon(() -> new ItemStack(ModItems.DRAGON_EGG_BLOCK_ITEM.get()))
-                            .title(Component.literal("DMR Hybrid eggs"))
-                            .displayItems((enabledFeatures, entries) -> {
-                                var breeds = new ArrayList<>(DragonBreedsRegistry.getDragonBreeds())
-                                        .stream()
-                                                .filter(IDragonBreed::isHybrid)
-                                                .sorted(Comparator.comparing(IDragonBreed::getId))
-                                                .toList();
-
-                                for (IDragonBreed type : breeds) {
-                                    entries.accept(DragonEggItemBlock.getDragonEggStack(type));
-                                }
-                                for (IDragonBreed type : breeds) {
-                                    entries.accept(DragonSpawnEgg.create(type));
-                                }
-                            })
-                            .build());
 
             MOD_TESTING_DEV_TAB =
                     CREATIVE_MODE_TABS.register("dragon_mounts_testing_dev", () -> CreativeModeTab.builder()

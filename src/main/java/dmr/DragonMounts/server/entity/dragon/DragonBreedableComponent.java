@@ -1,16 +1,14 @@
 package dmr.DragonMounts.server.entity.dragon;
 
-import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.network.packets.DragonAgeSyncPacket;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModBlocks;
 import dmr.DragonMounts.registry.ModEntities;
+import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
 import dmr.DragonMounts.server.blocks.DMREggBlock;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
-import dmr.DragonMounts.util.BreedingUtils;
-import java.util.Optional;
 import net.minecraft.core.GlobalPos;
-import net.minecraft.network.chat.Component;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
@@ -21,8 +19,11 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 /**
  * Abstract class that implements dragon breeding functionality.
@@ -63,23 +64,22 @@ abstract class DragonBreedableComponent extends DragonBreedComponent {
 
         // Pick a random breed from the list to use as the offspring
         var offSpringBreed = eggOutcomes.get(getRandom().nextInt(eggOutcomes.size()));
-        var variant = !offSpringBreed.getVariants().isEmpty()
-                ? offSpringBreed
-                        .getVariants()
-                        .get(getRandom().nextInt(offSpringBreed.getVariants().size()))
-                : null;
-        var egg = DMREggBlock.place(level, blockPosition(), state, offSpringBreed, variant);
-
-        if (ServerConfig.ENABLE_RANDOM_STATS) {
-            getDragon().setEggBreedAttributes(mate, () -> egg);
-        }
-
-        // mix the custom names in case both parents have one
-        if (hasCustomName() && animal.hasCustomName()) {
-            String babyName = BreedingUtils.generateCustomName(getDragon(), animal);
-            egg.setCustomName(Component.literal(babyName));
-        }
-
+        var variant = !offSpringBreed.getVariants().isEmpty() ? offSpringBreed.getVariants().get(getRandom().nextInt(offSpringBreed.getVariants().size())) : null;
+        var tag = new CompoundTag();
+        
+        var tempEntity = ModEntities.DRAGON_ENTITY.get().create(level);
+        tempEntity.setBreed(offSpringBreed);
+        tempEntity.setVariant(variant != null ? variant.id() : null);
+        tempEntity.finalizeDragon(getDragon(), mate);
+        tempEntity.addAdditionalSaveData(tag);
+        
+        level.setBlock(blockPosition(), state, Block.UPDATE_ALL);
+        var egg = (DMREggBlockEntity) level.getBlockEntity(blockPosition());
+        
+        egg.setBreed(offSpringBreed);
+        egg.setVariantId(variant != null ? variant.id() : null);
+        egg.setHatchTime(offSpringBreed.getHatchTime());
+        egg.setDragonOutcomeTag(tag);
         getDragon().updateOwnerData();
     }
 

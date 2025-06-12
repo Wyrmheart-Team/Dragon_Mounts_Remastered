@@ -2,8 +2,8 @@ package dmr.tests;
 
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.server.events.LootTableInject;
+import dmr.DragonMounts.types.LootTableEntry;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.LootTableEntry;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;

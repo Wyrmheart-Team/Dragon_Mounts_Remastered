@@ -5,7 +5,7 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModBlockEntities;
 import dmr.DragonMounts.server.blockentities.DMRBlankEggBlockEntity;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
+import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -111,7 +111,7 @@ public class BlankEggBlock extends DragonEggBlock implements EntityBlock, Simple
         }
     }
 
-    public void addHatchingParticles(IDragonBreed breed, Level level, BlockPos pos, RandomSource random) {
+    public void addHatchingParticles(DragonBreed breed, Level level, BlockPos pos, RandomSource random) {
         double px = pos.getX() + random.nextDouble();
         double py = pos.getY() + random.nextDouble();
         double pz = pos.getZ() + random.nextDouble();

@@ -9,7 +9,6 @@ import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
 import dmr.DragonMounts.server.blocks.BlankEggBlock;
 import dmr.DragonMounts.server.items.BlankDragonEggItemBlock;
-import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -172,7 +171,7 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
             }
 
             if (level.getBlockEntity(pos) instanceof DMREggBlockEntity e && e.getBreed() != null) {
-                var breed = e.getBreed() instanceof DragonHybridBreed hybridBreed ? hybridBreed.parent1 : e.getBreed();
+                var breed = e.getBreed();
                 return modelData
                         .derive()
                         .with(Data.PROPERTY, new Data(breed.getId(), e.getVariantId()))
@@ -206,14 +205,6 @@ public class DragonEggModel implements IUnbakedGeometry<DragonEggModel> {
                     ModComponents.DRAGON_BREED,
                     DragonBreedsRegistry.getDefault().getId());
             var variantId = stack.get(ModComponents.DRAGON_VARIANT);
-
-            if (breed.startsWith("hybrid_")) {
-                var breedObject = DragonBreedsRegistry.getDragonBreed(breed);
-
-                if (breedObject instanceof DragonHybridBreed hybridBreed) {
-                    breed = hybridBreed.parent1.getId();
-                }
-            }
 
             var model = variantId != null
                     ? owner.models.get(String.join(ModConstants.VARIANT_DIVIDER, breed, variantId))

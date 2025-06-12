@@ -2,37 +2,33 @@ package dmr.DragonMounts.util;
 
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
+import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.types.habitats.Habitat;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.animal.Animal;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-public class BreedingUtils {
-    static final ExecutorService executor = Executors.newSingleThreadExecutor();
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map.Entry;
 
-    public static IDragonBreed getHabitatBreedOutcome(ServerLevel level, BlockPos pos) {
+public class BreedingUtils {
+    public static DragonBreed getHabitatBreedOutcome(ServerLevel level, BlockPos pos) {
         var outcomes = getHabitatBreedOutcomes(level, pos);
         var first = outcomes.stream().findFirst();
         return first.map(Entry::getValue).orElse(null);
     }
 
-    public static List<Entry<Integer, IDragonBreed>> getHabitatBreedOutcomes(ServerLevel level, BlockPos pos) {
-        var outcomes = new ArrayList<Entry<Integer, IDragonBreed>>();
+    public static List<Entry<Integer, DragonBreed>> getHabitatBreedOutcomes(ServerLevel level, BlockPos pos) {
+        var outcomes = new ArrayList<Entry<Integer, DragonBreed>>();
 
         // Add the highest habitat point breed to the list of possible outcomes
-        for (IDragonBreed dragonBreed : DragonBreedsRegistry.getDragonBreeds()) {
-            if (dragonBreed.isHybrid()) continue;
+        for (DragonBreed dragonBreed : DragonBreedsRegistry.getDragonBreeds()) {
             if (dragonBreed.getHabitats() == null || dragonBreed.getHabitats().isEmpty()) continue;
 
             var points = 0;
@@ -53,7 +49,8 @@ public class BreedingUtils {
         return outcomes;
     }
 
-    @NotNull public static String generateCustomName(TameableDragonEntity mate1, Animal animal) {
+    @NotNull
+    public static String generateCustomName(TameableDragonEntity mate1, Animal animal) {
         String p1Name = mate1.getCustomName().getString();
         String p2Name = animal.getCustomName().getString();
         String babyName;

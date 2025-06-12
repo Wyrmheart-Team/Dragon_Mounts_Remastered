@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import dmr.DragonMounts.DMR;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -26,16 +27,9 @@ public class ModComponents {
             register("egg_hatch_time", Codec.INT, ByteBufCodecs.INT);
     public static final Supplier<DataComponentType<String>> EGG_OWNER =
             register("egg_owner", Codec.STRING, ByteBufCodecs.STRING_UTF8);
-
-    public static final Supplier<DataComponentType<Double>> DRAGON_HEALTH_ATTRIBUTE =
-            register("dragon_health_attribute", Codec.DOUBLE, ByteBufCodecs.DOUBLE);
-    public static final Supplier<DataComponentType<Double>> DRAGON_MOVEMENT_SPEED_ATTRIBUTE =
-            register("dragon_movement_speed_attribute", Codec.DOUBLE, ByteBufCodecs.DOUBLE);
-    public static final Supplier<DataComponentType<Double>> DRAGON_ATTACK_ATTRIBUTE =
-            register("dragon_attack_attribute", Codec.DOUBLE, ByteBufCodecs.DOUBLE);
-    public static final Supplier<DataComponentType<Double>> DRAGON_SCALE_ATTRIBUTE =
-            register("dragon_scale_attribute", Codec.DOUBLE, ByteBufCodecs.DOUBLE);
-
+    public static final Supplier<DataComponentType<CompoundTag>> EGG_OUTCOME =
+            register("egg_outcome", CompoundTag.CODEC, ByteBufCodecs.COMPOUND_TAG);
+    
     private static <T> Supplier<DataComponentType<T>> register(
             String name, Codec<T> codec, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
         return COMPONENTS.registerComponentType(

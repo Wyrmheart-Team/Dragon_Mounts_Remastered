@@ -1,14 +1,9 @@
 package dmr.DragonMounts.server.items;
 
 import dmr.DragonMounts.ModConstants;
-import dmr.DragonMounts.registry.DragonBreedsRegistry;
-import dmr.DragonMounts.registry.ModBlocks;
-import dmr.DragonMounts.registry.ModComponents;
-import dmr.DragonMounts.registry.ModItems;
+import dmr.DragonMounts.registry.*;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
-import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.Variant;
+import dmr.DragonMounts.types.dragonBreeds.DragonVariant;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -23,20 +18,20 @@ public class DragonEggItemBlock extends BlockItem {
         super(ModBlocks.DRAGON_EGG_BLOCK.get(), pProperties.rarity(Rarity.EPIC));
     }
 
-    public static ItemStack getDragonEggStack(IDragonBreed type) {
+    public static ItemStack getDragonEggStack(DragonBreed type) {
         return getDragonEggStack(type, 1, null);
     }
 
-    public static ItemStack getDragonEggStack(IDragonBreed type, Variant variant) {
+    public static ItemStack getDragonEggStack(DragonBreed type, DragonVariant variant) {
         return getDragonEggStack(type, 1, variant);
     }
 
-    public static ItemStack getDragonEggStack(IDragonBreed type, int count, Variant variant) {
+    public static ItemStack getDragonEggStack(DragonBreed type, int count, DragonVariant variant) {
         ItemStack stack = new ItemStack(ModItems.DRAGON_EGG_BLOCK_ITEM.get(), count);
         if (variant != null) {
-            DragonBreed.setDragonTypeVariant(stack, type, variant);
+            DragonBreathRegistry.setDragonTypeVariant(stack, type, variant);
         } else {
-            DragonBreed.setDragonType(stack, type);
+            DragonBreathRegistry.setDragonType(stack, type);
         }
         return stack;
     }
@@ -52,18 +47,6 @@ public class DragonEggItemBlock extends BlockItem {
                 ".",
                 ModBlocks.DRAGON_EGG_BLOCK.get().getDescriptionId(),
                 breed + (variant != null ? ModConstants.VARIANT_DIVIDER + variant : ""));
-    }
-
-    @Override
-    public Component getName(ItemStack pStack) {
-        var breed = DragonBreed.getDragonType(pStack);
-        if (breed instanceof DragonHybridBreed hybridBreed) {
-            var par1 = hybridBreed.parent1.getName().getString();
-            var par2 = hybridBreed.parent2.getName().getString();
-            var langKey = String.join(".", ModBlocks.DRAGON_EGG_BLOCK.get().getDescriptionId(), "hybrid");
-            return Component.translatable(langKey, par1, par2);
-        }
-        return super.getName(pStack);
     }
 
     @Override

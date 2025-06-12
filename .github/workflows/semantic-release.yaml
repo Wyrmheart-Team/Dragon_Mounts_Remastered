@@ -56,6 +56,15 @@ jobs:
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      
+      - name: Split Semantic Commit Messages
+        id: split_commits
+        shell: pwsh
+        run: |
+          # Make script executable
+          chmod +x ./.github/scripts/split-semantic-commits.ps1
+          # Run the script
+          pwsh ./.github/scripts/split-semantic-commits.ps1
 
       - name: Run Semantic Release
         id: semantic

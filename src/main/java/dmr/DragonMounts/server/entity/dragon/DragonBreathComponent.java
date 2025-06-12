@@ -224,9 +224,9 @@ abstract class DragonBreathComponent extends DragonAnimationComponent {
      * Applies damage to the target from the breath attack.
      */
     public void attackWithBreath(LivingEntity target) {
-        if(!canHarmWithBreath(target)) return;
-        if(getControllingPassenger() != null && getControllingPassenger() == target) return;
-        
+        if (!canHarmWithBreath(target)) return;
+        if (getControllingPassenger() != null && getControllingPassenger() == target) return;
+
         var breathType = getDragon().getBreed().getBreathType();
         if (breathType == null) return;
 
@@ -260,6 +260,7 @@ abstract class DragonBreathComponent extends DragonAnimationComponent {
      * Checks if the dragon can harm the target with its breath.
      */
     public boolean canHarmWithBreath(LivingEntity target) {
-        return getOwner() == null || target != getOwner() && getOwner().canAttack(target) && !target.isAlliedTo(getOwner());
+        return getOwner() == null
+                || target != getOwner() && getOwner().canAttack(target) && !target.isAlliedTo(getOwner());
     }
 }

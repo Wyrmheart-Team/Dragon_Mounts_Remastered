@@ -1,6 +1,10 @@
 package dmr.DragonMounts.registry;
 
 import dmr.DragonMounts.types.breath.DragonBreathType;
+import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
+import dmr.DragonMounts.types.dragonBreeds.DragonVariant;
+import net.minecraft.world.item.ItemStack;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,5 +43,32 @@ public class DragonBreathRegistry {
 
     public static DragonBreathType getDefault() {
         return hasBreathType("fire") ? getBreathType("fire") : getFirst();
+    }
+
+    public static DragonBreed getDragonType(ItemStack stack) {
+        var breedId = stack.get(ModComponents.DRAGON_BREED);
+        return DragonBreedsRegistry.getDragonBreed(breedId);
+    }
+
+    public static DragonVariant getDragonTypeVariant(ItemStack stack) {
+        var breed = getDragonType(stack);
+        var variantId = stack.get(ModComponents.DRAGON_VARIANT);
+        if (breed != null) {
+            return breed.getVariants().stream()
+                    .filter(variant -> variant.id().equals(variantId))
+                    .findFirst()
+                    .orElse(null);
+        }
+        return null;
+    }
+
+    public static void setDragonType(ItemStack stack, DragonBreed type) {
+        if (stack == null || type == null) return;
+        stack.set(ModComponents.DRAGON_BREED, type.getId());
+    }
+
+    public static void setDragonTypeVariant(ItemStack stack, DragonBreed type, DragonVariant variant) {
+        setDragonType(stack, type);
+        stack.set(ModComponents.DRAGON_VARIANT, variant.id());
     }
 }

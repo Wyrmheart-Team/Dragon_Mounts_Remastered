@@ -3,7 +3,7 @@ package dmr.DragonMounts.server.blockentities;
 import dmr.DragonMounts.ModConstants.NBTConstants;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.*;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
+import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.util.PlayerStateUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +11,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.component.DataComponentMap.Builder;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -27,54 +26,25 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.UUID;
 
 import static dmr.DragonMounts.server.blocks.DMREggBlock.HATCHING;
-
+@Getter
+@Setter
 public class DMREggBlockEntity extends BlockEntity {
-
-    @Getter
-    @Setter
-    private String breedId;
-
-    @Getter
-    @Setter
-    private String variantId = "";
-
-    @Getter
-    @Setter
-    private double healthAttribute;
-
-    @Getter
-    @Setter
-    private double speedAttribute;
-
-    @Getter
-    @Setter
-    private double damageAttribute;
     
-    @Getter
-    @Setter
-    private double maxScaleAttribute;
-
-    @Getter
-    @Setter
+    private String breedId;
+    private String variantId = "";
+    private CompoundTag dragonOutcomeTag;
     private int hatchTime = ServerConfig.HATCH_TIME_CONFIG.intValue();
-
-    @Getter
-    @Setter
     private String owner;
-
-    @Getter
-    @Setter
-    private Component customName;
-
+    
     public DMREggBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.DRAGON_EGG_BLOCK_ENTITY.get(), pPos, pBlockState);
     }
 
-    public IDragonBreed getBreed() {
+    public DragonBreed getBreed() {
         return DragonBreedsRegistry.getDragonBreed(getBreedId());
     }
 
-    public void setBreed(IDragonBreed breed) {
+    public void setBreed(DragonBreed breed) {
         setBreedId(breed.getId());
     }
 
@@ -86,8 +56,7 @@ public class DMREggBlockEntity extends BlockEntity {
 
         pTag.putInt("hatchTime", getHatchTime());
         pTag.putString("owner", getOwner() == null ? "" : getOwner());
-
-        if (getCustomName() != null) pTag.putString("name", Component.Serializer.toJson(customName, registries));
+        pTag.put("eggOutcome", getDragonOutcomeTag());
     }
 
     @Override
@@ -96,9 +65,7 @@ public class DMREggBlockEntity extends BlockEntity {
         setBreedId(tag.getString(NBTConstants.BREED));
         setHatchTime(tag.getInt("hatchTime"));
         setOwner(tag.getString("owner"));
-
-        var name = tag.getString("name");
-        if (!name.isBlank()) setCustomName(Component.Serializer.fromJson(name, registries));
+        setDragonOutcomeTag(tag.getCompound("eggOutcome"));
     }
 
     @Override
@@ -108,14 +75,7 @@ public class DMREggBlockEntity extends BlockEntity {
         setHatchTime(
                 componentInput.getOrDefault(ModComponents.EGG_HATCH_TIME, ServerConfig.HATCH_TIME_CONFIG.intValue()));
         setOwner(componentInput.get(ModComponents.EGG_OWNER));
-
-        if (ServerConfig.ENABLE_RANDOM_STATS) {
-            setSpeedAttribute(
-                    componentInput.getOrDefault(ModComponents.DRAGON_MOVEMENT_SPEED_ATTRIBUTE, Math.random()));
-            setDamageAttribute(componentInput.getOrDefault(ModComponents.DRAGON_ATTACK_ATTRIBUTE, Math.random()));
-            setHealthAttribute(componentInput.getOrDefault(ModComponents.DRAGON_HEALTH_ATTRIBUTE, Math.random()));
-            setMaxScaleAttribute(componentInput.getOrDefault(ModComponents.DRAGON_SCALE_ATTRIBUTE, Math.random()));
-        }
+        setDragonOutcomeTag(componentInput.get(ModComponents.EGG_OUTCOME));
     }
 
     @Override
@@ -124,13 +84,7 @@ public class DMREggBlockEntity extends BlockEntity {
         components.set(ModComponents.DRAGON_BREED, getBreedId());
         components.set(ModComponents.EGG_HATCH_TIME, getHatchTime());
         components.set(ModComponents.EGG_OWNER, getOwner());
-
-        if (ServerConfig.ENABLE_RANDOM_STATS) {
-            components.set(ModComponents.DRAGON_HEALTH_ATTRIBUTE, getHealthAttribute());
-            components.set(ModComponents.DRAGON_ATTACK_ATTRIBUTE, getDamageAttribute());
-            components.set(ModComponents.DRAGON_MOVEMENT_SPEED_ATTRIBUTE, getSpeedAttribute());
-            components.set(ModComponents.DRAGON_SCALE_ATTRIBUTE, getMaxScaleAttribute());
-        }
+        components.set(ModComponents.EGG_OUTCOME, getDragonOutcomeTag());
     }
 
     public int tickCount = 0;
@@ -177,21 +131,15 @@ public class DMREggBlockEntity extends BlockEntity {
                 1.2f,
                 0.95f + level.getRandom().nextFloat() * 0.2f);
 
+        baby.readAdditionalSaveData(dragonOutcomeTag);
         baby.setBreed(data.getBreed());
         baby.setVariant(data.getVariantId());
 
         baby.setBaby(true);
         baby.setAge(-Math.abs(data.getBreed().getGrowthTime()));
         baby.setPos(pos.getX(), pos.getY(), pos.getZ());
-
         baby.setHatched(true);
-
-        if (ServerConfig.ENABLE_RANDOM_STATS) {
-            baby.setHatchedAttributes(this);
-        }
-
-        if (data.getCustomName() != null) baby.setCustomName(data.getCustomName());
-
+        
         if (!level.addFreshEntity(baby)) return;
 
         if (ownerId != null && !ownerId.isBlank()) {
@@ -202,12 +150,7 @@ public class DMREggBlockEntity extends BlockEntity {
                 state.dragonsHatched++;
 
                 ModCriterionTriggers.HATCH_COUNT_TRIGGER.get().trigger(serverPlayer, state.dragonsHatched);
-
-                if (data.getBreed().isHybrid()) {
-                    ModCriterionTriggers.IS_HYBRID_HATCH_TRIGGER.get().trigger(serverPlayer);
-                } else {
-                    ModCriterionTriggers.HATCH_TRIGGER.get().trigger(serverPlayer, data.getBreedId());
-                }
+                ModCriterionTriggers.HATCH_TRIGGER.get().trigger(serverPlayer, data.getBreedId());
             }
         }
 

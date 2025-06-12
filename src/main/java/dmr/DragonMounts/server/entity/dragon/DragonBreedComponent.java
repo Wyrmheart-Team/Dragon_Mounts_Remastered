@@ -2,14 +2,16 @@ package dmr.DragonMounts.server.entity.dragon;
 
 import dmr.DragonMounts.ModConstants.NBTConstants;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.Variant;
+import dmr.DragonMounts.server.entity.TameableDragonEntity;
+import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
+import dmr.DragonMounts.types.dragonBreeds.DragonVariant;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.level.Level;
 
 /**
@@ -62,10 +64,10 @@ abstract class DragonBreedComponent extends DragonBreathComponent {
 
     private boolean breedIsSet = false;
 
-    protected IDragonBreed breed;
+    protected DragonBreed breed;
 
     /** Gets the current breed of the dragon. */
-    public IDragonBreed getBreed() {
+    public DragonBreed getBreed() {
         var origBreed = getEntityData().get(origBreedDataAccessor);
 
         // If there is a original breed stored, try to fetch the breed from that
@@ -77,7 +79,7 @@ abstract class DragonBreedComponent extends DragonBreathComponent {
     }
 
     /** Sets the breed of the dragon. */
-    public void setBreed(IDragonBreed dragonBreed) {
+    public void setBreed(DragonBreed dragonBreed) {
         if (breed != dragonBreed || !breedIsSet) { // prevent loops, unnecessary work, etc.
             if (dragonBreed == null
                     || dragonBreed.getId() == null
@@ -90,10 +92,10 @@ abstract class DragonBreedComponent extends DragonBreathComponent {
             }
 
             breedIsSet = true;
-
-            if (breed != null) breed.close(getDragon());
+            getAttributes()
+                    .assignAllValues(new AttributeMap(
+                            TameableDragonEntity.createAttributes().build())); // restore
             breed = dragonBreed;
-            dragonBreed.initialize(getDragon());
             getEntityData().set(breedDataAccessor, dragonBreed.getId());
 
             if (getEntityData().get(origBreedDataAccessor).isBlank()) {
@@ -108,7 +110,7 @@ abstract class DragonBreedComponent extends DragonBreathComponent {
     }
 
     /** Gets the current variant of the dragon. */
-    public Variant getVariant() {
+    public DragonVariant getVariant() {
         var id = getVariantId();
         return getBreed().getVariants().stream()
                 .filter(v -> v.id().equals(id))
@@ -132,20 +134,13 @@ abstract class DragonBreedComponent extends DragonBreathComponent {
                 && getBreed().getVariants().stream().anyMatch(v -> v.id().equals(getVariantId())));
     }
 
-    public void tick() {
-        super.tick();
-        if (tickCount % 20 == 0) getBreed().tick(getDragon());
-    }
-
     public void baseTick() {
         super.baseTick();
 
         if (!breedIsSet && getBreed() != null) {
-            if (getBreed() != null) getBreed().close(getDragon());
             setBreed(getBreed());
 
             if (getBreed() != null) {
-                getBreed().initialize(getDragon());
                 breedIsSet = true;
             }
         }

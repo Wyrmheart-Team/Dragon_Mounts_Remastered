@@ -3,9 +3,10 @@ package dmr.DragonMounts.types.abilities.types;
 import com.mojang.serialization.Codec;
 import dmr.DragonMounts.registry.DragonAbilities;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
-import java.util.Map;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+
+import java.util.Map;
 
 public interface Ability {
     Codec<Ability> CODEC = Codec.STRING.dispatch(Ability::type, DragonAbilities.REGISTRY::get);
@@ -21,9 +22,7 @@ public interface Ability {
     }
 
     default void initialize(TameableDragonEntity dragon) {}
-
-    default void close(TameableDragonEntity dragon) {}
-
+    
     default void tick(TameableDragonEntity dragon) {}
 
     default void onMove(TameableDragonEntity dragon) {}

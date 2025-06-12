@@ -16,7 +16,6 @@ import dmr.DragonMounts.server.events.LootTableInject;
 import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.types.breath.DragonBreathType;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -103,7 +102,7 @@ public class DataPackHandler {
                 .orElseGet(() -> RegistryAccess.EMPTY.registryOrThrow(BREATH_TYPES_KEY));
 
         List<DragonArmor> armorList = new ArrayList<>();
-        List<IDragonBreed> breedList = new ArrayList<>();
+        List<DragonBreed> breedList = new ArrayList<>();
         List<DragonBreathType> breathList = new ArrayList<>();
 
         for (Entry<ResourceKey<DragonArmor>, DragonArmor> ent : armor_reg.entrySet()) {
@@ -132,7 +131,6 @@ public class DataPackHandler {
         }
 
         DragonBreedsRegistry.setBreeds(breedList);
-        DragonBreedsRegistry.registerHybrids();
 
         LootTableInject.firstLoadInjectArmor(level);
         LootTableInject.firstLoadInjectBreeds(level);

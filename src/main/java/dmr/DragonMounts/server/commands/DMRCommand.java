@@ -58,40 +58,6 @@ public class DMRCommand {
                                                         Vec3Argument.getVec3(context, "pos"),
                                                         CompoundTagArgument.getCompoundTag(context, "nbt"))))))));
 
-        var spawnHybrid = baseCommand.then(Commands.literal("spawn")
-                .then(Commands.literal("hybrid")
-                        .then(Commands.argument("parent 1", StringArgumentType.word())
-                                .suggests(DMRCommand::getBreeds)
-                                .then(Commands.argument("parent 2", StringArgumentType.word())
-                                        .suggests(DMRCommand::getBreeds)
-                                        .executes(context -> spawnDragon(
-                                                context.getSource(),
-                                                String.format(
-                                                        "hybrid_%s_%s",
-                                                        context.getArgument("parent 1", String.class),
-                                                        context.getArgument("parent 2", String.class)),
-                                                context.getSource().getPosition(),
-                                                new CompoundTag()))
-                                        .then(Commands.argument("pos", Vec3Argument.vec3())
-                                                .executes(context -> spawnDragon(
-                                                        context.getSource(),
-                                                        String.format(
-                                                                "hybrid_%s_%s",
-                                                                context.getArgument("parent 1", String.class),
-                                                                context.getArgument("parent 2", String.class)),
-                                                        Vec3Argument.getVec3(context, "pos"),
-                                                        new CompoundTag()))
-                                                .then(Commands.argument("nbt", StringArgumentType.greedyString())
-                                                        .executes(context -> spawnDragon(
-                                                                context.getSource(),
-                                                                String.format(
-                                                                        "hybrid_%s_%s",
-                                                                        context.getArgument("parent 1", String.class),
-                                                                        context.getArgument("parent 2", String.class)),
-                                                                Vec3Argument.getVec3(context, "pos"),
-                                                                CompoundTagArgument.getCompoundTag(
-                                                                        context, "nbt")))))))));
-
         var recall = baseCommand.then(Commands.literal("recall")
                 .then(Commands.argument("id", UuidArgument.uuid())
                         .suggests((context, builder) -> {
@@ -135,7 +101,6 @@ public class DMRCommand {
                                 DyeColor.byName(ctx.getArgument("color", String.class), DyeColor.WHITE)))));
 
         commandDispatcher.register(spawnRegular);
-        commandDispatcher.register(spawnHybrid);
         commandDispatcher.register(recall);
         commandDispatcher.register(clearWhistle);
     }
@@ -212,9 +177,7 @@ public class DMRCommand {
 
     private static CompletableFuture<Suggestions> getBreeds(
             CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
-        DragonBreedsRegistry.getDragonBreeds().stream()
-                .filter(breed -> !breed.isHybrid())
-                .forEach(breed -> builder.suggest(breed.getId(), breed.getName()));
+        DragonBreedsRegistry.getDragonBreeds().forEach(breed -> builder.suggest(breed.getId(), breed.getName()));
         return builder.buildFuture();
     }
 }

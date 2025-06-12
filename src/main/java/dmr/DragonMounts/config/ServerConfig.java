@@ -34,9 +34,6 @@ public class ServerConfig {
             category = "eggs")
     public static boolean REPLENISH_EGGS = true;
 
-    @Config(key = "allow_hybridization", comment = "Allow hybridization between dragons.", category = "eggs")
-    public static boolean ALLOW_HYBRIDIZATION = true;
-
     @Config(
             key = "habitat_offspring",
             comment = "Offspring from breeding can turn into dragon type matching current environment.",

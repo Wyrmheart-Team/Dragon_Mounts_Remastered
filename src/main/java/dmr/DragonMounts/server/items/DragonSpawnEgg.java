@@ -6,9 +6,8 @@ import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.registry.ModEntities;
 import dmr.DragonMounts.registry.ModItems;
-import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.Variant;
+import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
+import dmr.DragonMounts.types.dragonBreeds.DragonVariant;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -27,11 +26,11 @@ public class DragonSpawnEgg extends DeferredSpawnEggItem {
     public static final String DATA_PRIM_COLOR = "PrimaryColor";
     public static final String DATA_SEC_COLOR = "SecondaryColor";
 
-    public static ItemStack create(IDragonBreed breed) {
+    public static ItemStack create(DragonBreed breed) {
         return create(breed, null);
     }
 
-    public static ItemStack create(IDragonBreed breed, Variant variant) {
+    public static ItemStack create(DragonBreed breed, DragonVariant variant) {
         var id = breed.getId();
 
         ItemStack stack = new ItemStack(ModItems.DRAGON_SPAWN_EGG.get());
@@ -76,16 +75,6 @@ public class DragonSpawnEgg extends DeferredSpawnEggItem {
 
     @Override
     public Component getName(ItemStack stack) {
-        if (stack.has(ModComponents.DRAGON_BREED)) {
-            var breed = DragonBreedsRegistry.getDragonBreed(stack.get(ModComponents.DRAGON_BREED));
-            if (breed instanceof DragonHybridBreed hybridBreed) {
-                var par1 = hybridBreed.parent1.getName().getString();
-                var par2 = hybridBreed.parent2.getName().getString();
-                var langKey = String.join(".", ModItems.DRAGON_SPAWN_EGG.get().getDescriptionId(), "hybrid");
-                return Component.translatable(langKey, par1, par2);
-            }
-        }
-
         var customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
 
         var tag = customData.copyTag();

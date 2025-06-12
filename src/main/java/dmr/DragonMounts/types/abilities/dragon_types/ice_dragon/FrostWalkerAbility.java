@@ -17,12 +17,7 @@ public class FrostWalkerAbility implements Ability {
     public void initialize(TameableDragonEntity dragon) {
         dragon.setPathfindingMalus(PathType.WATER, 0);
     }
-
-    @Override
-    public void close(TameableDragonEntity dragon) {
-        dragon.setPathfindingMalus(PathType.WATER, PathType.WATER.getMalus());
-    }
-
+    
     @Override
     public void onMove(TameableDragonEntity dragon) {
         if (!dragon.level.isClientSide() && dragon.isAdult()) {

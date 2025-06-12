@@ -5,8 +5,7 @@ import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.server.advancement.HatchTrigger;
 import dmr.DragonMounts.server.items.DragonEggItemBlock;
 import dmr.DragonMounts.server.items.DragonSpawnEgg;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
-import java.util.ArrayList;
+import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
@@ -33,44 +32,8 @@ public class ModAdvancements {
         };
 
         var origMap = new HashMap<>(manager.advancements);
-        var main = manager.get(DMR.id("main"));
-
-        List<ItemPredicate> hybridStacks = new ArrayList<>();
-
-        for (IDragonBreed breed : DragonBreedsRegistry.getDragonBreeds()) {
-            if (!breed.isHybrid() || breed.getLootTable().isEmpty()) {
-                continue;
-            }
-
-            var predicate = ItemPredicate.Builder.item()
-                    .of(ModItems.DRAGON_EGG_BLOCK_ITEM.get())
-                    .hasComponents(DataComponentPredicate.builder()
-                            .expect(ModComponents.DRAGON_BREED.get(), breed.getId())
-                            .build())
-                    .build();
-
-            hybridStacks.add(predicate);
-        }
-
-        var findHybrid = Builder.advancement()
-                .parent(main)
-                .display(
-                        DragonEggItemBlock.getDragonEggStack(DragonBreedsRegistry.getDragonBreed("amethyst")),
-                        Component.translatable("dmr.advancements.find_hybrid_egg.title"),
-                        Component.translatable("dmr.advancements.find_hybrid_egg.description"),
-                        null,
-                        AdvancementType.TASK,
-                        true,
-                        true,
-                        false)
-                .addCriterion(
-                        "obtained_hybrid_egg", TriggerInstance.hasItems(hybridStacks.toArray(new ItemPredicate[0])))
-                .build(DMR.id("find_hybrid"));
-
-        origMap.put(DMR.id("find_hybrid"), findHybrid);
-
-        for (IDragonBreed breed : DragonBreedsRegistry.getDragonBreeds()) {
-            if (breed.isHybrid() || breed.getLootTable().isEmpty()) {
+        for (DragonBreed breed : DragonBreedsRegistry.getDragonBreeds()) {
+            if (breed.getLootTable().isEmpty()) {
                 continue;
             }
 

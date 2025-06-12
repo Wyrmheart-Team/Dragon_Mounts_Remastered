@@ -4,7 +4,6 @@ import dmr.DragonMounts.registry.DragonArmorRegistry;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.gametest.framework.GameTest;
@@ -51,7 +50,7 @@ public class DataPackTests {
         DragonBreedsRegistry.register(testBreed);
 
         // Verify the breed was registered
-        IDragonBreed registeredBreed = DragonBreedsRegistry.getDragonBreed("test_breed");
+        DragonBreed registeredBreed = DragonBreedsRegistry.getDragonBreed("test_breed");
         if (registeredBreed == null) {
             helper.fail("Test breed not found in registry after registration");
         }
@@ -125,7 +124,7 @@ public class DataPackTests {
         testArmor.setId("test_armor");
 
         // Update the registries with completely new collections
-        List<IDragonBreed> breeds = new ArrayList<>();
+        List<DragonBreed> breeds = new ArrayList<>();
         breeds.add(testBreed);
         DragonBreedsRegistry.setBreeds(breeds);
 
@@ -143,7 +142,7 @@ public class DataPackTests {
         }
 
         // Verify the specific items can be retrieved
-        IDragonBreed registeredBreed = DragonBreedsRegistry.getDragonBreed("test_breed");
+        DragonBreed registeredBreed = DragonBreedsRegistry.getDragonBreed("test_breed");
         if (registeredBreed == null) {
             helper.fail("Test breed not found in registry");
         }
@@ -154,7 +153,7 @@ public class DataPackTests {
         }
 
         // Restore the original registries to avoid affecting other tests
-        List<IDragonBreed> defaultBreeds = new ArrayList<>();
+        List<DragonBreed> defaultBreeds = new ArrayList<>();
         defaultBreeds.add(DragonBreedsRegistry.getDefault());
         DragonBreedsRegistry.setBreeds(defaultBreeds);
 

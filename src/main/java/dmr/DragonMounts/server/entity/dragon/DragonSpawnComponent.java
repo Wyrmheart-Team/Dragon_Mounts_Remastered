@@ -1,8 +1,8 @@
 package dmr.DragonMounts.server.entity.dragon;
 
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.Variant;
+import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
+import dmr.DragonMounts.types.dragonBreeds.DragonVariant;
 import dmr.DragonMounts.util.BreedingUtils;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -63,11 +63,11 @@ abstract class DragonSpawnComponent extends DragonAudioComponent {
     }
 
     public static class DragonGroupData extends AgeableMob.AgeableMobGroupData {
-        public final IDragonBreed breed;
-        public final Variant variant;
+        public final DragonBreed breed;
+        public final DragonVariant variant;
         public UUID groupId;
 
-        public DragonGroupData(IDragonBreed breed, Variant variant) {
+        public DragonGroupData(DragonBreed breed, DragonVariant variant) {
             super(true);
             this.breed = breed;
             this.variant = variant;
@@ -107,7 +107,7 @@ abstract class DragonSpawnComponent extends DragonAudioComponent {
                             .toList();
                     // Get random breed from the list of breeds with the same value
                     var breed = breeds.get(random.nextInt(breeds.size())).getValue();
-                    Variant variant = null;
+                    DragonVariant variant = null;
                     setBreed(breed);
 
                     if (!breed.getVariants().isEmpty() && random.nextFloat() < 0.2f) {

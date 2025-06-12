@@ -1,7 +1,5 @@
 package dmr.DragonMounts.server.blocks;
 
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
-
 import dmr.DragonMounts.ModConstants.NBTConstants;
 import dmr.DragonMounts.config.ClientConfig;
 import dmr.DragonMounts.config.ServerConfig;
@@ -10,9 +8,7 @@ import dmr.DragonMounts.registry.ModBlockEntities;
 import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
 import dmr.DragonMounts.server.items.DragonEggItemBlock;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.Variant;
-import java.util.Objects;
+import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
@@ -48,6 +44,10 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Vector3f;
 
+import java.util.Objects;
+
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
+
 public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWaterloggedBlock {
 
     public static final BooleanProperty HATCHING = BooleanProperty.create("hatching");
@@ -74,25 +74,9 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
             var hatchTime =
                     pStack.getOrDefault(ModComponents.EGG_HATCH_TIME, ServerConfig.HATCH_TIME_CONFIG.intValue());
             var variantId = pStack.get(ModComponents.DRAGON_VARIANT);
-
-            if (ServerConfig.ENABLE_RANDOM_STATS) {
-                var healthAttribute = pStack.get(ModComponents.DRAGON_HEALTH_ATTRIBUTE);
-                var speedAttribute = pStack.get(ModComponents.DRAGON_MOVEMENT_SPEED_ATTRIBUTE);
-                var damageAttribute = pStack.get(ModComponents.DRAGON_ATTACK_ATTRIBUTE);
-
-                if (healthAttribute != null) {
-                    e.setHealthAttribute(healthAttribute);
-                }
-
-                if (speedAttribute != null) {
-                    e.setSpeedAttribute(speedAttribute);
-                }
-
-                if (damageAttribute != null) {
-                    e.setDamageAttribute(damageAttribute);
-                }
-            }
-
+            var eggTag = pStack.get(ModComponents.EGG_OUTCOME);
+            
+            e.setDragonOutcomeTag(eggTag);
             e.setOwner(pPlacer.getUUID().toString());
 
             if (variantId != null) {
@@ -134,7 +118,7 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
         var breedId = level.getBlockEntity(pos) instanceof DMREggBlockEntity e ? e.getBreedId() : null;
         var variantId = level.getBlockEntity(pos) instanceof DMREggBlockEntity e ? e.getVariantId() : null;
 
-        IDragonBreed breed = DragonBreedsRegistry.getDragonBreed(breedId);
+        DragonBreed breed = DragonBreedsRegistry.getDragonBreed(breedId);
         var breedVariant = breed.getVariants().stream()
                 .filter(variant -> variant.id().equals(variantId))
                 .findFirst()
@@ -224,22 +208,7 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
             falling(entity);
         }
     }
-
-    public static DMREggBlockEntity place(
-            ServerLevel level, BlockPos pos, BlockState state, IDragonBreed breed, Variant variant) {
-        level.setBlock(pos, state, Block.UPDATE_ALL);
-        var data = (DMREggBlockEntity) level.getBlockEntity(pos);
-
-        if (breed == null) {
-            throw new IllegalArgumentException("Breed cannot be null");
-        }
-
-        data.setBreed(breed);
-        data.setVariantId(variant != null ? variant.id() : null);
-        data.setHatchTime(breed.getHatchTime());
-        return data;
-    }
-
+    
     @Override
     public void animateTick(BlockState pState, Level pLevel, BlockPos pPos, RandomSource random) {
         if (pState.getValue(HATCHING) && pLevel.getBlockEntity(pPos) instanceof DMREggBlockEntity e) {
@@ -249,7 +218,7 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
         }
     }
 
-    public void addHatchingParticles(IDragonBreed breed, Level level, BlockPos pos, RandomSource random) {
+    public void addHatchingParticles(DragonBreed breed, Level level, BlockPos pos, RandomSource random) {
         double px = pos.getX() + random.nextDouble();
         double py = pos.getY() + random.nextDouble();
         double pz = pos.getZ() + random.nextDouble();
@@ -261,7 +230,7 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
         spawnHatchingParticle(level, pos, random, px, py, pz, ox, oy, oz, particle);
     }
 
-    public static ParticleOptions getHatchingParticles(IDragonBreed breed, RandomSource random) {
+    public static ParticleOptions getHatchingParticles(DragonBreed breed, RandomSource random) {
         if (breed.getHatchParticles() != null) {
             return breed.getHatchParticles();
         }
@@ -269,7 +238,7 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
         return dustParticleFor(breed, random);
     }
 
-    public static DustParticleOptions dustParticleFor(IDragonBreed breed, RandomSource random) {
+    public static DustParticleOptions dustParticleFor(DragonBreed breed, RandomSource random) {
         var vec = Vec3.fromRGB24(random.nextDouble() < 0.75 ? breed.getPrimaryColor() : breed.getSecondaryColor());
         return new DustParticleOptions(new Vector3f((float) vec.x, (float) vec.y, (float) vec.z), 1);
     }

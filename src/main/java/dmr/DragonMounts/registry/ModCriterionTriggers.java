@@ -23,8 +23,6 @@ public class ModCriterionTriggers {
     public static final Supplier<HatchCountTrigger> HATCH_COUNT_TRIGGER =
             CRITERION_TRIGGERS.register("hatch_count", HatchCountTrigger::new);
 
-    public static final Supplier<CustomTrigger> IS_HYBRID_HATCH_TRIGGER = register("hatch_hybrid_dragon_egg");
-
     public static Supplier<CustomTrigger> register(String name) {
         return CRITERION_TRIGGERS.register(name, () -> new CustomTrigger(name));
     }

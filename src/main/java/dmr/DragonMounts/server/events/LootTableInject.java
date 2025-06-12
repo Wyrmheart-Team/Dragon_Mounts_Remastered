@@ -5,10 +5,10 @@ import dmr.DragonMounts.registry.DragonArmorRegistry;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.registry.ModItems;
+import dmr.DragonMounts.types.LootTableEntry;
 import dmr.DragonMounts.types.armor.DragonArmor;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.LootTableEntry;
-import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.Variant;
+import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
+import dmr.DragonMounts.types.dragonBreeds.DragonVariant;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.LevelAccessor;
@@ -28,9 +28,7 @@ public class LootTableInject {
     public static void firstLoadInjectBreeds(LevelAccessor level) {
         var server = level.getServer();
         if (server != null) {
-            for (IDragonBreed breed : DragonBreedsRegistry.getDragonBreeds()) {
-                if (breed.isHybrid()) continue;
-
+            for (DragonBreed breed : DragonBreedsRegistry.getDragonBreeds()) {
                 for (LootTableEntry entry : breed.getLootTable()) {
                     var newTableKey = ResourceKey.create(Registries.LOOT_TABLE, entry.table());
                     var table = server.reloadableRegistries().getLootTable(newTableKey);
@@ -83,7 +81,7 @@ public class LootTableInject {
         }
     }
 
-    public static LootPool injectEggLoot(IDragonBreed breed, LootTableEntry entry, Variant variant) {
+    public static LootPool injectEggLoot(DragonBreed breed, LootTableEntry entry, DragonVariant variant) {
         var lootItemBuilder = LootItem.lootTableItem(ModItems.DRAGON_EGG_BLOCK_ITEM.get())
                 .apply(SetComponentsFunction.setComponent(ModComponents.DRAGON_BREED.get(), breed.getId()));
         if (variant != null) {
@@ -115,9 +113,7 @@ public class LootTableInject {
 
     @SubscribeEvent
     public static void onLootLoad(LootTableLoadEvent evt) {
-        for (IDragonBreed breed : DragonBreedsRegistry.getDragonBreeds()) {
-            if (breed.isHybrid()) continue;
-
+        for (DragonBreed breed : DragonBreedsRegistry.getDragonBreeds()) {
             for (LootTableEntry entry : breed.getLootTable()) {
                 if (evt != null) {
                     if (evt.getName().equals(entry.table())) {
@@ -129,7 +125,7 @@ public class LootTableInject {
 
                         evt.getTable().addPool(pool);
 
-                        for (Variant variant : breed.getVariants()) {
+                        for (DragonVariant variant : breed.getVariants()) {
                             var vPool = injectEggLoot(breed, entry, variant);
 
                             if (evt.getTable().getPool(vPool.getName()) != null) {

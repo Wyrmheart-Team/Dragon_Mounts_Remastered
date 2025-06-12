@@ -7,7 +7,6 @@ import dmr.DragonMounts.client.model.DragonEggModel.Baked;
 import dmr.DragonMounts.config.ClientConfig;
 import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
 import dmr.DragonMounts.server.blocks.DMREggBlock;
-import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
 import java.util.Objects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -57,10 +56,6 @@ public class DragonEggRenderer implements BlockEntityRenderer<DMREggBlockEntity>
                             .asList()
                             .getFirst(),
                     true);
-
-            if (blockEntity.getBreed() != null && blockEntity.getBreed() instanceof DragonHybridBreed hybridBreed) {
-                bakedModel = eggModel.models.getOrDefault(hybridBreed.parent1.getId(), Baked.FALLBACK.get());
-            }
 
             Minecraft.getInstance()
                     .getBlockRenderer()

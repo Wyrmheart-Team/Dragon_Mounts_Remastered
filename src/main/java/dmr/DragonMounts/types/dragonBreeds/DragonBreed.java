@@ -4,9 +4,8 @@ import com.google.gson.annotations.SerializedName;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.DragonBreathRegistry;
-import dmr.DragonMounts.registry.DragonBreedsRegistry;
-import dmr.DragonMounts.registry.ModComponents;
-import dmr.DragonMounts.types.abilities.types.Ability;
+import dmr.DragonMounts.types.LootTableEntry;
+import dmr.DragonMounts.types.abilities.DragonAbilityEntry;
 import dmr.DragonMounts.types.breath.DragonBreathType;
 import dmr.DragonMounts.types.habitats.Habitat;
 import lombok.EqualsAndHashCode;
@@ -18,7 +17,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,48 +25,46 @@ import java.util.Map;
 
 /**
  * Represents a dragon breed with specific attributes, abilities, and characteristics.
- * This class implements the IDragonBreed interface and provides serialization support
- * for loading breed data from JSON files.
+ * This class provides serialization support for loading breed data from JSON files.
  */
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(of = {"id"} )
+@ToString(of = {"id"})
 @Getter
-public class DragonBreed implements IDragonBreed {
+public class DragonBreed {
     private <T> T getValueOrDefault(T value, T defaultValue) {
-        return value != null && (!(value instanceof Number) || ((Number)value).doubleValue() > 0) ? value : defaultValue;
+        return value != null && (!(value instanceof Number) || ((Number) value).doubleValue() > 0)
+                ? value
+                : defaultValue;
     }
-    
+
     @Setter
     private String id;
-    
+
     @SerializedName("ambient_sound")
     private SoundEvent ambientSound;
-    
+
     @SerializedName("death_loot")
     private ResourceLocation deathLootTable;
-    
+
     @SerializedName("hatch_time")
     private int hatchTime = -1;
-    
-    @Override
+
     public int getHatchTime() {
         return getValueOrDefault(hatchTime, ServerConfig.HATCH_TIME_CONFIG.intValue());
     }
 
     @SerializedName("growth_time")
     private int growthTime = -1;
-    
-    @Override
+
     public int getGrowthTime() {
-        return getValueOrDefault(growthTime, (int)(ServerConfig.GROWTH_TIME_CONFIG * 20));
+        return getValueOrDefault(growthTime, (int) (ServerConfig.GROWTH_TIME_CONFIG * 20));
     }
 
     @SerializedName("size_modifier")
     private float sizeModifier = -1;
 
-    @Override
     public float getSizeModifier() {
-        return getValueOrDefault(sizeModifier, (float)ServerConfig.SIZE_MODIFIER);
+        return getValueOrDefault(sizeModifier, (float) ServerConfig.SIZE_MODIFIER);
     }
 
     @SerializedName("primary_color")
@@ -84,20 +80,13 @@ public class DragonBreed implements IDragonBreed {
     public int getSecondaryColor() {
         return secondaryColor == null ? 0 : Integer.parseInt(secondaryColor, 16);
     }
-    
+
     @SerializedName("inventory_texture")
-    private ResourceLocation inventoryTexture;
-    private final ResourceLocation defaultInventoryTexture = ResourceLocation.parse("textures/block/stone.png");
-    
-    @Override
-    public ResourceLocation getInventoryTexture() {
-        return inventoryTexture != null ? inventoryTexture : defaultInventoryTexture;
-    }
-    
+    private ResourceLocation inventoryTexture = ResourceLocation.parse("textures/block/stone.png");
+
     @SerializedName("breath_type")
     private String breathType;
 
-    @Override
     public DragonBreathType getBreathType() {
         return DragonBreathRegistry.getBreathType(breathType);
     }
@@ -107,13 +96,13 @@ public class DragonBreed implements IDragonBreed {
 
     @SerializedName("attributes")
     private Map<ResourceLocation, Double> attributes = new HashMap<>();
-    
+
     @SerializedName("habitats")
     private List<Habitat> habitats = new ArrayList<>();
-    
-    @SerializedName("abilities")
-    private List<Ability> abilities = new ArrayList<>();
-    
+
+    @SerializedName("dragon_abilities")
+    private List<DragonAbilityEntry> abilities = new ArrayList<>();
+
     @SerializedName("taming_items")
     private List<Item> tamingItems = new ArrayList<>();
 
@@ -122,14 +111,13 @@ public class DragonBreed implements IDragonBreed {
 
     @SerializedName("hatch_particles")
     private ParticleOptions hatchParticles;
-    
+
     @SerializedName("accessories")
     private List<String> accessories = new ArrayList<>();
 
     @SerializedName("loot_tables")
     private List<LootTableEntry> lootTable = new ArrayList<>();
-    
-    @Override
+
     public Component getName() {
         return Component.translatable(DMR.MOD_ID + ".dragon_breed." + getId());
     }
@@ -139,50 +127,14 @@ public class DragonBreed implements IDragonBreed {
     }
 
     @SerializedName("model_location")
-    private ResourceLocation dragonModelLocation;
-    
+    private ResourceLocation dragonModelLocation = DMR.id("geo/dragon.geo.json");
+
     @SerializedName("animation_location")
-    private ResourceLocation dragonAnimationLocation;
-    
+    private ResourceLocation dragonAnimationLocation = DMR.id("animations/dragon.animation.json");
+
     @SerializedName("armor_type")
     private String armorTypeId = "default";
-    
+
     @SerializedName("variants")
-    private Variant[] variants;
-    private List<Variant> cachedVariants = null;
-    
-    @Override
-    public List<Variant> getVariants() {
-        if (cachedVariants == null) {
-            cachedVariants = variants != null ? List.of(variants) : List.of();
-        }
-        return List.copyOf(cachedVariants);
-    }
-
-    public static IDragonBreed getDragonType(ItemStack stack) {
-        var breedId = stack.get(ModComponents.DRAGON_BREED);
-        return DragonBreedsRegistry.getDragonBreed(breedId);
-    }
-
-    public static Variant getDragonTypeVariant(ItemStack stack) {
-        var breed = getDragonType(stack);
-        var variantId = stack.get(ModComponents.DRAGON_VARIANT);
-        if (breed != null) {
-            return breed.getVariants().stream()
-                    .filter(variant -> variant.id().equals(variantId))
-                    .findFirst()
-                    .orElse(null);
-        }
-        return null;
-    }
-
-    public static void setDragonType(ItemStack stack, IDragonBreed type) {
-        if (stack == null || type == null) return;
-        stack.set(ModComponents.DRAGON_BREED, type.getId());
-    }
-
-    public static void setDragonTypeVariant(ItemStack stack, IDragonBreed type, Variant variant) {
-        setDragonType(stack, type);
-        stack.set(ModComponents.DRAGON_VARIANT, variant.id());
-    }
+    private List<DragonVariant> variants;
 }

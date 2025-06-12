@@ -2,22 +2,31 @@ package dmr.DragonMounts.server.entity.dragon;
 
 import dmr.DragonMounts.ModConstants.NBTConstants;
 import dmr.DragonMounts.server.entity.DragonAgroState;
-import java.util.UUID;
+import dmr.DragonMounts.server.entity.TameableDragonEntity;
+import dmr.DragonMounts.util.BreedingUtils;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 /**
  * Abstract class that implements core dragon functionality.
  * This is the final layer in the abstract dragon entity hierarchy.
  */
-public abstract class AbstractDragonEntity extends DragonAttributeComponent {
+public abstract class AbstractDragonEntity extends DragonAbilitiesComponent {
 
     protected static final EntityDataAccessor<String> uuidDataAccessor =
             SynchedEntityData.defineId(AbstractDragonEntity.class, EntityDataSerializers.STRING);
@@ -103,5 +112,28 @@ public abstract class AbstractDragonEntity extends DragonAttributeComponent {
      */
     public void setDragonUUID(UUID uuid) {
         entityData.set(uuidDataAccessor, uuid.toString());
+    }
+
+    @Override
+    public SpawnGroupData finalizeSpawn(
+            ServerLevelAccessor accessor,
+            DifficultyInstance difficulty,
+            MobSpawnType spawnType,
+            @Nullable SpawnGroupData spawnGroupData) {
+        finalizeDragon(null, null);
+        return super.finalizeSpawn(accessor, difficulty, spawnType, spawnGroupData);
+    }
+    
+    @Override
+    public void finalizeDragon(@Nullable TameableDragonEntity parent1, @Nullable TameableDragonEntity parent2) {
+        super.finalizeDragon(parent1, parent2);
+        
+        if(parent1 != null && parent2 != null) {
+            // mix the custom names in case both parents have one
+            if (parent1.hasCustomName() && parent2.hasCustomName()) {
+                String babyName = BreedingUtils.generateCustomName(parent1, parent2);
+                setCustomName(Component.literal(babyName));
+            }
+        }
     }
 }
