@@ -1,10 +1,15 @@
 package dmr.DragonMounts.server.entity.dragon;
 
+import static net.minecraft.world.entity.ai.attributes.Attributes.*;
+import static net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED;
+
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
 import dmr.DragonMounts.server.entity.DragonConstants;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
+import java.util.List;
+import java.util.function.Supplier;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -22,12 +27,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.function.Supplier;
-
-import static net.minecraft.world.entity.ai.attributes.Attributes.*;
-import static net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED;
-
 abstract class DragonAttributeComponent extends DragonSpawnComponent {
     protected DragonAttributeComponent(EntityType<? extends TamableAnimal> entityType, Level level) {
         super(entityType, level);
@@ -36,22 +35,30 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
         entityData.set(damageAttribute, (float) Math.random());
         entityData.set(maxScaleAttribute, (float) Math.random());
     }
-    
-    public static final EntityDataAccessor<Float> healthAttribute = SynchedEntityData.defineId(DragonAttributeComponent.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> speedAttribute = SynchedEntityData.defineId(DragonAttributeComponent.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> damageAttribute = SynchedEntityData.defineId(DragonAttributeComponent.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> maxScaleAttribute = SynchedEntityData.defineId(DragonAttributeComponent.class, EntityDataSerializers.FLOAT);
-    
+
+    public static final EntityDataAccessor<Float> healthAttribute =
+            SynchedEntityData.defineId(DragonAttributeComponent.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> speedAttribute =
+            SynchedEntityData.defineId(DragonAttributeComponent.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> damageAttribute =
+            SynchedEntityData.defineId(DragonAttributeComponent.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> maxScaleAttribute =
+            SynchedEntityData.defineId(DragonAttributeComponent.class, EntityDataSerializers.FLOAT);
+
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor accessor, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+    public SpawnGroupData finalizeSpawn(
+            ServerLevelAccessor accessor,
+            DifficultyInstance difficulty,
+            MobSpawnType spawnType,
+            @Nullable SpawnGroupData spawnGroupData) {
         entityData.set(healthAttribute, (float) Math.random());
         entityData.set(speedAttribute, (float) Math.random());
         entityData.set(damageAttribute, (float) Math.random());
         entityData.set(maxScaleAttribute, (float) Math.random());
-        
+
         return super.finalizeSpawn(accessor, difficulty, spawnType, spawnGroupData);
     }
-    
+
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
@@ -60,7 +67,7 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
         builder.define(damageAttribute, 0f);
         builder.define(maxScaleAttribute, 0f);
     }
-    
+
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(MOVEMENT_SPEED, DragonConstants.BASE_SPEED_GROUND)
@@ -92,12 +99,17 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
         {
             var randomStatsHealth = new AttributeModifier(
                     RANDOM_STATS_MODIFIER,
-                    upperLower(entityData.get(healthAttribute), ServerConfig.LOWER_MAX_HEALTH, ServerConfig.UPPER_MAX_HEALTH),
+                    upperLower(
+                            entityData.get(healthAttribute),
+                            ServerConfig.LOWER_MAX_HEALTH,
+                            ServerConfig.UPPER_MAX_HEALTH),
                     Operation.ADD_VALUE);
             var healthInstance = getAttribute(MAX_HEALTH);
 
-            if(!healthInstance.hasModifier(RANDOM_STATS_MODIFIER) || healthInstance.getModifier(RANDOM_STATS_MODIFIER).amount() != randomStatsHealth.amount()) {
-                if (healthInstance.hasModifier(RANDOM_STATS_MODIFIER)) healthInstance.removeModifier(RANDOM_STATS_MODIFIER);
+            if (!healthInstance.hasModifier(RANDOM_STATS_MODIFIER)
+                    || healthInstance.getModifier(RANDOM_STATS_MODIFIER).amount() != randomStatsHealth.amount()) {
+                if (healthInstance.hasModifier(RANDOM_STATS_MODIFIER))
+                    healthInstance.removeModifier(RANDOM_STATS_MODIFIER);
                 healthInstance.addTransientModifier(randomStatsHealth);
             }
         }
@@ -108,9 +120,11 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
                     upperLower(entityData.get(damageAttribute), ServerConfig.LOWER_DAMAGE, ServerConfig.UPPER_DAMAGE),
                     Operation.ADD_VALUE);
             var damageInstance = getAttribute(ATTACK_DAMAGE);
-            
-            if(!damageInstance.hasModifier(RANDOM_STATS_MODIFIER) || damageInstance.getModifier(RANDOM_STATS_MODIFIER).amount() != randomStatsDamage.amount()) {
-                if (damageInstance.hasModifier(RANDOM_STATS_MODIFIER)) damageInstance.removeModifier(RANDOM_STATS_MODIFIER);
+
+            if (!damageInstance.hasModifier(RANDOM_STATS_MODIFIER)
+                    || damageInstance.getModifier(RANDOM_STATS_MODIFIER).amount() != randomStatsDamage.amount()) {
+                if (damageInstance.hasModifier(RANDOM_STATS_MODIFIER))
+                    damageInstance.removeModifier(RANDOM_STATS_MODIFIER);
                 damageInstance.addTransientModifier(randomStatsDamage);
             }
         }
@@ -121,9 +135,11 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
                     upperLower(entityData.get(speedAttribute), ServerConfig.LOWER_SPEED, ServerConfig.UPPER_SPEED),
                     Operation.ADD_VALUE);
             var speedInstance = getAttribute(MOVEMENT_SPEED);
-            
-            if(!speedInstance.hasModifier(RANDOM_STATS_MODIFIER) || speedInstance.getModifier(RANDOM_STATS_MODIFIER).amount() != randomStatsSpeed.amount()) {
-                if (speedInstance.hasModifier(RANDOM_STATS_MODIFIER)) speedInstance.removeModifier(RANDOM_STATS_MODIFIER);
+
+            if (!speedInstance.hasModifier(RANDOM_STATS_MODIFIER)
+                    || speedInstance.getModifier(RANDOM_STATS_MODIFIER).amount() != randomStatsSpeed.amount()) {
+                if (speedInstance.hasModifier(RANDOM_STATS_MODIFIER))
+                    speedInstance.removeModifier(RANDOM_STATS_MODIFIER);
                 speedInstance.addTransientModifier(randomStatsSpeed);
             }
         }
@@ -139,8 +155,9 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
             AttributeInstance instance = getAttribute(attribute);
             if (instance == null) continue;
 
-            if(!instance.hasModifier(SCALE_MODIFIER) || instance.getModifier(SCALE_MODIFIER).amount() != mod.amount()) {
-                if(instance.hasModifier(SCALE_MODIFIER)) instance.removeModifier(SCALE_MODIFIER);
+            if (!instance.hasModifier(SCALE_MODIFIER)
+                    || instance.getModifier(SCALE_MODIFIER).amount() != mod.amount()) {
+                if (instance.hasModifier(SCALE_MODIFIER)) instance.removeModifier(SCALE_MODIFIER);
                 instance.addTransientModifier(mod);
             }
         }
@@ -149,7 +166,7 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
     private void setBaseValue(Holder<Attribute> attribute, double value) {
         AttributeInstance instance = getAttribute(attribute);
         if (instance == null) return;
-        if(instance.getBaseValue() != value) instance.setBaseValue(value);
+        if (instance.getBaseValue() != value) instance.setBaseValue(value);
     }
 
     public void setEggBreedAttributes(TameableDragonEntity mate, Supplier<DMREggBlockEntity> eggBlockEntitySupplier) {
@@ -165,22 +182,22 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
         var highestDamage = Math.max(entityData.get(damageAttribute), mate.entityData.get(damageAttribute));
         eggBlockEntitySupplier.get().setDamageAttribute(randomUpperLower(lowestDamage, highestDamage));
     }
-    
+
     public void setHatchedAttributes(DMREggBlockEntity eggBlockEntity) {
-        entityData.set(healthAttribute, (float)eggBlockEntity.getHealthAttribute());
-        entityData.set(speedAttribute, (float)eggBlockEntity.getSpeedAttribute());
-        entityData.set(damageAttribute, (float)eggBlockEntity.getDamageAttribute());
-        entityData.set(maxScaleAttribute, (float)eggBlockEntity.getMaxScaleAttribute());
+        entityData.set(healthAttribute, (float) eggBlockEntity.getHealthAttribute());
+        entityData.set(speedAttribute, (float) eggBlockEntity.getSpeedAttribute());
+        entityData.set(damageAttribute, (float) eggBlockEntity.getDamageAttribute());
+        entityData.set(maxScaleAttribute, (float) eggBlockEntity.getMaxScaleAttribute());
     }
-    
+
     private int upperLower(double value, int lower, int upper) {
-        return (int)Math.round((value * ((double)upper - (double)lower)) + (double)lower);
+        return (int) Math.round((value * ((double) upper - (double) lower)) + (double) lower);
     }
-    
+
     private double randomUpperLower(int lower, int upper) {
         return upperLower(Math.random(), lower, upper);
     }
-    
+
     private double upperLower(double value, double lower, double upper) {
         return (value * (upper - lower)) + lower;
     }

@@ -4,16 +4,15 @@ import com.google.gson.annotations.SerializedName;
 import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.types.breath.DragonBreathType;
 import dmr.DragonMounts.types.habitats.Habitat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class DragonHybridBreed implements IDragonBreed {
 
@@ -35,12 +34,12 @@ public class DragonHybridBreed implements IDragonBreed {
                 parent1.getName().getString(),
                 parent2.getName().getString());
     }
-    
+
     @Override
     public ResourceLocation getInventoryTexture() {
         return parent1.getInventoryTexture();
     }
-    
+
     @Override
     public ResourceLocation getResourceLocation() {
         return parent1.getResourceLocation() != null ? parent1.getResourceLocation() : parent2.getResourceLocation();
