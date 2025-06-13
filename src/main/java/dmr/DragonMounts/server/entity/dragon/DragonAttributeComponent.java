@@ -191,7 +191,14 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
     }
 
     private int upperLower(double value, int lower, int upper) {
-        return (int) Math.round((value * ((double) upper - (double) lower)) + (double) lower);
+        if (upper < lower) {
+            throw new IllegalArgumentException("Upper bound must be greater than or equal to lower bound.");
+        }
+        double result = (value * ((double) upper - (double) lower)) + (double) lower;
+        if (result > Integer.MAX_VALUE || result < Integer.MIN_VALUE) {
+            throw new ArithmeticException("Result exceeds valid range for integers.");
+        }
+        return (int) Math.round(result);
     }
 
     private double randomUpperLower(int lower, int upper) {
