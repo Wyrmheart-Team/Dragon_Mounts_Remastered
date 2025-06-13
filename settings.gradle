@@ -13,13 +13,13 @@ pluginManagement {
 
     plugins {
         id 'net.neoforged.moddev' version '2.0.93'
-        id 'net.neoforged.moddev.repositories' version '2.0.72'
+        id 'net.neoforged.moddev.repositories' version '2.0.93'
     }
 }
 
 plugins {
     id 'net.neoforged.moddev.repositories'
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
 }
 
 dependencyResolutionManagement {
