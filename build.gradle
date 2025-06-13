@@ -3,7 +3,7 @@ import org.slf4j.event.Level
 plugins {
     id 'java-library'
     id 'idea'
-    id "io.freefair.lombok" version "8.10"
+    id "io.freefair.lombok" version "8.13.1"
     id "net.neoforged.moddev"
     id 'com.diffplug.spotless' version '7.0.3'
 }
