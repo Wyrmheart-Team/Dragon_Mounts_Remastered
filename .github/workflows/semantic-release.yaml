@@ -1,5 +1,10 @@
 name: Run semantic release
 
+permissions:
+  contents: read
+  issues: write
+  packages: write
+
 on:
   workflow_call:
     inputs:
