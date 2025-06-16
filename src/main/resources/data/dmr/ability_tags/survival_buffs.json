@@ -1,5 +1,4 @@
 {
-  "id": "survival_buffs",
   "abilities": [
     {
       "ability": "health_regen",
