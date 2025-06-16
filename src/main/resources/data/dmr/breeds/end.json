@@ -17,6 +17,9 @@
   ],
   "dragon_abilities": [
     {
+      "ability": "#common_abilities"
+    },
+    {
       "ability": "ender_cloak",
       "chance": 0.5
     },

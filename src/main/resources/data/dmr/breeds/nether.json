@@ -4,6 +4,9 @@
   },
   "dragon_abilities": [
     {
+      "ability": "#common_abilities"
+    },
+    {
       "ability": "infernal_pact",
       "chance": 0.5
     },

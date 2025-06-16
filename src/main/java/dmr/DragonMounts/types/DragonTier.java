@@ -5,13 +5,16 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 @Getter
 public enum DragonTier {
     COMMON(0, ChatFormatting.WHITE, 1.0, 2),
-    UNCOMMON(1, ChatFormatting.GREEN, 0.3, 3),
-    RARE(2, ChatFormatting.BLUE, 0.1, 4),
-    EPIC(3, ChatFormatting.DARK_PURPLE, 0.03, 5),
-    LEGENDARY(4, ChatFormatting.GOLD, 0.01, 6);
+    UNCOMMON(1, ChatFormatting.GREEN, 0.5, 3),
+    RARE(2, ChatFormatting.BLUE, 0.25, 4),
+    EPIC(3, ChatFormatting.DARK_PURPLE, 0.1, 5),
+    LEGENDARY(4, ChatFormatting.GOLD, 0.05, 6);
 
     private final int level;
     private final ChatFormatting color;
@@ -30,15 +33,13 @@ public enum DragonTier {
     }
 
     public static DragonTier getRandomTier() {
-        double totalChance = 0;
-        for (DragonTier tier : values()) {
-            totalChance += tier.getSpawnChance();
-        }
-        double random = (Math.random() * totalChance);
-        double cumulativeChance = 0;
-        for (DragonTier tier : values()) {
-            cumulativeChance += tier.getSpawnChance();
-            if (random <= cumulativeChance) {
+        double random = Math.random();
+        
+        var tiers = Arrays.asList(values());
+        Collections.reverse(tiers);
+        
+        for (DragonTier tier : tiers) {
+            if (random <= tier.getSpawnChance()) {
                 return tier;
             }
         }

@@ -2,6 +2,10 @@ package dmr.tests;
 
 import dmr.DMRTestConstants;
 import dmr.DragonMounts.registry.*;
+import dmr.DragonMounts.registry.block.ModBlocks;
+import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
+import dmr.DragonMounts.registry.entity.ModEntities;
+import dmr.DragonMounts.registry.item.ModItems;
 import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
 import dmr.DragonMounts.server.blocks.DMREggBlock;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;

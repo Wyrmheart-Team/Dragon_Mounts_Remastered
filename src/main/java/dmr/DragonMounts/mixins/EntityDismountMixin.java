@@ -2,8 +2,8 @@ package dmr.DragonMounts.mixins;
 
 import dmr.DragonMounts.common.capability.DragonOwnerCapability;
 import dmr.DragonMounts.network.packets.DismountDragonPacket;
-import dmr.DragonMounts.registry.ModCapabilities;
-import dmr.DragonMounts.registry.ModMemoryModuleTypes;
+import dmr.DragonMounts.registry.entity.ModCapabilities;
+import dmr.DragonMounts.registry.entity.ModMemoryModuleTypes;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;

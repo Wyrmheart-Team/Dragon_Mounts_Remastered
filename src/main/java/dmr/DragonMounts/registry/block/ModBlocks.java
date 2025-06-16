@@ -1,4 +1,4 @@
-package dmr.DragonMounts.registry;
+package dmr.DragonMounts.registry.block;
 
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.server.blocks.BlankEggBlock;

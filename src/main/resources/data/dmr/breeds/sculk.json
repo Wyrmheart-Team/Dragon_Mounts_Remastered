@@ -13,6 +13,9 @@
   ],
   "dragon_abilities": [
     {
+      "ability": "#common_abilities"
+    },
+    {
       "ability": "echo_sense",
       "chance": 0.5
     }

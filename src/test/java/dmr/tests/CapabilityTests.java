@@ -1,7 +1,7 @@
 package dmr.tests;
 
-import dmr.DragonMounts.registry.ModCapabilities;
-import dmr.DragonMounts.registry.ModEntities;
+import dmr.DragonMounts.registry.entity.ModCapabilities;
+import dmr.DragonMounts.registry.entity.ModEntities;
 import dmr.DragonMounts.util.PlayerStateUtils;
 import java.util.List;
 import net.minecraft.gametest.framework.GameTest;

@@ -2,6 +2,7 @@ package dmr.DragonMounts.types.abilities;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Represents an entry in a dragon breed's ability list.
@@ -9,9 +10,11 @@ import lombok.Getter;
  */
 @Getter
 public class DragonAbilityEntry {
+    
+    //TODO: Add ability groups to be able to have reuseable groups of abilities
     @SerializedName("ability")
-    private String ability;
+    private ResourceLocation ability;
 
     @SerializedName("chance")
-    private float chance;
+    private float chance = 1.0f;
 }

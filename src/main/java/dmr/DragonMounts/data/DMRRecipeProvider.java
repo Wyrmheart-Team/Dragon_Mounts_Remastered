@@ -2,8 +2,8 @@ package dmr.DragonMounts.data;
 
 import com.google.common.collect.ImmutableMap;
 import dmr.DragonMounts.DMR;
-import dmr.DragonMounts.registry.ModBlocks;
-import dmr.DragonMounts.registry.ModItems;
+import dmr.DragonMounts.registry.block.ModBlocks;
+import dmr.DragonMounts.registry.item.ModItems;
 import dmr.DragonMounts.server.items.DragonWhistleItem;
 import java.util.List;
 import java.util.Map;

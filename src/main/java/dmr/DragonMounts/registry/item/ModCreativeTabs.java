@@ -1,6 +1,9 @@
-package dmr.DragonMounts.registry;
+package dmr.DragonMounts.registry.item;
 
 import dmr.DragonMounts.DMR;
+import dmr.DragonMounts.registry.ModComponents;
+import dmr.DragonMounts.registry.datapack.DragonArmorRegistry;
+import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
 import dmr.DragonMounts.server.items.*;
 import dmr.DragonMounts.types.DragonTier;
 import dmr.DragonMounts.types.armor.DragonArmor;

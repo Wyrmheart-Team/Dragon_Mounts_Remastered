@@ -1,6 +1,9 @@
 {
   "dragon_abilities": [
     {
+      "ability": "#common_abilities"
+    },
+    {
       "ability": "ember_aura",
       "chance": 0.5
     },

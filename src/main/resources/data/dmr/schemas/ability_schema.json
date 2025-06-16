@@ -1,8 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/ability_schema.json",
+  "$version": "1.0.0",
+  "$comment": "This schema is used to validate dragon ability JSON files in the data/dmr/abilities directory. Each ability defines a special power or trait that can be assigned to dragon breeds.",
   "title": "Dragon Ability Schema",
   "description": "Schema for defining dragon abilities that can be assigned to dragon breeds",
   "type": "object",
+  "additionalProperties": false,
   "properties": {
     "id": {
       "$ref": "definitions.json#/$defs/identifier",
@@ -18,11 +22,13 @@
       "type": "integer",
       "description": "Maximum tier level this ability can reach. Higher tiers typically provide stronger effects.",
       "minimum": 1,
+      "default": 1,
       "examples": [3, 5]
     },
     "breed_transferable": {
       "type": "boolean",
       "description": "Whether the ability can be transferred to offspring when breeding dragons.",
+      "default": false,
       "examples": [true, false]
     },
     "properties": {

@@ -1,4 +1,4 @@
-package dmr.DragonMounts.registry;
+package dmr.DragonMounts.registry.datapack;
 
 import dmr.DragonMounts.types.armor.DragonArmor;
 import java.util.ArrayList;

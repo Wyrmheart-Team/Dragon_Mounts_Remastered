@@ -2,7 +2,7 @@ package dmr.DragonMounts.server.ai.behaviours;
 
 import com.google.common.collect.ImmutableMap;
 import dmr.DragonMounts.registry.ModAttributes;
-import dmr.DragonMounts.registry.ModMemoryModuleTypes;
+import dmr.DragonMounts.registry.entity.ModMemoryModuleTypes;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.behavior.Behavior;

@@ -1,7 +1,7 @@
 package dmr.DragonMounts.mixins;
 
 import dmr.DragonMounts.common.capability.DragonOwnerCapability;
-import dmr.DragonMounts.registry.ModCapabilities;
+import dmr.DragonMounts.registry.entity.ModCapabilities;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;

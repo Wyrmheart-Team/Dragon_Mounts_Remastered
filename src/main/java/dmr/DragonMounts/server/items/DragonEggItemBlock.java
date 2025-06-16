@@ -3,6 +3,9 @@ package dmr.DragonMounts.server.items;
 import dmr.DragonMounts.ModConstants;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.*;
+import dmr.DragonMounts.registry.block.ModBlocks;
+import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
+import dmr.DragonMounts.registry.item.ModItems;
 import dmr.DragonMounts.types.DragonTier;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.DragonVariant;
@@ -32,9 +35,9 @@ public class DragonEggItemBlock extends BlockItem {
     public static ItemStack getDragonEggStack(DragonBreed type, int count, DragonVariant variant) {
         ItemStack stack = new ItemStack(ModItems.DRAGON_EGG_BLOCK_ITEM.get(), count);
         if (variant != null) {
-            DragonBreathRegistry.setDragonTypeVariant(stack, type, variant);
+            DragonBreedsRegistry.setDragonTypeVariant(stack, type, variant);
         } else {
-            DragonBreathRegistry.setDragonType(stack, type);
+            DragonBreedsRegistry.setDragonType(stack, type);
         }
         return stack;
     }

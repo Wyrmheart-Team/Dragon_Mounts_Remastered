@@ -1,4 +1,4 @@
-package dmr.DragonMounts.registry;
+package dmr.DragonMounts.registry.entity;
 
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.config.ServerConfig;

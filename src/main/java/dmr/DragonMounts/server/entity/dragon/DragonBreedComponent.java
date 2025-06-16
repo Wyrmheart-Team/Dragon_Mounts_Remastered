@@ -1,7 +1,7 @@
 package dmr.DragonMounts.server.entity.dragon;
 
 import dmr.DragonMounts.ModConstants.NBTConstants;
-import dmr.DragonMounts.registry.DragonBreedsRegistry;
+import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.DragonVariant;

@@ -5,6 +5,9 @@ import static dmr.DragonMounts.server.blocks.DMREggBlock.HATCHING;
 import dmr.DragonMounts.ModConstants.NBTConstants;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.*;
+import dmr.DragonMounts.registry.block.ModBlockEntities;
+import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
+import dmr.DragonMounts.registry.entity.ModEntities;
 import dmr.DragonMounts.types.DragonTier;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.util.PlayerStateUtils;
@@ -113,6 +116,10 @@ public class DMREggBlockEntity extends BlockEntity {
     public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
         tickCount++;
         int maxHatchTime = getBreed() == null ? 1 : getBreed().getHatchTime();
+        if (ServerConfig.ENABLE_DRAGON_TIERS) {
+            maxHatchTime = (int) (maxHatchTime * (1 + (getTier().getLevel() * 0.1)));
+        }
+
         int growthStage = (maxHatchTime / 3);
 
         if (tickCount % 20 == 0) {
@@ -156,12 +163,15 @@ public class DMREggBlockEntity extends BlockEntity {
         baby.setBreed(data.getBreed());
         baby.setVariant(data.getVariantId());
 
+        var age = -Math.abs(data.getBreed().getGrowthTime());
         if (ServerConfig.ENABLE_DRAGON_TIERS) {
             baby.setTier(data.getTier());
+            age = (int) -Math.abs(
+                    data.getBreed().getGrowthTime() * (1 + (data.getTier().getLevel() * 0.1)));
         }
 
         baby.setBaby(true);
-        baby.setAge(-Math.abs(data.getBreed().getGrowthTime()));
+        baby.setAge(age);
         baby.setPos(pos.getX(), pos.getY(), pos.getZ());
         baby.setHatched(true);
 

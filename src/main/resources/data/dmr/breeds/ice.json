@@ -1,6 +1,9 @@
 {
   "dragon_abilities": [
     {
+      "ability": "#common_abilities"
+    },
+    {
       "ability": "frost_walker",
       "chance": 0.5
     },

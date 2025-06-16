@@ -26,6 +26,9 @@
   "immunities": ["drown"],
   "dragon_abilities": [
     {
+      "ability": "#common_abilities"
+    },
+    {
       "ability": "aquatic_grace",
       "chance": 0.5
     },

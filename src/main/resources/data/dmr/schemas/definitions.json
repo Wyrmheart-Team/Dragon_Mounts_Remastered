@@ -1,5 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/definitions.json",
+  "$version": "1.0.0",
+  "$comment": "This schema contains common type definitions used by other schemas in the Dragon Mounts Remastered mod. It is not meant to be used directly for validation, but rather referenced by other schemas using $ref.",
   "title": "Dragon Mounts Remastered Definitions",
   "description": "Common type definitions used across multiple schemas in the Dragon Mounts Remastered mod",
   "$defs": {
@@ -136,7 +139,7 @@
       "description": "An entry defining a dragon ability with its chance of occurrence",
       "properties": {
         "ability": {
-          "$ref": "#/definitions/ability",
+          "$ref": "definitions.json#/$defs/ability",
           "description": "The ability this entry refers to"
         },
         "chance": {
@@ -169,7 +172,7 @@
         "description": "A loot table entry with drop chance and quantity range",
         "properties": {
           "table": {
-            "$ref": "#/definitions/loot_table",
+            "$ref": "definitions.json#/$defs/loot_table",
             "description": "Loot table resource location"
           },
           "chance": {
@@ -207,7 +210,7 @@
       "type": "object",
       "description": "Map of attribute identifiers to their values",
       "propertyNames": {
-        "$ref": "#/$defs/attribute"
+        "$ref": "definitions.json#/$defs/attribute"
       },
       "additionalProperties": {
         "type": "number",

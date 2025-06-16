@@ -5,17 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.*;
+import dmr.DragonMounts.registry.datapack.*;
 import dmr.DragonMounts.server.events.LootTableInject;
 import dmr.DragonMounts.types.abilities.DragonAbility;
+import dmr.DragonMounts.types.abilities.DragonAbilityTag;
 import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.types.breath.DragonBreathType;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.util.SchemaValidator;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.function.Consumer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -24,6 +21,12 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 @EventBusSubscriber(modid = DMR.MOD_ID)
 public class DataPackHandler {
@@ -37,6 +40,7 @@ public class DataPackHandler {
         loadData(resourceManager, "armor", DragonArmor.class, DragonArmorRegistry::setArmors);
         loadData(resourceManager, "breath_types", DragonBreathType.class, DragonBreathRegistry::setBreathTypes);
         loadData(resourceManager, "abilities", DragonAbility.class, DragonAbilityRegistry::setAbilityDefinitions);
+        loadData(resourceManager, "ability_tags", DragonAbilityTag.class, DragonAbilityTagRegistry::setAbilityTags);
     }
 
     private static <T extends DatapackEntry> void loadData(
@@ -124,6 +128,8 @@ public class DataPackHandler {
             schemaName = "breath_type_schema";
         } else if (clas == DragonArmor.class) {
             schemaName = "armor_schema";
+        } else if (clas == DragonAbilityTag.class) {
+            schemaName = "ability_tag_schema";
         }
         return schemaName;
     }

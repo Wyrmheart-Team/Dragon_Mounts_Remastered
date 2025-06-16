@@ -1,0 +1,17 @@
+{
+  "id": "survival_buffs",
+  "abilities": [
+    {
+      "ability": "health_regen",
+      "chance": 0.05
+    },
+    {
+      "ability": "healthy",
+      "chance": 0.2
+    },
+    {
+      "ability": "tough_armor",
+      "chance": 0.2
+    }
+  ]
+}

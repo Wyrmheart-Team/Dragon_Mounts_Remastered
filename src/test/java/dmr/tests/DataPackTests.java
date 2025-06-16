@@ -1,7 +1,7 @@
 package dmr.tests;
 
-import dmr.DragonMounts.registry.DragonArmorRegistry;
-import dmr.DragonMounts.registry.DragonBreedsRegistry;
+import dmr.DragonMounts.registry.datapack.DragonArmorRegistry;
+import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
 import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import java.util.ArrayList;

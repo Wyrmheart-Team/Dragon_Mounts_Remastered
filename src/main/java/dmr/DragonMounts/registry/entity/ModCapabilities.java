@@ -1,4 +1,4 @@
-package dmr.DragonMounts.registry;
+package dmr.DragonMounts.registry.entity;
 
 import static dmr.DragonMounts.DMR.MOD_ID;
 

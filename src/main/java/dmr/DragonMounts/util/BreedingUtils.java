@@ -1,6 +1,6 @@
 package dmr.DragonMounts.util;
 
-import dmr.DragonMounts.registry.DragonBreedsRegistry;
+import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.types.habitats.Habitat;
 import java.util.AbstractMap.SimpleEntry;

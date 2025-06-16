@@ -1,8 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/breed_schema.json",
+  "$version": "1.0.0",
+  "$comment": "This schema is used to validate dragon breed JSON files in the data/dmr/breeds directory. Each breed defines a type of dragon with its own characteristics, abilities, and behaviors.",
   "title": "Dragon Breed Schema",
   "description": "Schema for defining dragon breeds with their characteristics, abilities, and behaviors",
   "type": "object",
+  "additionalProperties": false,
   "properties": {
     "ambient_sound": {
       "$ref": "definitions.json#/$defs/sound",
@@ -30,6 +34,7 @@
       "type": "number",
       "description": "Size multiplier applied to the dragon's base dimensions. Values greater than 1.0 make the dragon larger, while values less than 1.0 make it smaller.",
       "minimum": 0,
+      "default": 1.0,
       "examples": [0.8, 1.2]
     },
     "primary_color": {

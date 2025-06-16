@@ -1,4 +1,4 @@
-package dmr.DragonMounts.registry;
+package dmr.DragonMounts.registry.item;
 
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.server.recipes.NetheriteArmorRecipe;

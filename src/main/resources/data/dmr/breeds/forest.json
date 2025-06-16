@@ -1,6 +1,9 @@
 {
   "dragon_abilities": [
     {
+      "ability": "#common_abilities"
+    },
+    {
       "ability": "nature_blessing",
       "chance": 0.5
     },

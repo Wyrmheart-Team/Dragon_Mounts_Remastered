@@ -2,6 +2,8 @@ package dmr.DragonMounts.registry;
 
 import com.google.common.collect.ImmutableMap;
 import dmr.DragonMounts.DMR;
+import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
+import dmr.DragonMounts.registry.item.ModItems;
 import dmr.DragonMounts.server.advancement.HatchTrigger;
 import dmr.DragonMounts.server.items.DragonEggItemBlock;
 import dmr.DragonMounts.server.items.DragonSpawnEgg;

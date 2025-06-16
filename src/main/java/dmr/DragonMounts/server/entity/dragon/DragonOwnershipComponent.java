@@ -2,8 +2,8 @@ package dmr.DragonMounts.server.entity.dragon;
 
 import dmr.DragonMounts.ModConstants.NBTConstants;
 import dmr.DragonMounts.common.handlers.DragonWhistleHandler;
-import dmr.DragonMounts.registry.ModCapabilities;
-import dmr.DragonMounts.registry.ModMemoryModuleTypes;
+import dmr.DragonMounts.registry.entity.ModCapabilities;
+import dmr.DragonMounts.registry.entity.ModMemoryModuleTypes;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.server.worlddata.DragonWorldDataManager;
 import java.util.Objects;

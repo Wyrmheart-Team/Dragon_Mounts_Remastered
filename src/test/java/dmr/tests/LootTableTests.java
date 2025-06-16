@@ -1,6 +1,6 @@
 package dmr.tests;
 
-import dmr.DragonMounts.registry.DragonBreedsRegistry;
+import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
 import dmr.DragonMounts.server.events.LootTableInject;
 import dmr.DragonMounts.types.LootTableEntry;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;

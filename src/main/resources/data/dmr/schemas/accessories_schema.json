@@ -1,20 +1,31 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/accessories_schema.json",
+  "$version": "1.0.0",
+  "$comment": "This schema is used to validate dragon accessory JSON files in the data/dmr/accessories directory. Accessories define visual elements that can be added to dragon models.",
+  "title": "Dragon Accessories Schema",
+  "description": "Schema for defining dragon accessories that can be applied to dragon models to customize their appearance",
   "type": "object",
+  "additionalProperties": false,
   "properties": {
     "bones": {
       "type": "array",
+      "description": "List of bone names in the dragon model that should be visible when this accessory is applied. These bones represent the visual elements of the accessory.",
       "items": {
-        "type": "string"
-      }
+        "type": "string",
+        "description": "Name of a bone in the dragon model"
+      },
+      "examples": [["horn_left", "horn_right"], ["tail_spike_1", "tail_spike_2", "tail_spike_3"]]
     },
     "negativeBones": {
       "type": "array",
+      "description": "List of bone names in the dragon model that should be hidden when this accessory is applied. This can be used to remove default parts of the model that conflict with the accessory.",
       "items": {
-        "type": "string"
-      }
+        "type": "string",
+        "description": "Name of a bone in the dragon model to hide"
+      },
+      "examples": [["default_horn_left", "default_horn_right"], ["default_tail_spike"]]
     }
   },
-  "required": ["bones"],
-  "description": "List of accessories"
+  "required": ["bones"]
 }

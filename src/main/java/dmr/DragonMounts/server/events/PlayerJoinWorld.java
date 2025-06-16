@@ -2,7 +2,7 @@ package dmr.DragonMounts.server.events;
 
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.network.packets.CompleteDataSync;
-import dmr.DragonMounts.registry.ModCapabilities;
+import dmr.DragonMounts.registry.entity.ModCapabilities;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

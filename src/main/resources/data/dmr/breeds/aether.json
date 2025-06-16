@@ -1,6 +1,9 @@
 {
   "dragon_abilities": [
     {
+      "ability": "#common_abilities"
+    },
+    {
       "ability": "quick_flight",
       "chance": 0.5
     }

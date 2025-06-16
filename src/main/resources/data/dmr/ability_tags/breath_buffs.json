@@ -1,0 +1,13 @@
+{
+  "id": "breath_buffs",
+  "abilities": [
+    {
+      "ability": "bad_breath",
+      "chance": 0.3
+    },
+    {
+      "ability": "quick_breath",
+      "chance": 0.05
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 package dmr.DragonMounts.server.blockentities;
 
 import dmr.DragonMounts.network.packets.BlankEggSyncPacket;
-import dmr.DragonMounts.registry.ModBlockEntities;
-import dmr.DragonMounts.registry.ModBlocks;
+import dmr.DragonMounts.registry.block.ModBlockEntities;
+import dmr.DragonMounts.registry.block.ModBlocks;
 import dmr.DragonMounts.util.BreedingUtils;
 import lombok.Getter;
 import lombok.Setter;

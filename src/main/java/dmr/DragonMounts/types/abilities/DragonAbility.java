@@ -2,12 +2,13 @@ package dmr.DragonMounts.types.abilities;
 
 import com.google.gson.annotations.SerializedName;
 import dmr.DragonMounts.types.DatapackEntry;
+import lombok.Getter;
+import net.minecraft.resources.ResourceLocation;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import lombok.Getter;
-import net.minecraft.resources.ResourceLocation;
 
 /**
  * Represents a dragon ability definition loaded from datapacks.

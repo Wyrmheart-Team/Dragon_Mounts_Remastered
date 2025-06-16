@@ -1,9 +1,9 @@
 package dmr.DragonMounts.server.entity.dragon;
 
 import dmr.DragonMounts.network.packets.DragonAgeSyncPacket;
-import dmr.DragonMounts.registry.DragonBreedsRegistry;
-import dmr.DragonMounts.registry.ModBlocks;
-import dmr.DragonMounts.registry.ModEntities;
+import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
+import dmr.DragonMounts.registry.block.ModBlocks;
+import dmr.DragonMounts.registry.entity.ModEntities;
 import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
 import dmr.DragonMounts.server.blocks.DMREggBlock;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;

@@ -2,7 +2,7 @@ package dmr.DragonMounts.server.entity.dragon;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.FLYING_SPEED;
 
-import dmr.DragonMounts.registry.ModMemoryModuleTypes;
+import dmr.DragonMounts.registry.entity.ModMemoryModuleTypes;
 import dmr.DragonMounts.server.ai.DragonBodyController;
 import dmr.DragonMounts.server.ai.DragonMoveController;
 import dmr.DragonMounts.server.ai.navigation.DragonPathNavigation;

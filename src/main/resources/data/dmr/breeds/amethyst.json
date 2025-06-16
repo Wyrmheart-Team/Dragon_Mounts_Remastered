@@ -9,6 +9,9 @@
   ],
   "dragon_abilities": [
     {
+      "ability": "#common_abilities"
+    },
+    {
       "ability": "gem_guard",
       "chance": 0.5
     },

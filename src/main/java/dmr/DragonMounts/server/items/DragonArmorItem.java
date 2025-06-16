@@ -1,7 +1,7 @@
 package dmr.DragonMounts.server.items;
 
 import dmr.DragonMounts.registry.ModComponents;
-import dmr.DragonMounts.registry.ModItems;
+import dmr.DragonMounts.registry.item.ModItems;
 import dmr.DragonMounts.types.armor.DragonArmor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

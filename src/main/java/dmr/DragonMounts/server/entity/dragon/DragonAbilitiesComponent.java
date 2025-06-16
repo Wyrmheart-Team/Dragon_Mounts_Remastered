@@ -1,17 +1,13 @@
 package dmr.DragonMounts.server.entity.dragon;
 
-import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.config.ServerConfig;
-import dmr.DragonMounts.registry.DragonAbilityRegistry;
+import dmr.DragonMounts.registry.datapack.DragonAbilityRegistry;
+import dmr.DragonMounts.registry.datapack.DragonAbilityTagRegistry;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.types.abilities.Ability;
 import dmr.DragonMounts.types.abilities.DragonAbility;
 import dmr.DragonMounts.types.abilities.DragonAbilityEntry;
 import dmr.DragonMounts.util.MiscUtils;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Consumer;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -23,6 +19,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.function.Consumer;
 
 abstract class DragonAbilitiesComponent extends DragonTierComponent {
     protected DragonAbilitiesComponent(EntityType<? extends TamableAnimal> entityType, Level level) {
@@ -105,30 +104,125 @@ abstract class DragonAbilitiesComponent extends DragonTierComponent {
         if (parent1 != null) addParentAbilities.accept(parent1);
         if (parent2 != null) addParentAbilities.accept(parent2);
 
-        Collections.shuffle(possibilities);
-
-        for (DragonAbilityEntry entry : possibilities) {
-            if (abilities.size() >= maxAbilities) break;
-
-            if (Math.random() < entry.getChance()) {
-                DragonAbility definition = DragonAbilityRegistry.getAbilityDefinition(DMR.id(entry.getAbility()));
-                Ability ability = DragonAbilityRegistry.createAbilityInstance(definition);
-
-                if (ability != null) {
-                    ability.onInitialize(getDragon());
-
-                    // Set ability level based on weighted random up to max tier
-                    int maxTier = Math.max(1, definition.getMaxTier());
-                    int level = getWeightedRandomTier(maxTier);
-                    ability.setLevel(level);
-
-                    abilities.add(ability);
-                }
-            }
-        }
+        // Improved ability selection algorithm
+        selectAbilities(abilities, possibilities, maxAbilities, new HashSet<>());
 
         this.abilities.addAll(abilities);
     }
+
+    /**
+     * Selects abilities from the possibilities list based on their individual chances.
+     * This method processes all entries, including nested tags, and adds abilities
+     * based on their adjusted chances.
+     *
+     * @param selectedAbilities The list to add selected abilities to
+     * @param possibilities The list of possible abilities to select from
+     * @param maxAbilities The maximum number of abilities to select
+     * @param processedTags Set of already processed tags to avoid infinite recursion
+     */
+    private void selectAbilities(ArrayList<Ability> selectedAbilities, List<DragonAbilityEntry> possibilities, int maxAbilities, Set<String> processedTags) {
+        if (selectedAbilities.size() >= maxAbilities) return;
+
+        // Create a copy and shuffle to randomize order for equal chances
+        List<DragonAbilityEntry> entries = new ArrayList<>(possibilities);
+        Collections.shuffle(entries);
+
+        // Sort by adjusted chance (higher chance first)
+        entries.sort((a, b) -> Float.compare(
+                calculateAdjustedChance(b.getChance()),
+                calculateAdjustedChance(a.getChance())));
+
+        // Process each entry
+        for (DragonAbilityEntry entry : entries) {
+            if (selectedAbilities.size() >= maxAbilities) break;
+
+            var id = entry.getAbility();
+
+            if (id.getPath().startsWith("#")) {
+                // This is a tag reference, process it recursively
+                String tagName = id.getPath().substring(1);
+                String fullTagId = id.getNamespace() + ":" + tagName;
+
+                // Skip if we've already processed this tag to avoid infinite recursion
+                if (processedTags.contains(fullTagId)) continue;
+
+                // Mark this tag as processed
+                processedTags.add(fullTagId);
+
+                // Get the tag and process its entries
+                var tagId = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), tagName);
+                var abilityTag = DragonAbilityTagRegistry.getAbilityTag(tagId);
+
+                if (abilityTag != null) {
+                    // Recursively process the tag's entries
+                    selectAbilities(selectedAbilities, abilityTag.getAbilities(), 
+                                   maxAbilities, new HashSet<>(processedTags));
+                }
+            } else {
+                // This is a direct ability, try to add it
+                tryAddAbility(selectedAbilities, id, entry.getChance());
+            }
+        }
+    }
+    
+    /**
+     * Tries to add an ability to the list based on its chance.
+     *
+     * @param abilities The list to add the ability to
+     * @param id The ability ID
+     * @param chance The base chance of getting the ability
+     */
+    private void tryAddAbility(ArrayList<Ability> abilities, ResourceLocation id, float chance) {
+        // Adjust chance based on dragon tier
+        float adjustedChance = calculateAdjustedChance(chance);
+        if (Math.random() >= adjustedChance) return;
+
+        // Get the ability definition
+        DragonAbility definition = DragonAbilityRegistry.getAbilityDefinition(id);
+        if (definition == null) return;
+
+        // Create and initialize the ability
+        Ability ability = DragonAbilityRegistry.createAbilityInstance(definition);
+        if (ability == null) return;
+
+        ability.onInitialize(getDragon());
+
+        // Set ability level based on weighted random up to max tier
+        int maxTier = Math.max(1, definition.getMaxTier());
+        int level = getWeightedRandomTier(maxTier);
+        ability.setLevel(level);
+
+        // Add the ability
+        abilities.add(ability);
+    }
+    
+    /**
+     * Calculates an adjusted chance based on the dragon's tier.
+     * At tier 0, chances remain the same.
+     * As tier increases, rare abilities become more common and common abilities become more rare.
+     * At max tier, the probabilities are completely inverted.
+     *
+     * @param baseChance The base chance of getting the ability
+     * @return The adjusted chance based on the dragon's tier
+     */
+    private float calculateAdjustedChance(float baseChance) {
+        if (!ServerConfig.ENABLE_DRAGON_TIERS) return baseChance;
+        
+        // Get the dragon's tier level (0-4)
+        int tierLevel = getDragon().getTier().getLevel();
+        
+        // At tier 0, return the original chance
+        if (tierLevel == 0) return baseChance;
+        
+        // Calculate the inversion factor (0 at tier 0, 1 at max tier)
+        float maxTier = 4.0f; // LEGENDARY is tier 4
+        float inversionFactor = tierLevel / maxTier;
+        
+        // Invert the probability based on the inversion factor
+        // As inversionFactor approaches 1, the result approaches (1 - baseChance)
+        return (1.0f - inversionFactor) * baseChance + inversionFactor * (1.0f - baseChance);
+    }
+
 
     private int calculateMaxAbilities() {
         // Add modifiers from traits
@@ -138,7 +232,8 @@ abstract class DragonAbilitiesComponent extends DragonTierComponent {
 
     /**
      * Generates a weighted random tier between 1 and maxTier.
-     * Higher tiers are less likely to be selected.
+     * The distribution is influenced by the dragon's own tier.
+     * Higher tier dragons are more likely to get higher tier abilities.
      *
      * @param maxTier The maximum tier to generate
      * @return A weighted random tier between 1 and maxTier
@@ -146,9 +241,22 @@ abstract class DragonAbilitiesComponent extends DragonTierComponent {
     private int getWeightedRandomTier(int maxTier) {
         if (maxTier <= 1) return 1;
 
-        // Use a triangular distribution to make higher tiers less likely
+        // Get the dragon's tier level (0-4)
+        int dragonTierLevel = ServerConfig.ENABLE_DRAGON_TIERS ? getDragon().getTier().getLevel() : 0;
+
+        // Calculate a bias factor based on the dragon's tier
+        // Higher tier dragons have a higher bias towards higher ability tiers
+        double tierBias = dragonTierLevel * 0.15; // 0% for COMMON, up to 60% for LEGENDARY
+
+        // Generate a random value with the bias applied
         double random = Math.random();
-        double weightedRandom = Math.sqrt(random) * maxTier;
+
+        // Apply the bias - this shifts the distribution towards higher values for higher tier dragons
+        random = Math.pow(random, 1.0 - tierBias);
+
+        // Scale to the max tier
+        double weightedRandom = random * maxTier;
+
         return Math.max(1, (int) Math.ceil(weightedRandom));
     }
 

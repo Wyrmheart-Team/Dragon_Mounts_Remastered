@@ -1,7 +1,7 @@
 package dmr.DragonMounts.network.packets;
 
 import dmr.DragonMounts.network.AbstractMessage;
-import dmr.DragonMounts.registry.ModCapabilities;
+import dmr.DragonMounts.registry.entity.ModCapabilities;
 import dmr.DragonMounts.util.PlayerStateUtils;
 import lombok.Getter;
 import net.minecraft.nbt.CompoundTag;

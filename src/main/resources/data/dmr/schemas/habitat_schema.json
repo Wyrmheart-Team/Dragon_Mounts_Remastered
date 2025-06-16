@@ -1,5 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/habitat_schema.json",
+  "$version": "1.0.0",
+  "$comment": "This schema is used to define dragon habitats within breed JSON files. Habitats determine where dragons prefer to live, breed, and spawn. Each habitat type has different properties that affect how dragons interact with their environment.",
   "title": "Dragon Habitat Schema",
   "description": "Schema for defining dragon habitats that determine where dragons prefer to live and breed",
   "type": "object",
@@ -228,7 +231,7 @@
         "required_habitats": {
           "type": "array",
           "items": {
-            "$ref": "#",
+            "$ref": "habitat_schema.json",
             "description": "A habitat definition that must be satisfied. If any required habitat returns 0 points, the entire picky habitat returns 0 points."
           },
           "description": "List of habitat conditions that must all be satisfied for this habitat to be valid. All conditions must be met (AND logic).",

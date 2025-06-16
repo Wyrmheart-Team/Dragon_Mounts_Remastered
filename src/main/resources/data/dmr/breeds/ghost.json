@@ -36,8 +36,7 @@
   "accessories": ["thin_legs"],
   "dragon_abilities": [
     {
-      "ability": "ethereal_harmony",
-      "chance": 0.5
+      "ability": "#ghost_abilities"
     }
   ]
 }

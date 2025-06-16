@@ -2,8 +2,8 @@ package dmr.DragonMounts.server.blocks;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
-import dmr.DragonMounts.registry.DragonBreedsRegistry;
-import dmr.DragonMounts.registry.ModBlockEntities;
+import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
+import dmr.DragonMounts.registry.block.ModBlockEntities;
 import dmr.DragonMounts.server.blockentities.DMRBlankEggBlockEntity;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import net.minecraft.core.BlockPos;

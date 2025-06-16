@@ -1,0 +1,8 @@
+{
+  "id": "common_abilities",
+  "abilities": [
+    {
+      "ability": "#combat_buffs"
+    }
+  ]
+}

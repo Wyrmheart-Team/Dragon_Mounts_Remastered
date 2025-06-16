@@ -3,7 +3,7 @@ package dmr.DragonMounts.types.dragonBreeds;
 import com.google.gson.annotations.SerializedName;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.config.ServerConfig;
-import dmr.DragonMounts.registry.DragonBreathRegistry;
+import dmr.DragonMounts.registry.datapack.DragonBreathRegistry;
 import dmr.DragonMounts.types.DatapackEntry;
 import dmr.DragonMounts.types.LootTableEntry;
 import dmr.DragonMounts.types.LootTableProvider;

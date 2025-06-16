@@ -1,8 +1,8 @@
 package dmr.DragonMounts.server.recipes;
 
-import dmr.DragonMounts.registry.DragonArmorRegistry;
-import dmr.DragonMounts.registry.ModCustomRecipes;
-import dmr.DragonMounts.registry.ModItems;
+import dmr.DragonMounts.registry.datapack.DragonArmorRegistry;
+import dmr.DragonMounts.registry.item.ModCustomRecipes;
+import dmr.DragonMounts.registry.item.ModItems;
 import dmr.DragonMounts.types.armor.DragonArmor;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;

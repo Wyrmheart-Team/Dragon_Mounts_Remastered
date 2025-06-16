@@ -1,6 +1,6 @@
 package dmr.tests;
 
-import dmr.DragonMounts.registry.DragonBreedsRegistry;
+import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.types.habitats.Habitat;
 import dmr.DragonMounts.util.BreedingUtils;

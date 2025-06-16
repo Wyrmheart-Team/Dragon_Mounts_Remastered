@@ -1,6 +1,9 @@
 {
   "dragon_abilities": [
     {
+      "ability": "#common_abilities"
+    },
+    {
       "ability": "floral_trail",
       "chance": 0.5
     },

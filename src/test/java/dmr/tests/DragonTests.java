@@ -1,10 +1,10 @@
 package dmr.tests;
 
 import dmr.DMRTestConstants;
-import dmr.DragonMounts.registry.DragonArmorRegistry;
-import dmr.DragonMounts.registry.DragonBreedsRegistry;
-import dmr.DragonMounts.registry.ModEntities;
-import dmr.DragonMounts.registry.ModItems;
+import dmr.DragonMounts.registry.datapack.DragonArmorRegistry;
+import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
+import dmr.DragonMounts.registry.entity.ModEntities;
+import dmr.DragonMounts.registry.item.ModItems;
 import dmr.DragonMounts.server.items.DragonArmorItem;
 import dmr.DragonMounts.util.PlayerStateUtils;
 import java.util.Objects;

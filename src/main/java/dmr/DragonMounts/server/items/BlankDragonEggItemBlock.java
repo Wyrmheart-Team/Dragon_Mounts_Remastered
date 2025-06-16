@@ -1,6 +1,6 @@
 package dmr.DragonMounts.server.items;
 
-import dmr.DragonMounts.registry.ModBlocks;
+import dmr.DragonMounts.registry.block.ModBlocks;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;

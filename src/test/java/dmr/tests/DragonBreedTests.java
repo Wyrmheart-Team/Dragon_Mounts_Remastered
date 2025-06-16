@@ -1,6 +1,6 @@
 package dmr.tests;
 
-import dmr.DragonMounts.registry.DragonBreedsRegistry;
+import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
 import java.util.Objects;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.level.GameType;

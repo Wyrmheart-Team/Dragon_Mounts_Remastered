@@ -1,0 +1,14 @@
+{
+  "id": "combat_buffs",
+  "abilities": [
+    {
+      "ability": "#survival_buffs"
+    },
+    {
+      "ability": "#bite_buffs"
+    },
+    {
+      "ability": "#breath_buffs"
+    }
+  ]
+}

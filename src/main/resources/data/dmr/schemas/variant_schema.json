@@ -1,8 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/variant_schema.json",
+  "$version": "1.0.0",
+  "$comment": "This schema is used to define dragon variants within breed JSON files. Variants are visual or behavioral variations of a dragon breed that can be selected during spawning or breeding.",
   "title": "Dragon Variant Schema",
   "description": "Schema for defining dragon variants with their visual appearance and properties",
   "type": "object",
+  "additionalProperties": false,
   "properties": {
     "id": {
       "$ref": "definitions.json#/$defs/identifier",
@@ -48,6 +52,7 @@
       "type": "number",
       "description": "Size multiplier applied to the variant's base dimensions. Values greater than 1.0 make the variant larger, while values less than 1.0 make it smaller.",
       "minimum": 0,
+      "default": 1.0,
       "examples": [0.8, 1.0, 1.2]
     }
   },

@@ -1,8 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/breath_type_schema.json",
+  "$version": "1.0.0",
+  "$comment": "This schema is used to validate breath type JSON files in the data/dmr/breath_types directory. Each breath type defines the visual and damage properties of a dragon's breath attack.",
   "title": "Dragon Breath Type Schema",
   "description": "Schema for defining dragon breath attack types with their visual effects and damage properties",
   "type": "object",
+  "additionalProperties": false,
   "properties": {
     "colors": {
       "type": "array",
@@ -17,18 +21,21 @@
       "type": "number",
       "description": "Base damage dealt by the breath attack to entities hit by it. Higher values cause more damage.",
       "minimum": 0,
+      "default": 3.0,
       "examples": [2.0, 4.0, 6.0]
     },
     "fire_time": {
       "type": "integer",
       "description": "Time in ticks that the target will be set on fire when hit by the breath. Set to 0 for breath types that don't cause fire.",
       "minimum": 0,
+      "default": 0,
       "examples": [0, 60, 100]
     },
     "particle_density": {
       "type": "integer",
       "description": "Density of particles in the breath attack. Higher values create more particles, making the breath appear thicker.",
       "minimum": 1,
+      "default": 3,
       "examples": [3, 5, 8]
     },
     "effects": {
@@ -54,7 +61,8 @@
             "type": "number",
             "description": "Chance (0.0 to 1.0) that this effect will be applied when an entity is hit by the breath.",
             "minimum": 0,
-            "maximum": 1
+            "maximum": 1,
+            "default": 1.0
           }
         },
         "required": ["effect", "duration", "amplifier"]

@@ -2,7 +2,7 @@ package dmr.DragonMounts.network.packets;
 
 import dmr.DragonMounts.common.capability.DragonOwnerCapability;
 import dmr.DragonMounts.network.AbstractMessage;
-import dmr.DragonMounts.registry.ModCapabilities;
+import dmr.DragonMounts.registry.entity.ModCapabilities;
 import lombok.Getter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;

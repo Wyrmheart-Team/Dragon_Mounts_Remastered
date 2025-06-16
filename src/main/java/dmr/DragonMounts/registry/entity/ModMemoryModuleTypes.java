@@ -1,4 +1,4 @@
-package dmr.DragonMounts.registry;
+package dmr.DragonMounts.registry.entity;
 
 import com.mojang.serialization.Codec;
 import dmr.DragonMounts.DMR;

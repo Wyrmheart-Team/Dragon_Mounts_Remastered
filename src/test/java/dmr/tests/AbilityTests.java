@@ -1,6 +1,6 @@
 package dmr.tests;
 
-import dmr.DragonMounts.registry.DragonAbilityRegistry;
+import dmr.DragonMounts.registry.datapack.DragonAbilityRegistry;
 import dmr.DragonMounts.types.abilities.DragonAbility;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.resources.ResourceLocation;
