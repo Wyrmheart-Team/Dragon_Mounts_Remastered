@@ -1,21 +1,22 @@
 package dmr.DragonMounts.types;
 
 import com.google.gson.Gson;
+import dmr.DragonMounts.DMR;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 
 public class ResourcePackLoader {
 
@@ -33,15 +34,12 @@ public class ResourcePackLoader {
         if (negativeBones != null && negativeBones.size() > 0) negativeModelProperties.put(key, negativeBones);
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public static void addReloadListener(FMLClientSetupEvent event) {
-        reload(Minecraft.getInstance().getResourceManager());
-
-        if (Minecraft.getInstance().getResourceManager() instanceof ReloadableResourceManager) {
-            ((ReloadableResourceManager) Minecraft.getInstance().getResourceManager())
-                    .registerReloadListener((ResourceManagerReloadListener) manager -> {
-                        reload(Minecraft.getInstance().getResourceManager());
-                    });
+    @EventBusSubscriber(value = Dist.CLIENT, modid = DMR.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+    public static class clientReloadSubscriber {
+        @OnlyIn(Dist.CLIENT)
+        @SubscribeEvent
+        public static void registerClientReloadListeners(RegisterClientReloadListenersEvent event) {
+            event.registerReloadListener((ResourceManagerReloadListener) ResourcePackLoader::reload);
         }
     }
 

@@ -1,9 +1,18 @@
 package dmr.DragonMounts.server.entity.dragon;
 
+import static dmr.DragonMounts.util.MiscUtils.randomUpperLower;
+import static dmr.DragonMounts.util.MiscUtils.upperLower;
+import static net.minecraft.world.entity.ai.attributes.Attributes.*;
+import static net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED;
+
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.config.ServerConfig;
+import dmr.DragonMounts.registry.ModAttributes;
 import dmr.DragonMounts.server.entity.DragonConstants;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -22,15 +31,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-
-import static dmr.DragonMounts.util.MiscUtils.randomUpperLower;
-import static dmr.DragonMounts.util.MiscUtils.upperLower;
-import static net.minecraft.world.entity.ai.attributes.Attributes.*;
-import static net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED;
 
 abstract class DragonAttributeComponent extends DragonSpawnComponent {
     protected DragonAttributeComponent(EntityType<? extends TamableAnimal> entityType, Level level) {
@@ -67,7 +67,10 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
                 .add(KNOCKBACK_RESISTANCE, DragonConstants.BASE_KB_RESISTANCE)
                 .add(ATTACK_DAMAGE, DragonConstants.BASE_DAMAGE)
                 .add(FLYING_SPEED, DragonConstants.BASE_SPEED_FLYING)
-                .add(SWIM_SPEED, DragonConstants.BASE_SPEED_WATER);
+                .add(SWIM_SPEED, DragonConstants.BASE_SPEED_WATER)
+                .add(ModAttributes.BREATH_DAMAGE, 1)
+                .add(ModAttributes.BITE_DAMAGE, 1)
+                .add(ModAttributes.BREATH_COOLDOWN, 0);
     }
 
     private static final ResourceLocation SCALE_MODIFIER =
@@ -121,55 +124,67 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
 
         setHealth(getMaxHealth() * healthPercentile); // in case we have less than max health
 
-        if(ServerConfig.ENABLE_RANDOM_STATS) {
+        if (ServerConfig.ENABLE_RANDOM_STATS) {
             float lowestHealth = 0, highestHealth = 1f;
             float lowestSpeed = 0, highestSpeed = 1f;
             float lowestDamage = 0f, highestDamage = 1f;
             float lowestScale = 0f, highestScale = 1f;
-            
+
             if (parent1 != null && parent2 != null) {
-                Function<EntityDataAccessor<Float>, Float> min = (data) -> Math.min(parent1.entityData.get(data), parent2.entityData.get(data));
-                Function<EntityDataAccessor<Float>, Float> max = (data) -> Math.max(parent1.entityData.get(data), parent2.entityData.get(data));
-                
+                Function<EntityDataAccessor<Float>, Float> min =
+                        (data) -> Math.min(parent1.entityData.get(data), parent2.entityData.get(data));
+                Function<EntityDataAccessor<Float>, Float> max =
+                        (data) -> Math.max(parent1.entityData.get(data), parent2.entityData.get(data));
+
                 lowestHealth = min.apply(healthAttribute);
                 highestHealth = max.apply(healthAttribute);
-                
+
                 lowestSpeed = min.apply(speedAttribute);
                 highestSpeed = max.apply(speedAttribute);
-                
+
                 lowestDamage = min.apply(damageAttribute);
                 highestDamage = max.apply(damageAttribute);
-                
+
                 lowestScale = min.apply(maxScaleAttribute);
                 highestScale = max.apply(maxScaleAttribute);
             }
-            
+
             var healthValue = randomUpperLower(lowestHealth, highestHealth);
             var speedValue = randomUpperLower(lowestSpeed, highestSpeed);
             var damageValue = randomUpperLower(lowestDamage, highestDamage);
             var scaleValue = randomUpperLower(lowestScale, highestScale);
-            
+
             entityData.set(healthAttribute, healthValue);
             entityData.set(speedAttribute, speedValue);
             entityData.set(damageAttribute, damageValue);
             entityData.set(maxScaleAttribute, scaleValue);
-            
-            var randomStatsHealth =
-                    new AttributeModifier(RANDOM_STATS_MODIFIER, upperLower(entityData.get(healthAttribute), ServerConfig.LOWER_MAX_HEALTH, ServerConfig.UPPER_MAX_HEALTH), Operation.ADD_VALUE);
+
+            var randomStatsHealth = new AttributeModifier(
+                    RANDOM_STATS_MODIFIER,
+                    upperLower(
+                            entityData.get(healthAttribute),
+                            ServerConfig.LOWER_MAX_HEALTH,
+                            ServerConfig.UPPER_MAX_HEALTH),
+                    Operation.ADD_VALUE);
             var healthInstance = getAttribute(MAX_HEALTH);
             healthInstance.addTransientModifier(randomStatsHealth);
-            
-            var randomStatsDamage =
-                    new AttributeModifier(RANDOM_STATS_MODIFIER, upperLower(entityData.get(damageAttribute), ServerConfig.LOWER_DAMAGE, ServerConfig.UPPER_DAMAGE), Operation.ADD_VALUE);
+
+            var randomStatsDamage = new AttributeModifier(
+                    RANDOM_STATS_MODIFIER,
+                    upperLower(entityData.get(damageAttribute), ServerConfig.LOWER_DAMAGE, ServerConfig.UPPER_DAMAGE),
+                    Operation.ADD_VALUE);
             var damageInstance = getAttribute(ATTACK_DAMAGE);
             damageInstance.addTransientModifier(randomStatsDamage);
-            
-            var randomStatsSpeed = new AttributeModifier(RANDOM_STATS_MODIFIER, upperLower(entityData.get(speedAttribute), ServerConfig.LOWER_SPEED, ServerConfig.UPPER_SPEED), Operation.ADD_VALUE);
+
+            var randomStatsSpeed = new AttributeModifier(
+                    RANDOM_STATS_MODIFIER,
+                    upperLower(entityData.get(speedAttribute), ServerConfig.LOWER_SPEED, ServerConfig.UPPER_SPEED),
+                    Operation.ADD_VALUE);
             var speedInstance = getAttribute(MOVEMENT_SPEED);
             speedInstance.addTransientModifier(randomStatsSpeed);
         }
     }
-    
+
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);

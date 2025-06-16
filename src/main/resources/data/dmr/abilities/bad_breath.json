@@ -1,0 +1,9 @@
+{
+  "id": "bad_breath",
+  "ability_type": "attribute",
+  "breed_transferable": true,
+  "max_tier": 3,
+  "properties": {
+    "dmr:breath_damage": 2.0
+  }
+}

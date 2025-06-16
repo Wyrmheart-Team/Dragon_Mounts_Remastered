@@ -1,0 +1,18 @@
+{
+  "id": "echo_sense",
+  "ability_type": "monster_aura",
+  "breed_transferable": true,
+  "properties": {
+    "effects": [
+      {
+        "id": "minecraft:glowing",
+        "duration": 80,
+        "amplifier": 0,
+        "ambient": true,
+        "show_particles": false,
+        "show_icon": true
+      }
+    ],
+    "range": 20.0
+  }
+}

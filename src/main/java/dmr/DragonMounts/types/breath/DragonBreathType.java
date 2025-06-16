@@ -2,20 +2,17 @@ package dmr.DragonMounts.types.breath;
 
 import com.google.gson.annotations.SerializedName;
 import dmr.DragonMounts.DMR;
+import dmr.DragonMounts.types.DatapackEntry;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 
 @Getter
-public class DragonBreathType {
-
-    @Setter
-    private String id;
+public class DragonBreathType extends DatapackEntry {
 
     @SerializedName("colors")
     private List<String> colorHexCodes = new ArrayList<>();

@@ -1,0 +1,56 @@
+package dmr.DragonMounts.types;
+
+import lombok.Getter;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+
+@Getter
+public enum DragonTier {
+    COMMON(0, ChatFormatting.WHITE, 1.0, 2),
+    UNCOMMON(1, ChatFormatting.GREEN, 0.3, 3),
+    RARE(2, ChatFormatting.BLUE, 0.1, 4),
+    EPIC(3, ChatFormatting.DARK_PURPLE, 0.03, 5),
+    LEGENDARY(4, ChatFormatting.GOLD, 0.01, 6);
+
+    private final int level;
+    private final ChatFormatting color;
+    private final double spawnChance;
+    private final int maxAbilities;
+
+    DragonTier(int level, ChatFormatting color, double spawnChance, int maxAbilities) {
+        this.level = level;
+        this.color = color;
+        this.spawnChance = spawnChance;
+        this.maxAbilities = maxAbilities;
+    }
+
+    public Component getDisplayName() {
+        return Component.translatable("dmr.dragon_tier." + name().toLowerCase()).setStyle(Style.EMPTY.withColor(color));
+    }
+
+    public static DragonTier getRandomTier() {
+        double totalChance = 0;
+        for (DragonTier tier : values()) {
+            totalChance += tier.getSpawnChance();
+        }
+        double random = (Math.random() * totalChance);
+        double cumulativeChance = 0;
+        for (DragonTier tier : values()) {
+            cumulativeChance += tier.getSpawnChance();
+            if (random <= cumulativeChance) {
+                return tier;
+            }
+        }
+        return COMMON;
+    }
+
+    public static DragonTier fromLevel(int level) {
+        for (DragonTier tier : values()) {
+            if (tier.getLevel() == level) {
+                return tier;
+            }
+        }
+        return COMMON;
+    }
+}

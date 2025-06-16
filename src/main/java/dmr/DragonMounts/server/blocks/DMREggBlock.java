@@ -1,5 +1,7 @@
 package dmr.DragonMounts.server.blocks;
 
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
+
 import dmr.DragonMounts.ModConstants.NBTConstants;
 import dmr.DragonMounts.config.ClientConfig;
 import dmr.DragonMounts.config.ServerConfig;
@@ -9,6 +11,7 @@ import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
 import dmr.DragonMounts.server.items.DragonEggItemBlock;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
+import java.util.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
@@ -44,10 +47,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Vector3f;
 
-import java.util.Objects;
-
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
-
 public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWaterloggedBlock {
 
     public static final BooleanProperty HATCHING = BooleanProperty.create("hatching");
@@ -75,7 +74,7 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
                     pStack.getOrDefault(ModComponents.EGG_HATCH_TIME, ServerConfig.HATCH_TIME_CONFIG.intValue());
             var variantId = pStack.get(ModComponents.DRAGON_VARIANT);
             var eggTag = pStack.get(ModComponents.EGG_OUTCOME);
-            
+
             e.setDragonOutcomeTag(eggTag);
             e.setOwner(pPlacer.getUUID().toString());
 
@@ -208,7 +207,7 @@ public class DMREggBlock extends DragonEggBlock implements EntityBlock, SimpleWa
             falling(entity);
         }
     }
-    
+
     @Override
     public void animateTick(BlockState pState, Level pLevel, BlockPos pPos, RandomSource random) {
         if (pState.getValue(HATCHING) && pLevel.getBlockEntity(pPos) instanceof DMREggBlockEntity e) {

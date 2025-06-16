@@ -1,0 +1,9 @@
+{
+  "id": "tough_armor",
+  "ability_type": "attribute",
+  "breed_transferable": true,
+  "max_tier": 4,
+  "attributes": {
+    "minecraft:generic.armor": 10.0
+  }
+}

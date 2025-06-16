@@ -176,8 +176,12 @@ public class TameableDragonEntity extends AbstractDragonEntity {
     public void baseTick() {
         super.baseTick();
 
-        if (!this.level.isClientSide && this.isAlive() && this.tickCount % 20 == 0) {
-            this.heal((float) ServerConfig.HEALTH_REGEN);
+        if (ServerConfig.HEALTH_REGEN > 0) {
+            if (!this.level.isClientSide && this.isAlive() && this.tickCount % 20 == 0) {
+                if (getHealth() < getMaxHealth()) {
+                    this.heal((float) ServerConfig.HEALTH_REGEN);
+                }
+            }
         }
 
         if (getDragonInventory() != null && getDragonInventory().isDirty()) {

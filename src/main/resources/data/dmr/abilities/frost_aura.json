@@ -1,0 +1,18 @@
+{
+  "id": "frost_aura",
+  "ability_type": "monster_aura",
+  "breed_transferable": true,
+  "properties": {
+    "effects": [
+      {
+        "id": "minecraft:movement_slowdown",
+        "duration": 100,
+        "amplifier": 1,
+        "ambient": true,
+        "show_particles": false,
+        "show_icon": true
+      }
+    ],
+    "range": 10.0
+  }
+}

@@ -9,9 +9,6 @@ import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.network.packets.PacketRegistry;
 import dmr.DragonMounts.registry.*;
 import dmr.DragonMounts.server.commands.DMRCommand;
-import dmr.DragonMounts.server.events.LootTableInject;
-import dmr.DragonMounts.types.DataPackHandler;
-import dmr.DragonMounts.types.abilities.types.Ability;
 import dmr.DragonMounts.types.habitats.Habitat;
 import dmr.DragonMounts.util.type_adapters.*;
 import java.util.List;
@@ -57,7 +54,6 @@ public class DMR {
         gsonBuilder.registerTypeAdapter(Block.class, new BlockAdapter());
         gsonBuilder.registerTypeAdapter(ParticleOptions.class, new ParticleOptionsAdapter());
         gsonBuilder.registerTypeAdapter(SoundEvent.class, new SoundEventAdapter());
-        gsonBuilder.registerTypeAdapter(Ability.class, new AbilityAdapter());
         gsonBuilder.registerTypeAdapter(Habitat.class, new HabitatAdapter());
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
@@ -86,12 +82,10 @@ public class DMR {
         ModActivityTypes.ACTIVITIES.register(bus);
         ModCustomRecipes.RECIPES.register(bus);
         ModParticles.PARTICLE_TYPES.register(bus);
+        ModAttributes.ATTRIBUTES.register(bus);
 
         bus.addListener(PacketRegistry::registerEvent);
-        bus.addListener(DataPackHandler::newDataPack);
 
-        NeoForge.EVENT_BUS.addListener(DataPackHandler::dataPackData);
-        NeoForge.EVENT_BUS.addListener(LootTableInject::onLootLoad);
         NeoForge.EVENT_BUS.addListener(this::registerCommands);
 
         if (DEBUG) {

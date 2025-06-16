@@ -1,10 +1,14 @@
 package dmr.DragonMounts.server.blockentities;
 
+import static dmr.DragonMounts.server.blocks.DMREggBlock.HATCHING;
+
 import dmr.DragonMounts.ModConstants.NBTConstants;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.*;
+import dmr.DragonMounts.types.DragonTier;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.util.PlayerStateUtils;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
@@ -23,19 +27,16 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.UUID;
-
-import static dmr.DragonMounts.server.blocks.DMREggBlock.HATCHING;
 @Getter
 @Setter
 public class DMREggBlockEntity extends BlockEntity {
-    
+
     private String breedId;
     private String variantId = "";
     private CompoundTag dragonOutcomeTag;
     private int hatchTime = ServerConfig.HATCH_TIME_CONFIG.intValue();
     private String owner;
-    
+
     public DMREggBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.DRAGON_EGG_BLOCK_ENTITY.get(), pPos, pBlockState);
     }
@@ -48,6 +49,16 @@ public class DMREggBlockEntity extends BlockEntity {
         setBreedId(breed.getId());
     }
 
+    private int tierLevel = 0;
+
+    public DragonTier getTier() {
+        return DragonTier.fromLevel(tierLevel);
+    }
+
+    public void setTier(DragonTier tier) {
+        this.tierLevel = tier.getLevel();
+    }
+
     @Override
     protected void saveAdditional(CompoundTag pTag, Provider registries) {
         super.saveAdditional(pTag, registries);
@@ -57,6 +68,7 @@ public class DMREggBlockEntity extends BlockEntity {
         pTag.putInt("hatchTime", getHatchTime());
         pTag.putString("owner", getOwner() == null ? "" : getOwner());
         pTag.put("eggOutcome", getDragonOutcomeTag());
+        pTag.putInt("tierLevel", tierLevel);
     }
 
     @Override
@@ -66,6 +78,7 @@ public class DMREggBlockEntity extends BlockEntity {
         setHatchTime(tag.getInt("hatchTime"));
         setOwner(tag.getString("owner"));
         setDragonOutcomeTag(tag.getCompound("eggOutcome"));
+        tierLevel = tag.getInt("tierLevel");
     }
 
     @Override
@@ -76,6 +89,10 @@ public class DMREggBlockEntity extends BlockEntity {
                 componentInput.getOrDefault(ModComponents.EGG_HATCH_TIME, ServerConfig.HATCH_TIME_CONFIG.intValue()));
         setOwner(componentInput.get(ModComponents.EGG_OWNER));
         setDragonOutcomeTag(componentInput.get(ModComponents.EGG_OUTCOME));
+
+        if (ServerConfig.ENABLE_DRAGON_TIERS) {
+            setTier(DragonTier.fromLevel(tierLevel));
+        }
     }
 
     @Override
@@ -85,6 +102,10 @@ public class DMREggBlockEntity extends BlockEntity {
         components.set(ModComponents.EGG_HATCH_TIME, getHatchTime());
         components.set(ModComponents.EGG_OWNER, getOwner());
         components.set(ModComponents.EGG_OUTCOME, getDragonOutcomeTag());
+
+        if (ServerConfig.ENABLE_DRAGON_TIERS) {
+            components.set(ModComponents.DRAGON_TIER, tierLevel);
+        }
     }
 
     public int tickCount = 0;
@@ -135,11 +156,15 @@ public class DMREggBlockEntity extends BlockEntity {
         baby.setBreed(data.getBreed());
         baby.setVariant(data.getVariantId());
 
+        if (ServerConfig.ENABLE_DRAGON_TIERS) {
+            baby.setTier(data.getTier());
+        }
+
         baby.setBaby(true);
         baby.setAge(-Math.abs(data.getBreed().getGrowthTime()));
         baby.setPos(pos.getX(), pos.getY(), pos.getZ());
         baby.setHatched(true);
-        
+
         if (!level.addFreshEntity(baby)) return;
 
         if (ownerId != null && !ownerId.isBlank()) {

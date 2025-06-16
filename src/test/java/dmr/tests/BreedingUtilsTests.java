@@ -1,8 +1,6 @@
 package dmr.tests;
 
-import dmr.DMRTestConstants;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
-import dmr.DragonMounts.registry.ModEntities;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.types.habitats.Habitat;
 import dmr.DragonMounts.util.BreedingUtils;
@@ -12,7 +10,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -130,58 +127,6 @@ public class BreedingUtilsTests {
 
         if (!highestBreed.getId().equals("test_breed2")) {
             helper.fail("Highest habitat breed should be test_breed2");
-        }
-
-        helper.succeed();
-    }
-
-    /**
-     * Tests the custom name generation for baby dragons. This test verifies that:
-     * 1. The generateCustomName method generates a name based on the parents' names
-     * 2. The generated name is not empty 3. The generated name follows the expected
-     * format based on the parents' names
-     *
-     * @param helper
-     *               The test helper provided by the game test framework
-     */
-    @EmptyTemplate(floor = true)
-    @GameTest
-    @TestHolder
-    public static void testGenerateCustomName(ExtendedGameTestHelper helper) {
-        // Create a player to ensure the level is loaded
-        var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
-
-        // Create two dragons with custom names
-        var dragon1 = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
-        dragon1.setBreed(DragonBreedsRegistry.getDefault());
-        dragon1.setCustomName(Component.literal("Tempor Invidunt"));
-
-        var dragon2 = helper.spawn(ModEntities.DRAGON_ENTITY.get(), DMRTestConstants.TEST_POS);
-        dragon2.setBreed(DragonBreedsRegistry.getDefault());
-        dragon2.setCustomName(Component.literal("Magna Dolore"));
-
-        // Generate a custom name for the baby
-        String babyName = BreedingUtils.generateCustomName(dragon1, dragon2);
-
-        // Verify that the name is not empty
-        if (babyName == null || babyName.isEmpty()) {
-            helper.fail("Generated name is empty");
-        }
-
-        // Verify that the name contains parts of the parents' names
-        // Since the name generation has random elements, we can only check that
-        // the name contains at least one word from either parent
-        boolean containsParentWord = false;
-        String[] parentWords = {"Tempor", "Invidunt", "Magna", "Dolore"};
-        for (String word : parentWords) {
-            if (babyName.contains(word)) {
-                containsParentWord = true;
-                break;
-            }
-        }
-
-        if (!containsParentWord) {
-            helper.fail("Generated name does not contain any parent word");
         }
 
         helper.succeed();

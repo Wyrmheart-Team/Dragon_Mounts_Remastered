@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Dragon Ability Schema",
+  "description": "Schema for defining dragon abilities that can be assigned to dragon breeds",
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "definitions.json#/$defs/identifier",
+      "description": "Unique identifier for the ability. Used to reference this ability in dragon breed definitions.",
+      "examples": ["fire_proof", "aquatic_grace", "swift_swim"]
+    },
+    "ability_type": {
+      "$ref": "definitions.json#/$defs/identifier",
+      "description": "Type of ability that determines how it functions. Common types include: 'effect' (applies status effects), 'attribute' (modifies dragon attributes), 'aura' (affects nearby entities), and 'monster_aura' (affects nearby monsters).",
+      "examples": ["effect", "attribute", "aura", "monster_aura"]
+    },
+    "max_tier": {
+      "type": "integer",
+      "description": "Maximum tier level this ability can reach. Higher tiers typically provide stronger effects.",
+      "minimum": 1,
+      "examples": [3, 5]
+    },
+    "breed_transferable": {
+      "type": "boolean",
+      "description": "Whether the ability can be transferred to offspring when breeding dragons.",
+      "examples": [true, false]
+    },
+    "properties": {
+      "type": "object",
+      "description": "Properties specific to the ability type. The structure varies based on the ability_type value.",
+      "examples": [
+        {"effect_id": "minecraft:strength", "duration": 200},
+        {"radius": 5, "target_type": "hostile"}
+      ]
+    },
+    "attributes": {
+      "$ref": "definitions.json#/$defs/attributes",
+      "description": "Attribute modifiers to apply when the ability is of type 'attribute'. Maps attribute IDs to their numeric values.",
+      "examples": [
+        {"minecraft:generic.max_health": 20.0, "minecraft:generic.movement_speed": 0.3}
+      ]
+    },
+    "particles": {
+      "type": "array",
+      "items": {
+        "$ref": "definitions.json#/$defs/particle",
+        "description": "Particle effect to display when the ability is active."
+      },
+      "description": "List of particle effects to display when the ability is active.",
+      "examples": [["minecraft:flame", "minecraft:smoke"]]
+    }
+  },
+  "required": ["id", "ability_type"]
+}

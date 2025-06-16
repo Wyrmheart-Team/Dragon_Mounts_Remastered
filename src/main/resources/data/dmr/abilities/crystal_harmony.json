@@ -1,0 +1,8 @@
+{
+  "id": "crystal_harmony",
+  "ability_type": "crystal_harmony",
+  "breed_transferable": true,
+  "properties": {
+    "protection_chance": 0.1
+  }
+}

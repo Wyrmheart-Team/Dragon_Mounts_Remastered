@@ -5,98 +5,122 @@ import dmr.DragonMounts.registry.DragonArmorRegistry;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.registry.ModItems;
+import dmr.DragonMounts.types.DragonTier;
 import dmr.DragonMounts.types.LootTableEntry;
+import dmr.DragonMounts.types.LootTableProvider;
 import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
-import dmr.DragonMounts.types.dragonBreeds.DragonVariant;
+import java.util.Collection;
+import java.util.function.BiFunction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.SetComponentsFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.LootTableLoadEvent;
 
+@EventBusSubscriber
 public class LootTableInject {
+    /**
+     * Generic method to inject loot tables for any type of entry that provides loot tables
+     * @param server The Minecraft server
+     * @param entries Collection of entries to process
+     * @param lootPoolCreator Function to create a loot pool from an entry and its loot table entry
+     * @param <T> Type of entry that implements LootTableProvider
+     */
+    private static <T extends LootTableProvider> void injectLootTables(
+            MinecraftServer server, Collection<T> entries, BiFunction<T, LootTableEntry, LootPool> lootPoolCreator) {
 
-    // Hacky method to add egg loot tables without having to run /reload
-    // This is due to NeoForge running the LootTableLoadEvent event before the data
-    // pack is loaded
-    public static void firstLoadInjectBreeds(LevelAccessor level) {
-        var server = level.getServer();
-        if (server != null) {
-            for (DragonBreed breed : DragonBreedsRegistry.getDragonBreeds()) {
-                for (LootTableEntry entry : breed.getLootTable()) {
-                    var newTableKey = ResourceKey.create(Registries.LOOT_TABLE, entry.table());
-                    var table = server.reloadableRegistries().getLootTable(newTableKey);
-                    if (table == LootTable.EMPTY) continue;
+        for (T entry : entries) {
+            for (LootTableEntry lootTableEntry : entry.getLootTable()) {
+                var newTableKey = ResourceKey.create(Registries.LOOT_TABLE, lootTableEntry.table());
+                var table = server.reloadableRegistries().getLootTable(newTableKey);
+                if (table == LootTable.EMPTY) continue;
 
-                    LootPool lootPool = injectEggLoot(breed, entry, null);
+                LootPool lootPool = lootPoolCreator.apply(entry, lootTableEntry);
 
-                    breed.getVariants().forEach(variant -> {
-                        LootPool variantLootPool = injectEggLoot(breed, entry, variant);
-
-                        if (table.getPool(variantLootPool.getName()) != null) {
-                            table.removePool(variantLootPool.getName());
-                        }
-
-                        table.addPool(variantLootPool);
-                    });
-
-                    if (table.getPool(lootPool.getName()) != null) {
-                        table.removePool(lootPool.getName());
-                    }
-
-                    table.addPool(lootPool);
-                }
+                updateLootTable(table, lootPool);
             }
         }
     }
 
-    // Hacky method to add armor loot tables without having to run /reload
-    // This is due to NeoForge running the LootTableLoadEvent event before the data
-    // pack is loaded
-    public static void firstLoadInjectArmor(LevelAccessor level) {
-        var server = level.getServer();
-
-        if (server != null) {
-            for (DragonArmor armor : DragonArmorRegistry.getDragonArmors()) {
-                for (LootTableEntry entry : armor.getLootTable()) {
-                    var newTableKey = ResourceKey.create(Registries.LOOT_TABLE, entry.table());
-                    var table = server.reloadableRegistries().getLootTable(newTableKey);
-                    if (table == LootTable.EMPTY) continue;
-
-                    LootPool lootPool = injectArmorLoot(armor, entry);
-
-                    if (table.getPool(lootPool.getName()) != null) {
-                        table.removePool(lootPool.getName());
-                    }
-
-                    table.addPool(lootPool);
-                }
-            }
+    /**
+     * Updates a loot table with a new loot pool, removing any existing pool with the same name
+     * @param table The loot table to update
+     * @param lootPool The loot pool to add
+     */
+    private static void updateLootTable(LootTable table, LootPool lootPool) {
+        if (table.getPool(lootPool.getName()) != null) {
+            table.removePool(lootPool.getName());
         }
+        table.addPool(lootPool);
     }
 
-    public static LootPool injectEggLoot(DragonBreed breed, LootTableEntry entry, DragonVariant variant) {
-        var lootItemBuilder = LootItem.lootTableItem(ModItems.DRAGON_EGG_BLOCK_ITEM.get())
-                .apply(SetComponentsFunction.setComponent(ModComponents.DRAGON_BREED.get(), breed.getId()));
-        if (variant != null) {
-            lootItemBuilder.apply(SetComponentsFunction.setComponent(ModComponents.DRAGON_VARIANT.get(), variant.id()));
-        }
+    // First load methods
+
+    public static void injectLootTables(MinecraftServer server) {
+        injectLootTables(server, DragonBreedsRegistry.getDragonBreeds(), LootTableInject::injectEggLoot);
+        injectLootTables(server, DragonArmorRegistry.getDragonArmors(), LootTableInject::injectArmorLoot);
+    }
+
+    // Loot pool creation methods
+
+    public static LootPool injectEggLoot(DragonBreed breed, LootTableEntry entry) {
+        // Get the global chance multiplier from config
         var chanceMultiplier = 1d;
-
         if (ServerConfig.MOD_CONFIG_SPEC.isLoaded()) {
             chanceMultiplier = ServerConfig.DRAGON_EGG_SPAWN_CHANCE;
         }
 
+        // Create the main loot pool builder
         var lootPoolBuilder = LootPool.lootPool()
                 .when(LootItemRandomChanceCondition.randomChance((float) (entry.chance() * chanceMultiplier)))
-                .add(lootItemBuilder)
                 .name(breed.getId() + "-egg");
+
+        if (ServerConfig.ENABLE_DRAGON_TIERS) {
+
+            // Add an entry for each tier with appropriate weighting
+            for (DragonTier tier : DragonTier.values()) {
+                var tierItemBuilder = LootItem.lootTableItem(ModItems.DRAGON_EGG_BLOCK_ITEM.get())
+                        .apply(SetComponentsFunction.setComponent(ModComponents.DRAGON_BREED.get(), breed.getId()))
+                        .apply(SetComponentsFunction.setComponent(ModComponents.DRAGON_TIER.get(), tier.getLevel()));
+
+                // Set the weight based on the tier's spawn chance
+                // This ensures higher tiers are less common
+                var weight = (int) (tier.getSpawnChance() * 100);
+                tierItemBuilder.setWeight(weight);
+
+                lootPoolBuilder.add(tierItemBuilder);
+
+                breed.getVariants().forEach(variant -> {
+                    var variantItemBuilder = LootItem.lootTableItem(ModItems.DRAGON_EGG_BLOCK_ITEM.get())
+                            .apply(SetComponentsFunction.setComponent(ModComponents.DRAGON_BREED.get(), breed.getId()))
+                            .apply(SetComponentsFunction.setComponent(ModComponents.DRAGON_TIER.get(), tier.getLevel()))
+                            .apply(SetComponentsFunction.setComponent(
+                                    ModComponents.DRAGON_VARIANT.get(), variant.id()));
+
+                    variantItemBuilder.setWeight(weight);
+                    lootPoolBuilder.add(variantItemBuilder);
+                });
+            }
+        } else {
+            var itemBuilder = LootItem.lootTableItem(ModItems.DRAGON_EGG_BLOCK_ITEM.get())
+                    .apply(SetComponentsFunction.setComponent(ModComponents.DRAGON_BREED.get(), breed.getId()));
+            lootPoolBuilder.add(itemBuilder);
+
+            breed.getVariants().forEach(variant -> {
+                var variantItemBuilder = LootItem.lootTableItem(ModItems.DRAGON_EGG_BLOCK_ITEM.get())
+                        .apply(SetComponentsFunction.setComponent(ModComponents.DRAGON_BREED.get(), breed.getId()))
+                        .apply(SetComponentsFunction.setComponent(ModComponents.DRAGON_VARIANT.get(), variant.id()));
+
+                lootPoolBuilder.add(variantItemBuilder);
+            });
+        }
 
         return lootPoolBuilder.build();
     }
@@ -113,44 +137,30 @@ public class LootTableInject {
 
     @SubscribeEvent
     public static void onLootLoad(LootTableLoadEvent evt) {
-        for (DragonBreed breed : DragonBreedsRegistry.getDragonBreeds()) {
-            for (LootTableEntry entry : breed.getLootTable()) {
-                if (evt != null) {
-                    if (evt.getName().equals(entry.table())) {
-                        var pool = injectEggLoot(breed, entry, null);
+        if (evt == null) return;
 
-                        if (evt.getTable().getPool(pool.getName()) != null) {
-                            evt.getTable().removePool(pool.getName());
-                        }
+        // Process dragon breeds
+        processLootTableEvent(evt, DragonBreedsRegistry.getDragonBreeds(), LootTableInject::injectEggLoot);
 
-                        evt.getTable().addPool(pool);
+        // Process dragon armor
+        processLootTableEvent(evt, DragonArmorRegistry.getDragonArmors(), LootTableInject::injectArmorLoot);
+    }
 
-                        for (DragonVariant variant : breed.getVariants()) {
-                            var vPool = injectEggLoot(breed, entry, variant);
+    /**
+     * Generic method to process loot table events for any type of entry that provides loot tables
+     * @param evt The loot table load event
+     * @param entries Collection of entries to process
+     * @param lootPoolCreator Function to create a loot pool from an entry and its loot table entry
+     * @param <T> Type of entry that implements LootTableProvider
+     */
+    private static <T extends LootTableProvider> void processLootTableEvent(
+            LootTableLoadEvent evt, Collection<T> entries, BiFunction<T, LootTableEntry, LootPool> lootPoolCreator) {
 
-                            if (evt.getTable().getPool(vPool.getName()) != null) {
-                                evt.getTable().removePool(vPool.getName());
-                            }
-
-                            evt.getTable().addPool(vPool);
-                        }
-                    }
-                }
-            }
-        }
-
-        for (DragonArmor armor : DragonArmorRegistry.getDragonArmors()) {
-            for (LootTableEntry entry : armor.getLootTable()) {
-                if (evt != null) {
-                    if (evt.getName().equals(entry.table())) {
-                        var armorPool = injectArmorLoot(armor, entry);
-
-                        if (evt.getTable().getPool(armorPool.getName()) != null) {
-                            evt.getTable().removePool(armorPool.getName());
-                        }
-
-                        evt.getTable().addPool(armorPool);
-                    }
+        for (T entry : entries) {
+            for (LootTableEntry lootTableEntry : entry.getLootTable()) {
+                if (evt.getName().equals(lootTableEntry.table())) {
+                    LootPool lootPool = lootPoolCreator.apply(entry, lootTableEntry);
+                    updateLootTable(evt.getTable(), lootPool);
                 }
             }
         }

@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Dragon Mounts Remastered Definitions",
+  "description": "Common type definitions used across multiple schemas in the Dragon Mounts Remastered mod",
+  "$defs": {
+    "item": {
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "An item identifier, optionally namespaced",
+      "custom_properties": {
+        "type": "item"
+      }
+    },
+    "block": {
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "A block identifier, optionally namespaced",
+      "custom_properties": {
+        "type": "block"
+      }
+    },
+    "fluid": {
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "A fluid identifier, optionally namespaced",
+      "custom_properties": {
+        "type": "fluid"
+      }
+    },
+    "sound": {
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "A sound identifier, optionally namespaced",
+      "custom_properties": {
+        "type": "sound"
+      }
+    },
+    "loot_table": {
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "A loot table identifier, optionally namespaced",
+      "custom_properties": {
+        "type": "loot_table"
+      }
+    },
+    "color": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{1,6}$",
+      "description": "A color in hexadecimal format (without # prefix)",
+      "custom_properties": {
+        "type": "color"
+      }
+    },
+    "texture": {
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "A texture file path, optionally namespaced",
+      "custom_properties": {
+        "type": "texture_file"
+      }
+    },
+    "block_tag": {
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "A block tag identifier, optionally namespaced",
+      "custom_properties": {
+        "type": "block_tag"
+      }
+    },
+    "fluid_tag": {
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "A fluid tag identifier, optionally namespaced",
+      "custom_properties": {
+        "type": "fluid_tag"
+      }
+    },
+    "item_tag": {
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "An item tag identifier, optionally namespaced",
+      "custom_properties": {
+        "type": "item_tag"
+      }
+    },
+    "biome_tag": {
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "A biome tag identifier, optionally namespaced",
+      "custom_properties": {
+        "type": "biome_tag"
+      }
+    },
+    "effect": {
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "A status effect identifier, optionally namespaced",
+      "custom_properties": {
+        "type": "effect"
+      }
+    },
+    "particle": {
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "A particle effect identifier, optionally namespaced",
+      "custom_properties": {
+        "type": "particle"
+      }
+    },
+    "model": {
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "A model file path, optionally namespaced",
+      "custom_properties": {
+        "type": "json_file"
+      }
+    },
+    "animation": {
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "An animation file path, optionally namespaced",
+      "custom_properties": {
+        "type": "json_file"
+      }
+    },
+    "ability": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_]+$",
+      "description": "A dragon ability identifier",
+      "custom_properties": {
+        "type": "ability"
+      }
+    },
+    "ability_entry": {
+      "type": "object",
+      "description": "An entry defining a dragon ability with its chance of occurrence",
+      "properties": {
+        "ability": {
+          "$ref": "#/definitions/ability",
+          "description": "The ability this entry refers to"
+        },
+        "chance": {
+          "type": "number",
+          "description": "The chance of a dragon getting this ability"
+        }
+      },
+      "custom_properties": {
+        "type": "ability_entry"
+      }
+    },
+    "breath_type": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_/.]+$",
+      "description": "A dragon breath type identifier",
+      "custom_properties": {
+        "type": "breath_type"
+      }
+    },
+    "identifier": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_]+$",
+      "description": "A simple identifier without namespace"
+    },
+    "loot_tables": {
+      "type": "array",
+      "description": "A collection of loot table entries with their drop chances and quantities",
+      "items": {
+        "type": "object",
+        "description": "A loot table entry with drop chance and quantity range",
+        "properties": {
+          "table": {
+            "$ref": "#/definitions/loot_table",
+            "description": "Loot table resource location"
+          },
+          "chance": {
+            "type": "number",
+            "description": "Chance of the item appearing in the loot table",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "min": {
+            "type": "integer",
+            "description": "Minimum quantity of the item",
+            "minimum": 1
+          },
+          "max": {
+            "type": "integer",
+            "description": "Maximum quantity of the item",
+            "minimum": 1
+          }
+        },
+        "required": ["table", "chance", "min", "max"]
+      },
+      "custom_properties": {
+        "type": "loot_tables"
+      }
+    },
+    "attribute": {
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "An attribute identifier, optionally namespaced",
+      "custom_properties": {
+        "type": "attribute"
+      }
+    },
+    "attributes": {
+      "type": "object",
+      "description": "Map of attribute identifiers to their values",
+      "propertyNames": {
+        "$ref": "#/$defs/attribute"
+      },
+      "additionalProperties": {
+        "type": "number",
+        "minimum": 0,
+        "description": "Attribute value"
+      },
+      "custom_properties": {
+        "type": "attributes"
+      }
+    }
+  }
+}

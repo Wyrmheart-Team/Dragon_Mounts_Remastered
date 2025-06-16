@@ -1,0 +1,9 @@
+{
+  "id": "quick_breath",
+  "ability_type": "attribute",
+  "breed_transferable": true,
+  "max_tier": 5,
+  "properties": {
+    "dmr:breath_cooldown": 0.2
+  }
+}

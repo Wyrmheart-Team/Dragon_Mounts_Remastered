@@ -1,0 +1,17 @@
+{
+  "id": "fire_proof",
+  "ability_type": "conditional_effect",
+  "breed_transferable": true,
+  "properties": {
+    "effect": "minecraft:fire_resistance",
+    "duration": 40,
+    "amplifier": 0,
+    "ambient": true,
+    "show_particles": false,
+    "show_icon": true,
+    "range": 10,
+    "apply_to_dragon": false,
+    "apply_to_owner": true,
+    "condition_type": "none"
+  }
+}

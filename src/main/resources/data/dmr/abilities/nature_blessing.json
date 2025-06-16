@@ -1,0 +1,22 @@
+{
+  "id": "nature_blessing",
+  "ability_type": "conditional_effect",
+  "breed_transferable": true,
+  "properties": {
+    "effects": [
+      {
+        "id": "minecraft:regeneration",
+        "duration": 40,
+        "amplifier": 0,
+        "ambient": true,
+        "show_particles": false,
+        "show_icon": true
+      }
+    ],
+    "range": 10,
+    "apply_to_dragon": true,
+    "apply_to_owner": true,
+    "condition_type": "near_nature",
+    "nature_check_radius": 2
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "dragon_abilities": [
+    {
+      "ability": "ember_aura",
+      "chance": 0.5
+    },
+    {
+      "ability": "fire_proof",
+      "chance": 0.5
+    }
+  ],
+  "habitats": [
+    {
+      "type": "nearby_blocks",
+      "block_tag": "dmr:fire_dragon_habitat_blocks"
+    },
+    {
+      "type": "picky",
+      "required_habitats": [
+        {
+          "type": "in_fluid",
+          "fluid_tag": "minecraft:lava",
+          "point_multiplier": 3.0
+        },
+        {
+          "type": "biome",
+          "biome_tag": "minecraft:is_overworld",
+          "points": 3
+        }
+      ]
+    }
+  ],
+  "hatch_particles": "minecraft:flame",
+  "immunities": ["onFire", "inFire", "lava", "hotFloor"],
+  "primary_color": "912400",
+  "secondary_color": "ff9819",
+  "breath_type": "fire",
+  "inventory_texture": "textures/block/magma.png",
+  "loot_tables": [
+    {
+      "table": "minecraft:chests/desert_pyramid",
+      "chance": 0.065,
+      "min": 1,
+      "max": 1
+    }
+  ],
+  "accessories": ["middle_tail_scales"]
+}

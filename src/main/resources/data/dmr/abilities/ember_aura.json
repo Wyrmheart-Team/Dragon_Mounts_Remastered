@@ -1,0 +1,12 @@
+{
+  "id": "ember_aura",
+  "ability_type": "monster_aura",
+  "breed_transferable": true,
+  "properties": {
+    "fire_ticks": 4,
+    "requires_no_fire": true,
+    "requires_not_fire_immune": true,
+    "requires_not_in_water_rain_or_bubble": true,
+    "range": 10.0
+  }
+}

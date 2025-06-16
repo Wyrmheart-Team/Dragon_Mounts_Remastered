@@ -1,0 +1,8 @@
+{
+  "id": "gem_guard",
+  "ability_type": "gem_guard",
+  "breed_transferable": true,
+  "properties": {
+    "deflect_chance": 0.25
+  }
+}

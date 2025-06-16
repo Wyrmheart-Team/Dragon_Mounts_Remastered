@@ -2,6 +2,7 @@ package dmr.DragonMounts.server.entity.dragon;
 
 import dmr.DragonMounts.client.particle.particleoptions.DragonBreathParticleOptions;
 import dmr.DragonMounts.network.packets.DragonBreathTargetSyncPacket;
+import dmr.DragonMounts.registry.ModAttributes;
 import dmr.DragonMounts.types.breath.DragonBreathType;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,11 +33,11 @@ import org.joml.Vector3d;
 abstract class DragonBreathComponent extends DragonAnimationComponent {
 
     @Getter
-    private static final double breathLength = 2.5; // 5 * 0.5
+    private static final double breathLength = 2.5; // Duration in seconds (5 half-seconds)
 
-    private static final double breathRange = 4;
+    private static final double breathRange = 4; // Maximum distance in blocks that breath attack can reach
 
-    // Breath attack properties
+    // Core breath attack positioning and targeting properties
     @Getter
     @Setter
     protected Vector3d breathSourcePosition;
@@ -227,8 +228,11 @@ abstract class DragonBreathComponent extends DragonAnimationComponent {
         var breathType = getDragon().getBreed().getBreathType();
         if (breathType == null) return;
 
+        // Get the base damage from the breath type
+        float damage = breathType.getDamage();
+        damage *= (float) getDragon().getAttributeValue(ModAttributes.BREATH_DAMAGE);
         // Apply damage using the custom damage source from the breath type
-        target.hurt(breathType.getDamageSource(this), breathType.getDamage());
+        target.hurt(breathType.getDamageSource(this), damage);
 
         // Apply fire if applicable
         if (breathType.getFireTime() > 0) {

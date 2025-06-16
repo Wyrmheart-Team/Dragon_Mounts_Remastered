@@ -2,7 +2,6 @@ package dmr.DragonMounts.network.packets;
 
 import dmr.DragonMounts.network.AbstractMessage;
 import dmr.DragonMounts.network.PacketHelper;
-import dmr.DragonMounts.types.DataPackHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -30,6 +29,6 @@ public class SyncDataPackPacket extends AbstractMessage<SyncDataPackPacket> {
 
     @Override
     public void handle(IPayloadContext context, Player player) {
-        DataPackHandler.run(player.level());
+        //        DataPackHandler.run(player.level());
     }
 }

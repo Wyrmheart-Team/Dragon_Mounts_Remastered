@@ -85,18 +85,18 @@ public class MiscUtils {
 
         return new float[] {r, g, b};
     }
-    
+
     @SuppressWarnings("unchecked")
     public static <T extends Number> T upperLower(double value, T lower, T upper) {
         double result = value * (upper.doubleValue() - lower.doubleValue()) + lower.doubleValue();
-	    return switch (lower) {
-		    case Integer ignored -> (T)Integer.valueOf((int)Math.round(result));
-		    case Float ignored   -> (T)Float.valueOf((float)result);
-		    case Double ignored  -> (T)Double.valueOf(result);
-		    default -> throw new IllegalArgumentException("Unsupported type: " + lower.getClass());
-	    };
+        return switch (lower) {
+            case Integer ignored -> (T) Integer.valueOf((int) Math.round(result));
+            case Float ignored -> (T) Float.valueOf((float) result);
+            case Double ignored -> (T) Double.valueOf(result);
+            default -> throw new IllegalArgumentException("Unsupported type: " + lower.getClass());
+        };
     }
-    
+
     public static <T extends Number> T randomUpperLower(T lower, T upper) {
         return upperLower(Math.random(), lower, upper);
     }

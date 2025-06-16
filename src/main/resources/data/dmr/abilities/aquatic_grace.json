@@ -1,0 +1,21 @@
+{
+  "id": "aquatic_grace",
+  "ability_type": "conditional_effect",
+  "breed_transferable": true,
+  "properties": {
+    "effects": [
+      {
+        "id": "minecraft:night_vision",
+        "duration": 400,
+        "amplifier": 0,
+        "ambient": true,
+        "show_particles": false,
+        "show_icon": false
+      }
+    ],
+    "range": 0,
+    "apply_to_dragon": false,
+    "apply_to_owner": true,
+    "condition_type": "in_water"
+  }
+}

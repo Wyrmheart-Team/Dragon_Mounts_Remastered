@@ -93,21 +93,21 @@ public class DragonWhistleHandler {
             return state.dragonNBTs.containsKey(whistleItem.getColor().getId());
         };
 
-        // Main hand - first
+        // Priority 1: Check main hand for a valid dragon whistle
         if (player.getInventory().getSelected().getItem() instanceof DragonWhistleItem whistleItem) {
             if (isValid.apply(whistleItem)) {
                 return whistleItem;
             }
         }
 
-        // Off hand - second
+        // Priority 2: Check off hand for a valid dragon whistle
         if (player.getInventory().offhand.getFirst().getItem() instanceof DragonWhistleItem whistleItem) {
             if (isValid.apply(whistleItem)) {
                 return whistleItem;
             }
         }
 
-        // Hotbar - third
+        // Priority 3: Check hotbar slots for a valid dragon whistle
         for (int i = 0; i < 9; i++) {
             if (player.getInventory().getItem(i).getItem() instanceof DragonWhistleItem whistleItem) {
                 if (isValid.apply(whistleItem)) {
@@ -116,7 +116,7 @@ public class DragonWhistleHandler {
             }
         }
 
-        // Inventory - fourth
+        // Priority 4: Check remaining inventory slots for a valid dragon whistle
         for (int i = 9; i < player.getInventory().getContainerSize(); i++) {
             if (player.getInventory().getItem(i).getItem() instanceof DragonWhistleItem whistleItem) {
                 if (isValid.apply(whistleItem)) {
@@ -158,7 +158,7 @@ public class DragonWhistleHandler {
             return false;
         }
 
-        // Clean up invalid whistle data
+        // Remove any corrupted or inconsistent dragon-whistle associations to prevent errors
         if (!player.level.isClientSide) {
             if ((handler.dragonNBTs.containsKey(index) && handler.dragonNBTs.get(index) == null)
                     || (handler.dragonInstances.containsKey(index) && handler.dragonInstances.get(index) == null)

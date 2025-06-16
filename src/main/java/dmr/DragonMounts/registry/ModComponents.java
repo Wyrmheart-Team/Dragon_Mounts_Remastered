@@ -28,7 +28,9 @@ public class ModComponents {
             register("egg_owner", Codec.STRING, ByteBufCodecs.STRING_UTF8);
     public static final Supplier<DataComponentType<CompoundTag>> EGG_OUTCOME =
             register("egg_outcome", CompoundTag.CODEC, ByteBufCodecs.COMPOUND_TAG);
-    
+    public static final Supplier<DataComponentType<Integer>> DRAGON_TIER =
+            register("dragon_tier", Codec.INT, ByteBufCodecs.INT);
+
     private static <T> Supplier<DataComponentType<T>> register(
             String name, Codec<T> codec, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
         return COMPONENTS.registerComponentType(

@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Dragon Breath Type Schema",
+  "description": "Schema for defining dragon breath attack types with their visual effects and damage properties",
+  "type": "object",
+  "properties": {
+    "colors": {
+      "type": "array",
+      "items": {
+        "$ref": "definitions.json#/$defs/color",
+        "description": "Hex color code (without # prefix) used in the breath particle gradient. Multiple colors create a gradient effect."
+      },
+      "description": "List of colors that form the gradient for the breath particles. The particles will transition between these colors.",
+      "examples": [["ff0000", "ff9900"], ["00ffff", "0000ff"], ["9900ff", "ff00ff"]]
+    },
+    "damage": {
+      "type": "number",
+      "description": "Base damage dealt by the breath attack to entities hit by it. Higher values cause more damage.",
+      "minimum": 0,
+      "examples": [2.0, 4.0, 6.0]
+    },
+    "fire_time": {
+      "type": "integer",
+      "description": "Time in ticks that the target will be set on fire when hit by the breath. Set to 0 for breath types that don't cause fire.",
+      "minimum": 0,
+      "examples": [0, 60, 100]
+    },
+    "particle_density": {
+      "type": "integer",
+      "description": "Density of particles in the breath attack. Higher values create more particles, making the breath appear thicker.",
+      "minimum": 1,
+      "examples": [3, 5, 8]
+    },
+    "effects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "effect": {
+            "$ref": "definitions.json#/$defs/effect",
+            "description": "Status effect identifier to apply to entities hit by the breath. Should be a valid effect ID."
+          },
+          "duration": {
+            "type": "integer",
+            "description": "Duration of the effect in ticks. 20 ticks = 1 second.",
+            "minimum": 1
+          },
+          "amplifier": {
+            "type": "integer",
+            "description": "Amplifier level of the effect. 0 is level I, 1 is level II, etc.",
+            "minimum": 0
+          },
+          "chance": {
+            "type": "number",
+            "description": "Chance (0.0 to 1.0) that this effect will be applied when an entity is hit by the breath.",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": ["effect", "duration", "amplifier"]
+      },
+      "description": "List of status effects to apply to targets hit by the breath attack.",
+      "examples": [
+        [
+          {
+            "effect": "minecraft:slowness",
+            "duration": 100,
+            "amplifier": 1,
+            "chance": 0.75
+          },
+          {
+            "effect": "minecraft:weakness",
+            "duration": 60,
+            "amplifier": 0,
+            "chance": 0.5
+          }
+        ]
+      ]
+    }
+  },
+  "required": ["colors"]
+}

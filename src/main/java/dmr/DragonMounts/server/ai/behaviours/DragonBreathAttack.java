@@ -1,6 +1,7 @@
 package dmr.DragonMounts.server.ai.behaviours;
 
 import com.google.common.collect.ImmutableMap;
+import dmr.DragonMounts.registry.ModAttributes;
 import dmr.DragonMounts.registry.ModMemoryModuleTypes;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import net.minecraft.server.level.ServerLevel;
@@ -41,9 +42,10 @@ public class DragonBreathAttack extends Behavior<TameableDragonEntity> {
     @Override
     protected void start(ServerLevel level, TameableDragonEntity entity, long gameTime) {
         var target = entity.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET);
-
+        var breathCooldown = entity.getAttribute(ModAttributes.BREATH_COOLDOWN);
+        var cooldown = COOLDOWN_DURATION - ((double) COOLDOWN_DURATION / 2 * breathCooldown.getValue());
         entity.setBreathAttackTarget(target.get());
-        entity.getBrain().setMemoryWithExpiry(ModMemoryModuleTypes.HAS_BREATH_COOLDOWN.get(), true, COOLDOWN_DURATION);
+        entity.getBrain().setMemoryWithExpiry(ModMemoryModuleTypes.HAS_BREATH_COOLDOWN.get(), true, (long) cooldown);
         status = Behavior.Status.RUNNING;
     }
 

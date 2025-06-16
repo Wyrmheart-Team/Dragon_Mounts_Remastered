@@ -2,6 +2,7 @@ package dmr.DragonMounts.registry;
 
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.server.items.*;
+import dmr.DragonMounts.types.DragonTier;
 import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.DragonVariant;
@@ -21,6 +22,7 @@ public class ModCreativeTabs {
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, DMR.MOD_ID);
 
     public static Supplier<CreativeModeTab> MOD_TESTING_DEV_TAB;
+    public static Supplier<CreativeModeTab> MOD_ALL_TIERS_DEV_TAB;
 
     public static final Supplier<CreativeModeTab> MOD_TAB =
             CREATIVE_MODE_TABS.register("dragon_mounts", () -> CreativeModeTab.builder()
@@ -57,9 +59,30 @@ public class ModCreativeTabs {
                     })
                     .build());
 
+    /**
+     * Creates a dragon egg ItemStack with the specified breed, variant, and tier.
+     *
+     * @param breed The dragon breed
+     * @param variant The dragon variant (can be null)
+     * @param tier The dragon tier
+     * @return An ItemStack representing the dragon egg with the specified properties
+     */
+    private static ItemStack createTieredDragonEgg(DragonBreed breed, DragonVariant variant, DragonTier tier) {
+        ItemStack stack;
+        if (variant != null) {
+            stack = DragonEggItemBlock.getDragonEggStack(breed, variant);
+        } else {
+            stack = DragonEggItemBlock.getDragonEggStack(breed);
+        }
+
+        // Set the tier component
+        stack.set(ModComponents.DRAGON_TIER, tier.getLevel());
+
+        return stack;
+    }
+
     public static void init() {
         if (DMR.DEBUG) {
-
             MOD_TESTING_DEV_TAB =
                     CREATIVE_MODE_TABS.register("dragon_mounts_testing_dev", () -> CreativeModeTab.builder()
                             .icon(() -> new ItemStack(ModItems.DRAGON_EGG_BLOCK_ITEM.get()))
@@ -73,6 +96,31 @@ public class ModCreativeTabs {
                                             entries.accept(item.getDefaultInstance());
                                         }
                                     }))
+                            .build());
+
+            // Add the new creative tab for all dragon tiers
+            MOD_ALL_TIERS_DEV_TAB =
+                    CREATIVE_MODE_TABS.register("dragon_mounts_all_tiers", () -> CreativeModeTab.builder()
+                            .icon(() -> new ItemStack(ModItems.DRAGON_EGG_BLOCK_ITEM.get()))
+                            .title(Component.literal("DMR All Dragon Tiers"))
+                            .displayItems((enabledFeatures, entries) -> {
+                                var breeds = DragonBreedsRegistry.getDragonBreeds();
+
+                                // For each breed
+                                for (DragonBreed breed : breeds) {
+                                    // Add all tiers of the base breed
+                                    for (DragonTier tier : DragonTier.values()) {
+                                        entries.accept(createTieredDragonEgg(breed, null, tier));
+                                    }
+
+                                    // Add all tiers of each variant
+                                    for (DragonVariant variant : breed.getVariants()) {
+                                        for (DragonTier tier : DragonTier.values()) {
+                                            entries.accept(createTieredDragonEgg(breed, variant, tier));
+                                        }
+                                    }
+                                }
+                            })
                             .build());
         }
     }

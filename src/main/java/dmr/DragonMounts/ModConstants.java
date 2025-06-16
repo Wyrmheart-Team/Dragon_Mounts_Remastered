@@ -6,22 +6,21 @@ public class ModConstants {
 
     public static class DragonConstants {
 
-        // Multiplier for BASE_FOLLOW_RANGE when determining if a dragon should walk or
-        // teleport to
-        // player
+        // Defines the threshold distance as a multiple of BASE_FOLLOW_RANGE at which dragons will teleport to their
+        // player instead of walking
         public static final double FOLLOW_RANGE_MULTIPLIER = 2.0;
 
-        // Sound pitch values for dragon whistle
+        // Configuration values for dragon whistle sound effects
         public static final float WHISTLE_BASE_PITCH = 1.4f;
         public static final float WHISTLE_PITCH_DIVISOR = 3.0f;
 
-        // Search radius for finding dragons near player
+        // Maximum distance at which dragons can be detected by player commands
         public static final double DRAGON_SEARCH_RADIUS = 100.0;
 
-        // Dragon state packet values
+        // Network packet identifier for dragon follow state
         public static final int DRAGON_STATE_FOLLOW = 1;
 
-        // Minimum dragon health when summoned
+        // Health threshold to ensure dragons have at least this much health when summoned
         public static final float MIN_DRAGON_HEALTH = 1.0f;
     }
 

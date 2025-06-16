@@ -69,8 +69,8 @@ public class DragonInventoryScreen extends AbstractContainerScreen<DragonContain
         }));
 
         for (int i = 0; i < 6; i++) {
-            var hasAbility = dragon.getBreed().getAbilities().size() > i;
-            var ability = hasAbility ? dragon.getBreed().getAbilities().get(i) : null;
+            var hasAbility = dragon.getAbilities().size() > i;
+            var ability = hasAbility ? dragon.getAbilities().get(i) : null;
             var btn = new DragonAbilityButton(leftPos + 10 + (i % 3 * 29), topPos + 143 + ((i / 3) * 29), ability);
             addRenderableWidget(btn);
         }

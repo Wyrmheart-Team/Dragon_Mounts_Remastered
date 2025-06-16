@@ -1,12 +1,15 @@
 package dmr.DragonMounts.server.items;
 
 import dmr.DragonMounts.ModConstants;
+import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.*;
+import dmr.DragonMounts.types.DragonTier;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.DragonVariant;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -47,6 +50,29 @@ public class DragonEggItemBlock extends BlockItem {
                 ".",
                 ModBlocks.DRAGON_EGG_BLOCK.get().getDescriptionId(),
                 breed + (variant != null ? ModConstants.VARIANT_DIVIDER + variant : ""));
+    }
+
+    @Override
+    public Component getName(ItemStack stack) {
+        // Get the base name component
+        MutableComponent nameComponent = Component.translatable(getDescriptionId(stack));
+
+        if (ServerConfig.ENABLE_DRAGON_TIERS) {
+            // Get the tier from the stack
+            Integer tierLevel = stack.get(ModComponents.DRAGON_TIER);
+            if (tierLevel != null) {
+                DragonTier tier = DragonTier.fromLevel(tierLevel);
+
+                // Add the tier name with its color
+                nameComponent = Component.empty()
+                        .append(tier.getDisplayName())
+                        .append(" ")
+                        .append(nameComponent)
+                        .withStyle(tier.getColor());
+            }
+        }
+
+        return nameComponent;
     }
 
     @Override

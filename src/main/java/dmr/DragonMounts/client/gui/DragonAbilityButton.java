@@ -2,7 +2,7 @@ package dmr.DragonMounts.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dmr.DragonMounts.DMR;
-import dmr.DragonMounts.types.abilities.types.Ability;
+import dmr.DragonMounts.types.abilities.Ability;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;

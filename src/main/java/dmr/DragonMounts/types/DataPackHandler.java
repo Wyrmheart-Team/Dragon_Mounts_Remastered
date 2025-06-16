@@ -1,147 +1,103 @@
 package dmr.DragonMounts.types;
 
-import com.google.gson.JsonElement;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.codecs.PrimitiveCodec;
+import com.fasterxml.jackson.core.json.JsonReadFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.config.ServerConfig;
-import dmr.DragonMounts.network.packets.SyncDataPackPacket;
-import dmr.DragonMounts.registry.DragonArmorRegistry;
-import dmr.DragonMounts.registry.DragonBreathRegistry;
-import dmr.DragonMounts.registry.DragonBreedsRegistry;
-import dmr.DragonMounts.registry.ModAdvancements;
+import dmr.DragonMounts.registry.*;
 import dmr.DragonMounts.server.events.LootTableInject;
+import dmr.DragonMounts.types.abilities.DragonAbility;
 import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.types.breath.DragonBreathType;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
+import dmr.DragonMounts.util.SchemaValidator;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
-import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.LevelAccessor;
+import java.util.function.Consumer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 
+@EventBusSubscriber(modid = DMR.MOD_ID)
 public class DataPackHandler {
-
-    public static final ResourceKey<Registry<DragonBreed>> BREEDS_KEY = ResourceKey.createRegistryKey(DMR.id("breeds"));
-    public static final ResourceKey<Registry<DragonArmor>> ARMORS_KEY = ResourceKey.createRegistryKey(DMR.id("armor"));
-    public static final ResourceKey<Registry<DragonBreathType>> BREATH_TYPES_KEY =
-            ResourceKey.createRegistryKey(DMR.id("breath_types"));
-
-    public static final Codec<DragonBreed> BREED_CODEC = new PrimitiveCodec<>() {
-        @Override
-        public <T> DataResult<DragonBreed> read(DynamicOps<T> ops, T input) {
-            return readData(input, DragonBreed.class);
-        }
-
-        @Override
-        public <T> T write(DynamicOps<T> ops, DragonBreed value) {
-            return ops.createString(DMR.getGson().toJson(value));
-        }
-    };
-
-    public static final Codec<DragonArmor> ARMOR_CODEC = new PrimitiveCodec<>() {
-        @Override
-        public <T> DataResult<DragonArmor> read(DynamicOps<T> ops, T input) {
-            return readData(input, DragonArmor.class);
-        }
-
-        @Override
-        public <T> T write(DynamicOps<T> ops, DragonArmor value) {
-            return ops.createString(DMR.getGson().toJson(value));
-        }
-    };
-
-    public static final Codec<DragonBreathType> BREATH_TYPE_CODEC = new PrimitiveCodec<>() {
-        @Override
-        public <T> DataResult<DragonBreathType> read(DynamicOps<T> ops, T input) {
-            return readData(input, DragonBreathType.class);
-        }
-
-        @Override
-        public <T> T write(DynamicOps<T> ops, DragonBreathType value) {
-            return ops.createString(DMR.getGson().toJson(value));
-        }
-    };
-
-    public static void newDataPack(DataPackRegistryEvent.NewRegistry event) {
-        event.dataPackRegistry(BREEDS_KEY, BREED_CODEC, BREED_CODEC);
-        event.dataPackRegistry(ARMORS_KEY, ARMOR_CODEC, ARMOR_CODEC);
-        event.dataPackRegistry(BREATH_TYPES_KEY, BREATH_TYPE_CODEC, BREATH_TYPE_CODEC);
+    @SubscribeEvent
+    public static void registerReloadListeners(AddReloadListenerEvent event) {
+        event.addListener((ResourceManagerReloadListener) DataPackHandler::loadData);
     }
 
-    public static void dataPackData(OnDatapackSyncEvent event) {
-        if (event.getPlayer() == null) {
-            event.getPlayerList().getPlayers().stream().findFirst().ifPresent(player -> run(player.level));
-            event.getPlayerList()
-                    .getPlayers()
-                    .forEach(player -> PacketDistributor.sendToPlayer(player, new SyncDataPackPacket()));
-        } else {
-            run(event.getPlayer().level);
-            PacketDistributor.sendToPlayer(event.getPlayer(), new SyncDataPackPacket());
-        }
+    public static void loadData(ResourceManager resourceManager) {
+        loadData(resourceManager, "breeds", DragonBreed.class, DragonBreedsRegistry::setBreeds);
+        loadData(resourceManager, "armor", DragonArmor.class, DragonArmorRegistry::setArmors);
+        loadData(resourceManager, "breath_types", DragonBreathType.class, DragonBreathRegistry::setBreathTypes);
+        loadData(resourceManager, "abilities", DragonAbility.class, DragonAbilityRegistry::setAbilityDefinitions);
     }
 
-    public static void run(LevelAccessor level) {
-        var breed_reg = level.registryAccess()
-                .registry(BREEDS_KEY)
-                .orElseGet(() -> RegistryAccess.EMPTY.registryOrThrow(BREEDS_KEY));
-        var armor_reg = level.registryAccess()
-                .registry(ARMORS_KEY)
-                .orElseGet(() -> RegistryAccess.EMPTY.registryOrThrow(ARMORS_KEY));
-        var breath_reg = level.registryAccess()
-                .registry(BREATH_TYPES_KEY)
-                .orElseGet(() -> RegistryAccess.EMPTY.registryOrThrow(BREATH_TYPES_KEY));
+    private static <T extends DatapackEntry> void loadData(
+            ResourceManager resourceManager, String path, Class<T> dataClass, Consumer<List<T>> consumer) {
+        var items = resourceManager.listResources(path, s -> true);
+        items.putAll(resourceManager.listResources("dmr/" + path, s -> true)); // Legacy path
+        List<T> ls = new ArrayList<>();
 
-        List<DragonArmor> armorList = new ArrayList<>();
-        List<DragonBreed> breedList = new ArrayList<>();
-        List<DragonBreathType> breathList = new ArrayList<>();
+        for (Entry<ResourceLocation, Resource> entry : items.entrySet()) {
+            var id = entry.getKey();
+            var resource = entry.getValue();
 
-        for (Entry<ResourceKey<DragonArmor>, DragonArmor> ent : armor_reg.entrySet()) {
-            var key = ent.getKey();
-            var armor = ent.getValue();
-            armor.setId(key.location().getPath());
-            armorList.add(armor);
+            try (InputStream stream = resource.open()) {
+                var json = lenientMapper.readTree(stream.readAllBytes());
+
+                if (SchemaValidator.validate(getSchemaName(dataClass), json.toPrettyString(), id.getPath())) {
+                    var item = DMR.getGson().fromJson(json.toPrettyString(), dataClass);
+
+                    item.setId(id.getPath()
+                            .substring(id.getPath().lastIndexOf("/") + 1)
+                            .replace(".json", ""));
+                    item.setFileSource(id);
+
+                    ls.add(item);
+                }
+            } catch (Exception e) {
+                DMR.LOGGER.error("Failed to load data for {}", id, e);
+            }
         }
 
-        DragonArmorRegistry.setArmors(armorList);
+        consumer.accept(ls);
+    }
 
-        for (Entry<ResourceKey<DragonBreathType>, DragonBreathType> ent : breath_reg.entrySet()) {
-            var key = ent.getKey();
-            var breathType = ent.getValue();
-            breathType.setId(key.location().getPath());
-            breathList.add(breathType);
-        }
+    static ObjectMapper lenientMapper = new ObjectMapper();
 
-        DragonBreathRegistry.setBreathTypes(breathList);
+    static {
+        lenientMapper.enable(
+                JsonReadFeature.ALLOW_TRAILING_COMMA.mappedFeature(),
+                JsonReadFeature.ALLOW_MISSING_VALUES.mappedFeature(),
+                JsonReadFeature.ALLOW_JAVA_COMMENTS.mappedFeature(),
+                JsonReadFeature.ALLOW_YAML_COMMENTS.mappedFeature(),
+                JsonReadFeature.ALLOW_SINGLE_QUOTES.mappedFeature(),
+                JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES.mappedFeature(),
+                JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS.mappedFeature(),
+                JsonReadFeature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER.mappedFeature());
+    }
 
-        for (Entry<ResourceKey<DragonBreed>, DragonBreed> ent : breed_reg.entrySet()) {
-            var key = ent.getKey();
-            var breed = ent.getValue();
-            breed.setId(key.location().getPath());
-            breedList.add(breed);
-        }
+    @SubscribeEvent
+    public static void levelLoad(OnDatapackSyncEvent event) {
+        var player = event.getRelevantPlayers().findFirst().orElse(null);
+        if (player == null) return;
 
-        DragonBreedsRegistry.setBreeds(breedList);
+        var level = player.level;
+        var server = level.getServer();
 
-        LootTableInject.firstLoadInjectArmor(level);
-        LootTableInject.firstLoadInjectBreeds(level);
+        if (server == null) return;
 
-        if (level instanceof ServerLevel serverLevel) {
-            ModAdvancements.init(serverLevel);
-        }
+        LootTableInject.injectLootTables(server);
+        ModAdvancements.init(server);
 
         if (!ServerConfig.ENABLE_BLANK_EGG) {
-            var server = level.getServer();
-            if (server == null) return;
             server.getRecipeManager()
                     .replaceRecipes(server.getRecipeManager().getRecipes().stream()
                             .filter(recipe -> !recipe.id().equals(DMR.id("blank_egg")))
@@ -149,24 +105,26 @@ public class DataPackHandler {
         }
     }
 
-    private static <T> DataResult<T> readData(Object input, Class<T> clas) {
-        if (input instanceof JsonElement el) {
-            try {
-                return DataResult.success(DMR.getGson().fromJson(el, clas));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    @SubscribeEvent
+    public static void dataPackData(OnDatapackSyncEvent event) {
+        //        event.getRelevantPlayers()
+        //                .forEach(player -> PacketDistributor.sendToPlayer(player, new SyncDataPackPacket()));
+        //
+    }
 
-        if (input instanceof StringTag tag) {
-            try {
-                return DataResult.success(DMR.getGson().fromJson(tag.getAsString(), clas));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    private static <T> String getSchemaName(Class<T> clas) {
+        String schemaName = null;
 
-        return DataResult.error(
-                () -> "Expected JsonElement, got " + input.getClass().getSimpleName());
+        // Determine which schema to use based on the class
+        if (clas == DragonAbility.class) {
+            schemaName = "ability_schema";
+        } else if (clas == DragonBreed.class) {
+            schemaName = "breed_schema";
+        } else if (clas == DragonBreathType.class) {
+            schemaName = "breath_type_schema";
+        } else if (clas == DragonArmor.class) {
+            schemaName = "armor_schema";
+        }
+        return schemaName;
     }
 }

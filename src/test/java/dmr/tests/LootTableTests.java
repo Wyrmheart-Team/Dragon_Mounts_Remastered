@@ -46,7 +46,7 @@ public class LootTableTests {
         LootTableEntry entry = new LootTableEntry(lootTableLocation, 0.5f, 1, 1);
 
         // Create a loot pool using the inject method
-        LootPool lootPool = LootTableInject.injectEggLoot(testBreed, entry, null);
+        LootPool lootPool = LootTableInject.injectEggLoot(testBreed, entry);
 
         // Verify the loot pool has the correct name
         if (!lootPool.getName().equals("test_breed-egg")) {
@@ -101,7 +101,7 @@ public class LootTableTests {
         LootTable lootTable = new LootTable.Builder().build();
 
         // Add a loot pool to the table
-        LootPool lootPool = LootTableInject.injectEggLoot(testBreed, entry, null);
+        LootPool lootPool = LootTableInject.injectEggLoot(testBreed, entry);
         lootTable.addPool(lootPool);
 
         // Verify the loot pool was added

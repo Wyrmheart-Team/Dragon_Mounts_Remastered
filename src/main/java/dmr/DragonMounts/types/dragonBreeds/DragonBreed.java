@@ -4,41 +4,34 @@ import com.google.gson.annotations.SerializedName;
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.DragonBreathRegistry;
+import dmr.DragonMounts.types.DatapackEntry;
 import dmr.DragonMounts.types.LootTableEntry;
+import dmr.DragonMounts.types.LootTableProvider;
 import dmr.DragonMounts.types.abilities.DragonAbilityEntry;
 import dmr.DragonMounts.types.breath.DragonBreathType;
 import dmr.DragonMounts.types.habitats.Habitat;
-import lombok.EqualsAndHashCode;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Represents a dragon breed with specific attributes, abilities, and characteristics.
  * This class provides serialization support for loading breed data from JSON files.
  */
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(of = {"id"})
 @Getter
-public class DragonBreed {
+public class DragonBreed extends DatapackEntry implements LootTableProvider {
     private <T> T getValueOrDefault(T value, T defaultValue) {
         return value != null && (!(value instanceof Number) || ((Number) value).doubleValue() > 0)
                 ? value
                 : defaultValue;
     }
-
-    @Setter
-    private String id;
 
     @SerializedName("ambient_sound")
     private SoundEvent ambientSound;
@@ -136,5 +129,5 @@ public class DragonBreed {
     private String armorTypeId = "default";
 
     @SerializedName("variants")
-    private List<DragonVariant> variants;
+    private List<DragonVariant> variants = new ArrayList<>();
 }

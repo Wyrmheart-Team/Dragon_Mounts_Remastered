@@ -1,0 +1,255 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Dragon Habitat Schema",
+  "description": "Schema for defining dragon habitats that determine where dragons prefer to live and breed",
+  "type": "object",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["biome"],
+          "description": "Specifies that this habitat is based on the biome the dragon is in."
+        },
+        "biome_tag": {
+          "$ref": "definitions.json#/$defs/biome_tag",
+          "description": "The biome tag that defines which biomes are suitable for this habitat. Dragons will prefer biomes that match this tag.",
+          "examples": ["minecraft:is_mountain", "minecraft:is_end", "minecraft:is_nether"]
+        },
+        "points": {
+          "type": "integer",
+          "description": "The number of habitat points awarded when a dragon is in a matching biome. Higher values make the habitat more desirable.",
+          "minimum": 0,
+          "default": 3,
+          "examples": [3, 5, 10]
+        }
+      },
+      "required": ["type", "biome_tag"],
+      "examples": [
+        {
+          "type": "biome",
+          "biome_tag": "minecraft:is_mountain",
+          "points": 3
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["in_fluid"],
+          "description": "Specifies that this habitat is based on the fluid the dragon is in or near."
+        },
+        "fluid_tag": {
+          "$ref": "definitions.json#/$defs/fluid_tag",
+          "description": "The fluid tag that defines which fluids are suitable for this habitat. Dragons will prefer areas with fluids that match this tag.",
+          "examples": ["minecraft:water", "minecraft:lava"]
+        },
+        "point_multiplier": {
+          "type": "number",
+          "description": "Multiplier applied to the number of matching fluid blocks around the dragon. Higher values make fluids more important for this habitat.",
+          "minimum": 0,
+          "default": 0.5,
+          "examples": [0.5, 1.0, 3.0]
+        }
+      },
+      "required": ["type", "fluid_tag"],
+      "examples": [
+        {
+          "type": "in_fluid",
+          "fluid_tag": "minecraft:lava",
+          "point_multiplier": 3.0
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["world_height"],
+          "description": "Specifies that this habitat is based on the Y-coordinate (height) in the world."
+        },
+        "height": {
+          "type": "integer",
+          "description": "The Y-coordinate threshold for this habitat. Dragons will prefer to be above or below this height depending on the 'below' property.",
+          "minimum": 0,
+          "examples": [64, 100, 200]
+        },
+        "below": {
+          "type": "boolean",
+          "description": "If true, dragons prefer to be below the specified height. If false, dragons prefer to be above the specified height.",
+          "default": false,
+          "examples": [true, false]
+        },
+        "points": {
+          "type": "integer",
+          "description": "The number of habitat points awarded when a dragon is at the correct height. Higher values make the height requirement more important.",
+          "minimum": 0,
+          "default": 3,
+          "examples": [3, 5, 10]
+        }
+      },
+      "required": ["type", "height"],
+      "examples": [
+        {
+          "type": "world_height",
+          "height": 200,
+          "below": false,
+          "points": 3
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["light"],
+          "description": "Specifies that this habitat is based on the light level at the dragon's location."
+        },
+        "light": {
+          "type": "integer",
+          "description": "The light level threshold for this habitat. Dragons will prefer to be in areas with light levels above or below this value depending on the 'below' property.",
+          "minimum": 0,
+          "examples": [7, 10, 15]
+        },
+        "below": {
+          "type": "boolean",
+          "description": "If true, dragons prefer darker areas below the specified light level. If false, dragons prefer brighter areas above the specified light level.",
+          "default": false,
+          "examples": [true, false]
+        },
+        "points": {
+          "type": "integer",
+          "description": "The number of habitat points awarded when a dragon is in an area with the correct light level. Higher values make the light requirement more important.",
+          "minimum": 0,
+          "default": 3,
+          "examples": [3, 5, 10]
+        }
+      },
+      "required": ["type", "light"],
+      "examples": [
+        {
+          "type": "light",
+          "light": 7,
+          "below": true,
+          "points": 3
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["nearby_blocks"],
+          "description": "Specifies that this habitat is based on specific blocks in the vicinity of the dragon."
+        },
+        "block_tag": {
+          "$ref": "definitions.json#/$defs/block_tag",
+          "description": "The block tag that defines which blocks are suitable for this habitat. Dragons will prefer areas with blocks that match this tag.",
+          "examples": ["dmr:fire_dragon_habitat_blocks", "dmr:end_dragon_habitat_blocks"]
+        },
+        "point_multiplier": {
+          "type": "number",
+          "description": "Multiplier applied to the number of matching blocks around the dragon. Higher values make these blocks more important for this habitat.",
+          "minimum": 0,
+          "default": 0.5,
+          "examples": [0.5, 1.0, 2.0]
+        }
+      },
+      "required": ["type", "block_tag"],
+      "examples": [
+        {
+          "type": "nearby_blocks",
+          "block_tag": "dmr:fire_dragon_habitat_blocks",
+          "point_multiplier": 0.5
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["dragon_breath"],
+          "description": "Specifies that this habitat is based on the presence of dragon breath particles in the area. Particularly useful for end dragons."
+        }
+      },
+      "required": ["type"],
+      "examples": [
+        {
+          "type": "dragon_breath"
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["time"],
+          "description": "Specifies that this habitat is based on the time of day in the world."
+        },
+        "is_day": {
+          "type": "boolean",
+          "description": "If true, dragons prefer daytime. If false, dragons prefer nighttime.",
+          "default": true,
+          "examples": [true, false]
+        },
+        "points": {
+          "type": "integer",
+          "description": "The number of habitat points awarded when the time of day matches the preference. Higher values make the time requirement more important.",
+          "minimum": 0,
+          "default": 1,
+          "examples": [1, 3, 5]
+        }
+      },
+      "required": ["type"],
+      "examples": [
+        {
+          "type": "time",
+          "is_day": false,
+          "points": 1
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["picky"],
+          "description": "Specifies a compound habitat that requires multiple other habitat conditions to be satisfied simultaneously."
+        },
+        "required_habitats": {
+          "type": "array",
+          "items": {
+            "$ref": "#",
+            "description": "A habitat definition that must be satisfied. If any required habitat returns 0 points, the entire picky habitat returns 0 points."
+          },
+          "description": "List of habitat conditions that must all be satisfied for this habitat to be valid. All conditions must be met (AND logic).",
+          "examples": [
+            [
+              {"type": "in_fluid", "fluid_tag": "minecraft:lava", "point_multiplier": 3.0},
+              {"type": "biome", "biome_tag": "minecraft:is_overworld", "points": 3}
+            ]
+          ]
+        }
+      },
+      "required": ["type", "required_habitats"],
+      "examples": [
+        {
+          "type": "picky",
+          "required_habitats": [
+            {"type": "in_fluid", "fluid_tag": "minecraft:lava", "point_multiplier": 3.0},
+            {"type": "biome", "biome_tag": "minecraft:is_overworld", "points": 3}
+          ]
+        }
+      ]
+    }
+  ]
+}

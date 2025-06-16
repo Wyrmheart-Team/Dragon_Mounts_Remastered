@@ -16,7 +16,6 @@ base {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-
 spotless {
     java {
         target 'src/*/java/**/*.java'
@@ -33,14 +32,6 @@ spotless {
 }
 
 sourceSets {
-    test {
-        java {
-            srcDirs 'src/test/java'
-        }
-        resources {
-            srcDirs 'src/test/resources'
-        }
-    }
     generated {
         resources {
             srcDir 'src/generated/resources'
@@ -48,25 +39,9 @@ sourceSets {
     }
 }
 
-test {
-    useJUnitPlatform()
+tasks.named('build') {
+    dependsOn tasks.named('spotlessApply')
 }
-
-dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testImplementation "net.neoforged:testframework:${project.neo_version}"
-
-    testImplementation sourceSets.main.output
-
-    implementation "software.bernie.geckolib:geckolib-neoforge-$minecraft_version:$geckolib_version"
-
-    compileOnly "mezz.jei:jei-$minecraft_version-common-api:$jei_version"
-    compileOnly "mezz.jei:jei-$minecraft_version-neoforge-api:$jei_version"
-
-    runtimeOnly "mezz.jei:jei-$minecraft_version-neoforge:$jei_version"
-}
-
 
 neoForge {
     version = project.neo_version
@@ -81,7 +56,8 @@ neoForge {
 
     runs {
         configureEach {
-            logLevel = org.slf4j.event.Level.DEBUG
+            logLevel = Level.WARN
+            sourceSet = sourceSets.main
         }
         client {
             client()
@@ -96,14 +72,6 @@ neoForge {
             type = "gameTestServer"
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
             logLevel = Level.INFO
-
-            sourceSet = sourceSets.test
-            // Include the test resources in the classpath for this specific run config.
-            mods  {
-                "${mod_id}" {
-                    sourceSet(sourceSets.test)
-                }
-            }
         }
 
         data {
@@ -118,11 +86,35 @@ neoForge {
         }
     }
 
-    unitTest {
-        enable()
-        testedMod = mods."${mod_id}"
-    }
     additionalMinecraftArtifacts.put('vanillaDeobfuscated', project.file('build/vanilla.jar'))
+}
+
+dependencies {
+    testImplementation libs.junit
+    testRuntimeOnly libs.junit.platform
+
+    testImplementation "net.neoforged:testframework:${project.neo_version}"
+    testImplementation sourceSets.main.output
+
+    implementation "software.bernie.geckolib:geckolib-neoforge-$minecraft_version:$geckolib_version"
+
+    implementation (libs.schema.validator){
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    additionalRuntimeClasspath libs.schema.validator
+
+    jarJar(implementation("com.networknt:json-schema-validator")){
+        version {
+            strictly '[1.5.7,)'
+            prefer '1.5.7'
+        }
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+
+    compileOnly "mezz.jei:jei-$minecraft_version-common-api:$jei_version"
+    compileOnly "mezz.jei:jei-$minecraft_version-neoforge-api:$jei_version"
+
+    runtimeOnly "mezz.jei:jei-$minecraft_version-neoforge:$jei_version"
 }
 
 sourceSets.main.resources {
@@ -176,8 +168,4 @@ idea {
 
 tasks.named('spotlessCheck') {
     enabled = false
-}
-
-tasks.named('build') {
-    dependsOn tasks.named('spotlessApply')
 }

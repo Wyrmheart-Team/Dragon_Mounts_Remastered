@@ -1,0 +1,41 @@
+{
+  "dragon_abilities": [
+    {
+      "ability": "quick_flight",
+      "chance": 0.5
+    }
+  ],
+  "abilities": ["quick_flight"],
+  "hatch_particles": "minecraft:cloud",
+  "habitats": [
+    {
+      "type": "world_height",
+      "height": 200
+    },
+    {
+      "type": "nearby_blocks",
+      "block_tag": "dmr:aether_dragon_habitat_blocks"
+    },
+    {
+      "type": "biome",
+      "biome_tag": "minecraft:is_mountain"
+    },
+    {
+      "type": "biome",
+      "biome_tag": "aether:is_aether"
+    }
+  ],
+  "primary_color": "718aa9",
+  "secondary_color": "e6e6e6",
+  "breath_type": "aether",
+  "inventory_texture": "textures/block/cyan_concrete_powder.png",
+  "loot_tables": [
+    {
+      "table": "minecraft:chests/simple_dungeon",
+      "chance": 0.15,
+      "min": 1,
+      "max": 1
+    }
+  ],
+  "accessories": ["tail_mem"]
+}

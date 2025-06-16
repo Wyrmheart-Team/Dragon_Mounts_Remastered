@@ -7,7 +7,6 @@ import dmr.DragonMounts.client.model.DragonEggModelLoader;
 import dmr.DragonMounts.registry.ModItems;
 import dmr.DragonMounts.registry.ModMenus;
 import dmr.DragonMounts.server.items.DragonSpawnEgg;
-import dmr.DragonMounts.types.ResourcePackLoader;
 import net.minecraft.util.FastColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -27,8 +26,6 @@ public class ClientRegistry {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void setupClient(final FMLClientSetupEvent event) {
-        ResourcePackLoader.addReloadListener(event);
-
         var modContainer = ModLoadingContext.get().getActiveContainer();
         modContainer.registerExtensionPoint(
                 IConfigScreenFactory.class, (mc, parent) -> new ConfigurationScreen(modContainer, parent));

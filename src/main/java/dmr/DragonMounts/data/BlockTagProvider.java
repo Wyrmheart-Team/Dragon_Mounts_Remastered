@@ -1,7 +1,7 @@
 package dmr.DragonMounts.data;
 
 import dmr.DragonMounts.DMR;
-import dmr.DragonMounts.types.abilities.dragon_types.fire_dragon.HotFeetAbility;
+import dmr.DragonMounts.types.abilities.base_abilities.HotFeetAbility;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.data.PackOutput;

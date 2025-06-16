@@ -1,6 +1,5 @@
 package dmr.DragonMounts.mixins;
 
-import dmr.DragonMounts.registry.DragonAbilities;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -18,7 +17,7 @@ public abstract class PlayerBreathMixin {
         if (((LivingEntity) (Object) this) instanceof Player player) {
             if (player.isPassenger() && player.getVehicle() instanceof TameableDragonEntity dragon) {
                 if (!dragon.canDrownInFluidType(Fluids.WATER.getFluidType())) {
-                    if (dragon.getBreed().getAbilities().contains(DragonAbilities.AQUATIC_GRACE_ABILITY)) {
+                    if (dragon.hasAbilityId("aquatic_grace")) {
                         ci.setReturnValue(true);
                     }
                 }

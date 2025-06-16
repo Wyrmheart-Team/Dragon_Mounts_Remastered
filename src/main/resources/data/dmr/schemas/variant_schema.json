@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Dragon Variant Schema",
+  "description": "Schema for defining dragon variants with their visual appearance and properties",
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "definitions.json#/$defs/identifier",
+      "description": "Unique identifier for the variant. Used to reference this variant in code and other configurations.",
+      "examples": ["albino", "ancient", "crystal"]
+    },
+    "texture": {
+      "$ref": "definitions.json#/$defs/texture",
+      "description": "Main skin texture for the variant. This is the primary texture used for the dragon's body.",
+      "examples": ["dmr:textures/entity/dragon/albino.png", "dmr:textures/entity/dragon/crystal.png"]
+    },
+    "saddle_texture": {
+      "$ref": "definitions.json#/$defs/texture",
+      "description": "Texture used for the saddle when the dragon is equipped with one. This is overlaid on top of the main texture.",
+      "examples": ["dmr:textures/entity/dragon/saddle/leather.png", "dmr:textures/entity/dragon/saddle/gold.png"]
+    },
+    "glow_texture": {
+      "$ref": "definitions.json#/$defs/texture",
+      "description": "Texture used for parts of the dragon that should glow in the dark. This is rendered with emissive properties.",
+      "examples": ["dmr:textures/entity/dragon/glow/ender.png", "dmr:textures/entity/dragon/glow/crystal.png"]
+    },
+    "egg_texture": {
+      "$ref": "definitions.json#/$defs/texture",
+      "description": "Texture used for this variant's dragon egg. Each variant can have a unique egg appearance.",
+      "examples": ["dmr:textures/entity/dragon_egg/fire.png", "dmr:textures/entity/dragon_egg/water.png"]
+    },
+    "breath_type": {
+      "$ref": "definitions.json#/$defs/breath_type",
+      "description": "The type of breath attack that this variant uses. Can override the breed's default breath type.",
+      "examples": ["fire", "ender", "water"]
+    },
+    "primary_color": {
+      "$ref": "definitions.json#/$defs/color",
+      "description": "Primary color of the variant in hexadecimal format (without # prefix). Used for the main body color and various rendering effects.",
+      "examples": ["ffffff", "000000", "ff0000"]
+    },
+    "secondary_color": {
+      "$ref": "definitions.json#/$defs/color",
+      "description": "Secondary color of the variant in hexadecimal format (without # prefix). Used for highlights, patterns, and various rendering effects.",
+      "examples": ["eeeeee", "333333", "00ff00"]
+    },
+    "size_modifier": {
+      "type": "number",
+      "description": "Size multiplier applied to the variant's base dimensions. Values greater than 1.0 make the variant larger, while values less than 1.0 make it smaller.",
+      "minimum": 0,
+      "examples": [0.8, 1.0, 1.2]
+    }
+  },
+  "required": ["id"]
+}

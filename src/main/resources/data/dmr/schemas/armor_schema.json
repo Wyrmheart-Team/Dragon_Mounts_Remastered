@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Dragon Armor Schema",
+  "description": "Schema for defining dragon armor types with their protection values and loot tables",
+  "type": "object",
+  "properties": {
+    "protection": {
+      "type": "integer",
+      "description": "Protection level provided by this armor type. Higher values provide more damage reduction when the dragon is attacked.",
+      "minimum": 0,
+      "examples": [4, 8, 12]
+    },
+    "loot_tables": {
+      "$ref": "definitions.json#/$defs/loot_tables",
+      "description": "Collection of loot tables that can contain this armor type, along with their drop chances and quantities.",
+      "examples": [
+        [
+          {
+            "table": "minecraft:chests/end_city_treasure",
+            "chance": 0.1,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      ]
+    }
+  },
+  "required": ["protection", "loot_tables"]
+}

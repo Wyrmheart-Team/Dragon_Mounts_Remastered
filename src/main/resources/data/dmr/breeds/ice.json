@@ -1,0 +1,36 @@
+{
+  "dragon_abilities": [
+    {
+      "ability": "frost_walker",
+      "chance": 0.5
+    },
+    {
+      "ability": "frost_aura",
+      "chance": 0.5
+    }
+  ],
+  "habitats": [
+    {
+      "type": "nearby_blocks",
+      "block_tag": "dmr:ice_dragon_habitat_blocks"
+    },
+    {
+      "type": "biome",
+      "biome_tag": "forge:is_cold/overworld"
+    }
+  ],
+  "hatch_particles": "minecraft:snowflake",
+  "immunities": ["drown", "freeze"],
+  "primary_color": "ffffff",
+  "secondary_color": "e1ff",
+  "breath_type": "ice",
+  "inventory_texture": "textures/block/ice.png",
+  "loot_tables": [
+    {
+      "table": "minecraft:chests/igloo_chest",
+      "chance": 0.15,
+      "min": 1,
+      "max": 1
+    }
+  ]
+}

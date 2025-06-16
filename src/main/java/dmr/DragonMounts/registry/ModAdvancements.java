@@ -16,14 +16,14 @@ import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.ServerAdvancementManager;
-import net.minecraft.server.level.ServerLevel;
 
 public class ModAdvancements {
 
-    public static void init(ServerLevel level) {
-        ServerAdvancementManager manager = level.getServer().getAdvancements();
+    public static void init(MinecraftServer server) {
+        ServerAdvancementManager manager = server.getAdvancements();
 
         HashMap<ResourceLocation, AdvancementHolder> map = new HashMap<>();
         Consumer<AdvancementHolder> register = (AdvancementHolder holder) -> {
@@ -104,9 +104,8 @@ public class ModAdvancements {
             }
         }
         for (PlayerAdvancements playeradvancements :
-                level.getServer().getPlayerList().advancements.values()) {
-            playeradvancements.reload(
-                    level.getServer().getPlayerList().getServer().getAdvancements());
+                server.getPlayerList().advancements.values()) {
+            playeradvancements.reload(server.getPlayerList().getServer().getAdvancements());
         }
     }
 }

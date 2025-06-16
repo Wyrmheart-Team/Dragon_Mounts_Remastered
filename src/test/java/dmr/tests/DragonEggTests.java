@@ -185,7 +185,6 @@ public class DragonEggTests {
             eggEntity.setBreedId("test");
             eggEntity.setHatchTime(0);
             eggEntity.setOwner("test");
-            eggEntity.setCustomName(null);
             eggEntity.getBreed();
             eggEntity.setBreed(DragonBreedsRegistry.getDefault());
         } else {

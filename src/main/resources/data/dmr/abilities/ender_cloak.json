@@ -1,0 +1,8 @@
+{
+  "id": "ender_cloak",
+  "ability_type": "ender_cloak",
+  "breed_transferable": true,
+  "properties": {
+    "protection_radius": 32.0
+  }
+}

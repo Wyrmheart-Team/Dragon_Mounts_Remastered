@@ -1,0 +1,8 @@
+{
+  "id": "quick_flight",
+  "ability_type": "attribute",
+  "breed_transferable": true,
+  "attributes": {
+    "minecraft:generic.flying_speed": 0.25
+  }
+}

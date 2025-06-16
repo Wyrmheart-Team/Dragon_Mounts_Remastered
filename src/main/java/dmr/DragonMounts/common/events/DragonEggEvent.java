@@ -3,9 +3,10 @@ package dmr.DragonMounts.common.events;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModBlocks;
+import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
 import dmr.DragonMounts.server.blocks.DMREggBlock;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -25,12 +26,9 @@ public class DragonEggEvent {
                 } else {
                     var state =
                             ModBlocks.DRAGON_EGG_BLOCK.get().defaultBlockState().setValue(DMREggBlock.HATCHING, true);
-                    DMREggBlock.place(
-                            (ServerLevel) e.getLevel(),
-                            e.getPos(),
-                            state,
-                            DragonBreedsRegistry.getDragonBreed("end"),
-                            null);
+                    e.getLevel().setBlock(e.getPos(), state, Block.UPDATE_ALL);
+                    var egg = (DMREggBlockEntity) e.getLevel().getBlockEntity(e.getPos());
+                    egg.setBreed(DragonBreedsRegistry.getDragonBreed("end"));
                 }
                 e.setCanceled(true);
             }

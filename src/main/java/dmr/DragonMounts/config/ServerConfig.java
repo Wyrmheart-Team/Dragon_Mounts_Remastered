@@ -49,6 +49,9 @@ public class ServerConfig {
     @Config(key = "enable_natural_dragon_spawns", comment = "Enable or disable natural dragon spawns.")
     public static boolean ENABLE_NATURAL_DRAGON_SPAWNS = false;
 
+    @Config(key = "enable_dragon_tiers", comment = "Enable or disable dragon tiers.")
+    public static boolean ENABLE_DRAGON_TIERS = true;
+
     @Config(
             key = "dragon_history_size",
             comment =
@@ -62,7 +65,7 @@ public class ServerConfig {
 
     @Config(key = "health_regen", comment = "Passive health regen value for dragons.", category = "base_stats")
     @RangeConstraint(min = 0)
-    public static double HEALTH_REGEN = 1.0;
+    public static double HEALTH_REGEN = 0;
 
     @Config(key = "base_damage", comment = "Base damage of all dragons.", category = "base_stats")
     @RangeConstraint(min = 1.0)
@@ -79,48 +82,48 @@ public class ServerConfig {
     @Config(
             key = "enable_random_stats",
             comment = "Whether to enable random stats for dragons.",
-            category = {"base_stats", "random_stats"})
+            category = "random_stats")
     public static boolean ENABLE_RANDOM_STATS = true;
 
     @Config(
             key = "upper_max_health",
             comment = "The maximum health bonus for dragons with random stats.",
-            category = {"base_stats", "random_stats"})
+            category = "random_stats")
     @RangeConstraint(min = 0)
     public static int UPPER_MAX_HEALTH = 10;
 
     @Config(
             key = "upper_damage",
             comment = "The maximum damage bonus for dragons with random stats.",
-            category = {"base_stats", "random_stats"})
+            category = "random_stats")
     @RangeConstraint(min = 0)
     public static double UPPER_DAMAGE = 5.0;
 
     @Config(
             key = "upper_speed",
             comment = "The maximum speed bonus for dragons with random stats.",
-            category = {"base_stats", "random_stats"})
+            category = "random_stats")
     @RangeConstraint(min = 0)
     public static double UPPER_SPEED = 0.2;
 
     @Config(
             key = "lower_max_health",
             comment = "The minimum health penalty for dragons with random stats.",
-            category = {"base_stats", "random_stats"})
+            category = "random_stats")
     @RangeConstraint(min = -Integer.MAX_VALUE, max = -1)
     public static int LOWER_MAX_HEALTH = -5;
 
     @Config(
             key = "lower_damage",
             comment = "The minimum damage penalty for dragons with random stats.",
-            category = {"base_stats", "random_stats"})
+            category = "random_stats")
     @RangeConstraint(min = -Double.MAX_VALUE, max = -1)
     public static double LOWER_DAMAGE = -2.5;
 
     @Config(
             key = "lower_speed",
             comment = "The minimum speed penalty for dragons with random stats.",
-            category = {"base_stats", "random_stats"})
+            category = "random_stats")
     @RangeConstraint(min = -Double.MAX_VALUE, max = 0)
     public static double LOWER_SPEED = -0.1;
 

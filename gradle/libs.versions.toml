@@ -1,0 +1,8 @@
+[versions]
+schema-validator = '1.5.7'
+junit = '5.10.2'
+
+[libraries]
+junit = { module = 'org.junit.jupiter:junit-jupiter', version.ref = 'junit'}
+junit-platform = { module = 'org.junit.platform:junit-platform-launcher'}
+schema-validator = { module = 'com.networknt:json-schema-validator', version.ref = 'schema-validator'}

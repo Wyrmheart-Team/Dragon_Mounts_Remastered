@@ -1,0 +1,9 @@
+{
+  "id": "healthy",
+  "ability_type": "attribute",
+  "breed_transferable": true,
+  "max_tier": 5,
+  "attributes": {
+    "minecraft:generic.max_health": 20.0
+  }
+}

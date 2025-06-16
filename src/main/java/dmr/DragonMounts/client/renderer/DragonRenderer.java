@@ -101,7 +101,32 @@ public class DragonRenderer extends GeoEntityRenderer<TameableDragonEntity> {
         }
 
         if (!entity.isAdult()) {
-            var scale = 0.25f + (entity.getAgeProgress() * 0.75f);
+            float ageProgress = entity.getAgeProgress();
+            float scale;
+
+            if (ageProgress <= 0.7f) {
+                // Normal linear scaling until 70% age progress
+                scale = 0.25f + (ageProgress * 0.75f);
+            } else {
+                // Non-linear scaling after 70% age progress
+                // Calculate base scale at 70% progress
+                float baseScale = 0.25f + (0.7f * 0.75f); // = 0.775f
+
+                // Get the max scale attribute
+                float maxScaleAttribute = entity.getEntityData().get(TameableDragonEntity.maxScaleAttribute);
+
+                // Calculate the target scale (max scale + max scale attribute)
+                float breedScale = entity.getBreed().getSizeModifier();
+                // breedScale/2 = max scale is 50% larger
+                float maxScale = breedScale + ((breedScale / 2) * maxScaleAttribute);
+
+                // Calculate progress within the 70%-100% range
+                float lateProgress = (ageProgress - 0.7f) / 0.3f; // Normalize to 0-1 range
+
+                // Interpolate between base scale and max scale
+                scale = baseScale + (lateProgress * (maxScale - baseScale));
+            }
+
             stack.scale(scale, scale, scale);
         }
 
