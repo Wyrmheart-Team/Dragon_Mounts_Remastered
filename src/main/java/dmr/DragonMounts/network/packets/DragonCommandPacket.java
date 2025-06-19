@@ -103,7 +103,8 @@ public class DragonCommandPacket extends AbstractMessage<DragonCommandPacket> {
             return;
         }
 
-        if (Command.values()[command] == Command.WHISTLE) {
+        var cmd = Command.values()[command];
+        if (cmd == Command.WHISTLE) {
             DragonWhistleHandler.summonDragon(player);
             player.displayClientMessage(Component.translatable("dmr.command_mode.whistle.text"), true);
             return;
