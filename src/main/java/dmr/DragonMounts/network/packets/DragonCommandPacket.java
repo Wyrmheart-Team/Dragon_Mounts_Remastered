@@ -113,7 +113,7 @@ public class DragonCommandPacket extends AbstractMessage<DragonCommandPacket> {
         var dragonEntity = level.getEntity(instance.getEntityId());
 
         if (dragonEntity instanceof TameableDragonEntity dragon) {
-            switch (Command.values()[command]) {
+            switch (cmd) {
                 case SIT -> {
                     dragon.setWanderTarget(Optional.empty());
                     dragon.setOrderedToSit(true);
