@@ -2,7 +2,7 @@
   "attributes": {
     "minecraft:generic.armor": 8.0
   },
-  "dragon_abilities": [
+  "abilities": [
     {
       "ability": "#common_abilities"
     },

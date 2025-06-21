@@ -2,7 +2,7 @@ param (
     [string]$WebhookUrl,        # Discord webhook URL
     [string]$ModName,           # Name of the mod
     [string]$NewReleaseVersion, # New release version
-    [string]$Changelog,         # Changelog content
+    [string]$ChangelogFile = "",# Path to file containing changelog content
     [string]$GitAuthor,         # Git commit author
     [string]$AuthorAvatar,      # Author avatar URL
     [string]$ButtonsJson
@@ -20,7 +20,19 @@ Write-Host "Sending Discord notification..."
 # Get the current timestamp in ISO 8601 format
 $timestamp = (Get-Date).ToString("o")
 
-$description = $Changelog -replace '\\n', "`n"
+# Get changelog content from the file
+$description = ""
+if ($ChangelogFile -and (Test-Path $ChangelogFile)) {
+    Write-Host "Reading changelog from file: $ChangelogFile"
+    $description = Get-Content -Path $ChangelogFile -Raw
+} else {
+    Write-Warning "No changelog file provided or file not found"
+}
+
+# Ensure the description is not null
+if (-not $description) {
+    $description = "No changelog available"
+}
 
 # Define the payload for the Discord webhook
 $payload = @{

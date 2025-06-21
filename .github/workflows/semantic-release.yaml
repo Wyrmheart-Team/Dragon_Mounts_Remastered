@@ -9,88 +9,35 @@ on:
         default: false
         type: boolean
     outputs:
-      new_release_published:
+      published:
         description: 'Whether a new release was published'
-        value: ${{ jobs.semantic-release.outputs.new_release_published }}
-      new_release_version:
+        value: ${{ jobs.semantic.outputs.published }}
+      version:
         description: 'The new release version'
-        value: ${{ jobs.semantic-release.outputs.new_release_version }}
-      changelog:
-        description: 'The changelog value'
-        value: ${{ jobs.semantic-release.outputs.changelog }}
+        value: ${{ jobs.semantic.outputs.version }}
 
 jobs:
-  semantic-release:
+  semantic:
     name: Semantic Release
     runs-on: ubuntu-latest
     outputs:
-      changelog: ${{ steps.release_description.outputs.description }}
-      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
-      new_release_version: ${{ steps.semantic.outputs.new_release_version }}
-
+      published: ${{ steps.rel.outputs.new_release_published }}
+      version:   ${{ steps.rel.outputs.new_release_version }}
+    
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20.x'
-          registry-url: 'https://npm.pkg.github.com'
-
-      - name: Cache npm dependencies
-        id: cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Save updated npm cache
-        if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
       
-      - name: Split Semantic Commit Messages
-        id: split_commits
-        shell: pwsh
-        run: |
-          # Make script executable
-          chmod +x ./.github/scripts/split-semantic-commits.ps1
-          # Run the script
-          pwsh ./.github/scripts/split-semantic-commits.ps1
-
       - name: Run Semantic Release
-        id: semantic
+        id: rel
         uses: cycjimmy/semantic-release-action@v4
         with:
-          semantic_version: 24.2.0
-          extra_plugins: |
-            @semantic-release/commit-analyzer
-            @semantic-release/release-notes-generator
           dry_run: ${{ inputs.dry-run }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-
-      - name: Generate Changelog Value
-        id: release_description
-        shell: bash
-        run: |
-          cat <<EOF > release_notes.txt
-          ${{ steps.semantic.outputs.new_release_notes }}
-          EOF
-          description=$(sed ':a;N;$!ba; s/\r//g; s/\n/\\n/g; s/"/\\"/g; s/%/\\n/g' release_notes.txt)
-          echo "description=$description" >> $GITHUB_OUTPUT
-
-          # Output changelog as job summary
-          echo "## Changelog for version ${{ steps.semantic.outputs.new_release_version }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          cat release_notes.txt >> $GITHUB_STEP_SUMMARY
-
-          rm release_notes.txt
+      
+      - name: Upload CHANGELOG.md as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: changelog-md
+          path: CHANGELOG.md

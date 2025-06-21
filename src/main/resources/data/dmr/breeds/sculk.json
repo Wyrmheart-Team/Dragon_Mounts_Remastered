@@ -11,7 +11,7 @@
       "block_tag": "dmr:sculk_dragon_habitat_blocks"
     }
   ],
-  "dragon_abilities": [
+  "abilities": [
     {
       "ability": "#common_abilities"
     },

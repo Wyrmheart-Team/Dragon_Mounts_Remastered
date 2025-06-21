@@ -83,7 +83,7 @@
         ]
       ]
     },
-    "dragon_abilities": {
+    "abilities": {
       "type": "array",
       "items": {
         "$ref": "definitions.json#/$defs/ability_entry",

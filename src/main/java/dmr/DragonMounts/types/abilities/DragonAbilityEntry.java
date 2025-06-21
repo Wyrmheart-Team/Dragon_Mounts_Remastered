@@ -10,8 +10,8 @@ import net.minecraft.resources.ResourceLocation;
  */
 @Getter
 public class DragonAbilityEntry {
-    
-    //TODO: Add ability groups to be able to have reuseable groups of abilities
+
+    // TODO: Add ability groups to be able to have reuseable groups of abilities
     @SerializedName("ability")
     private ResourceLocation ability;
 

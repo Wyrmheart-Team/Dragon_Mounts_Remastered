@@ -1,7 +1,6 @@
 package dmr.DragonMounts.registry.datapack;
 
 import dmr.DragonMounts.types.breath.DragonBreathType;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

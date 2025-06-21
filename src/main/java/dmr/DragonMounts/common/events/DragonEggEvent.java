@@ -1,8 +1,8 @@
 package dmr.DragonMounts.common.events;
 
 import dmr.DragonMounts.config.ServerConfig;
-import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.block.ModBlocks;
+import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
 import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
 import dmr.DragonMounts.server.blocks.DMREggBlock;
 import net.minecraft.world.InteractionHand;

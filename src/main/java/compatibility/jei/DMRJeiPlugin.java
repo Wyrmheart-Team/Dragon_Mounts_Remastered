@@ -1,8 +1,8 @@
 package compatibility.jei;
 
 import dmr.DragonMounts.DMR;
-import dmr.DragonMounts.registry.datapack.DragonArmorRegistry;
 import dmr.DragonMounts.registry.ModComponents;
+import dmr.DragonMounts.registry.datapack.DragonArmorRegistry;
 import dmr.DragonMounts.registry.item.ModItems;
 import dmr.DragonMounts.types.armor.DragonArmor;
 import java.util.ArrayList;

@@ -1,5 +1,4 @@
 {
-  "id": "fire_proof",
   "ability_type": "conditional_effect",
   "breed_transferable": true,
   "properties": {

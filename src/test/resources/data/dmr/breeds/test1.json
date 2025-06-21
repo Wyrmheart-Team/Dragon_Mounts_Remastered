@@ -1,7 +1,7 @@
 {
   "hatch_particles": "minecraft:dripping_water",
   "immunities": ["drown"],
-  "dragon_abilities": [
+  "abilities": [
     {
       "ability": "aquatic_grace",
       "chance": 0.5

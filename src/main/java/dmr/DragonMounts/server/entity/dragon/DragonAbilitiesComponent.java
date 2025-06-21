@@ -8,6 +8,8 @@ import dmr.DragonMounts.types.abilities.Ability;
 import dmr.DragonMounts.types.abilities.DragonAbility;
 import dmr.DragonMounts.types.abilities.DragonAbilityEntry;
 import dmr.DragonMounts.util.MiscUtils;
+import java.util.*;
+import java.util.function.Consumer;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -19,9 +21,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.*;
-import java.util.function.Consumer;
 
 abstract class DragonAbilitiesComponent extends DragonTierComponent {
     protected DragonAbilitiesComponent(EntityType<? extends TamableAnimal> entityType, Level level) {
@@ -120,7 +119,11 @@ abstract class DragonAbilitiesComponent extends DragonTierComponent {
      * @param maxAbilities The maximum number of abilities to select
      * @param processedTags Set of already processed tags to avoid infinite recursion
      */
-    private void selectAbilities(ArrayList<Ability> selectedAbilities, List<DragonAbilityEntry> possibilities, int maxAbilities, Set<String> processedTags) {
+    private void selectAbilities(
+            ArrayList<Ability> selectedAbilities,
+            List<DragonAbilityEntry> possibilities,
+            int maxAbilities,
+            Set<String> processedTags) {
         if (selectedAbilities.size() >= maxAbilities) return;
 
         // Create a copy and shuffle to randomize order for equal chances
@@ -128,9 +131,8 @@ abstract class DragonAbilitiesComponent extends DragonTierComponent {
         Collections.shuffle(entries);
 
         // Sort by adjusted chance (higher chance first)
-        entries.sort((a, b) -> Float.compare(
-                calculateAdjustedChance(b.getChance()),
-                calculateAdjustedChance(a.getChance())));
+        entries.sort((a, b) ->
+                Float.compare(calculateAdjustedChance(b.getChance()), calculateAdjustedChance(a.getChance())));
 
         // Process each entry
         for (DragonAbilityEntry entry : entries) {
@@ -155,8 +157,8 @@ abstract class DragonAbilitiesComponent extends DragonTierComponent {
 
                 if (abilityTag != null) {
                     // Recursively process the tag's entries
-                    selectAbilities(selectedAbilities, abilityTag.getAbilities(), 
-                                   maxAbilities, new HashSet<>(processedTags));
+                    selectAbilities(
+                            selectedAbilities, abilityTag.getAbilities(), maxAbilities, new HashSet<>(processedTags));
                 }
             } else {
                 // This is a direct ability, try to add it
@@ -164,7 +166,7 @@ abstract class DragonAbilitiesComponent extends DragonTierComponent {
             }
         }
     }
-    
+
     /**
      * Tries to add an ability to the list based on its chance.
      *
@@ -195,7 +197,7 @@ abstract class DragonAbilitiesComponent extends DragonTierComponent {
         // Add the ability
         abilities.add(ability);
     }
-    
+
     /**
      * Calculates an adjusted chance based on the dragon's tier.
      * At tier 0, chances remain the same.
@@ -207,22 +209,21 @@ abstract class DragonAbilitiesComponent extends DragonTierComponent {
      */
     private float calculateAdjustedChance(float baseChance) {
         if (!ServerConfig.ENABLE_DRAGON_TIERS) return baseChance;
-        
+
         // Get the dragon's tier level (0-4)
         int tierLevel = getDragon().getTier().getLevel();
-        
+
         // At tier 0, return the original chance
         if (tierLevel == 0) return baseChance;
-        
+
         // Calculate the inversion factor (0 at tier 0, 1 at max tier)
         float maxTier = 4.0f; // LEGENDARY is tier 4
         float inversionFactor = tierLevel / maxTier;
-        
+
         // Invert the probability based on the inversion factor
         // As inversionFactor approaches 1, the result approaches (1 - baseChance)
         return (1.0f - inversionFactor) * baseChance + inversionFactor * (1.0f - baseChance);
     }
-
 
     private int calculateMaxAbilities() {
         // Add modifiers from traits
@@ -242,7 +243,8 @@ abstract class DragonAbilitiesComponent extends DragonTierComponent {
         if (maxTier <= 1) return 1;
 
         // Get the dragon's tier level (0-4)
-        int dragonTierLevel = ServerConfig.ENABLE_DRAGON_TIERS ? getDragon().getTier().getLevel() : 0;
+        int dragonTierLevel =
+                ServerConfig.ENABLE_DRAGON_TIERS ? getDragon().getTier().getLevel() : 0;
 
         // Calculate a bias factor based on the dragon's tier
         // Higher tier dragons have a higher bias towards higher ability tiers

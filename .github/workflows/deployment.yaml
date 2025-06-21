@@ -23,12 +23,11 @@ jobs:
   
   deploy:
     needs: [semantic-release, game-tests]
-    if: needs.semantic-release.outputs.new_release_published == 'true'
+    if: needs.semantic-release.outputs.published == 'true'
     uses: ./.github/workflows/release.yaml
     secrets: inherit
     with:
-      new_release_version: ${{ needs.semantic-release.outputs.new_release_version }}
-      changelog: ${{ needs.semantic-release.outputs.changelog }}
+      version: ${{ needs.semantic-release.outputs.version }}
   
   set-version-tags:
     needs: deploy

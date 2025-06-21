@@ -1,5 +1,4 @@
 {
-  "id": "swift_swim",
   "ability_type": "conditional_effect",
   "breed_transferable": true,
   "properties": {

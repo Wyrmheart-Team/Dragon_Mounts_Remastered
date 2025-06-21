@@ -1,5 +1,4 @@
 {
-  "id": "frost_aura",
   "ability_type": "monster_aura",
   "breed_transferable": true,
   "properties": {

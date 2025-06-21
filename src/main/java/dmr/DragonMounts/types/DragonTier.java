@@ -1,12 +1,11 @@
 package dmr.DragonMounts.types;
 
+import java.util.Arrays;
+import java.util.Collections;
 import lombok.Getter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 @Getter
 public enum DragonTier {
@@ -34,10 +33,10 @@ public enum DragonTier {
 
     public static DragonTier getRandomTier() {
         double random = Math.random();
-        
+
         var tiers = Arrays.asList(values());
         Collections.reverse(tiers);
-        
+
         for (DragonTier tier : tiers) {
             if (random <= tier.getSpawnChance()) {
                 return tier;

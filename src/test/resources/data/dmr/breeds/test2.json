@@ -1,7 +1,7 @@
 {
   "hatch_particles": "minecraft:end_rod",
   "accessories": ["middle_tail_scales"],
-  "dragon_abilities": [
+  "abilities": [
     {
       "ability": "gem_guard",
       "chance": 0.5

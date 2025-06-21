@@ -7,7 +7,7 @@
       "block_tag": "dmr:amethyst_dragon_habitat_blocks"
     }
   ],
-  "dragon_abilities": [
+  "abilities": [
     {
       "ability": "#common_abilities"
     },

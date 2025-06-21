@@ -5,12 +5,11 @@ import dmr.DragonMounts.types.abilities.Ability;
 import dmr.DragonMounts.types.abilities.DragonAbility;
 import dmr.DragonMounts.types.abilities.base_abilities.*;
 import dmr.DragonMounts.types.abilities.generic_abilities.*;
-import net.minecraft.resources.ResourceLocation;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import net.minecraft.resources.ResourceLocation;
 
 public class DragonAbilityRegistry {
     // Registry for ability types (implementations of the Ability interface)
@@ -78,7 +77,7 @@ public class DragonAbilityRegistry {
     public static DragonAbility getAbilityDefinition(ResourceLocation id) {
         return ABILITY_DEFINITIONS.get(id);
     }
-    
+
     /**
      * Create an ability instance from a definition.
      *

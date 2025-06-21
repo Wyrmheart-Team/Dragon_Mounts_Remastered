@@ -34,7 +34,7 @@
     }
   ],
   "accessories": ["thin_legs"],
-  "dragon_abilities": [
+  "abilities": [
     {
       "ability": "#ghost_abilities"
     }

@@ -1,9 +1,9 @@
 package dmr.DragonMounts.server.events;
 
 import dmr.DragonMounts.config.ServerConfig;
+import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.registry.datapack.DragonArmorRegistry;
 import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
-import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.registry.item.ModItems;
 import dmr.DragonMounts.types.DragonTier;
 import dmr.DragonMounts.types.LootTableEntry;

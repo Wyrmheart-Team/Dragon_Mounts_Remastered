@@ -13,6 +13,11 @@ import dmr.DragonMounts.types.armor.DragonArmor;
 import dmr.DragonMounts.types.breath.DragonBreathType;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.util.SchemaValidator;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.function.Consumer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -21,12 +26,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.function.Consumer;
 
 @EventBusSubscriber(modid = DMR.MOD_ID)
 public class DataPackHandler {

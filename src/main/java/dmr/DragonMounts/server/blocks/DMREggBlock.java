@@ -5,9 +5,9 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 import dmr.DragonMounts.ModConstants.NBTConstants;
 import dmr.DragonMounts.config.ClientConfig;
 import dmr.DragonMounts.config.ServerConfig;
-import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
-import dmr.DragonMounts.registry.block.ModBlockEntities;
 import dmr.DragonMounts.registry.ModComponents;
+import dmr.DragonMounts.registry.block.ModBlockEntities;
+import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
 import dmr.DragonMounts.server.blockentities.DMREggBlockEntity;
 import dmr.DragonMounts.server.items.DragonEggItemBlock;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;

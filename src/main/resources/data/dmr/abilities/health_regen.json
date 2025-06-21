@@ -1,5 +1,4 @@
 {
-  "id": "health_regen",
   "ability_type": "effect",
   "breed_transferable": true,
   "max_tier": 3,

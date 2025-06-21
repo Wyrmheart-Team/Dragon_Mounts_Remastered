@@ -2,8 +2,8 @@ package dmr.DragonMounts.types.armor;
 
 import com.google.gson.annotations.SerializedName;
 import dmr.DragonMounts.DMR;
-import dmr.DragonMounts.registry.datapack.DragonArmorRegistry;
 import dmr.DragonMounts.registry.ModComponents;
+import dmr.DragonMounts.registry.datapack.DragonArmorRegistry;
 import dmr.DragonMounts.types.DatapackEntry;
 import dmr.DragonMounts.types.LootTableEntry;
 import dmr.DragonMounts.types.LootTableProvider;

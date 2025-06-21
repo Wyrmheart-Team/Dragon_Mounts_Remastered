@@ -1,5 +1,4 @@
 {
-  "id": "nature_blessing",
   "ability_type": "conditional_effect",
   "breed_transferable": true,
   "properties": {

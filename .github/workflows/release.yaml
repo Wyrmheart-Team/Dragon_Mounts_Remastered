@@ -3,13 +3,8 @@ name: Automatic Build Pipeline
 on:
   workflow_call:
     inputs:
-      changelog:
+      version:
         required: true
-        description: "The changelog for the release"
-        type: string
-      new_release_version:
-        required: true
-        description: "The new version of the release"
         type: string
 
 permissions:
@@ -17,136 +12,120 @@ permissions:
 
 jobs:
   common-setup:
+    name: Common Setup
     runs-on: ubuntu-latest
     outputs:
-      java_version: ${{ steps.read_props.outputs.java_version }}
+      java_version:      ${{ steps.read_props.outputs.java_version }}
       minecraft_version: ${{ steps.read_props.outputs.minecraft_version }}
-      neo_version: ${{ steps.read_props.outputs.neo_version }}
-      geckolib_version: ${{ steps.read_props.outputs.geckolib_version }}
-      mod_name: ${{ steps.read_props.outputs.mod_name }}
+      neo_version:       ${{ steps.read_props.outputs.neo_version }}
+      geckolib_version:  ${{ steps.read_props.outputs.geckolib_version }}
+      mod_name:          ${{ steps.read_props.outputs.mod_name }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
+      
       - name: Read gradle.properties and set outputs
         id: read_props
         run: |
           while IFS='=' read -r key value; do
-            key=$(echo "$key" | xargs)
+            key=$(echo "$key"   | xargs)
             value=$(echo "$value" | xargs)
             [[ -z "$key" || "$key" == \#* ]] && continue
             echo "$key=$value" >> $GITHUB_ENV
             echo "$key=$value" >> $GITHUB_OUTPUT
-            echo "$key=$value"
           done < gradle.properties
-
+  
   java-build:
     name: Java Build
-    runs-on: ubuntu-latest
     needs: common-setup
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-        
+      
       - name: Install Crowdin CLI
         run: npm i -g @crowdin/cli
       
-      - name: Crowding upload source files
+      - name: Upload Crowdin sources
         run: crowdin upload sources -b ${{ github.ref_name }}
         env:
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
       
-      - name: Crowdin download translations
+      - name: Download Crowdin translations
         run: crowdin download translations -b ${{ github.ref_name }}
         env:
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
-  
-      - name: Post-process crowdin files
+      
+      - name: Post-process Crowdin files
         run: bash .github/scripts/crowdin-post-process.sh
-
+      
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           java-version: ${{ needs.common-setup.outputs.java_version }}
-          distribution: "temurin"
-          cache: "gradle"
-
-      - name: Update gradle.properties
-        run: sed -i "s/mod_version=.*/mod_version=${{ inputs.new_release_version }}/g" gradle.properties
-
+          distribution: temurin
+          cache: gradle
+      
+      - name: Update mod_version
+        run: |
+          sed -i \
+            "s/mod_version=.*/mod_version=${{ inputs.version }}/g" \
+            gradle.properties
+      
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-
+      
       - name: Build with Gradle
         run: ./gradlew build
-
+      
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: dragon-mounts-jar
           path: build/libs/*.jar
           retention-days: 1
+  
   replace-placeholders:
     name: Replace Placeholders
-    runs-on: ubuntu-latest
     needs: common-setup
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         file: [curseforge_upload.json, modrinth_upload.json]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
-      - name: Fetch Game Version IDs
-        if: ${{ matrix.file == 'curseforge_upload.json' }}
-        id: fetch_ids
-        continue-on-error: true
-        env:
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-          MC_VERSION: ${{ needs.common-setup.outputs.minecraft_version }}
+      
+      - name: Download generated CHANGELOG.md
+        uses: actions/download-artifact@v4
+        with:
+          name: changelog-md
+          path: .
+      
+      - name: Build ${{ matrix.file }}
         run: |
-          # Fetch game versions from CurseForge API and extract IDs
-          GAME_VERSIONS=$(curl -s "https://minecraft.curseforge.com/api/game/versions" -H "X-Api-Token: ${{ env.CF_API_KEY}}")
-          echo "JAVA_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "Java 17") | .id')" >> $GITHUB_ENV
-          echo "CLIENT_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "Client") | .id')" >> $GITHUB_ENV
-          echo "SERVER_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "Server") | .id')" >> $GITHUB_ENV
-          echo "NEOFORGE_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r '.[] | select(.name == "NeoForge") | .id')" >> $GITHUB_ENV
-          echo "MC_VERSION_ID=$(echo "$GAME_VERSIONS" | jq -r --arg mc_ver "$MC_VERSION" '.[] | select(.name == $mc_ver) | .id')" >> $GITHUB_ENV
-
-      - name: Replace Placeholders in ${{ matrix.file }}
-        run: envsubst < ./.github/templates/${{ matrix.file }} > temp && mv temp ./.github/templates/${{ matrix.file }}
-        env:
-          changelog: ${{ inputs.changelog }}
-          mod_name: ${{ needs.common-setup.outputs.mod_name }}
-          new_release_version: ${{ inputs.new_release_version }}
-          minecraft_version: ${{ needs.common-setup.outputs.minecraft_version }}
-          neo_version: ${{ needs.common-setup.outputs.neo_version }}
-          geckolib_version: ${{ needs.common-setup.outputs.geckolib_version }}
-          mod_version: ${{ inputs.new_release_version }}
-          java_version_id: ${{ env.JAVA_VERSION_ID }}
-          client_version_id: ${{ env.CLIENT_VERSION_ID }}
-          server_version_id: ${{ env.SERVER_VERSION_ID }}
-          neoforge_version_id: ${{ env.NEOFORGE_VERSION_ID }}
-          mc_version_id: ${{ env.MC_VERSION_ID }}
-
-      - name: Verify Placeholders Replaced
-        run: |
-          if grep -q '\${' ./.github/templates/${{ matrix.file }}; then
-            echo "Error: Unresolved placeholders in ${{ matrix.file }}" >&2
-            exit 1
-          fi
-
+          jq \
+            --rawfile log CHANGELOG.md \
+            --arg version "${{ inputs.version }}" \
+            --arg mod_name "${{ needs.common-setup.outputs.mod_name }}" \
+            --arg mc_ver "${{ needs.common-setup.outputs.minecraft_version }}" \
+            '.version = $version
+             | .changelog = $log
+             | .modName = $mod_name
+             | .minecraftVersion = $mc_ver' \
+            ./.github/templates/${{ matrix.file }} \
+            > ${{ matrix.file }}
+      
       - name: Upload Processed File
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.file }}
-          path: ./.github/templates/${{ matrix.file }}
-          retention-days: 1
+          path: ${{ matrix.file }}
+  
   upload:
     name: Upload to Platforms
-    runs-on: ubuntu-latest
-    environment: Release
     needs: [java-build, replace-placeholders]
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         platform: [curseforge, modrinth]
@@ -155,58 +134,73 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.platform }}_upload.json
-          path: ./
-
+          path: .
+      
       - name: Download JAR artifact
         uses: actions/download-artifact@v4
         with:
           name: dragon-mounts-jar
           path: build/libs/
-
+      
       - name: Upload to CurseForge
         if: matrix.platform == 'curseforge'
+        id: curseforge_upload
         env:
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          CF_API_KEY:    ${{ secrets.CF_API_KEY }}
           CF_PROJECT_ID: ${{ secrets.CF_PROJECT_ID }}
         run: |
-          FILE_PATH=$(find build/libs -name "*.jar" | head -n 1)
-          curl --fail-with-body "https://minecraft.curseforge.com/api/projects/${{ env.CF_PROJECT_ID }}/upload-file" \
+          FILE=$(find build/libs -name "*.jar" | head -n 1)
+          RESPONSE=$(curl --fail-with-body \
+            "https://minecraft.curseforge.com/api/projects/${{ env.CF_PROJECT_ID }}/upload-file" \
             -H "X-Api-Token: ${{ env.CF_API_KEY }}" \
             -F "metadata=$(cat curseforge_upload.json)" \
-            -F "file=@$FILE_PATH"
-
+            -F "file=@$FILE")
+          CF_FILE_ID=$(echo "$RESPONSE" | jq -r '.id')
+          CF_DIRECT_URL="https://www.curseforge.com/minecraft/mc-mods/dmr/files/$CF_FILE_ID"
+          echo "CF_FILE_ID=$CF_FILE_ID" >> $GITHUB_ENV
+          echo "CF_DIRECT_URL=$CF_DIRECT_URL" >> $GITHUB_ENV
+      
       - name: Upload to Modrinth
         if: matrix.platform == 'modrinth'
+        id: modrinth_upload
         env:
-          MODRINTH_API_KEY: ${{ secrets.MODRINTH_API_KEY }}
+          MODRINTH_API_KEY:    ${{ secrets.MODRINTH_API_KEY }}
+          MODRINTH_PROJECT_ID: dmr
         run: |
-          FILE_PATH=$(find build/libs -name "*.jar" | head -n 1)
-          curl --fail-with-body -X POST "https://api.modrinth.com/v2/version" \
+          FILE=$(find build/libs -name "*.jar" | head -n 1)
+          RESPONSE=$(curl --fail-with-body -X POST "https://api.modrinth.com/v2/version" \
             -H "Authorization: ${{ env.MODRINTH_API_KEY }}" \
             -F "data=@modrinth_upload.json" \
-            -F "file=@$FILE_PATH"
-
+            -F "file=@$FILE")
+          MR_VERSION_ID=$(echo "$RESPONSE" | jq -r '.id')
+          MR_FILE_ID=$(echo "$RESPONSE" | jq -r '.files[0].id')
+          MR_VERSION_PAGE_URL="https://modrinth.com/mod/${{ env.MODRINTH_PROJECT_ID }}/version/${{ inputs.version }}"
+          echo "MR_VERSION_ID=$MR_VERSION_ID" >> $GITHUB_ENV
+          echo "MR_FILE_ID=$MR_FILE_ID" >> $GITHUB_ENV
+          echo "MR_VERSION_PAGE_URL=$MR_VERSION_PAGE_URL" >> $GITHUB_ENV
+  
   after-release:
     name: Announce Release
-    runs-on: ubuntu-latest
     needs: [upload, common-setup]
+    runs-on: ubuntu-latest
     continue-on-error: true
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
+      
+      - name: Download CHANGELOG.md
+        uses: actions/download-artifact@v4
+        with:
+          name: changelog-md
+          path: .
+      
       - name: Notify Discord
         shell: pwsh {0}
         run: |
-          $Buttons = @(
-            @{ Name = "CurseForge"; Url = "https://www.curseforge.com/minecraft/mc-mods/dmr" },
-            @{ Name = "Modrinth"; Url = "https://modrinth.com/mod/dmr" }
-          ) | ConvertTo-Json -Depth 10
           pwsh ./.github/scripts/announce_release.ps1 `
             -WebhookUrl ${{ secrets.DISCORD_ANNOUNCEMENT_WEBHOOK_URL }} `
             -ModName "${{ needs.common-setup.outputs.mod_name }}" `
-            -NewReleaseVersion "${{ inputs.new_release_version }}" `
-            -Changelog '${{ inputs.changelog }}' `
+            -NewReleaseVersion "${{ inputs.version }}" `
+            -ChangelogFile "./CHANGELOG.md" `
             -GitAuthor "$GITHUB_TRIGGERING_ACTOR" `
-            -AuthorAvatar "https://avatars.githubusercontent.com/$GITHUB_TRIGGERING_ACTOR" `
-            -ButtonsJson "$Buttons"
+            -AuthorAvatar "https://avatars.githubusercontent.com/$GITHUB_TRIGGERING_ACTOR"

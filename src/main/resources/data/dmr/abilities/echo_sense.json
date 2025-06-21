@@ -1,5 +1,4 @@
 {
-  "id": "echo_sense",
   "ability_type": "monster_aura",
   "breed_transferable": true,
   "properties": {

@@ -6,12 +6,11 @@ import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.DragonVariant;
 import dmr.DragonMounts.util.BreedingUtils;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.item.ItemStack;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
 
 public class DragonBreedsRegistry {
 
@@ -77,12 +76,12 @@ public class DragonBreedsRegistry {
         breeds.add(tameableDragonEntity.getBreed());
         return breeds;
     }
-    
+
     public static DragonBreed getDragonType(ItemStack stack) {
         var breedId = stack.get(ModComponents.DRAGON_BREED);
         return getDragonBreed(breedId);
     }
-    
+
     public static DragonVariant getDragonTypeVariant(ItemStack stack) {
         var breed = getDragonType(stack);
         var variantId = stack.get(ModComponents.DRAGON_VARIANT);
@@ -94,12 +93,12 @@ public class DragonBreedsRegistry {
         }
         return null;
     }
-    
+
     public static void setDragonType(ItemStack stack, DragonBreed type) {
         if (stack == null || type == null) return;
         stack.set(ModComponents.DRAGON_BREED, type.getId());
     }
-    
+
     public static void setDragonTypeVariant(ItemStack stack, DragonBreed type, DragonVariant variant) {
         setDragonType(stack, type);
         stack.set(ModComponents.DRAGON_VARIANT, variant.id());

@@ -8,11 +8,6 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "id": {
-      "$ref": "definitions.json#/$defs/identifier",
-      "description": "Unique identifier for the ability. Used to reference this ability in dragon breed definitions.",
-      "examples": ["fire_proof", "aquatic_grace", "swift_swim"]
-    },
     "ability_type": {
       "$ref": "definitions.json#/$defs/identifier",
       "description": "Type of ability that determines how it functions. Common types include: 'effect' (applies status effects), 'attribute' (modifies dragon attributes), 'aura' (affects nearby entities), and 'monster_aura' (affects nearby monsters).",

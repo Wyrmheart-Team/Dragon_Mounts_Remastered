@@ -2,8 +2,8 @@ package dmr.DragonMounts.server.items;
 
 import dmr.DragonMounts.ModConstants;
 import dmr.DragonMounts.ModConstants.NBTConstants;
-import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModComponents;
+import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.entity.ModEntities;
 import dmr.DragonMounts.registry.item.ModItems;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;

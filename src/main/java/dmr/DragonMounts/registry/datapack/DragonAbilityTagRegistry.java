@@ -1,11 +1,10 @@
 package dmr.DragonMounts.registry.datapack;
 
 import dmr.DragonMounts.types.abilities.DragonAbilityTag;
-import net.minecraft.resources.ResourceLocation;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import net.minecraft.resources.ResourceLocation;
 
 public class DragonAbilityTagRegistry {
 
@@ -21,11 +20,11 @@ public class DragonAbilityTagRegistry {
             register(abilityTag);
         }
     }
-    
+
     public static DragonAbilityTag getAbilityTag(ResourceLocation id) {
         return getAbilityTag(id.getPath());
     }
-    
+
     public static DragonAbilityTag getAbilityTag(String name) {
         var val = ABILITY_TAGS.getOrDefault(name, null);
         return val == null ? getDefault() : val;

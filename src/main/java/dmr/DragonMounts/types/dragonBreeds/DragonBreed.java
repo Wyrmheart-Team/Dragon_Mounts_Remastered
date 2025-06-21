@@ -93,7 +93,7 @@ public class DragonBreed extends DatapackEntry implements LootTableProvider {
     @SerializedName("habitats")
     private List<Habitat> habitats = new ArrayList<>();
 
-    @SerializedName("dragon_abilities")
+    @SerializedName("abilities")
     private List<DragonAbilityEntry> abilities = new ArrayList<>();
 
     @SerializedName("taming_items")

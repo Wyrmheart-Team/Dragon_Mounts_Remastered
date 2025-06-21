@@ -2,6 +2,9 @@ package dmr.DragonMounts.data;
 
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.registry.entity.ModEntities;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.RegistrySetBuilder;
@@ -22,10 +25,6 @@ import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers.AddSpawnsBiomeModifier;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
 @EventBusSubscriber(modid = DMR.MOD_ID, bus = Bus.MOD)
 public class DataProvider {

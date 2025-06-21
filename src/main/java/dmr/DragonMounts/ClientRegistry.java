@@ -4,8 +4,8 @@ import static net.neoforged.fml.common.EventBusSubscriber.Bus.MOD;
 
 import dmr.DragonMounts.client.gui.DragonInventoryScreen;
 import dmr.DragonMounts.client.model.DragonEggModelLoader;
-import dmr.DragonMounts.registry.item.ModItems;
 import dmr.DragonMounts.registry.ModMenus;
+import dmr.DragonMounts.registry.item.ModItems;
 import dmr.DragonMounts.server.items.DragonSpawnEgg;
 import net.minecraft.util.FastColor;
 import net.neoforged.api.distmarker.Dist;
