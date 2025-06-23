@@ -1,4 +1,4 @@
-package dmr.tests;
+package dmr_test.tests;
 
 import dmr.DragonMounts.registry.entity.ModCapabilities;
 import dmr.DragonMounts.registry.entity.ModEntities;

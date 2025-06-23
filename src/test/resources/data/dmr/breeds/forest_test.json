@@ -1,0 +1,29 @@
+{
+  "hatch_particles": "minecraft:happy_villager",
+  "immunities": [],
+  "abilities": [
+    {
+      "ability": "floral_trail",
+      "chance": 1.0
+    },
+    {
+      "ability": "camouflage",
+      "chance": 0.7
+    }
+  ],
+  "primary_color": "228b22",
+  "secondary_color": "32cd32",
+  "ambient_sound": "minecraft:block.grass.break",
+  "growth_time": 60000,
+  "hatch_time": 10000,
+  "accessories": ["thin_legs", "neck_ridge"],
+  "breath_type": "nature",
+  "loot_tables": [
+    {
+      "table": "minecraft:chests/woodland_mansion",
+      "chance": 0.1,
+      "min": 1,
+      "max": 1
+    }
+  ]
+}

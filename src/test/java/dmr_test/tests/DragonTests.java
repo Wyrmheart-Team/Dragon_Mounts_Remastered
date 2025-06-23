@@ -1,12 +1,12 @@
-package dmr.tests;
+package dmr_test.tests;
 
-import dmr.DMRTestConstants;
 import dmr.DragonMounts.registry.datapack.DragonArmorRegistry;
 import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.entity.ModEntities;
 import dmr.DragonMounts.registry.item.ModItems;
 import dmr.DragonMounts.server.items.DragonArmorItem;
 import dmr.DragonMounts.util.PlayerStateUtils;
+import dmr_test.utils.DMRTestConstants;
 import java.util.Objects;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.sounds.SoundSource;

@@ -1,6 +1,5 @@
-package dmr.tests;
+package dmr_test.tests;
 
-import dmr.DMRTestConstants;
 import dmr.DragonMounts.common.handlers.DragonWhistleHandler;
 import dmr.DragonMounts.common.handlers.DragonWhistleHandler.DragonInstance;
 import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
@@ -10,6 +9,7 @@ import dmr.DragonMounts.registry.item.ModItems;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.server.items.DragonWhistleItem;
 import dmr.DragonMounts.util.PlayerStateUtils;
+import dmr_test.utils.DMRTestConstants;
 import java.util.Objects;
 import java.util.UUID;
 import net.minecraft.gametest.framework.GameTest;

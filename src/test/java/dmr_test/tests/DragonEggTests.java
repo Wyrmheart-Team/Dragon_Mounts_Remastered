@@ -1,7 +1,6 @@
-package dmr.tests;
+package dmr_test.tests;
 
-import dmr.DMRTestConstants;
-import dmr.DragonMounts.registry.*;
+import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.registry.block.ModBlocks;
 import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.entity.ModEntities;
@@ -11,7 +10,7 @@ import dmr.DragonMounts.server.blocks.DMREggBlock;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.server.items.DragonEggItemBlock;
 import dmr.DragonMounts.util.PlayerStateUtils;
-import java.util.Objects;
+import dmr_test.utils.DMRTestConstants;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.entity.EntityType;
@@ -22,6 +21,8 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
+
+import java.util.Objects;
 
 /**
  * Tests for the dragon egg functionality of the mod. These tests verify that
@@ -289,14 +290,14 @@ public class DragonEggTests {
     @TestHolder
     public static void correctDragonEggType(ExtendedGameTestHelper helper) {
         var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
-        var stack = DragonEggItemBlock.getDragonEggStack(DragonBreedsRegistry.getDragonBreed("fire"));
+        var stack = DragonEggItemBlock.getDragonEggStack(DragonBreedsRegistry.getDragonBreed(DMRTestConstants.FIRE_BREED_ID));
         player.setItemInHand(player.getUsedItemHand(), stack);
         helper.placeAt(player, stack, DMRTestConstants.TEST_POS.below(), Direction.UP);
 
         helper.assertBlockPresent(ModBlocks.DRAGON_EGG_BLOCK.get(), DMRTestConstants.TEST_POS);
         helper.assertBlockEntityData(
                 DMRTestConstants.TEST_POS,
-                eggEntity -> Objects.equals(((DMREggBlockEntity) eggEntity).getBreedId(), "fire"),
+                eggEntity -> Objects.equals(((DMREggBlockEntity) eggEntity).getBreedId(), DMRTestConstants.FIRE_BREED_ID),
                 () -> "Egg breed type does not match");
         helper.succeed();
     }

@@ -1,4 +1,4 @@
-package dmr;
+package dmr_test.reporters;
 
 import java.util.HashMap;
 import net.minecraft.Util;

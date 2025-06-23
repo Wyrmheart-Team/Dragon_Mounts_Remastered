@@ -30,7 +30,7 @@ public class DragonAttackablesSensor extends NearestVisibleLivingEntitySensor {
         if (target instanceof TameableDragonEntity otherDragon) {
             if (dragon.getSpawnGroupId() == otherDragon.getSpawnGroupId()) {
                 return false;
-            }else if(otherDragon.wasHatched()){
+            } else if (otherDragon.wasHatched()) {
                 return false;
             } else if (!otherDragon.isTame() && !dragon.isTame()) {
                 return true;

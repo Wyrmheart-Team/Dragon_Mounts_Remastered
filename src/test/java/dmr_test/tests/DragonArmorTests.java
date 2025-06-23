@@ -1,7 +1,7 @@
-package dmr.tests;
+package dmr_test.tests;
 
 import dmr.DragonMounts.registry.datapack.DragonArmorRegistry;
-import java.util.Objects;
+import dmr_test.utils.DMRTestConstants;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.level.GameType;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -9,6 +9,8 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
+
+import java.util.Objects;
 
 /**
  * Tests for the DragonArmorRegistry functionality. These tests verify that
@@ -100,15 +102,15 @@ public class DragonArmorTests {
         helper.makeTickingMockServerPlayerInCorner(GameType.DEFAULT_MODE);
 
         // Retrieve a specific armor by ID
-        var armor = DragonArmorRegistry.getDragonArmor("test1");
+        var armor = DragonArmorRegistry.getDragonArmor(DMRTestConstants.IRON_ARMOR_ID);
 
         // Verify the armor exists
         if (armor == null) {
-            helper.fail("No test1 dragon armor found");
+            helper.fail("No " + DMRTestConstants.IRON_ARMOR_ID + " dragon armor found");
         }
 
         // Verify the armor has the correct ID
-        if (!Objects.equals(armor.getId(), "test1")) {
+        if (!Objects.equals(armor.getId(), DMRTestConstants.IRON_ARMOR_ID)) {
             helper.fail("Dragon armor has incorrect id");
         }
 
@@ -129,11 +131,11 @@ public class DragonArmorTests {
         helper.makeTickingMockServerPlayerInCorner(GameType.DEFAULT_MODE);
 
         // Check if a specific armor exists using the hasDragonArmor method
-        boolean exists = DragonArmorRegistry.hasDragonArmor("test1");
+        boolean exists = DragonArmorRegistry.hasDragonArmor(DMRTestConstants.IRON_ARMOR_ID);
 
         // Verify the armor exists
         if (!exists) {
-            helper.fail("test1 armor should exist but hasDragonArmor returned false");
+            helper.fail(DMRTestConstants.IRON_ARMOR_ID + " armor should exist but hasDragonArmor returned false");
         }
 
         // Check if a non-existent armor is correctly identified as not existing

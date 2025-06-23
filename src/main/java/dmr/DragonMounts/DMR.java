@@ -93,16 +93,6 @@ public class DMR {
         bus.addListener(PacketRegistry::registerEvent);
 
         NeoForge.EVENT_BUS.addListener(this::registerCommands);
-
-        if (DEBUG) {
-            try {
-                var clas = Class.forName("dmr.DMRTestMod");
-                var method = clas.getMethod("registerTestFramework", IEventBus.class, ModContainer.class);
-                method.invoke(null, bus, container);
-            } catch (Exception e) {
-                LOGGER.debug("Failed to register test framework.");
-            }
-        }
     }
 
     @SubscribeEvent

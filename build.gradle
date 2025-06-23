@@ -39,13 +39,16 @@ sourceSets {
     }
 }
 
+test {
+    useJUnitPlatform()
+}
+
 tasks.named('build') {
     dependsOn tasks.named('spotlessApply')
 }
 
 neoForge {
     version = project.neo_version
-    addModdingDependenciesTo sourceSets.test
 
     parchment {
         minecraftVersion = project.parchment_mc_version
@@ -54,10 +57,20 @@ neoForge {
 
     validateAccessTransformers = true
 
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+
+        "${mod_id}_test" {
+            sourceSet sourceSets.test
+        }
+    }
+
     runs {
         configureEach {
             logLevel = Level.WARN
-            sourceSet = sourceSets.main
+            loadedMods = [mods."${mod_id}"]
         }
         client {
             client()
@@ -70,8 +83,9 @@ neoForge {
         // This run config launches GameTestServer and runs all registered gametests, then exits.
         gameTestServer {
             type = "gameTestServer"
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            systemProperty 'neoforge.enabledGameTestNamespaces', "${project.mod_id}_test"
             logLevel = Level.INFO
+            loadedMods = [mods."${mod_id}", mods."${mod_id}_test"]
         }
 
         data {
@@ -80,12 +94,11 @@ neoForge {
         }
     }
 
-    mods {
-        "${mod_id}" {
-            sourceSet sourceSets.main
-        }
+    unitTest {
+        enable()
+        loadedMods = [mods."${mod_id}", mods."${mod_id}_test"]
+        testedMod = mods."${mod_id}_test"
     }
-
     additionalMinecraftArtifacts.put('vanillaDeobfuscated', project.file('build/vanilla.jar'))
 }
 
@@ -93,7 +106,7 @@ dependencies {
     testImplementation libs.junit
     testRuntimeOnly libs.junit.platform
 
-    testImplementation "net.neoforged:testframework:${project.neo_version}"
+    implementation "net.neoforged:testframework:${project.neo_version}"
     testImplementation sourceSets.main.output
 
     implementation "software.bernie.geckolib:geckolib-neoforge-$minecraft_version:$geckolib_version"

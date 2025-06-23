@@ -11,10 +11,6 @@ import com.networknt.schema.SpecVersion.VersionFlag;
 import com.networknt.schema.ValidationMessage;
 import com.networknt.schema.resource.SchemaLoader;
 import dmr.DragonMounts.DMR;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -22,6 +18,10 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+
+import java.io.InputStream;
+import java.net.URI;
+import java.util.*;
 
 @EventBusSubscriber(modid = DMR.MOD_ID)
 public class SchemaValidator {
@@ -34,7 +34,8 @@ public class SchemaValidator {
             "breed_schema.json",
             "breath_type_schema.json",
             "armor_schema.json",
-            "variant_schema.json");
+            "variant_schema.json",
+            "ability_tag_schema.json");
 
     // All schema files, including dependencies, that must be loaded.
     private static final List<String> ALL_SCHEMAS = Arrays.asList(
@@ -44,7 +45,9 @@ public class SchemaValidator {
             "armor_schema.json",
             "variant_schema.json",
             "definitions.json",
-            "habitat_schema.json");
+            "habitat_schema.json",
+            "ability_tag_schema.json",
+            "accessories_schema.json");
 
     private static final Map<String, JsonSchema> schemaCache = new HashMap<>();
     private static final ArrayList<String> schemas = new ArrayList<>();
@@ -59,7 +62,7 @@ public class SchemaValidator {
     public static void loadSchemas(ResourceManager resourceManager) {
         schemaCache.clear();
 
-        Map<String, byte[]> schemaContents = new HashMap<>();
+        Map<String, String> schemaContents = new HashMap<>();
         for (String fileName : ALL_SCHEMAS) {
             try {
                 ResourceLocation location = DMR.id("schemas/" + fileName);
@@ -78,7 +81,11 @@ public class SchemaValidator {
                     var prettyPrintMapper = new ObjectMapper();
                     prettyPrintMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-                    schemaContents.put(uri, prettyPrintMapper.writeValueAsBytes(rootNode));
+                    String schemaJson = prettyPrintMapper.writeValueAsString(rootNode);
+                    schemaContents.put(uri, schemaJson);
+                    // Also add alternative URI patterns that might be referenced
+                    schemaContents.put(SCHEMA_BASE_URI + "schemas/" + fileName, schemaJson);
+                    schemaContents.put(fileName, schemaJson);
                     schemas.add(fileName);
                 }
             } catch (Exception e) {
@@ -86,17 +93,22 @@ public class SchemaValidator {
             }
         }
 
-        // This loader serves schema content from our pre-loaded map.
-        final SchemaLoader mapBasedLoader = uri -> {
-            byte[] schemaBytes = schemaContents.get(uri.toString());
-            if (schemaBytes == null) {
-                return null;
+        // Create a custom schema loader that only loads from our pre-loaded schemas
+        final SchemaLoader localOnlyLoader = uri -> {
+            String uriString = uri.toString();
+            String schemaContent = schemaContents.get(uriString);
+            if (schemaContent != null) {
+                return () -> new java.io.ByteArrayInputStream(schemaContent.getBytes());
             }
-            return () -> new ByteArrayInputStream(schemaBytes);
+            DMR.LOGGER.warn("Attempted to load schema from URI not in cache, blocking network access: {}", uriString);
+            return null; // Return null to prevent network loading
         };
 
         factory = JsonSchemaFactory.getInstance(
-                VersionFlag.V202012, builder -> builder.schemaLoaders(loaders -> loaders.add(mapBasedLoader)));
+                VersionFlag.V202012, builder -> builder.schemaLoaders(loaders -> {
+                    loaders.add(localOnlyLoader); // Add our local-only loader first
+                    // Don't add any other loaders to prevent network access
+                }));
 
         for (String fileName : TOP_LEVEL_SCHEMAS) {
             getAndCacheSchema(fileName);

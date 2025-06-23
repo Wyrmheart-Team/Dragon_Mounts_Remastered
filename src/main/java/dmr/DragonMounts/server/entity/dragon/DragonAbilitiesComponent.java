@@ -1,5 +1,6 @@
 package dmr.DragonMounts.server.entity.dragon;
 
+import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.datapack.DragonAbilityRegistry;
 import dmr.DragonMounts.registry.datapack.DragonAbilityTagRegistry;
@@ -8,8 +9,6 @@ import dmr.DragonMounts.types.abilities.Ability;
 import dmr.DragonMounts.types.abilities.DragonAbility;
 import dmr.DragonMounts.types.abilities.DragonAbilityEntry;
 import dmr.DragonMounts.util.MiscUtils;
-import java.util.*;
-import java.util.function.Consumer;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -21,6 +20,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.function.Consumer;
 
 abstract class DragonAbilitiesComponent extends DragonTierComponent {
     protected DragonAbilitiesComponent(EntityType<? extends TamableAnimal> entityType, Level level) {
@@ -140,20 +142,18 @@ abstract class DragonAbilitiesComponent extends DragonTierComponent {
 
             var id = entry.getAbility();
 
-            if (id.getPath().startsWith("#")) {
+            if (id.startsWith("#")) {
                 // This is a tag reference, process it recursively
-                String tagName = id.getPath().substring(1);
-                String fullTagId = id.getNamespace() + ":" + tagName;
+                String tagName = id.substring(1);
 
                 // Skip if we've already processed this tag to avoid infinite recursion
-                if (processedTags.contains(fullTagId)) continue;
+                if (processedTags.contains(tagName)) continue;
 
                 // Mark this tag as processed
-                processedTags.add(fullTagId);
+                processedTags.add(tagName);
 
                 // Get the tag and process its entries
-                var tagId = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), tagName);
-                var abilityTag = DragonAbilityTagRegistry.getAbilityTag(tagId);
+                var abilityTag = DragonAbilityTagRegistry.getAbilityTag(tagName);
 
                 if (abilityTag != null) {
                     // Recursively process the tag's entries
@@ -174,13 +174,13 @@ abstract class DragonAbilitiesComponent extends DragonTierComponent {
      * @param id The ability ID
      * @param chance The base chance of getting the ability
      */
-    private void tryAddAbility(ArrayList<Ability> abilities, ResourceLocation id, float chance) {
+    private void tryAddAbility(ArrayList<Ability> abilities, String id, float chance) {
         // Adjust chance based on dragon tier
         float adjustedChance = calculateAdjustedChance(chance);
         if (Math.random() >= adjustedChance) return;
 
         // Get the ability definition
-        DragonAbility definition = DragonAbilityRegistry.getAbilityDefinition(id);
+        DragonAbility definition = DragonAbilityRegistry.getAbilityDefinition(DMR.id(id));
         if (definition == null) return;
 
         // Create and initialize the ability

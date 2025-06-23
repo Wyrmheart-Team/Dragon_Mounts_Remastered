@@ -1,0 +1,29 @@
+{
+  "hatch_particles": "minecraft:snowflake",
+  "immunities": ["freeze"],
+  "abilities": [
+    {
+      "ability": "frost_walker",
+      "chance": 1.0
+    },
+    {
+      "ability": "crystal_harmony",
+      "chance": 0.6
+    }
+  ],
+  "primary_color": "87ceeb",
+  "secondary_color": "b0e0e6",
+  "ambient_sound": "minecraft:block.glass.break",
+  "growth_time": 52000,
+  "hatch_time": 9000,
+  "accessories": ["second_horns", "middle_tail_scales"],
+  "breath_type": "ice",
+  "loot_tables": [
+    {
+      "table": "minecraft:chests/igloo_chest",
+      "chance": 0.15,
+      "min": 1,
+      "max": 1
+    }
+  ]
+}

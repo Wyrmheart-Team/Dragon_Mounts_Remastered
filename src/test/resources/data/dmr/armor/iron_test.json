@@ -1,0 +1,17 @@
+{
+  "protection": 8,
+  "loot_tables": [
+    {
+      "table": "minecraft:chests/simple_dungeon",
+      "chance": 0.2,
+      "min": 1,
+      "max": 1
+    },
+    {
+      "table": "minecraft:chests/village_armorer",
+      "chance": 0.15,
+      "min": 1,
+      "max": 1
+    }
+  ]
+}

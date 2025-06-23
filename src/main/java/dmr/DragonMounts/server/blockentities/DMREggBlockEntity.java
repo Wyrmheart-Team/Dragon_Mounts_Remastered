@@ -1,17 +1,16 @@
 package dmr.DragonMounts.server.blockentities;
 
-import static dmr.DragonMounts.server.blocks.DMREggBlock.HATCHING;
-
+import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.ModConstants.NBTConstants;
 import dmr.DragonMounts.config.ServerConfig;
-import dmr.DragonMounts.registry.*;
+import dmr.DragonMounts.registry.ModComponents;
+import dmr.DragonMounts.registry.ModCriterionTriggers;
 import dmr.DragonMounts.registry.block.ModBlockEntities;
 import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.entity.ModEntities;
 import dmr.DragonMounts.types.DragonTier;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;
 import dmr.DragonMounts.util.PlayerStateUtils;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
@@ -29,6 +28,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.UUID;
+
+import static dmr.DragonMounts.server.blocks.DMREggBlock.HATCHING;
 
 @Getter
 @Setter
@@ -70,8 +73,11 @@ public class DMREggBlockEntity extends BlockEntity {
 
         pTag.putInt("hatchTime", getHatchTime());
         pTag.putString("owner", getOwner() == null ? "" : getOwner());
-        pTag.put("eggOutcome", getDragonOutcomeTag());
         pTag.putInt("tierLevel", tierLevel);
+        
+        if(getDragonOutcomeTag() != null) {
+            pTag.put("eggOutcome", getDragonOutcomeTag().copy());
+        }
     }
 
     @Override
@@ -80,8 +86,11 @@ public class DMREggBlockEntity extends BlockEntity {
         setBreedId(tag.getString(NBTConstants.BREED));
         setHatchTime(tag.getInt("hatchTime"));
         setOwner(tag.getString("owner"));
-        setDragonOutcomeTag(tag.getCompound("eggOutcome"));
         tierLevel = tag.getInt("tierLevel");
+        
+        if(tag.contains("eggOutcome")) {
+            dragonOutcomeTag = tag.getCompound("eggOutcome");
+        }
     }
 
     @Override
@@ -159,7 +168,14 @@ public class DMREggBlockEntity extends BlockEntity {
                 1.2f,
                 0.95f + level.getRandom().nextFloat() * 0.2f);
 
-        baby.readAdditionalSaveData(dragonOutcomeTag);
+        if(dragonOutcomeTag != null && !dragonOutcomeTag.isEmpty()) {
+            try {
+                baby.readAdditionalSaveData(dragonOutcomeTag);
+            }catch (Exception e) {
+                DMR.LOGGER.error("There was an error trying to parse the dragon outcome tag", e);
+            }
+        }
+        
         baby.setBreed(data.getBreed());
         baby.setVariant(data.getVariantId());
 

@@ -1,0 +1,29 @@
+{
+  "hatch_particles": "minecraft:dripping_water",
+  "immunities": ["drown"],
+  "abilities": [
+    {
+      "ability": "aquatic_grace",
+      "chance": 1.0
+    },
+    {
+      "ability": "swift_swim",
+      "chance": 1.0
+    }
+  ],
+  "primary_color": "0080ff",
+  "secondary_color": "4169e1",
+  "ambient_sound": "minecraft:block.water.ambient",
+  "growth_time": 45000,
+  "hatch_time": 7500,
+  "accessories": ["leg_fins", "tail_mem"],
+  "breath_type": "water",
+  "loot_tables": [
+    {
+      "table": "minecraft:chests/buried_treasure",
+      "chance": 0.25,
+      "min": 1,
+      "max": 2
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-package dmr;
+package dmr_test.reporters;
 
 import java.io.PrintWriter;
 import java.nio.file.Path;

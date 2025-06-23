@@ -1,4 +1,4 @@
-package dmr;
+package dmr_test.reporters;
 
 import java.nio.file.Path;
 import net.minecraft.resources.ResourceLocation;

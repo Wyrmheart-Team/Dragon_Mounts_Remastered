@@ -1,8 +1,8 @@
-package dmr.tests;
+package dmr_test.tests;
 
-import dmr.DMRTestConstants;
 import dmr.DragonMounts.network.packets.DragonStatePacket;
 import dmr.DragonMounts.registry.entity.ModEntities;
+import dmr_test.utils.DMRTestConstants;
 import io.netty.buffer.Unpooled;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.FriendlyByteBuf;

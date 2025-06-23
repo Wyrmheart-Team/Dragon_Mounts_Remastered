@@ -128,7 +128,7 @@
     },
     "ability": {
       "type": "string",
-      "pattern": "^[a-zA-Z0-9_]+$",
+      "pattern": "^#?[a-zA-Z0-9_]+$",
       "description": "A dragon ability identifier",
       "custom_properties": {
         "type": "ability"

@@ -51,5 +51,5 @@
       "examples": [["minecraft:flame", "minecraft:smoke"]]
     }
   },
-  "required": ["id", "ability_type"]
+  "required": ["ability_type"]
 }

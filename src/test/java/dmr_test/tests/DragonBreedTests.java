@@ -1,7 +1,7 @@
-package dmr.tests;
+package dmr_test.tests;
 
 import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
-import java.util.Objects;
+import dmr_test.utils.DMRTestConstants;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.level.GameType;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -9,6 +9,8 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
+
+import java.util.Objects;
 
 /**
  * Tests for the DragonBreedsRegistry functionality. These tests verify that
@@ -100,15 +102,15 @@ public class DragonBreedTests {
         helper.makeTickingMockServerPlayerInCorner(GameType.DEFAULT_MODE);
 
         // Retrieve a specific breed by ID
-        var breed = DragonBreedsRegistry.getDragonBreed("test1");
+        var breed = DragonBreedsRegistry.getDragonBreed(DMRTestConstants.ICE_BREED_ID);
 
         // Verify the breed exists
         if (breed == null) {
-            helper.fail("No dragon breed found with id 'test1'");
+            helper.fail("No dragon breed found with id '" + DMRTestConstants.ICE_BREED_ID + "'");
         }
 
         // Verify the breed has the correct ID
-        if (!Objects.equals(breed.getId(), "test1")) {
+        if (!Objects.equals(breed.getId(), DMRTestConstants.ICE_BREED_ID)) {
             helper.fail("Dragon breed has incorrect id");
         }
 
@@ -129,11 +131,11 @@ public class DragonBreedTests {
         helper.makeTickingMockServerPlayerInCorner(GameType.DEFAULT_MODE);
 
         // Check if a specific breed exists using the hasDragonBreed method
-        boolean exists = DragonBreedsRegistry.hasDragonBreed("test1");
+        boolean exists = DragonBreedsRegistry.hasDragonBreed(DMRTestConstants.FOREST_BREED_ID);
 
         // Verify the breed exists
         if (!exists) {
-            helper.fail("test1 breed should exist but hasDragonBreed returned false");
+            helper.fail(DMRTestConstants.FOREST_BREED_ID + " breed should exist but hasDragonBreed returned false");
         }
 
         // Check if a non-existent breed is correctly identified as not existing

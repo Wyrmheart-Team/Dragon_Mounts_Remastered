@@ -8,7 +8,6 @@
       "chance": 0.5
     }
   ],
-  "abilities": ["quick_flight"],
   "hatch_particles": "minecraft:cloud",
   "habitats": [
     {

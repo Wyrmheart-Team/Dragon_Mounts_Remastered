@@ -1,4 +1,4 @@
-package dmr.tests;
+package dmr_test.tests;
 
 import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
 import dmr.DragonMounts.types.dragonBreeds.DragonBreed;

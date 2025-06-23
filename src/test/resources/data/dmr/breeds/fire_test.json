@@ -1,0 +1,29 @@
+{
+  "hatch_particles": "minecraft:flame",
+  "immunities": ["fire", "lava"],
+  "abilities": [
+    {
+      "ability": "infernal_pact",
+      "chance": 1.0
+    },
+    {
+      "ability": "hot_feet",
+      "chance": 0.8
+    }
+  ],
+  "primary_color": "ff4500",
+  "secondary_color": "ff8c00",
+  "ambient_sound": "dmr:entity.dragon.breathe",
+  "growth_time": 48000,
+  "hatch_time": 8000,
+  "accessories": ["neck_ridge", "tail_horns"],
+  "breath_type": "fire",
+  "loot_tables": [
+    {
+      "table": "minecraft:chests/nether_bridge",
+      "chance": 0.2,
+      "min": 1,
+      "max": 2
+    }
+  ]
+}

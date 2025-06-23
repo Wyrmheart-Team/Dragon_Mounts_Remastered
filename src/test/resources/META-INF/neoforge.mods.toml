@@ -1,0 +1,39 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "GPLv3"
+
+[[mods]]
+modId = "dmr_test"
+displayName = "DMR Tests"
+version = "1.0.0"
+authors = "Wyrmheart Team"
+description = '''Dragon Mounts Remastered'''
+
+[[dependencies.dmr_test]]
+modId = "neoforge"
+type = "required"
+mandatory = true
+versionRange = "[21.1.0,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.dmr_test]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1, 1.22)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.dmr_test]]
+modId = "geckolib"
+type = "required"
+versionRange = "[4.6,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.dmr_test]]
+modId = "dmr"
+type = "required"
+versionRange = "[1.0,)"
+ordering = "NONE"
+side = "BOTH"
