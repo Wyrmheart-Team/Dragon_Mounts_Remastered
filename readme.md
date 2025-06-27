@@ -59,7 +59,10 @@ Please follow coding conventions and include clear commit messages.
 
 ## License
 
-This project is licensed under the **GNU General Public License v3.0**. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the PolyForm Noncommercial License 1.0.0.
+
+You may use, modify, and share this code for non-commercial purposes only.
+See the [LICENSE](LICENSE.md) file for details.
 
 ## Contact
 - **Discord**: Join our [Discord Server](https://discord.gg/3XknsXtKYR) for community support.

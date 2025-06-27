@@ -102,10 +102,18 @@ public class DragonCommandPacket extends AbstractMessage<DragonCommandPacket> {
         if (instance == null) {
             return;
         }
+
+        var cmd = Command.values()[command];
+        if (cmd == Command.WHISTLE) {
+            DragonWhistleHandler.summonDragon(player);
+            player.displayClientMessage(Component.translatable("dmr.command_mode.whistle.text"), true);
+            return;
+        }
+
         var dragonEntity = level.getEntity(instance.getEntityId());
 
         if (dragonEntity instanceof TameableDragonEntity dragon) {
-            switch (Command.values()[command]) {
+            switch (cmd) {
                 case SIT -> {
                     dragon.setWanderTarget(Optional.empty());
                     dragon.setOrderedToSit(true);
@@ -121,10 +129,6 @@ public class DragonCommandPacket extends AbstractMessage<DragonCommandPacket> {
                     dragon.setWanderTarget(Optional.of(GlobalPos.of(level.dimension(), player.blockPosition())));
                     player.displayClientMessage(Component.translatable("dmr.command_mode.wander.text"), true);
                 }
-                case WHISTLE -> {
-                    DragonWhistleHandler.summonDragon(player);
-                    player.displayClientMessage(Component.translatable("dmr.command_mode.whistle.text"), true);
-                }
                 case PASSIVE -> {
                     dragon.setAgroState(PASSIVE);
                     player.displayClientMessage(Component.translatable("dmr.command_mode.passive.text"), true);
@@ -137,6 +141,7 @@ public class DragonCommandPacket extends AbstractMessage<DragonCommandPacket> {
                     dragon.setAgroState(AGGRESSIVE);
                     player.displayClientMessage(Component.translatable("dmr.command_mode.aggressive.text"), true);
                 }
+                default -> throw new IllegalArgumentException("Unexpected value: " + Command.values()[command]);
             }
         }
     }

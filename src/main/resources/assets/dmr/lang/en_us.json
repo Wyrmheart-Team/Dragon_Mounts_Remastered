@@ -260,5 +260,10 @@
   "dmr.configuration.behavior": "Behavior Settings",
   "dmr.configuration.eggs": "Eggs Settings",
   "dmr.configuration.random_stats": "Random Stats Settings",
-  "dmr.configuration.whistle": "Whistle Settings"
+  "dmr.configuration.whistle": "Whistle Settings",
+  "subtitles.entity.dragon.ambient": "Dragon breathes",
+  "subtitles.entity.dragon.ambient.ghost": "Ethereal dragon noises",
+  "subtitles.entity.dragon.death": "Dragon dies",
+  "subtitles.entity.dragon.step": "Dragon footsteps",
+  "subtitles.entity.dragon.whistle": "Dragon whistle blows"
 }
