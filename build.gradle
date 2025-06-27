@@ -84,7 +84,7 @@ neoForge {
         gameTestServer {
             type = "gameTestServer"
             systemProperty 'neoforge.enabledGameTestNamespaces', "${project.mod_id}_test"
-            logLevel = Level.INFO
+            logLevel = Level.WARN
             loadedMods = [mods."${mod_id}", mods."${mod_id}_test"]
         }
 
@@ -101,6 +101,11 @@ neoForge {
     }
     additionalMinecraftArtifacts.put('vanillaDeobfuscated', project.file('build/vanilla.jar'))
 }
+
+tasks.named('test'){
+    dependsOn runGameTestServer
+}
+
 
 dependencies {
     testImplementation libs.junit

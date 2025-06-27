@@ -290,15 +290,17 @@ public class DragonEggTests {
     @TestHolder
     public static void correctDragonEggType(ExtendedGameTestHelper helper) {
         var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
-        var stack = DragonEggItemBlock.getDragonEggStack(DragonBreedsRegistry.getDragonBreed(DMRTestConstants.FIRE_BREED_ID));
+        var breed = DragonBreedsRegistry.getDragonBreed(DMRTestConstants.FOREST_BREED_ID);
+        var stack = DragonEggItemBlock.getDragonEggStack(breed);
         player.setItemInHand(player.getUsedItemHand(), stack);
         helper.placeAt(player, stack, DMRTestConstants.TEST_POS.below(), Direction.UP);
 
         helper.assertBlockPresent(ModBlocks.DRAGON_EGG_BLOCK.get(), DMRTestConstants.TEST_POS);
+        var blockEntity = helper.getBlockEntity(DMRTestConstants.TEST_POS);
         helper.assertBlockEntityData(
                 DMRTestConstants.TEST_POS,
-                eggEntity -> Objects.equals(((DMREggBlockEntity) eggEntity).getBreedId(), DMRTestConstants.FIRE_BREED_ID),
-                () -> "Egg breed type does not match");
+                eggEntity -> Objects.equals(((DMREggBlockEntity) eggEntity).getBreedId(), breed.getId()),
+                () -> "Egg breed type does not match, expected " + breed.getId() + ", got " + ((DMREggBlockEntity) blockEntity).getBreedId());
         helper.succeed();
     }
 

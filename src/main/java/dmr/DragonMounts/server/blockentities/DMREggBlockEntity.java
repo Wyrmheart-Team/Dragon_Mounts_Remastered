@@ -167,17 +167,20 @@ public class DMREggBlockEntity extends BlockEntity {
                 SoundSource.BLOCKS,
                 1.2f,
                 0.95f + level.getRandom().nextFloat() * 0.2f);
-
+        
+        baby.setBreed(data.getBreed());
+        baby.setVariant(data.getVariantId());
+        
         if(dragonOutcomeTag != null && !dragonOutcomeTag.isEmpty()) {
             try {
                 baby.readAdditionalSaveData(dragonOutcomeTag);
             }catch (Exception e) {
                 DMR.LOGGER.error("There was an error trying to parse the dragon outcome tag", e);
+                baby.finalizeDragon(null, null);
             }
+        }else{
+            baby.finalizeDragon(null, null);
         }
-        
-        baby.setBreed(data.getBreed());
-        baby.setVariant(data.getVariantId());
 
         var age = -Math.abs(data.getBreed().getGrowthTime());
         if (ServerConfig.ENABLE_DRAGON_TIERS) {

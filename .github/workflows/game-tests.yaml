@@ -48,5 +48,5 @@ jobs:
             ${{ runner.os }}-gradle-
       
       - name: Run game test server
-        run: ./gradlew runGameTestServer
+        run: ./gradlew test
         

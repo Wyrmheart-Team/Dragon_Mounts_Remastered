@@ -1,5 +1,15 @@
 package dmr_test.reporters;
 
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.testframework.Test;
+import net.neoforged.testframework.Test.Result;
+import net.neoforged.testframework.summary.FileSummaryDumper;
+import net.neoforged.testframework.summary.TestSummary;
+import net.neoforged.testframework.summary.TestSummary.TestInfo;
+import net.neoforged.testframework.summary.md.Alignment;
+import net.neoforged.testframework.summary.md.Table;
+import org.slf4j.Logger;
+
 import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.util.EnumMap;
@@ -7,16 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.testframework.Test;
-import net.neoforged.testframework.Test.Result;
-import net.neoforged.testframework.summary.FileSummaryDumper;
-import net.neoforged.testframework.summary.FormattingUtil;
-import net.neoforged.testframework.summary.TestSummary;
-import net.neoforged.testframework.summary.TestSummary.TestInfo;
-import net.neoforged.testframework.summary.md.Alignment;
-import net.neoforged.testframework.summary.md.Table;
-import org.slf4j.Logger;
 
 public class DMRTestDumper implements FileSummaryDumper {
 
@@ -71,8 +71,8 @@ public class DMRTestDumper implements FileSummaryDumper {
         List<TestSummary.TestInfo> failedTests = testsByStatus.getOrDefault(Test.Result.FAILED, List.of());
         List<TestSummary.TestInfo> passedTests = testsByStatus.getOrDefault(Test.Result.PASSED, List.of());
         Table.Builder builder = Table.builder()
-                .withAlignments(Alignment.LEFT, Alignment.LEFT, Alignment.CENTER, Alignment.LEFT, Alignment.LEFT)
-                .addRow("Test group", "Test Id", "Test Result", "Status message", "Test description");
+                .withAlignments(Alignment.LEFT, Alignment.LEFT, Alignment.CENTER, Alignment.LEFT)
+                .addRow("Test group", "Test Id", "Test Result", "Status message");
         if (!failedTests.isEmpty()) {
             for (TestSummary.TestInfo failedTest : failedTests) {
                 var message = failedTest.status().message();
@@ -85,18 +85,17 @@ public class DMRTestDumper implements FileSummaryDumper {
                         failedTest.groups().getFirst(),
                         failedTest.testId(),
                         formatStatus(failedTest.result(), !failedTest.manual() && !failedTest.required()),
-                        message,
-                        getDescription(failedTest));
+                        message);
             }
         }
         if (!passedTests.isEmpty()) {
             for (TestSummary.TestInfo passedTest : passedTests) {
+                var message = passedTest.status().message();
                 builder.addRow(
                         passedTest.groups().getFirst(),
                         passedTest.testId(),
                         formatStatus(passedTest.status().result(), false),
-                        passedTest.status().message(),
-                        getDescription(passedTest));
+                        !message.equals("GameTest passed") ? message : "");
             }
         }
         if (!passedTests.isEmpty() && failedTests.isEmpty()) {
@@ -118,12 +117,5 @@ public class DMRTestDumper implements FileSummaryDumper {
             return "✅";
         }
         return "⚠️";
-    }
-
-    private static String getDescription(TestSummary.TestInfo failedTest) {
-        return failedTest.description().stream()
-                .filter(c -> !c.getString().equals("GameTest-only"))
-                .map(FormattingUtil::componentToPlainString)
-                .collect(Collectors.joining("<br/>"));
     }
 }
