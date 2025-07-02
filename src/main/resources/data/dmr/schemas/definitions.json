@@ -206,6 +206,14 @@
         "type": "attribute"
       }
     },
+    "duration_integer": {
+      "type": "integer",
+      "description": "An integer representing a duration in ticks (20 ticks = 1 second)",
+      "minimum": 0,
+      "custom_properties": {
+        "type": "duration_integer"
+      }
+    },
     "attributes": {
       "type": "object",
       "description": "Map of attribute identifiers to their values",

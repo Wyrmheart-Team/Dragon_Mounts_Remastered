@@ -19,15 +19,13 @@
       "examples": ["dmr:entities/dragon/fire", "minecraft:entities/ender_dragon"]
     },
     "hatch_time": {
-      "type": "integer",
+      "$ref": "definitions.json#/$defs/duration_integer",
       "description": "Time in ticks required for a dragon egg to hatch. If not specified, the default value from server configuration will be used.",
-      "minimum": 0,
       "examples": [12000, 24000]
     },
     "growth_time": {
-      "type": "integer",
+      "$ref": "definitions.json#/$defs/duration_integer",
       "description": "Time in ticks required for a baby dragon to grow into an adult. If not specified, the default value from server configuration will be used.",
-      "minimum": 0,
       "examples": [72000, 144000]
     },
     "size_modifier": {
@@ -39,12 +37,12 @@
     },
     "primary_color": {
       "$ref": "definitions.json#/$defs/color",
-      "description": "Primary color of the dragon in hexadecimal format (without # prefix).",
+      "description": "Primary color of the dragon in hexadecimal format (without # prefix). Used primarily for coloring spawn eggs and some minor visual effects.",
       "examples": ["912400", "161616", "62ff"]
     },
     "secondary_color": {
       "$ref": "definitions.json#/$defs/color",
-      "description": "Secondary color of the dragon in hexadecimal format (without # prefix).",
+      "description": "Secondary color of the dragon in hexadecimal format (without # prefix). Used primarily for coloring spawn eggs and some minor visual effects.",
       "examples": ["ff9819", "ff63e8", "5999ff"]
     },
     "inventory_texture": {

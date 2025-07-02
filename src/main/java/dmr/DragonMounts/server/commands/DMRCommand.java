@@ -12,12 +12,7 @@ import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.server.worlddata.DragonWorldData.DragonHistory;
 import dmr.DragonMounts.server.worlddata.DragonWorldDataManager;
 import dmr.DragonMounts.util.PlayerStateUtils;
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.CompoundTagArgument;
@@ -31,6 +26,11 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.Comparator;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class DMRCommand {
 
@@ -170,7 +170,7 @@ public class DMRCommand {
         PacketDistributor.sendToPlayer(source.getPlayer(), new CompleteDataSync(source.getPlayer()));
         source.sendSuccess(
                 () -> Component.translatable(
-                        "dmr.commands.clear_whistle.success", I18n.get("color.minecraft." + color.getName())),
+                        "dmr.commands.clear_whistle.success", Component.translatable("color." + color.getName())),
                 true);
         return 1;
     }
