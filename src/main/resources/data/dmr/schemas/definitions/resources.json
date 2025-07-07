@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/definitions/resources.json",
+  "$version": "1.0.0",
+  "$comment": "Resource identifiers and references used across Dragon Mounts Remastered schemas",
+  "title": "DMR Resource Definitions", 
+  "description": "Common resource identifier patterns and types",
+  "$defs": {
+    "identifier": {
+      "$anchor": "identifier",
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$",
+      "description": "A simple identifier without namespace"
+    },
+    "item": {
+      "$anchor": "item", 
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "An item identifier, optionally namespaced"
+    },
+    "block": {
+      "$anchor": "block",
+      "type": "string", 
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "A block identifier, optionally namespaced"
+    },
+    "fluid": {
+      "$anchor": "fluid",
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$", 
+      "description": "A fluid identifier, optionally namespaced"
+    },
+    "sound": {
+      "$anchor": "sound",
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "A sound identifier, optionally namespaced"
+    },
+    "loot_table": {
+      "$anchor": "loot_table",
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "A loot table identifier, optionally namespaced"
+    },
+    "texture": {
+      "$anchor": "texture",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_/.]+$",
+      "description": "A texture file path without extension"
+    },
+    "model": {
+      "$anchor": "model", 
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_/.]+$",
+      "description": "A model file path without extension"
+    },
+    "animation": {
+      "$anchor": "animation",
+      "type": "string", 
+      "pattern": "^[a-zA-Z0-9_/.]+$",
+      "description": "An animation file path without extension"
+    },
+    "particle": {
+      "$anchor": "particle",
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "A particle effect identifier, optionally namespaced"
+    },
+    "color": {
+      "$anchor": "color",
+      "type": "string", 
+      "pattern": "^#[0-9a-fA-F]{6}$",
+      "description": "A hexadecimal color value"
+    },
+    "block_tag": {
+      "$anchor": "block_tag",
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "A block tag identifier, optionally namespaced"
+    },
+    "fluid_tag": {
+      "$anchor": "fluid_tag", 
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "A fluid tag identifier, optionally namespaced"
+    },
+    "item_tag": {
+      "$anchor": "item_tag",
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$", 
+      "description": "An item tag identifier, optionally namespaced"
+    },
+    "biome_tag": {
+      "$anchor": "biome_tag",
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_/.]+$",
+      "description": "A biome tag identifier, optionally namespaced"
+    },
+    "loot_tables": {
+      "$anchor": "loot_tables",
+      "type": "array",
+      "description": "Array of loot table entries with chances and quantities",
+      "items": {
+        "type": "object",
+        "properties": {
+          "loot_table": {
+            "$ref": "#loot_table", 
+            "description": "The loot table identifier"
+          },
+          "chance": {
+            "type": "number",
+            "description": "Chance (0.0-1.0) that this loot table is used",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "default": 1.0
+          },
+          "min_quantity": {
+            "type": "integer",
+            "description": "Minimum quantity to generate",
+            "minimum": 1, 
+            "default": 1
+          },
+          "max_quantity": {
+            "type": "integer",
+            "description": "Maximum quantity to generate", 
+            "minimum": 1,
+            "default": 1
+          }
+        },
+        "required": ["loot_table"],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/types/ability_tag_schema.json",
+  "$version": "1.0.0",
+  "$comment": "This schema is used to validate dragon ability tag JSON files in the data/dmr/ability_tags directory. Each ability tag defines a collection of abilities that can be referenced as a group.",
+  "title": "Dragon Ability Tag Schema",
+  "description": "Schema for defining dragon ability tags that group multiple abilities together",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "abilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ability": {
+            "type": "string",
+            "description": "The ability or ability tag this entry refers to. If it starts with '#', it references another ability tag.",
+            "examples": ["fire_proof", "quick_flight", "#common_abilities"]
+          },
+          "chance": {
+            "type": "number",
+            "description": "The chance of a dragon getting this ability",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 1.0
+          }
+        },
+        "required": ["ability"],
+        "additionalProperties": false
+      },
+      "description": "List of abilities or ability tags in this tag, along with their chances of occurrence.",
+      "minItems": 1
+    }
+  },
+  "required": ["abilities"]
+}

@@ -1,0 +1,18 @@
+{
+  "ability_type": "conditional_effect",
+  "breed_transferable": true,
+  "max_tier": 4,
+  "properties": {
+    "condition_type": "near_trees",
+    "nature_check_radius": 3
+  },
+  "actions": [
+    {
+      "effect": "minecraft:resistance",
+      "duration": 60,
+      "amplifier": 0,
+      "ambient": true,
+      "targets": ["dragon"]
+    }
+  ]
+}

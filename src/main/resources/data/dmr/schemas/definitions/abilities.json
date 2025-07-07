@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/definitions/abilities.json",
+  "$version": "1.0.0",
+  "$comment": "Dragon-specific ability definitions for Dragon Mounts Remastered",
+  "title": "DMR Dragon Abilities",
+  "description": "Dragon ability identifiers and references",
+  "$defs": {
+    "ability": {
+      "$anchor": "ability",
+      "type": "string",
+      "pattern": "^#?[a-zA-Z0-9_]+$",
+      "description": "A dragon ability identifier"
+    },
+    "ability_entry": {
+      "$anchor": "ability_entry",
+      "type": "object",
+      "description": "An entry defining a dragon ability with its chance of occurrence",
+      "properties": {
+        "ability": {
+          "$ref": "#ability",
+          "description": "The ability this entry refers to"
+        },
+        "chance": {
+          "type": "number",
+          "description": "The chance of a dragon getting this ability",
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      },
+      "required": ["ability", "chance"],
+      "additionalProperties": false
+    },
+    "breath_type": {
+      "$anchor": "breath_type",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_/.]+$",
+      "description": "A dragon breath type identifier"
+    }
+  }
+}

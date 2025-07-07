@@ -38,15 +38,20 @@ public class SchemaValidator {
 
     // All schema files, including dependencies, that must be loaded.
     private static final List<String> ALL_SCHEMAS = Arrays.asList(
-            "ability_schema.json",
-            "breed_schema.json",
-            "breath_type_schema.json",
-            "armor_schema.json",
-            "variant_schema.json",
-            "definitions.json",
-            "habitat_schema.json",
-            "ability_tag_schema.json",
-            "accessories_schema.json");
+            "types/ability_schema.json",
+            "types/breed_schema.json",
+            "types/breath_type_schema.json",
+            "types/armor_schema.json",
+            "types/variant_schema.json",
+            "types/habitat_schema.json",
+            "types/ability_tag_schema.json",
+            "types/accessories_schema.json",
+            "definitions/definitions.json",
+            "definitions/actions.json",
+            "definitions/effects.json",
+            "definitions/resources.json",
+            "definitions/attributes.json",
+            "definitions/abilities.json");
 
     private static final Map<String, JsonSchema> schemaCache = new HashMap<>();
     private static final ArrayList<String> schemas = new ArrayList<>();
@@ -66,7 +71,8 @@ public class SchemaValidator {
             try {
                 ResourceLocation location = DMR.id("schemas/" + fileName);
                 try (InputStream stream = resourceManager.open(location)) {
-                    String uri = SCHEMA_BASE_URI + fileName;
+                    // Base URI should match the $id in the schema files
+                    String uri = SCHEMA_BASE_URI + "schemas/" + fileName;
                     var content = stream.readAllBytes();
 
                     var lenientMapper = new ObjectMapper();
@@ -83,14 +89,33 @@ public class SchemaValidator {
                     String schemaJson = prettyPrintMapper.writeValueAsString(rootNode);
                     schemaContents.put(uri, schemaJson);
                     // Also add alternative URI patterns that might be referenced
-                    schemaContents.put(SCHEMA_BASE_URI + "schemas/" + fileName, schemaJson);
+                    schemaContents.put(SCHEMA_BASE_URI + fileName, schemaJson);
                     schemaContents.put(fileName, schemaJson);
+                    // Add without 'schemas/' prefix for relative references
+                    String fileNameWithoutPath = fileName.substring(fileName.lastIndexOf('/') + 1);
+                    schemaContents.put(SCHEMA_BASE_URI + fileNameWithoutPath, schemaJson);
                     schemas.add(fileName);
                 }
             } catch (Exception e) {
                 DMR.LOGGER.error("Failed to read local schema file: {}", fileName, e);
             }
         }
+
+        // Add additional URI mappings for relative references
+        Map<String, String> additionalMappings = new HashMap<>(schemaContents);
+        for (Map.Entry<String, String> entry : schemaContents.entrySet()) {
+            String uri = entry.getKey();
+            String content = entry.getValue();
+            
+            // Add mappings for relative paths that might be used in $ref
+            if (uri.contains("/definitions/")) {
+                // For definition files, add mappings without the full path
+                String fileName = uri.substring(uri.lastIndexOf('/') + 1);
+                additionalMappings.put(SCHEMA_BASE_URI + fileName, content);
+                additionalMappings.put(fileName, content);
+            }
+        }
+        schemaContents.putAll(additionalMappings);
 
         // Create a custom schema loader that only loads from our pre-loaded schemas
         final SchemaLoader localOnlyLoader = uri -> {
@@ -99,6 +124,28 @@ public class SchemaValidator {
             if (schemaContent != null) {
                 return () -> new java.io.ByteArrayInputStream(schemaContent.getBytes());
             }
+            
+            // Try to resolve relative references
+            if (!uriString.startsWith("http")) {
+                // Try with base URI
+                schemaContent = schemaContents.get(SCHEMA_BASE_URI + uriString);
+                if (schemaContent != null) {
+                    return () -> new java.io.ByteArrayInputStream(schemaContent.getBytes());
+                }
+                
+                // Try with schemas/ prefix
+                schemaContent = schemaContents.get(SCHEMA_BASE_URI + "schemas/" + uriString);
+                if (schemaContent != null) {
+                    return () -> new java.io.ByteArrayInputStream(schemaContent.getBytes());
+                }
+                
+                // Try with schemas/definitions/ prefix for relative refs from definitions
+                schemaContent = schemaContents.get(SCHEMA_BASE_URI + "schemas/definitions/" + uriString);
+                if (schemaContent != null) {
+                    return () -> new java.io.ByteArrayInputStream(schemaContent.getBytes());
+                }
+            }
+            
             DMR.LOGGER.warn("Attempted to load schema from URI not in cache, blocking network access: {}", uriString);
             return null; // Return null to prevent network loading
         };
@@ -121,9 +168,9 @@ public class SchemaValidator {
                 return;
             }
 
-            URI schemaUri = URI.create(SCHEMA_BASE_URI + schemaFileName);
+            URI schemaUri = URI.create(SCHEMA_BASE_URI + "schemas/" + schemaFileName);
             JsonSchema schema = factory.getSchema(schemaUri);
-            String schemaName = schemaFileName.replace(".json", "");
+            String schemaName = schemaFileName.replace(".json", "").replace("types/", "").replace("definitions/", "");
             schemaCache.put(schemaName, schema);
         } catch (Exception e) {
             DMR.LOGGER.error("Failed to get schema from factory: {}", schemaFileName, e);

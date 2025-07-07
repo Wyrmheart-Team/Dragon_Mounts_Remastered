@@ -1,0 +1,20 @@
+{
+  "ability_type": "conditional_effect",
+  "breed_transferable": false,
+  "max_tier": 1,
+  "properties": {
+    "range": 0,
+    "condition_type": "in_water"
+  },
+  "actions": [
+    {
+      "effect": "minecraft:strength",
+      "duration": 40,
+      "amplifier": 0,
+      "ambient": true,
+      "show_particles": false,
+      "show_icon": false,
+      "targets": ["dragon"]
+    }
+  ]
+}

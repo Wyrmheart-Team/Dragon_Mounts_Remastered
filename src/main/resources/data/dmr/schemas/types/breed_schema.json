@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "schemas/breed_schema.json",
+  "$id": "schemas/types/breed_schema.json",
   "$version": "1.0.0",
   "$comment": "This schema is used to validate dragon breed JSON files in the data/dmr/breeds directory. Each breed defines a type of dragon with its own characteristics, abilities, and behaviors.",
   "title": "Dragon Breed Schema",
@@ -9,22 +9,22 @@
   "additionalProperties": false,
   "properties": {
     "ambient_sound": {
-      "$ref": "definitions.json#/$defs/sound",
+      "$ref": "../definitions/resources.json#/$defs/sound",
       "description": "Ambient sound played by the dragon during normal activity. Should be a valid sound resource identifier.",
       "examples": ["dmr:entity.dragon.breathe", "minecraft:entity.ender_dragon.growl"]
     },
     "death_loot": {
-      "$ref": "definitions.json#/$defs/loot_table",
+      "$ref": "../definitions/resources.json#/$defs/loot_table",
       "description": "Loot table that determines what items drop when the dragon dies. Should be a valid loot table resource identifier.",
       "examples": ["dmr:entities/dragon/fire", "minecraft:entities/ender_dragon"]
     },
     "hatch_time": {
-      "$ref": "definitions.json#/$defs/duration_integer",
+      "$ref": "../definitions/attributes.json#/$defs/duration_integer",
       "description": "Time in ticks required for a dragon egg to hatch. If not specified, the default value from server configuration will be used.",
       "examples": [12000, 24000]
     },
     "growth_time": {
-      "$ref": "definitions.json#/$defs/duration_integer",
+      "$ref": "../definitions/attributes.json#/$defs/duration_integer",
       "description": "Time in ticks required for a baby dragon to grow into an adult. If not specified, the default value from server configuration will be used.",
       "examples": [72000, 144000]
     },
@@ -36,17 +36,17 @@
       "examples": [0.8, 1.2]
     },
     "primary_color": {
-      "$ref": "definitions.json#/$defs/color",
+      "$ref": "../definitions/resources.json#/$defs/color",
       "description": "Primary color of the dragon in hexadecimal format (without # prefix). Used primarily for coloring spawn eggs and some minor visual effects.",
       "examples": ["912400", "161616", "62ff"]
     },
     "secondary_color": {
-      "$ref": "definitions.json#/$defs/color",
+      "$ref": "../definitions/resources.json#/$defs/color",
       "description": "Secondary color of the dragon in hexadecimal format (without # prefix). Used primarily for coloring spawn eggs and some minor visual effects.",
       "examples": ["ff9819", "ff63e8", "5999ff"]
     },
     "inventory_texture": {
-      "$ref": "definitions.json#/$defs/texture",
+      "$ref": "../definitions/resources.json#/$defs/texture",
       "description": "The texture displayed in the dragon's inventory UI. Should be a valid texture resource identifier.",
       "examples": ["minecraft:textures/block/magma.png", "textures/block/obsidian.png"]
     },
@@ -58,10 +58,11 @@
         "pattern": "^[a-zA-Z0-9_]+$"
       },
       "description": "List of damage types that the dragon is immune to. Dragons with these immunities will not take damage from the specified sources.",
-      "examples": [["onFire", "inFire", "lava", "hotFloor"], ["drown"]]
+      "examples": [["onFire", "inFire", "lava", "hotFloor"], ["drown"]],
+      "minItems": 1
     },
     "attributes": {
-      "$ref": "definitions.json#/$defs/attributes",
+      "$ref": "../definitions/attributes.json#/$defs/attributes",
       "description": "Base attributes of the dragon that affect its stats like health, speed, armor, etc. Maps attribute IDs to their numeric values.",
       "examples": [
         {"minecraft:generic.max_health": 75.0, "minecraft:generic.armor": 8.0}
@@ -74,6 +75,7 @@
         "description": "Habitat definition that specifies where the dragon prefers to live. Different habitat types include biome, fluid, height, light, and more."
       },
       "description": "List of habitats where the dragon prefers to live. These affect breeding, spawning, and other behaviors.",
+      "minItems": 1,
       "examples": [
         [
           {"type": "biome", "biome_tag": "minecraft:is_end"},
@@ -84,10 +86,11 @@
     "abilities": {
       "type": "array",
       "items": {
-        "$ref": "definitions.json#/$defs/ability_entry",
+        "$ref": "../definitions/abilities.json#/$defs/ability_entry",
         "description": "Ability entry that specifies an ability and the chance of a dragon having it."
       },
       "description": "List of possible abilities that the dragon can have, along with the chance of each ability occurring.",
+      "minItems": 1,
       "examples": [
         [
           {"ability": "ember_aura", "chance": 0.5},
@@ -96,44 +99,47 @@
       ]
     },
     "breath_type": {
-      "$ref": "definitions.json#/$defs/breath_type",
+      "$ref": "../definitions/abilities.json#/$defs/breath_type",
       "description": "The type of breath attack that the dragon uses. Should reference a valid breath type defined in a breath type JSON file.",
       "examples": ["fire", "ender", "water"]
     },
     "taming_items": {
       "type": "array",
       "items": {
-        "$ref": "definitions.json#/$defs/item",
+        "$ref": "../definitions/resources.json#/$defs/item",
         "description": "Item that can be used to tame this dragon breed. Should be a valid item identifier."
       },
       "description": "List of items that can be used to tame this dragon breed. Players must use one of these items to tame a wild dragon.",
-      "examples": [["minecraft:blaze_powder", "minecraft:fire_charge"]]
+      "examples": [["minecraft:blaze_powder", "minecraft:fire_charge"]],
+      "minItems": 1
     },
     "breeding_items": {
       "type": "array",
       "items": {
-        "$ref": "definitions.json#/$defs/item",
+        "$ref": "../definitions/resources.json#/$defs/item",
         "description": "Item that can be used to breed this dragon. Should be a valid item identifier."
       },
       "description": "List of items that can be used to breed this dragon with another dragon. Players must use one of these items to initiate breeding.",
-      "examples": [["minecraft:golden_apple", "minecraft:enchanted_golden_apple"]]
+      "examples": [["minecraft:golden_apple", "minecraft:enchanted_golden_apple"]],
+      "minItems": 1
     },
     "hatch_particles": {
-      "$ref": "definitions.json#/$defs/particle",
+      "$ref": "../definitions/resources.json#/$defs/particle",
       "description": "Particle effect displayed when a dragon egg of this breed hatches. Should be a valid particle effect identifier.",
       "examples": ["minecraft:flame", "minecraft:portal", "minecraft:end_rod"]
     },
     "accessories": {
       "type": "array",
       "items": {
-        "$ref": "definitions.json#/$defs/identifier",
+        "$ref": "../definitions/resources.json#/$defs/identifier",
         "description": "Accessory identifier for visual elements on the dragon model, such as horns, fins, or scales."
       },
       "description": "List of accessories that appear on this dragon breed. These are visual elements that distinguish different breeds.",
-      "examples": [["middle_tail_scales", "tail_horns"], ["second_horns", "tail_mem"]]
+      "examples": [["middle_tail_scales", "tail_horns"], ["second_horns", "tail_mem"]],
+      "minItems": 1
     },
     "loot_tables": {
-      "$ref": "definitions.json#/$defs/loot_tables",
+      "$ref": "../definitions/resources.json#/$defs/loot_tables",
       "description": "Collection of loot tables that can be dropped by this dragon breed, along with their drop chances and quantities.",
       "examples": [
         [
@@ -147,12 +153,12 @@
       ]
     },
     "model_location": {
-      "$ref": "definitions.json#/$defs/model",
+      "$ref": "../definitions/resources.json#/$defs/model",
       "description": "Resource location of the 3D model file for this dragon breed. Should be a valid model file path.",
       "examples": ["dmr:geo/dragon.geo.json"]
     },
     "animation_location": {
-      "$ref": "definitions.json#/$defs/animation",
+      "$ref": "../definitions/resources.json#/$defs/animation",
       "description": "Resource location of the animation file for this dragon breed. Should be a valid animation file path.",
       "examples": ["dmr:animations/dragon.animation.json"]
     },
@@ -163,6 +169,7 @@
         "description": "Variant definition for this dragon breed. Variants are visual or behavioral variations within a breed."
       },
       "description": "List of variants available for this dragon breed. Variants can have different textures, colors, and other properties.",
+      "minItems": 1,
       "examples": [
         [
           {

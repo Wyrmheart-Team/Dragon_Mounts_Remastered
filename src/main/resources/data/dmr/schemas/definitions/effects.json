@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", 
+  "$id": "schemas/definitions/effects.json",
+  "$version": "1.0.0",
+  "$comment": "Effect system definitions for Dragon Mounts Remastered",
+  "title": "DMR Effect Definitions",
+  "description": "Effect-related types and structures",
+  "$defs": {
+    "effect": {
+      "$anchor": "effect",
+      "type": "string", 
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_.]+$",
+      "description": "A status effect identifier, optionally namespaced"
+    },
+    "simple_effect": {
+      "$anchor": "simple_effect",
+      "type": "object",
+      "description": "Simple effect application configuration",
+      "properties": {
+        "effect": {
+          "$ref": "#/$defs/effect",
+          "description": "The status effect to apply"
+        },
+        "duration": {
+          "$ref": "attributes.json#/$defs/duration_integer",
+          "description": "Duration of the effect in ticks",
+          "default": 20
+        },
+        "amplifier": {
+          "type": "integer",
+          "description": "Amplifier level of the effect (0 = level 1)",
+          "minimum": 0,
+          "default": 0
+        },
+        "ambient": {
+          "type": "boolean",
+          "description": "Whether the effect is ambient (from a beacon)",
+          "default": false
+        },
+        "show_particles": {
+          "type": "boolean", 
+          "description": "Whether to show effect particles",
+          "default": true
+        },
+        "show_icon": {
+          "type": "boolean",
+          "description": "Whether to show the effect icon",
+          "default": true
+        }
+      },
+      "required": ["effect"],
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,305 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/definitions/actions.json",
+  "$version": "1.0.0",
+  "$comment": "Action system definitions for Dragon Mounts Remastered",
+  "title": "DMR Action Definitions",
+  "description": "Action types and structures for dragon abilities",
+  "$defs": {
+    "target_type": {
+      "$anchor": "target_type",
+      "type": "string",
+      "enum": ["dragon", "owner", "target", "monsters", "all_entities", "passengers"],
+      "description": "Valid target types for actions"
+    },
+    "targets": {
+      "$anchor": "targets",
+      "description": "List of target types for this action",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/target_type",
+          "description": "Single target type"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/target_type"
+          },
+          "description": "Multiple target types",
+          "minItems": 1
+        }
+      ],
+      "default": ["dragon"]
+    },
+    "action_base": {
+      "$anchor": "action_base",
+      "type": "object",
+      "description": "Base properties for all action types",
+      "properties": {
+        "targets": {
+          "$ref": "#/$defs/targets",
+          "description": "Who should receive this action"
+        }
+      },
+      "additionalProperties": false
+    },
+    "effect_action": {
+      "$anchor": "effect_action",
+      "allOf": [
+        {"$ref": "#/$defs/action_base"},
+        {
+          "type": "object",
+          "description": "Effect action: Apply a status effect",
+          "properties": {
+            "targets": true,
+            "effect": {
+              "$ref": "effects.json#/$defs/effect",
+              "description": "The status effect to apply"
+            },
+            "duration": {
+              "$ref": "attributes.json#/$defs/duration_integer",
+              "description": "Duration of the effect in ticks",
+              "default": 40
+            },
+            "amplifier": {
+              "type": "integer",
+              "description": "Amplifier level of the effect (0 = level 1)",
+              "minimum": 0,
+              "default": 0
+            },
+            "ambient": {
+              "type": "boolean",
+              "description": "Whether the effect is ambient (from a beacon)",
+              "default": true
+            },
+            "show_particles": {
+              "type": "boolean",
+              "description": "Whether to show effect particles",
+              "default": false
+            },
+            "show_icon": {
+              "type": "boolean",
+              "description": "Whether to show the effect icon",
+              "default": true
+            },
+            "duration_scale_factor": {
+              "type": "number",
+              "description": "Factor by which the duration scales with ability tier",
+              "minimum": 0,
+              "default": 1.0
+            },
+            "amplifier_scale_factor": {
+              "type": "number",
+              "description": "Factor by which the amplifier scales with ability tier",
+              "minimum": 0,
+              "default": 0.0
+            }
+          },
+          "required": ["effect"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "attribute_simple": {
+      "$anchor": "attribute_simple",
+      "type": "string",
+      "$ref": "attributes.json#/$defs/attribute",
+      "description": "Simple attribute format"
+    },
+    "attribute_complex": {
+      "$anchor": "attribute_complex",
+      "type": "object",
+      "description": "Complex attribute format",
+      "properties": {
+        "id": {
+          "$ref": "attributes.json#/$defs/attribute",
+          "description": "The attribute to modify"
+        },
+        "value": {
+          "type": "number",
+          "description": "The value to apply"
+        },
+        "operation": {
+          "type": "string",
+          "enum": ["ADD_VALUE", "ADD_MULTIPLIED_BASE", "ADD_MULTIPLIED_TOTAL"],
+          "description": "How to apply the attribute modifier",
+          "default": "ADD_VALUE"
+        }
+      },
+      "required": ["id", "value"],
+      "additionalProperties": false
+    },
+    "attribute_action": {
+      "$anchor": "attribute_action",
+      "allOf": [
+        {"$ref": "#/$defs/action_base"},
+        {
+          "type": "object",
+          "description": "Attribute action: Modify an entity attribute",
+          "properties": {
+            "targets": true,
+            "attribute": {
+              "oneOf": [
+                {"$ref": "#/$defs/attribute_simple"},
+                {"$ref": "#/$defs/attribute_complex"}
+              ]
+            },
+            "attribute_value": {
+              "type": "number",
+              "description": "Value for simple attribute format",
+              "default": 1.0
+            },
+            "attribute_operation": {
+              "type": "string",
+              "enum": ["ADD_VALUE", "ADD_MULTIPLIED_BASE", "ADD_MULTIPLIED_TOTAL"],
+              "description": "Operation for simple attribute format",
+              "default": "ADD_VALUE"
+            },
+            "attribute_scale_factor": {
+              "type": "number",
+              "description": "Factor by which the value scales with ability tier",
+              "minimum": 0,
+              "default": 1.0
+            },
+            "permanent": {
+              "type": "boolean",
+              "description": "Whether this attribute modifier should be permanent (not removed when conditions change)",
+              "default": false
+            }
+          },
+          "required": ["attribute"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "heal_action": {
+      "$anchor": "heal_action",
+      "allOf": [
+        {"$ref": "#/$defs/action_base"},
+        {
+          "type": "object",
+          "description": "Heal action: Restore health",
+          "properties": {
+            "targets": true,
+            "heal": {
+              "type": "number",
+              "description": "Amount of health to restore",
+              "minimum": 0
+            },
+            "heal_scale_factor": {
+              "type": "number",
+              "description": "Factor by which healing scales with ability tier",
+              "minimum": 0,
+              "default": 1.0
+            }
+          },
+          "required": ["heal"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "damage_action": {
+      "$anchor": "damage_action",
+      "allOf": [
+        {"$ref": "#/$defs/action_base"},
+        {
+          "type": "object",
+          "description": "Damage action: Deal damage",
+          "properties": {
+            "targets": true,
+            "damage": {
+              "type": "number",
+              "description": "Amount of damage to deal",
+              "minimum": 0
+            },
+            "damage_scale_factor": {
+              "type": "number",
+              "description": "Factor by which damage scales with ability tier",
+              "minimum": 0,
+              "default": 1.0
+            }
+          },
+          "required": ["damage"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "item_simple": {
+      "$anchor": "item_simple",
+      "type": "string",
+      "$ref": "resources.json#/$defs/item",
+      "description": "Simple item format"
+    },
+    "item_complex": {
+      "$anchor": "item_complex",
+      "type": "object",
+      "description": "Complex item format",
+      "properties": {
+        "item": {
+          "$ref": "resources.json#/$defs/item",
+          "description": "The item to give"
+        },
+        "count": {
+          "type": "integer",
+          "description": "Number of items to give",
+          "minimum": 1,
+          "default": 1
+        }
+      },
+      "required": ["item"],
+      "additionalProperties": false
+    },
+    "give_item_action": {
+      "$anchor": "give_item_action",
+      "allOf": [
+        {"$ref": "#/$defs/action_base"},
+        {
+          "type": "object",
+          "description": "Give item action: Give an item to players",
+          "properties": {
+            "targets": true,
+            "give_item": {
+              "oneOf": [
+                {"$ref": "#/$defs/item_simple"},
+                {"$ref": "#/$defs/item_complex"}
+              ]
+            },
+            "item_count": {
+              "type": "integer",
+              "description": "Count for simple item format",
+              "minimum": 1,
+              "default": 1
+            },
+            "item_scale_factor": {
+              "type": "number",
+              "description": "Factor by which item count scales with ability tier",
+              "minimum": 0,
+              "default": 1.0
+            }
+          },
+          "required": ["give_item"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "action": {
+      "$anchor": "action",
+      "oneOf": [
+        {"$ref": "#/$defs/effect_action"},
+        {"$ref": "#/$defs/attribute_action"},
+        {"$ref": "#/$defs/heal_action"},
+        {"$ref": "#/$defs/damage_action"},
+        {"$ref": "#/$defs/give_item_action"}
+      ]
+    },
+    "actions": {
+      "$anchor": "actions",
+      "type": "array",
+      "description": "Array of actions to perform when this ability triggers",
+      "items": {
+        "$ref": "#/$defs/action"
+      },
+      "minItems": 1
+    }
+  }
+}

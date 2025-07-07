@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/definitions/attributes.json",
+  "$version": "1.0.0",
+  "$comment": "Attribute system definitions for Dragon Mounts Remastered",
+  "title": "DMR Attribute Definitions",
+  "description": "Attribute-related types and structures",
+  "$defs": {
+    "attribute": {
+      "$anchor": "attribute",
+      "type": "string",
+      "pattern": "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_.]+$",
+      "description": "An attribute identifier, optionally namespaced"
+    },
+    "attributes": {
+      "$anchor": "attributes",
+      "type": "object",
+      "description": "A map of attribute identifiers to their numeric values",
+      "patternProperties": {
+        "^(?:[a-zA-Z0-9_]+:)?[a-zA-Z0-9_.]+$": {
+          "type": "number",
+          "description": "The numeric value for this attribute"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "duration_integer": {
+      "$anchor": "duration_integer", 
+      "type": "integer",
+      "description": "Duration in ticks (20 ticks = 1 second)",
+      "minimum": 1
+    }
+  }
+}

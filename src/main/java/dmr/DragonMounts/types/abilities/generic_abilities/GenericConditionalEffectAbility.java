@@ -41,6 +41,30 @@ public class GenericConditionalEffectAbility extends GenericActionAbility {
     }
 
     @Override
+    public void tick(TameableDragonEntity dragon) {
+        if (actions.isEmpty() || dragon.level.isClientSide) {
+            return;
+        }
+
+        Player owner = dragon.getOwner() instanceof Player ? (Player) dragon.getOwner() : null;
+        boolean conditionMet = checkCondition(dragon, owner);
+
+        if (conditionMet && !wasConditionMet) {
+            // Condition just became true - apply effects
+            executeActions(dragon, owner);
+            appliedTargets.add(dragon);
+            if (owner != null) {
+                appliedTargets.add(owner);
+            }
+        } else if (!conditionMet && wasConditionMet) {
+            // Condition just became false - cleanup attribute modifiers
+            cleanupAttributeModifiers();
+        }
+
+        wasConditionMet = conditionMet;
+    }
+
+    @Override
     public void tickWithOwner(TameableDragonEntity dragon, Player owner) {
         if (actions.isEmpty() || dragon.level.isClientSide) {
             return;
@@ -81,7 +105,9 @@ public class GenericConditionalEffectAbility extends GenericActionAbility {
     private boolean checkCondition(TameableDragonEntity dragon, Player owner) {
         return switch (conditionType) {
             case "in_water" -> dragon.isInWater();
+            case "in_lava" -> dragon.isInLava();
             case "near_nature" -> checkNearNature(dragon);
+            case "near_trees" -> checkNearTrees(dragon);
             case "on_ground" -> dragon.onGround();
             case "flying" -> !dragon.onGround() && !dragon.isInWater();
             case "day" -> dragon.level.isDay();
@@ -104,6 +130,18 @@ public class GenericConditionalEffectAbility extends GenericActionAbility {
                 .map(level::getBlockState)
                 .filter(state ->
                         state.is(Blocks.GRASS_BLOCK) || state.is(BlockTags.FLOWERS) || state.is(BlockTags.SAPLINGS));
+
+        return blocks.findAny().isPresent();
+    }
+
+    private boolean checkNearTrees(TameableDragonEntity dragon) {
+        var level = dragon.level;
+        var basePos = dragon.blockPosition();
+        var blocks = BlockPos.betweenClosedStream(
+                        basePos.offset(natureCheckRadius, natureCheckRadius, natureCheckRadius),
+                        basePos.offset(-natureCheckRadius, -natureCheckRadius, -natureCheckRadius))
+                .map(level::getBlockState)
+                .filter(state -> state.is(BlockTags.LOGS) || state.is(BlockTags.LEAVES));
 
         return blocks.findAny().isPresent();
     }

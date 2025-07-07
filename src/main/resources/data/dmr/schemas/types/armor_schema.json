@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "schemas/armor_schema.json",
+  "$id": "schemas/types/armor_schema.json",
   "$version": "1.0.0",
   "$comment": "This schema is used to validate dragon armor JSON files in the data/dmr/armor directory. Each armor type defines a set of protection values and loot tables for dragon armor.",
   "title": "Dragon Armor Schema",
@@ -15,7 +15,7 @@
       "examples": [4, 8, 12]
     },
     "loot_tables": {
-      "$ref": "definitions.json#/$defs/loot_tables",
+      "$ref": "../definitions/resources.json#/$defs/loot_tables",
       "description": "Collection of loot tables that can contain this armor type, along with their drop chances and quantities.",
       "examples": [
         [

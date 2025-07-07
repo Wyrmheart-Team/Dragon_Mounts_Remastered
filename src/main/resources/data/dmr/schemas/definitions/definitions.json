@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/definitions/definitions.json",
+  "$version": "1.0.0",
+  "$comment": "Legacy definitions file - most definitions have been moved to focused modules. This file remains for backward compatibility and will be phased out.",
+  "title": "Dragon Mounts Remastered Legacy Definitions",
+  "description": "Legacy type definitions - use focused modules instead (resources.json, attributes.json, effects.json, actions.json, abilities.json)",
+  "$defs": {
+    "identifier": {
+      "$anchor": "identifier",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_]+$",
+      "description": "A simple identifier without namespace"
+    },
+    "target_settings": {
+      "$anchor": "target_settings",
+      "type": "object",
+      "description": "Settings for who should receive the effects/actions",
+      "properties": {
+        "apply_to_dragon": {
+          "type": "boolean",
+          "description": "Whether to apply effects to the dragon itself",
+          "default": true
+        },
+        "apply_to_owner": {
+          "type": "boolean",
+          "description": "Whether to apply effects to the dragon's owner",
+          "default": false
+        },
+        "apply_to_target": {
+          "type": "boolean",
+          "description": "Whether to apply effects to the event target (if applicable)",
+          "default": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

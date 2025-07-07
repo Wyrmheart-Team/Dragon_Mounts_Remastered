@@ -1,0 +1,529 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/types/ability_schema.json",
+  "$version": "1.0.0",
+  "$comment": "This schema is used to validate dragon ability JSON files in the data/dmr/abilities directory. Each ability defines a special power or trait that can be assigned to dragon breeds.",
+  "title": "Dragon Ability Schema",
+  "description": "Schema for defining dragon abilities that can be assigned to dragon breeds",
+  "type": "object",
+  "discriminator": {
+    "propertyName": "ability_type",
+    "mapping": {
+      "conditional_effect": "#/$defs/conditional_effect_ability",
+      "event_trigger": "#/$defs/event_trigger_ability",
+      "environmental_sensor": "#/$defs/environmental_sensor_ability",
+      "resource_generator": "#/$defs/resource_generator_ability",
+      "block_interaction": "#/$defs/block_interaction_ability",
+      "footprint_generator": "#/$defs/footprint_generator_ability"
+    }
+  },
+  "oneOf": [
+    {"$ref": "#/$defs/conditional_effect_ability"},
+    {"$ref": "#/$defs/event_trigger_ability"},
+    {"$ref": "#/$defs/environmental_sensor_ability"},
+    {"$ref": "#/$defs/resource_generator_ability"},
+    {"$ref": "#/$defs/block_interaction_ability"},
+    {"$ref": "#/$defs/footprint_generator_ability"},
+    {"$ref": "#/$defs/custom_ability"}
+  ],
+  "$defs": {
+    "ability_base": {
+      "$anchor": "ability_base",
+      "type": "object",
+      "properties": {
+        "max_tier": {
+          "type": "integer",
+          "description": "Maximum tier level this ability can reach. Higher tiers typically provide stronger effects.",
+          "minimum": 1,
+          "default": 1
+        },
+        "breed_transferable": {
+          "type": "boolean",
+          "description": "Whether the ability can be transferred to offspring when breeding dragons.",
+          "default": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "conditional_effect_ability": {
+      "$anchor": "conditional_effect_ability",
+      "allOf": [
+        {"$ref": "#/$defs/ability_base"},
+        {
+          "type": "object",
+          "properties": {
+            "ability_type": {
+              "const": "conditional_effect",
+              "description": "Specifies that this ability applies status effects to the dragon and/or its owner when a specific condition is met. Uses GenericConditionalEffectAbility implementation."
+            },
+            "properties": {
+              "type": "object",
+              "description": "Properties specific to conditional effect abilities.",
+              "properties": {
+                "condition_type": {
+                  "type": "string",
+                  "description": "The condition that must be met for the effect to apply.",
+                  "enum": [
+                    "none",
+                    "in_water",
+                    "in_lava",
+                    "near_nature",
+                    "near_trees",
+                    "on_ground",
+                    "flying",
+                    "day",
+                    "night",
+                    "health_low",
+                    "health_full",
+                    "alone",
+                    "raining",
+                    "thundering"
+                  ],
+                  "default": "none"
+                },
+                "nature_check_radius": {
+                  "type": "integer",
+                  "description": "Radius in blocks to check for nature blocks when condition_type is 'near_nature'.",
+                  "minimum": 0,
+                  "default": 2
+                }
+              },
+              "additionalProperties": false
+            },
+            "actions": {
+              "$ref": "../definitions/actions.json#/$defs/actions",
+              "description": "Array of actions to perform when this ability triggers"
+            }
+          },
+          "required": ["ability_type", "properties", "actions"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "event_trigger_ability": {
+      "$anchor": "event_trigger_ability",
+      "allOf": [
+        {"$ref": "#/$defs/ability_base"},
+        {
+          "type": "object",
+          "properties": {
+            "ability_type": {
+              "const": "event_trigger",
+              "description": "Specifies that this ability triggers effects based on events like attacks, damage, kills, etc. Uses GenericEventTriggerAbility implementation."
+            },
+            "properties": {
+              "type": "object",
+              "description": "Properties specific to event trigger abilities.",
+              "properties": {
+                "event_type": {
+                  "type": "string",
+                  "description": "The type of event that triggers this ability.",
+                  "enum": [
+                    "on_attack",
+                    "on_damage",
+                    "on_kill",
+                    "on_critical",
+                    "on_mount",
+                    "on_dismount",
+                    "on_feed"
+                  ],
+                  "default": "on_attack"
+                },
+                "trigger_chance": {
+                  "type": "number",
+                  "description": "Chance (0.0-1.0) that the ability triggers when the event occurs.",
+                  "minimum": 0.0,
+                  "maximum": 1.0,
+                  "default": 1.0
+                },
+                "cooldown_ticks": {
+                  "type": "integer",
+                  "description": "Cooldown in ticks before the ability can trigger again.",
+                  "minimum": 0,
+                  "default": 0
+                }
+              },
+              "additionalProperties": false
+            },
+            "actions": {
+              "$ref": "../definitions/actions.json#/$defs/actions",
+              "description": "Array of actions to perform when this ability triggers"
+            }
+          },
+          "required": ["ability_type", "properties", "actions"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "environmental_sensor_ability": {
+      "$anchor": "environmental_sensor_ability",
+      "allOf": [
+        {"$ref": "#/$defs/ability_base"},
+        {
+          "type": "object",
+          "properties": {
+            "ability_type": {
+              "const": "environmental_sensor",
+              "description": "Specifies that this ability applies effects based on environmental conditions like time, weather, biome, or dimension. Uses GenericEnvironmentalSensorAbility implementation."
+            },
+            "properties": {
+              "type": "object",
+              "description": "Properties specific to environmental sensor abilities.",
+              "properties": {
+                "condition_type": {
+                  "type": "string",
+                  "description": "The type of environmental condition to check.",
+                  "enum": [
+                    "time_based",
+                    "weather_based",
+                    "biome_based",
+                    "dimension_based"
+                  ],
+                  "default": "time_based"
+                },
+                "range": {
+                  "type": "integer",
+                  "description": "Range in blocks for owner proximity requirement.",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "apply_to_dragon": {
+                  "type": "boolean",
+                  "description": "Whether to apply effects to the dragon itself.",
+                  "default": true
+                },
+                "apply_to_owner": {
+                  "type": "boolean",
+                  "description": "Whether to apply effects to the dragon's owner.",
+                  "default": false
+                },
+                "min_time": {
+                  "type": "integer",
+                  "description": "Minimum time of day (0-24000) for time_based condition.",
+                  "minimum": 0,
+                  "maximum": 24000,
+                  "default": 0
+                },
+                "max_time": {
+                  "type": "integer",
+                  "description": "Maximum time of day (0-24000) for time_based condition.",
+                  "minimum": 0,
+                  "maximum": 24000,
+                  "default": 24000
+                },
+                "requires_rain": {
+                  "type": "boolean",
+                  "description": "Whether rain is required for weather_based condition.",
+                  "default": false
+                },
+                "requires_thunder": {
+                  "type": "boolean",
+                  "description": "Whether thunder is required for weather_based condition.",
+                  "default": false
+                },
+                "requires_clear": {
+                  "type": "boolean",
+                  "description": "Whether clear weather is required for weather_based condition.",
+                  "default": false
+                },
+                "required_biome": {
+                  "type": "string",
+                  "description": "Specific biome ID required for biome_based condition.",
+                  "default": ""
+                },
+                "biome_tag": {
+                  "type": "string",
+                  "description": "Biome tag required for biome_based condition.",
+                  "default": ""
+                },
+                "required_dimension": {
+                  "type": "string",
+                  "description": "Specific dimension ID required for dimension_based condition.",
+                  "default": ""
+                }
+              },
+              "additionalProperties": false
+            },
+            "actions": {
+              "$ref": "../definitions/actions.json#/$defs/actions",
+              "description": "Array of actions to perform when environmental condition is met"
+            }
+          },
+          "required": ["ability_type", "properties", "actions"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "resource_generator_ability": {
+      "$anchor": "resource_generator_ability",
+      "allOf": [
+        {"$ref": "#/$defs/ability_base"},
+        {
+          "type": "object",
+          "properties": {
+            "ability_type": {
+              "const": "resource_generator",
+              "description": "Specifies that this ability generates resources over time. Uses GenericResourceGeneratorAbility implementation."
+            },
+            "properties": {
+              "type": "object",
+              "description": "Properties specific to resource generator abilities.",
+              "properties": {
+                "generation_interval": {
+                  "type": "integer",
+                  "description": "Interval in ticks between resource generation attempts.",
+                  "minimum": 1,
+                  "default": 1200
+                },
+                "requires_owner_nearby": {
+                  "type": "boolean",
+                  "description": "Whether the owner must be nearby for generation to occur.",
+                  "default": true
+                },
+                "range": {
+                  "type": "integer",
+                  "description": "Range in blocks for owner proximity requirement.",
+                  "minimum": 0,
+                  "default": 10
+                },
+                "condition": {
+                  "type": "string",
+                  "description": "Additional condition for resource generation.",
+                  "enum": [
+                    "none",
+                    "in_water",
+                    "on_ground",
+                    "flying",
+                    "day",
+                    "night"
+                  ],
+                  "default": "none"
+                },
+                "resources": {
+                  "type": "array",
+                  "description": "List of resources that can be generated.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "item": {
+                        "$ref": "../definitions/resources.json#/$defs/item",
+                        "description": "The item to generate."
+                      },
+                      "min_count": {
+                        "type": "integer",
+                        "description": "Minimum number of items to generate.",
+                        "minimum": 1,
+                        "default": 1
+                      },
+                      "max_count": {
+                        "type": "integer",
+                        "description": "Maximum number of items to generate.",
+                        "minimum": 1,
+                        "default": 1
+                      },
+                      "chance": {
+                        "type": "number",
+                        "description": "Chance (0.0-1.0) that this resource is generated.",
+                        "minimum": 0.0,
+                        "maximum": 1.0,
+                        "default": 1.0
+                      }
+                    },
+                    "required": ["item"],
+                    "additionalProperties": false
+                  },
+                  "minItems": 1
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": ["ability_type", "properties"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "block_interaction_ability": {
+      "$anchor": "block_interaction_ability",
+      "allOf": [
+        {"$ref": "#/$defs/ability_base"},
+        {
+          "type": "object",
+          "properties": {
+            "ability_type": {
+              "const": "block_interaction",
+              "description": "Specifies that this ability allows interaction with blocks like crop growth or harvesting. Uses GenericBlockInteractionAbility implementation."
+            },
+            "properties": {
+              "type": "object",
+              "description": "Properties specific to block interaction abilities.",
+              "properties": {
+                "interaction_type": {
+                  "type": "string",
+                  "description": "The type of block interaction to perform.",
+                  "enum": [
+                    "growth_acceleration",
+                    "auto_harvest",
+                    "fertilize"
+                  ],
+                  "default": "growth_acceleration"
+                },
+                "range": {
+                  "type": "integer",
+                  "description": "Range in blocks to search for target blocks.",
+                  "minimum": 1,
+                  "default": 3
+                },
+                "interval_ticks": {
+                  "type": "integer",
+                  "description": "Interval in ticks between interaction attempts.",
+                  "minimum": 1,
+                  "default": 100
+                },
+                "effect_chance": {
+                  "type": "number",
+                  "description": "Chance (0.0-1.0) that each block interaction succeeds.",
+                  "minimum": 0.0,
+                  "maximum": 1.0,
+                  "default": 0.3
+                },
+                "requires_owner_nearby": {
+                  "type": "boolean",
+                  "description": "Whether the owner must be nearby for interactions to occur.",
+                  "default": false
+                },
+                "owner_range": {
+                  "type": "integer",
+                  "description": "Range in blocks for owner proximity requirement.",
+                  "minimum": 0,
+                  "default": 10
+                },
+                "target_block_tag": {
+                  "type": "string",
+                  "description": "Block tag to target for interactions.",
+                  "default": ""
+                },
+                "target_block": {
+                  "type": "string",
+                  "description": "Specific block ID to target for interactions.",
+                  "default": ""
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": ["ability_type", "properties"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "footprint_generator_ability": {
+      "$anchor": "footprint_generator_ability",
+      "allOf": [
+        {"$ref": "#/$defs/ability_base"},
+        {
+          "type": "object",
+          "properties": {
+            "ability_type": {
+              "const": "footprint_generator",
+              "description": "Specifies that this ability creates footprints or trails when the dragon moves. Uses GenericFootprintGeneratorAbility implementation."
+            },
+            "properties": {
+              "type": "object",
+              "description": "Properties specific to footprint generator abilities.",
+              "properties": {
+                "footprint_chance": {
+                  "type": "number",
+                  "description": "Chance (0.0-1.0) that a footprint is created when the dragon moves.",
+                  "minimum": 0.0,
+                  "maximum": 1.0,
+                  "default": 0.1
+                },
+                "placement_block": {
+                  "type": "string",
+                  "description": "Block ID to place as footprints.",
+                  "default": ""
+                },
+                "replacement_block": {
+                  "type": "string",
+                  "description": "Specific block ID that can be replaced by footprints.",
+                  "default": ""
+                },
+                "replace_air": {
+                  "type": "boolean",
+                  "description": "Whether footprints can replace air blocks.",
+                  "default": true
+                },
+                "replace_water": {
+                  "type": "boolean",
+                  "description": "Whether footprints can replace water blocks.",
+                  "default": false
+                },
+                "replace_lava": {
+                  "type": "boolean",
+                  "description": "Whether footprints can replace lava blocks.",
+                  "default": false
+                },
+                "pattern": {
+                  "type": "string",
+                  "description": "Pattern for footprint placement.",
+                  "enum": [
+                    "single",
+                    "cross",
+                    "circle"
+                  ],
+                  "default": "single"
+                },
+                "requires_adult": {
+                  "type": "boolean",
+                  "description": "Whether the dragon must be adult to create footprints.",
+                  "default": true
+                },
+                "requires_on_ground": {
+                  "type": "boolean",
+                  "description": "Whether the dragon must be on ground to create footprints.",
+                  "default": true
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": ["ability_type", "properties"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "custom_ability": {
+      "$anchor": "custom_ability",
+      "allOf": [
+        {"$ref": "#/$defs/ability_base"},
+        {
+          "type": "object",
+          "properties": {
+            "ability_type": {
+              "type": "string",
+              "description": "Specifies a custom ability type not covered by the generic implementations. The value should match the registered ability type ID.",
+              "not": {
+                "enum": [
+                  "conditional_effect",
+                  "event_trigger",
+                  "environmental_sensor",
+                  "resource_generator",
+                  "block_interaction",
+                  "footprint_generator"
+                ]
+              }
+            },
+            "properties": {
+              "type": "object",
+              "description": "Custom properties specific to this ability type. The structure depends on the ability implementation.",
+              "additionalProperties": true
+            }
+          },
+          "required": ["ability_type"],
+          "additionalProperties": true
+        }
+      ]
+    }
+  }
+}

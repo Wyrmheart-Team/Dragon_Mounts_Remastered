@@ -1,0 +1,21 @@
+{
+  "ability_type": "event_trigger",
+  "breed_transferable": false,
+  "max_tier": 1,
+  "properties": {
+    "event_type": "on_attack",
+    "trigger_chance": 1.0,
+    "cooldown_ticks": 0
+  },
+  "actions": [
+    {
+      "effect": "minecraft:slowness",
+      "duration": 60,
+      "amplifier": 0,
+      "ambient": false,
+      "show_particles": false,
+      "show_icon": false,
+      "targets": ["target"]
+    }
+  ]
+}
