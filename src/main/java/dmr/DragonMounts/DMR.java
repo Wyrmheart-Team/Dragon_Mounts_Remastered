@@ -10,6 +10,7 @@ import dmr.DragonMounts.network.packets.PacketRegistry;
 import dmr.DragonMounts.registry.*;
 import dmr.DragonMounts.registry.block.ModBlockEntities;
 import dmr.DragonMounts.registry.block.ModBlocks;
+import dmr.DragonMounts.registry.datapack.DragonAbilityRegistry;
 import dmr.DragonMounts.registry.entity.*;
 import dmr.DragonMounts.registry.item.ModCreativeTabs;
 import dmr.DragonMounts.registry.item.ModCustomRecipes;
@@ -72,6 +73,7 @@ public class DMR {
 
         ModCreativeTabs.init();
         ModItems.init();
+        DragonAbilityRegistry.init();
 
         ModBlocks.BLOCKS.register(bus);
         ModItems.ITEMS.register(bus);

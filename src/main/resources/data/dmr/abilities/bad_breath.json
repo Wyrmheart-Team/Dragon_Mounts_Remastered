@@ -1,8 +1,14 @@
 {
-  "ability_type": "attribute",
+  "ability_type": "permanent",
   "breed_transferable": true,
   "max_tier": 3,
-  "properties": {
-    "dmr:breath_damage": 2.0
-  }
+  "actions": [
+    {
+      "attribute": {
+        "id": "dmr:breath_damage",
+        "value": 2.0
+      },
+      "targets": ["dragon"]
+    }
+  ]
 }

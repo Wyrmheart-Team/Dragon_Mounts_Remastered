@@ -1,6 +1,7 @@
 package dmr.DragonMounts.server.entity.dragon;
 
 import dmr.DragonMounts.server.ai.DragonAI;
+import dmr.DragonMounts.types.abilities.EventType;
 import java.util.Objects;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -41,6 +42,9 @@ abstract class DragonCombatComponent extends DragonBreedableComponent {
 
         if (flag && src.getEntity() instanceof LivingEntity attacker) {
             DragonAI.wasHurtBy(getDragon(), attacker);
+
+            // Trigger event-based abilities for on_damage
+            getDragon().triggerEventAbilities(EventType.ON_DAMAGE, attacker);
         }
         return flag;
     }
@@ -81,6 +85,9 @@ abstract class DragonCombatComponent extends DragonBreedableComponent {
 
         if (attacked) {
             triggerAnim("head-controller", "bite");
+
+            // Trigger event-based abilities for on_attack
+            getDragon().triggerEventAbilities(EventType.ON_ATTACK, entityIn);
         }
 
         return attacked;

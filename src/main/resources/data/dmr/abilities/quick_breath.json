@@ -1,8 +1,14 @@
 {
-  "ability_type": "attribute",
+  "ability_type": "permanent",
   "breed_transferable": true,
   "max_tier": 5,
-  "properties": {
-    "dmr:breath_cooldown": 0.2
-  }
+  "actions": [
+    {
+      "attribute": {
+        "id": "dmr:breath_cooldown",
+        "value": 0.2
+      },
+      "targets": ["dragon"]
+    }
+  ]
 }

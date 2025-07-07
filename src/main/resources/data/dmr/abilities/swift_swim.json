@@ -3,30 +3,28 @@
   "breed_transferable": true,
   "properties": {
     "range": 2,
-    "apply_to_dragon": true,
-    "apply_to_owner": true,
-    "condition_type": "in_water",
-    "effects": [
-      {
-        "id": "minecraft:dolphins_grace",
-        "duration": 40,
-        "amplifier": 1,
-        "ambient": true,
-        "show_particles": false,
-        "show_icon": false,
-        "duration_scale_factor": 0.5,
-        "amplifier_scale_factor": 0.5
-      },
-      {
-        "id": "minecraft:water_breathing",
-        "duration": 60,
-        "amplifier": 0,
-        "ambient": true,
-        "show_particles": false,
-        "show_icon": true,
-        "duration_scale_factor": 0.5,
-        "amplifier_scale_factor": 0.0
-      }
-    ]
-  }
+    "condition_type": "in_water"
+  },
+  "actions": [
+    {
+      "effect": "minecraft:dolphins_grace",
+      "duration": 40,
+      "amplifier": 1,
+      "ambient": true,
+      "show_particles": false,
+      "show_icon": false,
+      "duration_scale_factor": 0.5,
+      "targets": ["dragon", "owner"]
+    },
+    {
+      "effect": "minecraft:water_breathing",
+      "duration": 60,
+      "amplifier": 0,
+      "ambient": true,
+      "show_particles": false,
+      "show_icon": true,
+      "duration_scale_factor": 0.5,
+      "targets": ["dragon", "owner"]
+    }
+  ]
 }

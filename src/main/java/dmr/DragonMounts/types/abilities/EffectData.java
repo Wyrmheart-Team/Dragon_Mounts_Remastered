@@ -10,6 +10,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 /**
@@ -145,7 +146,7 @@ public class EffectData {
      * @param target The player to apply the effect to
      * @param tier The tier of the ability
      */
-    public void apply(Player target, int tier) {
+    public void apply(LivingEntity target, int tier) {
         if (effect == null) return;
 
         // Scale duration and amplifier based on tier

@@ -11,6 +11,9 @@ import com.networknt.schema.SpecVersion.VersionFlag;
 import com.networknt.schema.ValidationMessage;
 import com.networknt.schema.resource.SchemaLoader;
 import dmr.DragonMounts.DMR;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -18,10 +21,6 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
-
-import java.io.InputStream;
-import java.net.URI;
-import java.util.*;
 
 @EventBusSubscriber(modid = DMR.MOD_ID)
 public class SchemaValidator {
@@ -105,7 +104,8 @@ public class SchemaValidator {
         };
 
         factory = JsonSchemaFactory.getInstance(
-                VersionFlag.V202012, builder -> builder.schemaLoaders(loaders -> {
+                VersionFlag.V202012,
+                builder -> builder.schemaLoaders(loaders -> {
                     loaders.add(localOnlyLoader); // Add our local-only loader first
                     // Don't add any other loaders to prevent network access
                 }));

@@ -1,8 +1,15 @@
 {
-  "ability_type": "attribute",
+  "ability_type": "permanent",
   "breed_transferable": true,
   "max_tier": 3,
-  "attributes": {
-    "dmr:generic.bite_damage": 5.0
-  }
+  "actions": [
+    {
+      "attribute": {
+        "id": "dmr:generic.bite_damage",
+        "value": 5.0,
+        "operation": "ADD_VALUE"
+      },
+      "targets": ["dragon"]
+    }
+  ]
 }

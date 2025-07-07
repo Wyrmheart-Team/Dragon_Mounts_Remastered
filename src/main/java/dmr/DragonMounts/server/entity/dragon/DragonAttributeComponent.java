@@ -1,10 +1,18 @@
 package dmr.DragonMounts.server.entity.dragon;
 
+import static dmr.DragonMounts.util.MiscUtils.randomUpperLower;
+import static dmr.DragonMounts.util.MiscUtils.upperLower;
+import static net.minecraft.world.entity.ai.attributes.Attributes.*;
+import static net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED;
+
 import dmr.DragonMounts.DMR;
 import dmr.DragonMounts.config.ServerConfig;
 import dmr.DragonMounts.registry.ModAttributes;
 import dmr.DragonMounts.server.entity.DragonConstants;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -23,15 +31,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-
-import static dmr.DragonMounts.util.MiscUtils.randomUpperLower;
-import static dmr.DragonMounts.util.MiscUtils.upperLower;
-import static net.minecraft.world.entity.ai.attributes.Attributes.*;
-import static net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED;
 
 abstract class DragonAttributeComponent extends DragonSpawnComponent {
     protected DragonAttributeComponent(EntityType<? extends TamableAnimal> entityType, Level level) {
@@ -200,19 +199,19 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
 
-        if(compound.contains("healthAttribute")) {
+        if (compound.contains("healthAttribute")) {
             entityData.set(healthAttribute, compound.getFloat("healthAttribute"));
         }
-        
-        if(compound.contains("speedAttribute")) {
+
+        if (compound.contains("speedAttribute")) {
             entityData.set(speedAttribute, compound.getFloat("speedAttribute"));
         }
-        
-        if(compound.contains("damageAttribute")) {
+
+        if (compound.contains("damageAttribute")) {
             entityData.set(damageAttribute, compound.getFloat("damageAttribute"));
         }
-        
-        if(compound.contains("maxScaleAttribute")) {
+
+        if (compound.contains("maxScaleAttribute")) {
             entityData.set(maxScaleAttribute, compound.getFloat("maxScaleAttribute"));
         }
     }

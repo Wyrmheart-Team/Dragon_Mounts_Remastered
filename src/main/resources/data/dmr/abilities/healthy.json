@@ -1,8 +1,15 @@
 {
-  "ability_type": "attribute",
+  "ability_type": "permanent",
   "breed_transferable": true,
   "max_tier": 5,
-  "attributes": {
-    "minecraft:generic.max_health": 20.0
-  }
+  "actions": [
+    {
+      "attribute": {
+        "id": "minecraft:generic.max_health",
+        "value": 20.0,
+        "operation": "ADD_VALUE"
+      },
+      "targets": ["dragon"]
+    }
+  ]
 }

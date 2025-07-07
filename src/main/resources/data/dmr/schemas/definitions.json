@@ -228,6 +228,333 @@
       "custom_properties": {
         "type": "attributes"
       }
+    },
+    "simple_effect": {
+      "type": "object",
+      "description": "A simple effect that can be applied to entities. Uses user-friendly format.",
+      "properties": {
+        "id": {
+          "$ref": "definitions.json#/$defs/effect",
+          "description": "The status effect to apply."
+        },
+        "duration": {
+          "$ref": "definitions.json#/$defs/duration_integer",
+          "description": "Duration of the effect in ticks.",
+          "default": 40
+        },
+        "amplifier": {
+          "type": "integer",
+          "description": "Amplifier level of the effect (0 = level 1).",
+          "minimum": 0,
+          "default": 0
+        },
+        "ambient": {
+          "type": "boolean",
+          "description": "Whether the effect is ambient (from a beacon).",
+          "default": true
+        },
+        "show_particles": {
+          "type": "boolean",
+          "description": "Whether to show effect particles.",
+          "default": false
+        },
+        "show_icon": {
+          "type": "boolean",
+          "description": "Whether to show the effect icon.",
+          "default": true
+        },
+        "duration_scale_factor": {
+          "type": "number",
+          "description": "Factor by which the duration scales with ability tier.",
+          "minimum": 0,
+          "default": 1.0
+        }
+      },
+      "required": ["id"]
+    },
+    "target_settings": {
+      "type": "object",
+      "description": "Settings for who should receive the effects/actions.",
+      "properties": {
+        "apply_to_dragon": {
+          "type": "boolean",
+          "description": "Whether to apply effects to the dragon itself.",
+          "default": true
+        },
+        "apply_to_owner": {
+          "type": "boolean",
+          "description": "Whether to apply effects to the dragon's owner.",
+          "default": false
+        },
+        "apply_to_target": {
+          "type": "boolean",
+          "description": "Whether to apply effects to the event target (if applicable).",
+          "default": false
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "description": "A single action that can be performed by an ability",
+      "properties": {
+        "targets": {
+          "description": "List of target types for this action",
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["dragon", "owner", "target", "monsters", "all_entities", "passengers"],
+              "description": "Single target type"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["dragon", "owner", "target", "monsters", "all_entities", "passengers"]
+              },
+              "description": "Multiple target types"
+            }
+          ],
+          "default": ["dragon"]
+        }
+      },
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "description": "Effect action: Apply a status effect",
+              "allOf": [
+                {
+                  "$ref": "definitions.json#/$defs/simple_effect"
+                },
+                {
+                  "properties": {
+                    "effect": {
+                      "description": "The status effect to apply"
+                    }
+                  },
+                  "required": ["effect"]
+                }
+              ]
+            },
+            {
+              "description": "Attribute action: Modify an entity attribute",
+              "properties": {
+                "attribute": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "$ref": "definitions.json#/$defs/attribute",
+                      "description": "Simple attribute format"
+                    },
+                    {
+                      "type": "object",
+                      "description": "Complex attribute format",
+                      "properties": {
+                        "id": {
+                          "$ref": "definitions.json#/$defs/attribute",
+                          "description": "The attribute to modify"
+                        },
+                        "value": {
+                          "type": "number",
+                          "description": "The value to apply"
+                        },
+                        "operation": {
+                          "type": "string",
+                          "enum": ["ADD_VALUE", "ADD_MULTIPLIED_BASE", "ADD_MULTIPLIED_TOTAL"],
+                          "description": "How to apply the attribute modifier",
+                          "default": "ADD_VALUE"
+                        }
+                      },
+                      "required": ["id", "value"]
+                    }
+                  ]
+                },
+                "attribute_value": {
+                  "type": "number",
+                  "description": "Value for simple attribute format",
+                  "default": 1.0
+                },
+                "attribute_operation": {
+                  "type": "string",
+                  "enum": ["ADD_VALUE", "ADD_MULTIPLIED_BASE", "ADD_MULTIPLIED_TOTAL"],
+                  "description": "Operation for simple attribute format",
+                  "default": "ADD_VALUE"
+                },
+                "attribute_scale_factor": {
+                  "type": "number",
+                  "description": "Factor by which the value scales with ability tier",
+                  "minimum": 0,
+                  "default": 1.0
+                },
+                "permanent": {
+                  "type": "boolean",
+                  "description": "Whether this attribute modifier should be permanent (not removed when conditions change)",
+                  "default": false
+                }
+              },
+              "required": ["attribute"]
+            },
+            {
+              "description": "Heal action: Restore health",
+              "properties": {
+                "heal": {
+                  "type": "number",
+                  "description": "Amount of health to restore",
+                  "minimum": 0
+                },
+                "heal_scale_factor": {
+                  "type": "number",
+                  "description": "Factor by which healing scales with ability tier",
+                  "minimum": 0,
+                  "default": 1.0
+                }
+              },
+              "required": ["heal"]
+            },
+            {
+              "description": "Damage action: Deal damage",
+              "properties": {
+                "damage": {
+                  "type": "number",
+                  "description": "Amount of damage to deal",
+                  "minimum": 0
+                },
+                "damage_scale_factor": {
+                  "type": "number",
+                  "description": "Factor by which damage scales with ability tier",
+                  "minimum": 0,
+                  "default": 1.0
+                }
+              },
+              "required": ["damage"]
+            },
+            {
+              "description": "Give item action: Give an item to players",
+              "properties": {
+                "give_item": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "$ref": "definitions.json#/$defs/item",
+                      "description": "Simple item format"
+                    },
+                    {
+                      "type": "object",
+                      "description": "Complex item format",
+                      "properties": {
+                        "item": {
+                          "$ref": "definitions.json#/$defs/item",
+                          "description": "The item to give"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "description": "Number of items to give",
+                          "minimum": 1,
+                          "default": 1
+                        }
+                      },
+                      "required": ["item"]
+                    }
+                  ]
+                },
+                "item_count": {
+                  "type": "integer",
+                  "description": "Count for simple item format",
+                  "minimum": 1,
+                  "default": 1
+                },
+                "item_scale_factor": {
+                  "type": "number",
+                  "description": "Factor by which item count scales with ability tier",
+                  "minimum": 0,
+                  "default": 1.0
+                }
+              },
+              "required": ["give_item"]
+            }
+          ]
+        }
+      ]
+    },
+    "actions_array": {
+      "type": "array",
+      "description": "Array of actions to perform when this ability triggers",
+      "items": {
+        "$ref": "definitions.json#/$defs/action"
+      },
+      "minItems": 1
+    },
+    "action_examples": {
+      "description": "Examples of different action types for abilities. Use the top-level actions array format.",
+      "oneOf": [
+        {
+          "description": "Single effect example: Give speed effect to dragon",
+          "example": {
+            "ability_type": "passive",
+            "actions": [
+              {
+                "effect": "minecraft:speed",
+                "duration": 200,
+                "amplifier": 1,
+                "targets": ["dragon"]
+              }
+            ]
+          }
+        },
+        {
+          "description": "Multiple actions example: Give effect and item",
+          "example": {
+            "ability_type": "conditional_effect",
+            "properties": {
+              "condition_type": "in_water"
+            },
+            "actions": [
+              {
+                "effect": "minecraft:speed",
+                "duration": 200,
+                "targets": ["dragon"]
+              },
+              {
+                "give_item": "minecraft:feather",
+                "item_count": 3,
+                "targets": ["owner"]
+              }
+            ]
+          }
+        },
+        {
+          "description": "Permanent attribute example: Increase max health",
+          "example": {
+            "ability_type": "permanent",
+            "actions": [
+              {
+                "attribute": {
+                  "id": "minecraft:generic.max_health",
+                  "value": 20,
+                  "operation": "ADD_VALUE"
+                },
+                "targets": ["dragon"]
+              }
+            ]
+          }
+        },
+        {
+          "description": "Healing ability example: Regenerate health",
+          "example": {
+            "ability_type": "passive",
+            "properties": {
+              "tick_interval": 40
+            },
+            "actions": [
+              {
+                "heal": 1.0,
+                "heal_scale_factor": 1.5,
+                "targets": ["dragon"]
+              }
+            ]
+          }
+        }
+      ]
     }
   }
 }

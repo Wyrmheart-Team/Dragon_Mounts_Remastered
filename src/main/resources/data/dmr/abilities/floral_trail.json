@@ -1,0 +1,7 @@
+{
+  "ability_type": "floral_trail",
+  "breed_transferable": true,
+  "properties": {
+    "grass_light_threshold": 4
+  }
+}

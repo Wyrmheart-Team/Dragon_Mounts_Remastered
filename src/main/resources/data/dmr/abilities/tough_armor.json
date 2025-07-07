@@ -1,8 +1,16 @@
 {
-  "ability_type": "attribute",
+  "ability_type": "permanent",
   "breed_transferable": true,
   "max_tier": 4,
-  "attributes": {
-    "minecraft:generic.armor": 10.0
-  }
+  "actions": [
+    {
+      "attribute": {
+        "id": "minecraft:generic.armor",
+        "value": 10.0,
+        "operation": "ADD_VALUE"
+      },
+      "attribute_scale_factor": 1.0,
+      "targets": ["dragon"]
+    }
+  ]
 }

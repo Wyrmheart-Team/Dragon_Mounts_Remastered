@@ -11,6 +11,7 @@ import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.server.items.DragonEggItemBlock;
 import dmr.DragonMounts.util.PlayerStateUtils;
 import dmr_test.utils.DMRTestConstants;
+import java.util.Objects;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.entity.EntityType;
@@ -21,8 +22,6 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
-
-import java.util.Objects;
 
 /**
  * Tests for the dragon egg functionality of the mod. These tests verify that
@@ -300,7 +299,8 @@ public class DragonEggTests {
         helper.assertBlockEntityData(
                 DMRTestConstants.TEST_POS,
                 eggEntity -> Objects.equals(((DMREggBlockEntity) eggEntity).getBreedId(), breed.getId()),
-                () -> "Egg breed type does not match, expected " + breed.getId() + ", got " + ((DMREggBlockEntity) blockEntity).getBreedId());
+                () -> "Egg breed type does not match, expected " + breed.getId() + ", got "
+                        + ((DMREggBlockEntity) blockEntity).getBreedId());
         helper.succeed();
     }
 

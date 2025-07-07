@@ -1,11 +1,16 @@
 {
-  "ability_type": "monster_aura",
+  "ability_type": "passive",
   "breed_transferable": true,
   "properties": {
-    "fire_ticks": 4,
-    "requires_no_fire": true,
-    "requires_not_fire_immune": true,
-    "requires_not_in_water_rain_or_bubble": true,
-    "range": 10.0
-  }
+    "range": 10.0,
+    "tick_interval": 20
+  },
+  "actions": [
+    {
+      "set_fire": true,
+      "fire_seconds": 4,
+      "check_immunity": true,
+      "targets": ["monsters"]
+    }
+  ]
 }

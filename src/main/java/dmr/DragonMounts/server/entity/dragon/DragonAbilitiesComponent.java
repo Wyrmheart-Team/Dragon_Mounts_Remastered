@@ -8,7 +8,11 @@ import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.types.abilities.Ability;
 import dmr.DragonMounts.types.abilities.DragonAbility;
 import dmr.DragonMounts.types.abilities.DragonAbilityEntry;
+import dmr.DragonMounts.types.abilities.EventType;
+import dmr.DragonMounts.types.abilities.generic_abilities.GenericEventTriggerAbility;
 import dmr.DragonMounts.util.MiscUtils;
+import java.util.*;
+import java.util.function.Consumer;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -18,11 +22,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.*;
-import java.util.function.Consumer;
 
 abstract class DragonAbilitiesComponent extends DragonTierComponent {
     protected DragonAbilitiesComponent(EntityType<? extends TamableAnimal> entityType, Level level) {
@@ -321,5 +323,21 @@ abstract class DragonAbilitiesComponent extends DragonTierComponent {
     public void tick() {
         super.tick();
         if (tickCount % 20 == 0) abilities.forEach(ability -> ability.tick(getDragon()));
+    }
+
+    /**
+     * Triggers event-based abilities of the specified type.
+     */
+    public void triggerEventAbilities(EventType eventType, Object target) {
+        if (level().isClientSide) return;
+
+        for (Ability ability : abilities) {
+            if (ability instanceof GenericEventTriggerAbility eventAbility) {
+                if (eventAbility.getEventType() == eventType) {
+                    eventAbility.triggerEffects(
+                            getDragon(), (Player) getDragon().getOwner(), target);
+                }
+            }
+        }
     }
 }

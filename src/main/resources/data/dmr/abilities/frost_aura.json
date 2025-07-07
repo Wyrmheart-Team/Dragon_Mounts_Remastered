@@ -1,17 +1,18 @@
 {
-  "ability_type": "monster_aura",
+  "ability_type": "passive",
   "breed_transferable": true,
   "properties": {
-    "effects": [
-      {
-        "id": "minecraft:movement_slowdown",
-        "duration": 100,
-        "amplifier": 1,
-        "ambient": true,
-        "show_particles": false,
-        "show_icon": true
-      }
-    ],
-    "range": 10.0
-  }
+    "range": 10.0,
+    "tick_interval": 20
+  },
+  "actions": [
+    {
+      "effect": "minecraft:slowness",
+      "duration": 100,
+      "amplifier": 1,
+      "ambient": true,
+      "show_particles": false,
+      "targets": ["monsters"]
+    }
+  ]
 }

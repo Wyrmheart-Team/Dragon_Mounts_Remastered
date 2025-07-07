@@ -1,7 +1,13 @@
 {
-  "ability_type": "attribute",
+  "ability_type": "permanent",
   "breed_transferable": true,
-  "attributes": {
-    "minecraft:generic.flying_speed": 0.25
-  }
+  "actions": [
+    {
+      "attribute": {
+        "id": "minecraft:generic.flying_speed",
+        "value": 0.25
+      },
+      "targets": ["dragon"]
+    }
+  ]
 }

@@ -1,28 +1,27 @@
 package dmr.DragonMounts.types.abilities.generic_abilities;
 
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
-import dmr.DragonMounts.types.abilities.Ability;
+import dmr.DragonMounts.types.abilities.ActionData;
 import dmr.DragonMounts.types.abilities.DragonAbility;
-import dmr.DragonMounts.types.abilities.EffectData;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 
 /**
- * A generic ability that applies status effects to the dragon and/or its owner
- * when a specific condition is met. Supports multiple effects and tier-based scaling.
+ * A generic ability that applies actions to the dragon and/or its owner
+ * when a specific condition is met. Uses the new ActionData system.
+ * Handles proper cleanup of attribute modifiers when conditions change.
  */
-public class GenericConditionalEffectAbility extends Ability {
-    private final List<EffectData> effects = new ArrayList<>();
-    private int range = 10;
-    private boolean applyToDragon = true;
-    private boolean applyToOwner = true;
+public class GenericConditionalEffectAbility extends GenericActionAbility {
     private String conditionType = "none";
     private int natureCheckRadius = 2;
+    private boolean wasConditionMet = false;
+    private final Set<LivingEntity> appliedTargets = new HashSet<>();
 
     public GenericConditionalEffectAbility(String abilityType) {
         super(abilityType);
@@ -33,54 +32,65 @@ public class GenericConditionalEffectAbility extends Ability {
         super.initializeDefinition(definition);
         Map<String, Object> props = definition.getProperties();
 
-        if (props.containsKey("range")) {
-            range = ((Number) props.get("range")).intValue();
-        }
-        if (props.containsKey("apply_to_dragon")) {
-            applyToDragon = (Boolean) props.get("apply_to_dragon");
-        }
-        if (props.containsKey("apply_to_owner")) {
-            applyToOwner = (Boolean) props.get("apply_to_owner");
-        }
         if (props.containsKey("condition_type")) {
             conditionType = (String) props.get("condition_type");
         }
         if (props.containsKey("nature_check_radius")) {
             natureCheckRadius = ((Number) props.get("nature_check_radius")).intValue();
         }
-
-        // Get effects from properties using the factory method
-        effects.addAll(EffectData.createFromProperties(props));
-    }
-
-    @Override
-    public boolean isNearbyAbility() {
-        return true;
-    }
-
-    @Override
-    public int getRange() {
-        return range;
     }
 
     @Override
     public void tickWithOwner(TameableDragonEntity dragon, Player owner) {
-        if (effects.isEmpty() || dragon.level.isClientSide) {
+        if (actions.isEmpty() || dragon.level.isClientSide) {
             return;
         }
 
-        if (checkCondition(dragon, owner)) {
-            int tier = getLevel();
-            for (EffectData effectData : effects) {
-                effectData.apply(dragon, owner, applyToDragon, applyToOwner, tier);
+        boolean conditionMet = checkCondition(dragon, owner);
+
+        if (conditionMet && !wasConditionMet) {
+            // Condition just became true - apply effects
+            executeActions(dragon, owner);
+            appliedTargets.add(dragon);
+            if (owner != null) {
+                appliedTargets.add(owner);
+            }
+        } else if (!conditionMet && wasConditionMet) {
+            // Condition just became false - cleanup attribute modifiers
+            cleanupAttributeModifiers();
+        }
+
+        wasConditionMet = conditionMet;
+    }
+
+    private void cleanupAttributeModifiers() {
+        for (LivingEntity target : appliedTargets) {
+            if (target != null && target.isAlive()) {
+                for (ActionData action : actions) {
+                    action.removeAttributeModifiers(target);
+                }
             }
         }
+        appliedTargets.clear();
+    }
+
+    public void onDragonDeath(TameableDragonEntity dragon) {
+        cleanupAttributeModifiers();
     }
 
     private boolean checkCondition(TameableDragonEntity dragon, Player owner) {
         return switch (conditionType) {
             case "in_water" -> dragon.isInWater();
             case "near_nature" -> checkNearNature(dragon);
+            case "on_ground" -> dragon.onGround();
+            case "flying" -> !dragon.onGround() && !dragon.isInWater();
+            case "day" -> dragon.level.isDay();
+            case "night" -> !dragon.level.isDay();
+            case "health_low" -> dragon.getHealth() / dragon.getMaxHealth() < 0.25f;
+            case "health_full" -> dragon.getHealth() >= dragon.getMaxHealth();
+            case "alone" -> owner == null || dragon.distanceTo(owner) > range;
+            case "raining" -> dragon.level.isRaining();
+            case "thundering" -> dragon.level.isThundering();
             default -> true;
         };
     }

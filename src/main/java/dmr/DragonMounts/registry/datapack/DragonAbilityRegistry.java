@@ -22,12 +22,17 @@ public class DragonAbilityRegistry {
      * Initialize the registry with the minimal set of built-in ability types.
      */
     public static void init() {
-        // Register the minimal set of ability types
-        registerAbilityType("effect", GenericEffectAbility::new);
-        registerAbilityType("attribute", GenericAttributeAbility::new);
-        registerAbilityType("aura", GenericAuraAbility::new);
-        registerAbilityType("monster_aura", GenericMonsterAuraAbility::new);
+        // Register the core ability types using ActionData system
         registerAbilityType("conditional_effect", GenericConditionalEffectAbility::new);
+        registerAbilityType("event_trigger", GenericEventTriggerAbility::new);
+        registerAbilityType("environmental_sensor", GenericEnvironmentalSensorAbility::new);
+        registerAbilityType("resource_generator", GenericResourceGeneratorAbility::new);
+        registerAbilityType("block_interaction", GenericBlockInteractionAbility::new);
+        registerAbilityType("footprint_generator", GenericFootprintGeneratorAbility::new);
+
+        // Register cleaner ability types for common patterns
+        registerAbilityType("permanent", GenericPermanentAbility::new);
+        registerAbilityType("passive", GenericPassiveAbility::new);
 
         registerAbilityType("hot_feet", HotFeetAbility::new);
         registerAbilityType("infernal_pact", InfernalPactAbility::new);

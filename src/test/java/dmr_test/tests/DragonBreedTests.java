@@ -2,6 +2,7 @@ package dmr_test.tests;
 
 import dmr.DragonMounts.registry.datapack.DragonBreedsRegistry;
 import dmr_test.utils.DMRTestConstants;
+import java.util.Objects;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.world.level.GameType;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -9,8 +10,6 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.ExtendedGameTestHelper;
-
-import java.util.Objects;
 
 /**
  * Tests for the DragonBreedsRegistry functionality. These tests verify that

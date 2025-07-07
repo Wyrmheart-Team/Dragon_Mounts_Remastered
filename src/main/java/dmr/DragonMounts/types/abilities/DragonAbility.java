@@ -32,4 +32,7 @@ public class DragonAbility extends DatapackEntry {
 
     @SerializedName("particles")
     private List<String> particles = new ArrayList<>();
+
+    @SerializedName("actions")
+    private List<Map<String, Object>> actions = new ArrayList<>();
 }

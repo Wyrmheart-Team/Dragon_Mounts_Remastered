@@ -36,7 +36,7 @@
   "accessories": ["thin_legs"],
   "abilities": [
     {
-      "ability": "#ghost_abilities"
+      "ability": "#common_abilities"
     }
   ]
 }

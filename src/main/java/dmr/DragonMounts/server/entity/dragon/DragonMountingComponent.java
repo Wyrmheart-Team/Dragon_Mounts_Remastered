@@ -2,6 +2,7 @@ package dmr.DragonMounts.server.entity.dragon;
 
 import dmr.DragonMounts.client.handlers.KeyInputHandler;
 import dmr.DragonMounts.server.entity.DragonConstants;
+import dmr.DragonMounts.types.abilities.EventType;
 import dmr.DragonMounts.util.PlayerStateUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -300,5 +301,23 @@ abstract class DragonMountingComponent extends DragonOwnershipComponent {
     @Override
     public LivingEntity getControllingPassenger() {
         return getFirstPassenger() instanceof LivingEntity driver && isOwnedBy(driver) ? driver : null;
+    }
+
+    @Override
+    protected void addPassenger(Entity passenger) {
+        super.addPassenger(passenger);
+        if (passenger instanceof Player player) {
+            // Trigger event-based abilities for on_mount
+            getDragon().triggerEventAbilities(EventType.ON_MOUNT, player);
+        }
+    }
+
+    @Override
+    public void removePassenger(Entity passenger) {
+        if (passenger instanceof Player player) {
+            // Trigger event-based abilities for on_dismount
+            getDragon().triggerEventAbilities(EventType.ON_DISMOUNT, player);
+        }
+        super.removePassenger(passenger);
     }
 }
