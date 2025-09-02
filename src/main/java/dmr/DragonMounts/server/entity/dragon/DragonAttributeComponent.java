@@ -90,7 +90,9 @@ abstract class DragonAttributeComponent extends DragonSpawnComponent {
 
         setBaseValue(MAX_HEALTH, ServerConfig.BASE_HEALTH);
         setBaseValue(ATTACK_DAMAGE, ServerConfig.BASE_DAMAGE);
-        setBaseValue(MOVEMENT_SPEED, DragonConstants.BASE_SPEED_GROUND * ServerConfig.BASE_SPEED);
+        setBaseValue(MOVEMENT_SPEED, DragonConstants.BASE_SPEED_GROUND * ServerConfig.BASE_WALKING_SPEED * ServerConfig.BASE_SPEED);
+        setBaseValue(FLYING_SPEED, DragonConstants.BASE_SPEED_FLYING * ServerConfig.BASE_FLYING_SPEED);
+        setBaseValue(SWIM_SPEED, DragonConstants.BASE_SPEED_WATER * ServerConfig.BASE_SWIMMING_SPEED);
 
         setRandomStats();
     }
