@@ -159,11 +159,11 @@ abstract class DragonMovementComponent extends DragonInventoryComponent {
     public boolean isAffectedByFluids() {
         return canDrownInFluidType(Fluids.WATER.getFluidType());
     }
-
-    @Override
-    protected float getWaterSlowDown() {
-        return 0.5f;
-    }
+	
+	@Override
+	public float getWaterSlowDown() {
+		return 0.5f;
+	}
 
     /** Checks if the dragon can drown in a specific fluid type. */
     public boolean canDrownInFluidType(net.neoforged.neoforge.fluids.FluidType type) {
