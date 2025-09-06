@@ -1,20 +1,28 @@
 package dmr.DragonMounts.server.items;
 
+import java.util.Optional;
+
 import dmr.DragonMounts.ModConstants;
 import dmr.DragonMounts.ModConstants.NBTConstants;
 import dmr.DragonMounts.registry.DragonBreedsRegistry;
 import dmr.DragonMounts.registry.ModComponents;
 import dmr.DragonMounts.registry.ModEntities;
 import dmr.DragonMounts.registry.ModItems;
+import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import dmr.DragonMounts.types.dragonBreeds.DragonHybridBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed;
 import dmr.DragonMounts.types.dragonBreeds.IDragonBreed.Variant;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 
 public class DragonSpawnEgg extends DeferredSpawnEggItem {
@@ -72,6 +80,32 @@ public class DragonSpawnEgg extends DeferredSpawnEggItem {
         stack.set(ModComponents.DRAGON_VARIANT, variant != null ? variant.id() : null);
 
         return stack;
+    }
+
+    @Override
+    public Optional<Mob> spawnOffspringFromSpawnEgg(Player player, Mob p_mob, EntityType<? extends Mob> entityType,
+            ServerLevel serverLevel, Vec3 pos, ItemStack stack) {
+        Optional<Mob> mob = super.spawnOffspringFromSpawnEgg(player, p_mob, entityType, serverLevel, pos, stack);
+        if (mob.isEmpty()) {
+          return mob;
+        }
+
+        TameableDragonEntity parent = (TameableDragonEntity) p_mob;
+        TameableDragonEntity child = (TameableDragonEntity) mob.get();
+
+        if (stack.has(ModComponents.DRAGON_BREED)) {
+          child.setBreed(DragonBreedsRegistry.getDragonBreed(stack.get(ModComponents.DRAGON_BREED)));
+          
+          if (stack.has(ModComponents.DRAGON_VARIANT)) {
+            child.setVariant(stack.get(ModComponents.DRAGON_VARIANT));
+          } else if (parent.hasVariant() && !child.getBreedId().equals(parent.getVariantId())) {
+            child.setVariant(parent.getVariantId());
+          }
+        } else {
+          child.setBreed(parent.getBreed());
+        }
+
+        return mob;
     }
 
     @Override
