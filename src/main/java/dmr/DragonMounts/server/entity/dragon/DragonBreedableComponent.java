@@ -85,9 +85,7 @@ abstract class DragonBreedableComponent extends DragonBreedComponent {
 
     /** Gets the offspring when breeding with another mob. */
     public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob mob) {
-        var offspring = ModEntities.DRAGON_ENTITY.get().create(level);
-        offspring.setBreed(getBreed());
-        return offspring;
+        return ModEntities.DRAGON_ENTITY.get().create(level);
     }
 
     /** Checks if the dragon can reproduce. */
