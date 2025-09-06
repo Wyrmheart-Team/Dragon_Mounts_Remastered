@@ -12,10 +12,13 @@ import net.minecraft.world.level.pathfinder.PathFinder;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.Tags.Fluids;
+
+import java.util.HashSet;
+import java.util.Set;
+
 import org.jetbrains.annotations.Nullable;
 
 public class DragonPathNavigation extends FlyingPathNavigation {
-
     public DragonPathNavigation(Mob pMob, Level pLevel) {
         super(pMob, pLevel);
     }
@@ -60,7 +63,7 @@ public class DragonPathNavigation extends FlyingPathNavigation {
         Path path = super.createPath(pos, accuracy);
 
         if (path == null || !path.canReach() || path.getNodeCount() <= 1) {
-            var dif = mob.blockPosition().getY() - pos.getY();
+            var dif = mob.blockPosition().distManhattan(pos);
             var jumpHeight = Math.max(1.125, (double) this.mob.maxUpStep());
 
             if (Mth.abs(dif) >= jumpHeight) {
@@ -68,6 +71,19 @@ public class DragonPathNavigation extends FlyingPathNavigation {
                 path = super.createPath(pos, accuracy);
             }
         }
+
+        int smallestDistance = -1;
+        int skipToNodeIndex = 0;
+        for (int i = 0; i < path.getNodeCount(); i++) {
+            BlockPos nodePos = path.getNodePos(i);
+            int distanceFromMob = mob.blockPosition().distManhattan(nodePos);
+            int distanceFromPlayer = pos.distManhattan(nodePos);
+            if ((smallestDistance == -1 || distanceFromMob < smallestDistance) && distanceFromPlayer > distanceFromMob) {
+                skipToNodeIndex = i;
+            }
+        }
+
+        path.setNextNodeIndex(skipToNodeIndex);
 
         resetMaxVisitedNodesMultiplier();
 
