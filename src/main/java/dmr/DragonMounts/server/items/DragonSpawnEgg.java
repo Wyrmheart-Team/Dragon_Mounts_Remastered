@@ -98,9 +98,8 @@ public class DragonSpawnEgg extends DeferredSpawnEggItem {
           
           if (stack.has(ModComponents.DRAGON_VARIANT)) {
             child.setVariant(stack.get(ModComponents.DRAGON_VARIANT));
-          } else {
-            Variant parentVariant = parent.getVariant();
-            child.setVariant(parentVariant != null ? parentVariant.id() : null);
+          } else if (parent.hasVariant() && !child.getBreedId().equals(parent.getVariantId())) {
+            child.setVariant(parent.getVariantId());
           }
         } else {
           child.setBreed(parent.getBreed());
