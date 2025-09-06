@@ -93,8 +93,7 @@ abstract class DragonSpawnComponent extends DragonAudioComponent {
                         .get(random.nextInt(breed.getVariants().size()));
                 setVariant(variant.id());
             }
-
-        } else {
+        } else if (spawnType != MobSpawnType.SPAWN_EGG) {
             var outcomes = BreedingUtils.getHabitatBreedOutcomes(level, blockPosition());
 
             if (!outcomes.isEmpty()) {
