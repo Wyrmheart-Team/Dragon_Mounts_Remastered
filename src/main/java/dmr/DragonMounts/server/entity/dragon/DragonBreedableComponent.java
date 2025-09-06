@@ -178,3 +178,4 @@ abstract class DragonBreedableComponent extends DragonBreedComponent {
         getDragon().setWanderTarget(Optional.of(GlobalPos.of(level.dimension(), blockPosition())));
     }
 }
+
