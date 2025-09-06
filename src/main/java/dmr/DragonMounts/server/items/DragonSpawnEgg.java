@@ -85,24 +85,24 @@ public class DragonSpawnEgg extends DeferredSpawnEggItem {
     @Override
     public Optional<Mob> spawnOffspringFromSpawnEgg(Player player, Mob p_mob, EntityType<? extends Mob> entityType,
             ServerLevel serverLevel, Vec3 pos, ItemStack stack) {
-        var mob = super.spawnOffspringFromSpawnEgg(player, p_mob, entityType, serverLevel, pos, stack);
+        Optional<Mob> mob = super.spawnOffspringFromSpawnEgg(player, p_mob, entityType, serverLevel, pos, stack);
         if (mob.isEmpty()) {
           return mob;
         }
 
-        var parent = (TameableDragonEntity) p_mob;
-        var child = (TameableDragonEntity) mob.get();
+        TameableDragonEntity parent = (TameableDragonEntity) p_mob;
+        TameableDragonEntity child = (TameableDragonEntity) mob.get();
 
-            if (stack.has(ModComponents.DRAGON_BREED)) {
+        if (stack.has(ModComponents.DRAGON_BREED)) {
           child.setBreed(DragonBreedsRegistry.getDragonBreed(stack.get(ModComponents.DRAGON_BREED)));
           
           if (stack.has(ModComponents.DRAGON_VARIANT)) {
             child.setVariant(stack.get(ModComponents.DRAGON_VARIANT));
           } else {
-            var parentVariant = parent.getVariant();
+            Variant parentVariant = parent.getVariant();
             child.setVariant(parentVariant != null ? parentVariant.id() : null);
           }
-            } else {
+        } else {
           child.setBreed(parent.getBreed());
         }
 
