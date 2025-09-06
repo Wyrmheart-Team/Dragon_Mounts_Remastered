@@ -13,9 +13,6 @@ import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.Tags.Fluids;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.jetbrains.annotations.Nullable;
 
 public class DragonPathNavigation extends FlyingPathNavigation {
