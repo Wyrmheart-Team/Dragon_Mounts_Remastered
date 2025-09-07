@@ -14,15 +14,15 @@ import net.neoforged.neoforge.common.Tags.Fluids;
 import org.jetbrains.annotations.Nullable;
 
 public class DragonPathNavigation extends FlyingPathNavigation {
-    protected final TameableDragonEntity mob;
+    protected final TameableDragonEntity dragon;
 
     private int lastPathCreationDelta = 0;
     private static final int TICKS_BETWEEN_PATH_CREATIONS = 5;
 
-    public DragonPathNavigation(TameableDragonEntity mob, Level pLevel) {
-        super(mob, pLevel);
+    public DragonPathNavigation(TameableDragonEntity dragon, Level level) {
+        super(dragon, level);
 
-        this.mob = mob;
+        this.dragon = dragon;
 
         setMaxVisitedNodesMultiplier(5f);
     }
@@ -62,16 +62,16 @@ public class DragonPathNavigation extends FlyingPathNavigation {
     public @Nullable Path createPath(BlockPos pos, int accuracy) {
         if (lastPathCreationDelta < TICKS_BETWEEN_PATH_CREATIONS) {
             return null;
-        } else {
-            lastPathCreationDelta = 0;
         }
+        
+        lastPathCreationDelta = 0;
 
-        dragonNodeEvaluator.allowSwimming = mob.getBreed() != null
-                && mob.getBreed().getImmunities().contains("drown")
-                && mob.level.getFluidState(pos).is(Fluids.WATER);
+        dragonNodeEvaluator.allowSwimming = dragon.getBreed() != null
+                && dragon.getBreed().getImmunities().contains("drown")
+                && dragon.level.getFluidState(pos).is(Fluids.WATER);
 
         // If the dragon's already flying, we create a flight path right away.
-        if (mob.isFlying()) {
+        if (dragon.isFlying()) {
             return createPathWithFlyingAllowed(pos, accuracy);
         }
 
@@ -85,7 +85,7 @@ public class DragonPathNavigation extends FlyingPathNavigation {
 
         // If there's no reason for the dragon to fly, settle for the walking/swimming path.
         var dif = mob.blockPosition().distManhattan(pos);
-        var jumpHeight = Math.max(1.125, (double) this.mob.maxUpStep());
+        var jumpHeight = Math.max(1.125f, mob.maxUpStep());
         if (Mth.abs(dif) < jumpHeight) {
             return path;
         }
@@ -96,6 +96,7 @@ public class DragonPathNavigation extends FlyingPathNavigation {
 
     private Path createPathWithFlyingAllowed(BlockPos pos, int accuracy) {
         dragonNodeEvaluator.allowFlying = true;
+
         Path path = super.createPath(pos, accuracy);
 
         int smallestDistance = -1;
