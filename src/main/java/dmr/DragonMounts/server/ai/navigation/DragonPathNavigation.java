@@ -16,6 +16,9 @@ import org.jetbrains.annotations.Nullable;
 public class DragonPathNavigation extends FlyingPathNavigation {
     protected final TameableDragonEntity mob;
 
+    private int lastPathCreationDelta = 0;
+    private static final int TICKS_BETWEEN_PATH_CREATIONS = 5;
+
     public DragonPathNavigation(TameableDragonEntity mob, Level pLevel) {
         super(mob, pLevel);
 
@@ -49,7 +52,20 @@ public class DragonPathNavigation extends FlyingPathNavigation {
     }
 
     @Override
+    public void tick() {
+        super.tick();
+
+        lastPathCreationDelta++;
+    }
+
+    @Override
     public @Nullable Path createPath(BlockPos pos, int accuracy) {
+        if (lastPathCreationDelta < TICKS_BETWEEN_PATH_CREATIONS) {
+            return null;
+        } else {
+            lastPathCreationDelta = 0;
+        }
+
         dragonNodeEvaluator.allowSwimming = mob.getBreed() != null
                 && mob.getBreed().getImmunities().contains("drown")
                 && mob.level.getFluidState(pos).is(Fluids.WATER);
