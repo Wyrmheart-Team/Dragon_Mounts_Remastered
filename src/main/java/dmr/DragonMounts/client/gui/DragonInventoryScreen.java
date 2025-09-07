@@ -12,7 +12,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
@@ -192,7 +191,7 @@ public class DragonInventoryScreen extends AbstractContainerScreen<DragonContain
 
     public static class ModeButton extends ExtendedButton {
         public ModeButton(int xPos, int yPos, String text, Button.OnPress handler) {
-            super(xPos, yPos, 18, 18, Component.literal(I18n.get(text).substring(0, 1)), handler);
+            super(xPos, yPos, 18, 18, Component.literal(Component.translatable(text).getString(1)), handler);
             this.setTooltip(Tooltip.create(Component.translatable(text)));
         }
     }
