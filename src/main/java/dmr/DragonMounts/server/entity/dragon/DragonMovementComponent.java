@@ -6,6 +6,7 @@ import dmr.DragonMounts.registry.ModMemoryModuleTypes;
 import dmr.DragonMounts.server.ai.DragonBodyController;
 import dmr.DragonMounts.server.ai.DragonMoveController;
 import dmr.DragonMounts.server.ai.navigation.DragonPathNavigation;
+import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -37,7 +38,7 @@ abstract class DragonMovementComponent extends DragonInventoryComponent {
 
     @Override
     protected PathNavigation createNavigation(Level level) {
-        DragonPathNavigation dragonNavigation = new DragonPathNavigation(this, level);
+        DragonPathNavigation dragonNavigation = new DragonPathNavigation((TameableDragonEntity) this, level);
         dragonNavigation.setCanFloat(true);
         return dragonNavigation;
     }

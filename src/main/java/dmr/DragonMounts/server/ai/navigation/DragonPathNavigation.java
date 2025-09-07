@@ -3,8 +3,6 @@ package dmr.DragonMounts.server.ai.navigation;
 import dmr.DragonMounts.server.entity.TameableDragonEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.Path;
@@ -16,8 +14,14 @@ import net.neoforged.neoforge.common.Tags.Fluids;
 import org.jetbrains.annotations.Nullable;
 
 public class DragonPathNavigation extends FlyingPathNavigation {
-    public DragonPathNavigation(Mob pMob, Level pLevel) {
-        super(pMob, pLevel);
+    protected final TameableDragonEntity mob;
+
+    public DragonPathNavigation(TameableDragonEntity mob, Level pLevel) {
+        super(mob, pLevel);
+
+        this.mob = mob;
+
+        setMaxVisitedNodesMultiplier(5f);
     }
 
     private DragonNodeEvaluator dragonNodeEvaluator;
@@ -46,28 +50,37 @@ public class DragonPathNavigation extends FlyingPathNavigation {
 
     @Override
     public @Nullable Path createPath(BlockPos pos, int accuracy) {
-        dragonNodeEvaluator.allowSwimming = false;
+        dragonNodeEvaluator.allowSwimming = mob.getBreed() != null
+                && mob.getBreed().getImmunities().contains("drown")
+                && mob.level.getFluidState(pos).is(Fluids.WATER);
+
+        // If the dragon's already flying, we create a flight path right away.
+        if (mob.isFlying()) {
+            return createPathWithFlyingAllowed(pos, accuracy);
+        }
+
         dragonNodeEvaluator.allowFlying = false;
 
-        setMaxVisitedNodesMultiplier(5f);
-
-        if (mob instanceof TameableDragonEntity dragon) {
-            dragonNodeEvaluator.allowSwimming = dragon.getBreed() != null
-                    && dragon.getBreed().getImmunities().contains("drown")
-                    && dragon.level.getFluidState(pos).is(Fluids.WATER);
-        }
-
+        // Otherwise, let's try and get a path to the target position by walking or swimming.
         Path path = super.createPath(pos, accuracy);
-
-        if (path == null || !path.canReach() || path.getNodeCount() <= 1) {
-            var dif = mob.blockPosition().distManhattan(pos);
-            var jumpHeight = Math.max(1.125, (double) this.mob.maxUpStep());
-
-            if (Mth.abs(dif) >= jumpHeight) {
-                dragonNodeEvaluator.allowFlying = true;
-                path = super.createPath(pos, accuracy);
-            }
+        if (path != null && path.canReach() && path.getNodeCount() > 1) {
+          return path;
         }
+
+        // If there's no reason for the dragon to fly, settle for the walking/swimming path.
+        var dif = mob.blockPosition().distManhattan(pos);
+        var jumpHeight = Math.max(1.125, (double) this.mob.maxUpStep());
+        if (Mth.abs(dif) < jumpHeight) {
+            return path;
+        }
+
+        // If walking or swimming doesn't work, let's try to fly there.
+        return createPathWithFlyingAllowed(pos, accuracy);
+    }
+
+    private Path createPathWithFlyingAllowed(BlockPos pos, int accuracy) {
+        dragonNodeEvaluator.allowFlying = true;
+        Path path = super.createPath(pos, accuracy);
 
         int smallestDistance = -1;
         int skipToNodeIndex = 0;
@@ -81,38 +94,6 @@ public class DragonPathNavigation extends FlyingPathNavigation {
         }
 
         path.setNextNodeIndex(skipToNodeIndex);
-
-        resetMaxVisitedNodesMultiplier();
-
-        return path;
-    }
-
-    @Override
-    public Path createPath(Entity entity, int accuracy) {
-        dragonNodeEvaluator.allowSwimming = false;
-        dragonNodeEvaluator.allowFlying = false;
-
-        setMaxVisitedNodesMultiplier(5f);
-
-        if (mob instanceof TameableDragonEntity dragon) {
-            dragonNodeEvaluator.allowSwimming = dragon.getBreed() != null
-                    && dragon.getBreed().getImmunities().contains("drown")
-                    && entity.isInWater();
-        }
-
-        Path path = super.createPath(entity, accuracy);
-
-        if (path == null || !path.canReach() || path.getNodeCount() <= 1) {
-            var dif = mob.blockPosition().getY() - entity.blockPosition().getY();
-            var jumpHeight = Math.max(1.125, (double) this.mob.maxUpStep());
-
-            if (Mth.abs(dif) >= jumpHeight) {
-                dragonNodeEvaluator.allowFlying = true;
-                path = super.createPath(entity, accuracy);
-            }
-        }
-
-        resetMaxVisitedNodesMultiplier();
 
         return path;
     }
