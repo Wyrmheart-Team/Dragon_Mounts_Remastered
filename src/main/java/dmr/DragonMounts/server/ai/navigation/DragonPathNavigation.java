@@ -98,15 +98,16 @@ public class DragonPathNavigation extends FlyingPathNavigation {
         dragonNodeEvaluator.allowFlying = true;
 
         Path path = super.createPath(pos, accuracy);
+        if (path == null) {
+          return path;
+        }
 
-        // Let's skip nodes that get the dragon farther away from the player to stop the dragon from travelling back
-        // when it doesn't need to.
-        advancePathToNodeClosestToPlayer(path, pos);
-
-        return path;
+        // If we can skip nodes that get the dragon farther away from the player to stop the dragon from travelling back
+        // when it doesn't need to, then we skip them.
+        return streamlinePath(path, pos);
     }
 
-    private void advancePathToNodeClosestToPlayer(Path path, BlockPos pos) {
+    private Path streamlinePath(Path path, BlockPos pos) {
         int closestNodeDist = -1;
         int skipToNodeIndex = 0;
         for (int i = 0; i < path.getNodeCount(); i++) {
@@ -122,6 +123,8 @@ public class DragonPathNavigation extends FlyingPathNavigation {
         }
 
         path.setNextNodeIndex(skipToNodeIndex);
+
+        return path;
     }
 
     @Override
