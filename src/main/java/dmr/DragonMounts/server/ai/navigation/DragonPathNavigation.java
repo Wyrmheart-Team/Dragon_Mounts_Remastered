@@ -99,20 +99,29 @@ public class DragonPathNavigation extends FlyingPathNavigation {
 
         Path path = super.createPath(pos, accuracy);
 
-        int smallestDistance = -1;
+        // Let's skip nodes that get the dragon farther away from the player to stop the dragon from travelling back
+        // when it doesn't need to.
+        advancePathToNodeClosestToPlayer(path, pos);
+
+        return path;
+    }
+
+    private void advancePathToNodeClosestToPlayer(Path path, BlockPos pos) {
+        int closestNodeDist = -1;
         int skipToNodeIndex = 0;
         for (int i = 0; i < path.getNodeCount(); i++) {
             BlockPos nodePos = path.getNodePos(i);
-            int distanceFromMob = mob.blockPosition().distManhattan(nodePos);
-            int distanceFromPlayer = pos.distManhattan(nodePos);
-            if ((smallestDistance == -1 || distanceFromMob < smallestDistance) && distanceFromPlayer > distanceFromMob) {
+            int distFromDragon = mob.blockPosition().distManhattan(nodePos);
+            int distFromPlayer = pos.distManhattan(nodePos);
+            if (distFromPlayer < closestNodeDist || distFromPlayer > distFromDragon) {
+                closestNodeDist = distFromPlayer;
                 skipToNodeIndex = i;
+            } else {
+                break;
             }
         }
 
         path.setNextNodeIndex(skipToNodeIndex);
-
-        return path;
     }
 
     @Override
