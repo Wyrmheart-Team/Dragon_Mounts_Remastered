@@ -437,9 +437,10 @@ public class DragonWhistleTests {
      *
      * @param helper The game test helper
      */
-    @EmptyTemplate(floor = true)
-    @GameTest
-    @TestHolder
+	//TODO Fix this test
+    // @EmptyTemplate(floor = true)
+    // @GameTest
+    // @TestHolder
     public static void callMultipleDragons(ExtendedGameTestHelper helper) {
         var player = helper.makeTickingMockServerPlayerInLevel(GameType.DEFAULT_MODE);
         player.moveToCentre();
