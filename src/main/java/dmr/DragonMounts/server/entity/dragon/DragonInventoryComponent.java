@@ -131,7 +131,7 @@ abstract class DragonInventoryComponent extends DragonCombatComponent {
      * Gets the item that would be picked when the dragon is picked.
      */
     public ItemStack getPickedResult(HitResult target) {
-        return DragonSpawnEgg.create(getBreed());
+        return DragonSpawnEgg.create(getBreed(), getVariant());
     }
 
     /**
