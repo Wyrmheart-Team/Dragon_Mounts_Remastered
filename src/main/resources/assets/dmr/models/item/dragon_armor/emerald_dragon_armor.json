@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "dmr:item/emerald_horse_armor"
+    "layer0": "dmr:item/emerald_dragon_armor"
   }
 }
